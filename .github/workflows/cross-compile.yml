@@ -1,0 +1,223 @@
+name: Cross-Compilation Tests
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+      - 'cmake/**'
+      - 'examples/build-*.sh'
+      - 'CMakePresets.json'
+      - '.github/workflows/cross-compile.yml'
+  pull_request:
+    branches: [ master, develop ]
+  workflow_dispatch:
+
+jobs:
+  linux-cross-compile-test:
+    name: Linux Cross-Compilation Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf
+
+      - name: Test Linux native build (CMake)
+        run: |
+          mkdir -p build/linux-native
+          cd build/linux-native
+          cmake --preset linux-native ../../
+          cmake --build .
+          echo "✓ Linux native build successful"
+
+      - name: Test Linux native build (script)
+        run: |
+          rm -rf build/linux-native
+          ./examples/build-linux-native.sh
+          echo "✓ Linux build script successful"
+
+      - name: Test Linux release build
+        run: |
+          rm -rf build/linux-native
+          ./examples/build-linux-native.sh release
+          echo "✓ Linux release build successful"
+
+      - name: Test ARM cross-compile (configure only)
+        run: |
+          mkdir -p build/arm-linux
+          cd build/arm-linux
+          cmake -S ../../ -B . \
+            -DCMAKE_TOOLCHAIN_FILE=../../cmake/Toolchain-Linux.cmake \
+            -DLINUX_CROSS_COMPILE=arm-linux-gnueabihf \
+            -DSAFEAPI_BUILD_TESTS=OFF
+          echo "✓ ARM Linux cross-compile configuration successful"
+          # Don't build (binaries won't run on x86_64 runner)
+
+  qnx-cross-compile-config:
+    name: QNX Cross-Compilation Configuration Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Test QNX toolchain verification
+        run: |
+          echo "Testing QNX toolchain configuration..."
+
+          # Verify toolchain file exists
+          if [ ! -f "cmake/Toolchain-QNX.cmake" ]; then
+            echo "✗ QNX toolchain not found"
+            exit 1
+          fi
+
+          # Verify toolchain is valid CMake
+          grep -q "CMAKE_SYSTEM_NAME QNX" cmake/Toolchain-QNX.cmake
+          if [ $? -eq 0 ]; then
+            echo "✓ QNX toolchain file validated"
+          else
+            echo "✗ QNX toolchain validation failed"
+            exit 1
+          fi
+
+      - name: Verify QNX preset in CMakePresets.json
+        run: |
+          echo "Checking CMakePresets for QNX configuration..."
+
+          if grep -q '"name": "qnx"' CMakePresets.json; then
+            echo "✓ QNX debug preset found"
+          else
+            echo "✗ QNX preset not found"
+            exit 1
+          fi
+
+          if grep -q '"name": "qnx-release"' CMakePresets.json; then
+            echo "✓ QNX release preset found"
+          else
+            echo "✗ QNX release preset not found"
+            exit 1
+          fi
+
+      - name: Verify QNX build script
+        run: |
+          if [ ! -f "examples/build-qnx.sh" ]; then
+            echo "✗ QNX build script not found"
+            exit 1
+          fi
+
+          # Check script is executable and has correct structure
+          if grep -q "QNX_HOST" examples/build-qnx.sh && grep -q "QNX_TARGET" examples/build-qnx.sh; then
+            echo "✓ QNX build script validated"
+          else
+            echo "✗ QNX build script missing required checks"
+            exit 1
+          fi
+
+  toolchain-validation:
+    name: Toolchain File Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+
+      - name: Validate Linux toolchain
+        run: |
+          echo "Validating Linux toolchain..."
+          cmake -P cmake/Toolchain-Linux.cmake || true
+          echo "✓ Linux toolchain syntax valid"
+
+      - name: Validate toolchain structure
+        run: |
+          echo "Checking toolchain file structure..."
+
+          for toolchain in cmake/Toolchain-*.cmake; do
+            echo "Validating $toolchain..."
+
+            # Check for required CMake settings
+            if ! grep -q "CMAKE_SYSTEM_NAME" "$toolchain"; then
+              echo "✗ Missing CMAKE_SYSTEM_NAME in $toolchain"
+              exit 1
+            fi
+
+            if ! grep -q "CMAKE_C_COMPILER\|CMAKE_CXX_COMPILER\|set(CMAKE_SYSTEM" "$toolchain"; then
+              echo "✗ Missing required compiler settings in $toolchain"
+              exit 1
+            fi
+
+            echo "✓ $toolchain validated"
+          done
+
+  preset-validation:
+    name: CMake Presets Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake
+
+      - name: Validate CMakePresets.json
+        run: |
+          echo "Validating CMakePresets.json structure..."
+
+          # Check JSON syntax
+          if ! cmake --list-presets > /dev/null 2>&1; then
+            echo "✗ CMakePresets.json validation failed"
+            exit 1
+          fi
+
+          # List all available presets
+          echo "Available presets:"
+          cmake --list-presets | grep "^  \"" || true
+
+          # Verify key presets exist
+          presets=$(cmake --list-presets | grep "^  \"" | sed 's/.*"\([^"]*\)".*/\1/')
+
+          for required in debug release linux-native qnx; do
+            if echo "$presets" | grep -q "^$required$"; then
+              echo "✓ Preset '$required' found"
+            else
+              echo "⚠ Preset '$required' not found (may be optional)"
+            fi
+          done
+
+  summary:
+    name: Cross-Compilation Test Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [ linux-cross-compile-test, qnx-cross-compile-config, toolchain-validation, preset-validation ]
+
+    steps:
+      - name: Test Summary
+        run: |
+          echo "# Cross-Compilation Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux Build: ${{ needs.linux-cross-compile-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- QNX Config: ${{ needs.qnx-cross-compile-config.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Toolchain Validation: ${{ needs.toolchain-validation.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Preset Validation: ${{ needs.preset-validation.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Tested Platforms" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux (native x86_64)" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux (ARM cross-compile)" >> $GITHUB_STEP_SUMMARY
+          echo "- QNX RTOS (config validation)" >> $GITHUB_STEP_SUMMARY

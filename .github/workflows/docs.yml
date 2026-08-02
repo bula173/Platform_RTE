@@ -1,0 +1,145 @@
+name: Build & Deploy Documentation
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'docs/**'
+      - 'Doxyfile'
+      - 'README.md'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'include/**'
+      - 'src/**'
+      - 'docs/**'
+      - 'Doxyfile'
+      - 'README.md'
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-docs:
+    name: Build Documentation with Doxygen
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+
+      - name: Verify Doxygen installation
+        run: doxygen --version
+
+      - name: Generate Doxygen documentation
+        run: doxygen Doxyfile
+        working-directory: ${{ github.workspace }}
+
+      - name: Verify documentation output
+        run: |
+          echo "Checking if HTML was generated..."
+          if [ -d "docs/api/html" ]; then
+            echo "✓ HTML documentation generated"
+            ls -la docs/api/html/ | head -20
+          else
+            echo "✗ HTML documentation NOT generated"
+            exit 1
+          fi
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: doxygen-documentation
+          path: docs/api/html/
+          retention-days: 7
+
+  deploy-docs:
+    name: Deploy Documentation to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: build-docs
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/develop')
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download documentation artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: doxygen-documentation
+          path: ./docs-to-deploy
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact to Pages
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./docs-to-deploy
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
+  validate-docs:
+    name: Validate Documentation Quality
+    runs-on: ubuntu-latest
+    needs: build-docs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download documentation
+        uses: actions/download-artifact@v3
+        with:
+          name: doxygen-documentation
+          path: ./docs-output
+
+      - name: Check for broken links in HTML
+        run: |
+          echo "Checking for common documentation issues..."
+
+          # Check if index.html exists
+          if [ ! -f "docs-output/index.html" ]; then
+            echo "✗ index.html not found"
+            exit 1
+          fi
+
+          # Count generated files
+          html_count=$(find docs-output -name "*.html" | wc -l)
+          echo "✓ Generated $html_count HTML files"
+
+          # Look for undocumented warnings
+          if grep -r "warning" docs-output 2>/dev/null | grep -q "undocumented"; then
+            echo "⚠ Found undocumented warnings in docs"
+          fi
+
+      - name: Generate documentation summary
+        run: |
+          echo "# Documentation Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Generated Files" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML files: $(find docs-output -name '*.html' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- CSS files: $(find docs-output -name '*.css' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "- JS files: $(find docs-output -name '*.js' | wc -l)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Documentation Location" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Pages: Will be available after deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- Artifact: Check 'doxygen-documentation' in workflow artifacts" >> $GITHUB_STEP_SUMMARY

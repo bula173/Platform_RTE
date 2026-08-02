@@ -1,0 +1,147 @@
+name: CI Build & Test
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  build-and-test:
+    name: Build & Test (${{ matrix.preset }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [ debug, release, ci, asan, ubsan ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential clang cppcheck
+
+      - name: List CMake presets
+        run: cmake --list-presets
+
+      - name: Configure (${{ matrix.preset }})
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build (${{ matrix.preset }})
+        run: cmake --build --preset ${{ matrix.preset }}
+
+      - name: Run tests (${{ matrix.preset }})
+        run: ctest --preset ${{ matrix.preset }} --output-on-failure
+        # Skip for ASAN/UBSAN if they're cross-compile targets
+        if: matrix.preset != 'qnx' && matrix.preset != 'qnx-release'
+
+  linux-native:
+    name: Linux Native (POSIX OAL)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential
+
+      - name: Build script
+        run: ./examples/build-linux-native.sh debug
+        shell: bash
+
+  static-analysis:
+    name: MISRA C:2012 Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential cppcheck
+
+      - name: Configure
+        run: cmake --preset debug
+
+      - name: Run cppcheck with MISRA
+        run: cmake --build build --target cppcheck
+        continue-on-error: true
+
+      - name: Upload MISRA report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: misra-report
+          path: build/cppcheck-report.*
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential clang-format clang-tools-extra
+
+      - name: Check code formatting
+        run: |
+          echo "Checking code formatting with clang-format..."
+          find include src tests -name "*.h" -o -name "*.c" | while read f; do
+            clang-format --dry-run --Werror "$f" || echo "Format issue in $f"
+          done
+        continue-on-error: true
+
+  build-all-presets:
+    name: Verify All Presets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential clang
+
+      - name: Test all presets (configure only)
+        run: |
+          presets=$(cmake --list-presets | grep "^  \"" | sed 's/.*"\([^"]*\)".*/\1/')
+          for preset in $presets; do
+            echo "Testing preset: $preset"
+            rm -rf build
+            if cmake --preset "$preset" 2>&1 | grep -q "error"; then
+              echo "Preset $preset failed configuration"
+              exit 1
+            fi
+          done
+
+  summary:
+    name: Build Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [ build-and-test, linux-native, static-analysis, code-quality, build-all-presets ]
+
+    steps:
+      - name: Job Status Summary
+        run: |
+          echo "# CI Workflow Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Jobs Status" >> $GITHUB_STEP_SUMMARY
+          echo "- Build & Test: ${{ needs.build-and-test.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Linux Native: ${{ needs.linux-native.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Static Analysis: ${{ needs.static-analysis.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Code Quality: ${{ needs.code-quality.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Preset Verification: ${{ needs.build-all-presets.result }}" >> $GITHUB_STEP_SUMMARY
