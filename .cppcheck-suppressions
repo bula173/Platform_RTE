@@ -1,0 +1,8 @@
+# cppcheck suppressions for documented MISRA C:2012 deviations
+# See docs/MISRA_COMPLIANCE_REPORT.md section 3 for rationale
+
+# Rule 15.5: single point of exit
+# DEVIATION RATIONALE: Guard clauses used for parameter validation, not nesting.
+# This is consistent with modern safety-critical C style (NASA/JPL guidelines).
+# See docs/MISRA_COMPLIANCE_REPORT.md section 3, first bullet.
+misra-single-exit

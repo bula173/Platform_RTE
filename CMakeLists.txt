@@ -39,3 +39,85 @@ if(SAFEAPI_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
+
+# ---------------------------------------------------------------------------
+# Static analysis: cppcheck with MISRA C:2012 addon
+# ---------------------------------------------------------------------------
+find_program(CPPCHECK_EXECUTABLE cppcheck)
+if(CPPCHECK_EXECUTABLE)
+    add_custom_target(cppcheck
+        COMMAND ${CPPCHECK_EXECUTABLE}
+            --project=${CMAKE_BINARY_DIR}/compile_commands.json
+            --addon=misra
+            --std=c99
+            --enable=all
+            --inconclusive
+            --suppressions-list=${CMAKE_CURRENT_SOURCE_DIR}/.cppcheck-suppressions
+            -I ${CMAKE_CURRENT_SOURCE_DIR}/include
+            --output-file=${CMAKE_BINARY_DIR}/cppcheck-report.txt
+            --xml --xml-version=2 > ${CMAKE_BINARY_DIR}/cppcheck-report.xml 2>&1 || true
+        COMMENT "Running cppcheck with MISRA C:2012 analysis..."
+        VERBATIM
+    )
+    message(STATUS "cppcheck found: ${CPPCHECK_EXECUTABLE}")
+    message(STATUS "  Run 'cmake --build build --target cppcheck' to analyze code")
+else()
+    message(STATUS "cppcheck not found - MISRA static analysis disabled")
+endif()
+
+# ---------------------------------------------------------------------------
+# Package and export configuration (for downstream projects)
+# ---------------------------------------------------------------------------
+# Define install paths
+set(INCLUDE_INSTALL_DIR include)
+set(LIB_INSTALL_DIR lib)
+set(CMAKE_INSTALL_DIR lib/cmake/safeAPIFramework)
+
+# Install public headers
+install(DIRECTORY include/safeapi
+    DESTINATION ${INCLUDE_INSTALL_DIR}
+    COMPONENT development
+)
+
+# Install CMake modules (for reuse by downstream projects)
+install(FILES
+    cmake/CompilerWarnings.cmake
+    cmake/SafeAPIHelpers.cmake
+    DESTINATION ${CMAKE_INSTALL_DIR}
+    COMPONENT development
+)
+
+# Generate and install config files
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfig.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
+    @ONLY
+)
+
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfigVersion.cmake.in
+    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
+    @ONLY
+)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_DIR}
+    COMPONENT development
+)
+
+# Install library targets (types is header-only)
+install(TARGETS
+    safeapi_status safeapi_buffer safeapi_cast
+    safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
+    safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
+    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+    RUNTIME DESTINATION bin
+    COMPONENT libraries
+)
+
+message(STATUS "safeAPIFramework package configuration ready")
+message(STATUS "  Install with: cmake --install build")
+message(STATUS "  Use in downstream projects: find_package(safeAPIFramework)")

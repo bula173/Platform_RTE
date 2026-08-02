@@ -1,0 +1,38 @@
+# safeAPIFrameworkConfig.cmake
+# Provides paths and CMake helpers for projects using safeAPIFramework
+#
+# Usage:
+#   find_package(safeAPIFramework REQUIRED)
+#   # Use variables: safeAPIFramework_INCLUDE_DIR, safeAPIFramework_LIB_DIR
+#   # Include helpers: SafeAPIHelpers, CompilerWarnings
+
+get_filename_component(_safeAPIFramework_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
+get_filename_component(_safeAPIFramework_PREFIX "${_safeAPIFramework_DIR}/../.." ABSOLUTE)
+
+# Make shared CMake modules available to downstream projects
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+# Expose install paths for downstream use
+set(safeAPIFramework_INCLUDE_DIR "${_safeAPIFramework_PREFIX}/include")
+set(safeAPIFramework_LIB_DIR "${_safeAPIFramework_PREFIX}/lib")
+
+# List of library names (for manual linking if targets are not exported)
+set(safeAPIFramework_LIBRARIES
+    safeapi_status
+    safeapi_buffer
+    safeapi_cast
+    safeapi_safestate
+    safeapi_string
+    safeapi_timer
+    safeapi_nvm
+    safeapi_memory
+    safeapi_task
+    safeapi_ipc
+    safeapi_log
+    safeapi_reboot
+)
+
+message(STATUS "safeAPIFramework found:")
+message(STATUS "  Include dir: ${safeAPIFramework_INCLUDE_DIR}")
+message(STATUS "  Lib dir: ${safeAPIFramework_LIB_DIR}")
+message(STATUS "  Use 'include(SafeAPIHelpers)' for helper functions")

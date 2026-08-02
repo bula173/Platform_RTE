@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="1">
+    <!-- cppcheck configuration for safeAPIFramework MISRA C:2012 compliance checking -->
+
+    <!-- Source paths to check -->
+    <dir name="include"/>
+    <dir name="src"/>
+
+    <!-- Exclude test code (not shipped deliverable) -->
+    <exclude-path>tests</exclude-path>
+
+    <!-- Enable all checks plus MISRA addon -->
+    <enable>all</enable>
+
+    <!-- MISRA C:2012 addon -->
+    <addon>misra</addon>
+
+    <!-- C99 standard (matches CMakeLists.txt) -->
+    <std>c99</std>
+
+    <!-- Suppress known safe patterns -->
+    <suppress>
+        <!-- Rule 15.5: single point of exit (documented deviation - guard clauses used instead) -->
+        <id>misra-single-exit</id>
+    </suppress>
+
+    <!-- Include paths for header resolution -->
+    <include-path>include</include-path>
+</project>
