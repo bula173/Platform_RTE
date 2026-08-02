@@ -42,11 +42,92 @@ hardware) without editing framework source. See
 
 ## Building
 
+### Using CMake Presets (recommended)
+
+CMake presets provide standardized build configurations. List available presets:
+
+```sh
+cmake --list-presets
+```
+
+**Common workflows:**
+
+```sh
+# Debug build with tests
+cmake --preset debug
+cmake --build --preset debug
+ctest --preset debug
+
+# Release build (optimized)
+cmake --preset release
+cmake --build --preset release
+ctest --preset release
+
+# CI build (strict checks, fail on warnings)
+cmake --preset ci
+cmake --build --preset ci
+ctest --preset ci
+
+# Memory sanitizer (detect use-after-free, buffer overflows)
+cmake --preset asan
+cmake --build --preset asan
+ctest --preset asan
+
+# Undefined behavior sanitizer
+cmake --preset ubsan
+cmake --build --preset ubsan
+ctest --preset ubsan
+
+# Code coverage
+cmake --preset coverage
+cmake --build --preset coverage
+ctest --preset coverage
+```
+
+**Available presets:**
+- `debug` — Debug build, all warnings, tests enabled
+- `release` — Optimized release build, tests enabled
+- `ci` — CI strict mode (warnings→errors, stop on test failure)
+- `asan` — AddressSanitizer (memory errors)
+- `ubsan` — UndefinedBehaviorSanitizer (undefined behavior)
+- `coverage` — Code coverage instrumentation
+- `clang` / `gcc` — Explicit compiler selection
+- `minimal` — Headers only, no tests
+
+### Manual CMake invocation
+
 ```sh
 cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+## Static Analysis (MISRA C:2012)
+
+The project uses **cppcheck** with the MISRA addon to verify compliance with MISRA C:2012 Mandatory & Required rules.
+
+**Run analysis:**
+```sh
+# Via convenience script
+./scripts/run-cppcheck.sh
+
+# Via CMake target (requires cppcheck installed)
+cmake --build build --target cppcheck
+
+# Direct cppcheck invocation
+cppcheck --addon=misra --std=c99 --enable=all -I include src include
+```
+
+**Output formats:**
+```sh
+./scripts/run-cppcheck.sh              # Print to stdout
+./scripts/run-cppcheck.sh --html report.html  # Generate HTML report
+./scripts/run-cppcheck.sh --json report.json  # Generate JSON report
+```
+
+**Compliance status:**
+See `docs/MISRA_COMPLIANCE_REPORT.md` for current conformance status and documented deviations.
+Suppressions are managed in `.cppcheck-suppressions`.
 
 ## Layout
 
