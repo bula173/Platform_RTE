@@ -1,0 +1,272 @@
+# safeAPIFramework Roadmap
+
+## Overview
+
+This roadmap tracks proposed feature additions and the configuration system for selective module inclusion. Features are organized by priority tier and implementation status.
+
+**Status Legend:**
+- `proposed` — Initial concept, not yet committed
+- `designing` — Architecture/design phase (ADR in progress)
+- `in-progress` — Active implementation
+- `testing` — Implementation complete, testing/review phase
+- `done` — Merged and released
+
+---
+
+## Tier 1: High Fit (Core RBC Requirements)
+
+### Hierarchical State Machine (HSM)
+- **Status:** `proposed`
+- **Priority:** P1 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Excellent — protocol handling becomes declarative
+- **Scope:**
+  - Table-driven event dispatch
+  - Nested states with entry/exit actions
+  - Orthogonal regions (AND states)
+  - Static transition table allocation
+- **GitHub Issue:** [#1](https://github.com/bula173/safeAPIFreamwork/issues/1)
+- **ADR:** `docs/architecture/ADR-008-hierarchical-state-machine.md` (pending)
+- **MISRA Considerations:** Avoid function pointers in transitions; use indexed dispatch table instead
+- **Est. Effort:** 2–3 weeks (design + implementation + testing)
+
+### Event/Message Queue
+- **Status:** `proposed`
+- **Priority:** P1 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Excellent — async task coordination, decouples producers/consumers
+- **Scope:**
+  - Bounded circular queue (static allocation)
+  - Multiple producer, single consumer (MPSC)
+  - Overflow/underflow detection
+  - Integration with task scheduler
+- **GitHub Issue:** [#2](https://github.com/bula173/safeAPIFreamwork/issues/2)
+- **ADR:** `docs/architecture/ADR-009-event-message-queue.md` (pending)
+- **MISRA Considerations:** Validate queue size at compile time; avoid dynamic growth
+- **Est. Effort:** 1–2 weeks
+
+### Watchdog & Health Monitor
+- **Status:** `proposed`
+- **Priority:** P1 (High)
+- **Target Release:** 0.2.0 or 0.3.0
+- **Fit for RBC:** Excellent — detect task starvation, deadlocks, timeout violations
+- **Scope:**
+  - Per-task heartbeat tracking
+  - Timeout violation detection
+  - Safe-state transition on health failure
+  - Integration with timer and reboot layers
+- **GitHub Issue:** [#3](https://github.com/bula173/safeAPIFreamwork/issues/3)
+- **ADR:** `docs/architecture/ADR-010-watchdog-health-monitor.md` (pending)
+- **MISRA Considerations:** All state transitions must be atomic
+- **Est. Effort:** 2–3 weeks
+
+### Protected Data / Synchronized Access
+- **Status:** `proposed`
+- **Priority:** P1 (Medium-High)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Good — prevents race conditions in multi-threaded access
+- **Scope:**
+  - Read-write guards (no dynamic locks)
+  - Deadlock prevention via strict lock ordering
+  - Atomic compare-and-swap helpers
+- **GitHub Issue:** [#4](https://github.com/bula173/safeAPIFreamwork/issues/4)
+- **ADR:** `docs/architecture/ADR-011-protected-data-sync.md` (pending)
+- **MISRA Considerations:** Static lock ordering analysis required
+- **Est. Effort:** 2–3 weeks
+
+---
+
+## Tier 2: Strong Fit (Recommended)
+
+### Diagnostic Ring Buffer
+- **Status:** `proposed`
+- **Priority:** P2 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — forensic logging, certification auditing
+- **Scope:**
+  - Bounded circular buffer for timestamped events
+  - No allocation after initialization
+  - Post-mortem analysis support
+  - Survives task restart
+- **GitHub Issue:** [#5](https://github.com/bula173/safeAPIFreamwork/issues/5)
+- **ADR:** `docs/architecture/ADR-012-diagnostic-ring-buffer.md` (pending)
+- **Est. Effort:** 1–2 weeks
+
+### Safe Configuration Manager
+- **Status:** `proposed`
+- **Priority:** P2 (Medium)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Good — runtime tuning, schema validation, NVM-backed
+- **Scope:**
+  - Schema-based validation
+  - Corruption detection and recovery
+  - Rollback support
+  - NVM persistence
+- **GitHub Issue:** [#6](https://github.com/bula173/safeAPIFreamwork/issues/6)
+- **ADR:** `docs/architecture/ADR-013-safe-config-manager.md` (pending)
+- **MISRA Considerations:** All config writes must be validated before commit
+- **Est. Effort:** 2–3 weeks
+
+### Checksum & CRC Utilities
+- **Status:** `proposed`
+- **Priority:** P2 (Medium)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — data integrity, protocol compliance
+- **Scope:**
+  - CRC32 (table-based, pre-computed)
+  - Fletcher-16/32 checksums
+  - Protocol payload verification
+  - NVM integrity checking
+- **GitHub Issue:** [#7](https://github.com/bula173/safeAPIFreamwork/issues/7)
+- **ADR:** `docs/architecture/ADR-014-checksum-crc-utils.md` (pending)
+- **Est. Effort:** 1 week
+
+### Cyclic Scheduler / Time Slot Allocator
+- **Status:** `proposed`
+- **Priority:** P2 (Low-Medium)
+- **Target Release:** 0.3.0 or later
+- **Fit for RBC:** Moderate — deterministic scheduling, but reduces flexibility
+- **Scope:**
+  - Static time-slot allocation per task
+  - Integration with timer layer
+  - Deterministic WCET analysis
+- **GitHub Issue:** [#8](https://github.com/bula173/safeAPIFreamwork/issues/8)
+- **ADR:** `docs/architecture/ADR-015-cyclic-scheduler.md` (pending)
+- **Est. Effort:** 2–3 weeks
+
+### Mock Backend Harness
+- **Status:** `proposed`
+- **Priority:** P2 (High, for testing)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — fast CI cycles, deterministic time control
+- **Scope:**
+  - Build-time selectable mock backends for all OAL services
+  - Time control for testing
+  - Failure injection support
+- **GitHub Issue:** [#9](https://github.com/bula173/safeAPIFreamwork/issues/9)
+- **ADR:** `docs/architecture/ADR-016-mock-backend-harness.md` (pending)
+- **Est. Effort:** 2 weeks
+
+---
+
+## Tier 3: Specialized Use (Defer Unless Required)
+
+### Performance Counters
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later
+- **Scope:** WCET analysis, task profiling, resource usage tracking
+- **GitHub Issue:** [#10](https://github.com/bula173/safeAPIFreamwork/issues/10)
+- **Est. Effort:** 1–2 weeks
+
+### Binary Serialization (ASN.1 / TLV)
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later
+- **Scope:** Schema-aware message encoding for protocol payloads
+- **GitHub Issue:** [#11](https://github.com/bula173/safeAPIFreamwork/issues/11)
+- **Est. Effort:** 2–3 weeks (depends on ASN.1 complexity)
+
+### CAN Bus Utilities
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later (rail-specific)
+- **Scope:** CAN frame builder/parser, DBC support
+- **GitHub Issue:** [#12](https://github.com/bula173/safeAPIFreamwork/issues/12)
+- **Est. Effort:** 1–2 weeks
+
+### Authenticated Encryption (AES-GCM Binding)
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later (depends on threat model)
+- **Scope:** Thin wrapper around proven crypto library (Mbed TLS, libsodium)
+- **GitHub Issue:** [#13](https://github.com/bula173/safeAPIFreamwork/issues/13)
+- **Est. Effort:** 1–2 weeks
+
+---
+
+## Configuration System
+
+### CMake Feature Flags
+- **Status:** `proposed`
+- **Priority:** P1 (Enables feature selection)
+- **Target Release:** 0.2.0
+- **Scope:**
+  - `SAFEAPI_ENABLE_<FEATURE>` options for each module
+  - Conditional compilation and linking
+  - Default-ON for current modules, default-OFF for new features
+- **GitHub Issue:** [#14](https://github.com/bula173/safeAPIFreamwork/issues/14)
+- **ADR:** `docs/architecture/ADR-017-feature-configuration.md` (pending)
+- **Est. Effort:** 1 week
+
+### Runtime Feature Registry (Phase 2)
+- **Status:** `proposed`
+- **Priority:** P2 (For multi-variant firmware)
+- **Target Release:** 0.3.0 or later
+- **Scope:**
+  - `sapi_enable_feature()` API
+  - Feature availability checks at runtime
+  - Graceful degradation when features disabled
+- **GitHub Issue:** [#15](https://github.com/bula173/safeAPIFreamwork/issues/15)
+- **ADR:** `docs/architecture/ADR-018-runtime-feature-registry.md` (pending)
+- **Est. Effort:** 1–2 weeks
+
+### Hybrid: Static Config Header + CMake (Phase 3)
+- **Status:** `proposed`
+- **Priority:** P2 (For certification workflows)
+- **Target Release:** 0.4.0 or later
+- **Scope:**
+  - Generated `safeapi_config.h` with static feature flags
+  - CMake verification of consistency
+  - Locked configuration before testing
+- **GitHub Issue:** [#16](https://github.com/bula173/safeAPIFreamwork/issues/16)
+- **ADR:** `docs/architecture/ADR-019-static-config-certification.md` (pending)
+- **Est. Effort:** 1 week
+
+---
+
+## Release Timeline
+
+### v0.2.0 (Next Major Release)
+- HSM (Tier 1)
+- Message Queue (Tier 1)
+- Watchdog & Health Monitor (Tier 1)
+- Diagnostic Ring Buffer (Tier 2)
+- Checksum & CRC Utilities (Tier 2)
+- Mock Backend Harness (Tier 2)
+- CMake Feature Flags configuration system (Phase 1)
+- **Est. Timeline:** Q3 2026
+
+### v0.3.0
+- Protected Data / Synchronized Access (Tier 1)
+- Safe Configuration Manager (Tier 2)
+- Cyclic Scheduler (Tier 2)
+- Runtime Feature Registry (Phase 2)
+- **Est. Timeline:** Q4 2026
+
+### v0.4.0+
+- Tier 3 features (as needed)
+- Hybrid static config system (Phase 3)
+- Performance tuning and optimization
+
+---
+
+## Tracking & Collaboration
+
+- **GitHub Issues:** Each feature has a dedicated issue for design discussion, implementation tracking, and review.
+- **GitHub Projects:** Use a project board to visualize status by tier and release.
+- **ADRs:** Architecture Decision Records in `docs/architecture/` document rationale for each feature.
+- **Feature Expansion Document:** Stored in both Claude.ai (artifact) and GitHub (this file + detailed specs).
+
+---
+
+## Next Steps
+
+1. ✅ Create this roadmap document (ROADMAP.md)
+2. Create GitHub Issues for each Tier 1 feature
+3. Draft ADRs for Tier 1 features
+4. Set up GitHub Projects board for visual tracking
+5. Begin design phase for HSM (highest priority)
+6. Update `docs/requirements/SRS.md` with new feature requirements
+
+See the feature expansion artifact at [Claude.ai](https://claude.ai/code/artifact/b75f23a4-842a-4c2c-8292-bfe2ecc94716) for detailed analysis.
