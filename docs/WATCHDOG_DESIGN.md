@@ -1,5 +1,10 @@
 # Watchdog Mechanism - SAPI Design
 
+📋 **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
+- API specification: `include/safeapi/watchdog/sapi_watchdog.h` ✅
+- Implementation: `src/watchdog/sapi_watchdog.c` (stub code, being developed)
+- Target release: safeAPIFramework v0.3.0
+
 ## Overview
 
 The watchdog mechanism detects system hang conditions (system-level, task-level, channel-level) and triggers configurable recovery actions (reboot, safe-state, failover).

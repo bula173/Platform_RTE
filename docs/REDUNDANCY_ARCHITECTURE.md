@@ -1,8 +1,14 @@
 # Hardware Redundancy & Voting Framework
 
+⚠️ **STATUS: DESIGN PHASE** — This document describes proposed SAPI APIs for redundancy and voting that have not yet been implemented. Code examples are illustrative of the design intent and do not correspond to existing APIs. This specification will become implemented in safeAPIFramework v0.4.0 or later.
+
+See [ROADMAP.md](ROADMAP.md) for implementation timeline and priority.
+
+---
+
 ## Overview
 
-Safety-critical systems (SIL 3/4) require hardware redundancy to detect and recover from single-point failures. The safeAPIFramework provides an abstraction layer for **redundant communication channels** with **voting/arbitration logic**.
+Safety-critical systems (SIL 3/4) require hardware redundancy to detect and recover from single-point failures. This document proposes an abstraction layer for **redundant communication channels** with **voting/arbitration logic** that will be added to the safeAPIFramework.
 
 **Key Concepts:**
 - **Vital Channels:** Safety-critical, must be redundant (2oo2, 2oo3)

@@ -8,6 +8,31 @@
 
 ---
 
+## Implementation Status by Hardware Pattern
+
+⚠️ **IMPORTANT:** This guide describes hardware patterns that can be implemented using safeAPIFramework. Current implementation status:
+
+| Hardware Pattern | SAPI Support | Status | Notes |
+|---|---|---|---|
+| **1oo1 (Single System)** | ✅ FULL | Production | All modules implemented |
+| **2oo2 (Dual-Channel)** | ⚠️ PARTIAL | In Progress | Requires watchdog (v0.3.0) for full SIL 3 |
+| **2oo2D (Dual-Site Network)** | ⚠️ PARTIAL | In Progress | Network redundancy via IPC; voting logic pending (v0.4.0) |
+| **2oo3 (Triple-Channel)** | ⚠️ DESIGN | Design Phase | Voting logic not yet implemented (v0.4.0+) |
+| **Online Mode (Active-Active)** | ⚠️ DESIGN | Design Phase | Checkpoint sync not yet implemented (v0.4.0+) |
+| **Hot Standby (Primary+Backup)** | ⚠️ PARTIAL | In Progress | State replication via IPC; failover logic pending (v0.4.0+) |
+| **Heterogeneous Systems** | ✅ FULL | Production | CPU diversity is hardware choice; SAPI supports it |
+| **Centralized Voter** | ⚠️ DESIGN | Design Phase | Voter logic not yet implemented (v0.4.0+) |
+| **Distributed Gossip** | ⚠️ DESIGN | Design Phase | Gossip algorithm not yet implemented (v0.4.0+) |
+
+**Current Capability:** SAPI enables SIL 1-3 systems and can support SIL 4 with:
+- External voting/redundancy implementations (you provide the logic)
+- Watchdog for fault detection (being implemented in v0.3.0)
+- Checkpoint synchronization from user code (design in progress)
+
+See [REDUNDANCY_ARCHITECTURE.md](REDUNDANCY_ARCHITECTURE.md) for planned redundancy APIs.
+
+---
+
 ## Safety Fundamentals: Why Hardware & Software Together
 
 ### What is Functional Safety?
@@ -154,9 +179,9 @@ different implementation teams.
 | **Example** | One random bit flip in memory | Compiler generates same bug in all copies |
 | **Solution** | 2oo2 voting (detects mismatch) | Different CPUs/compilers (prevent mismatch) |
 
-### SAPI's Role: The Software Safety Foundation
+### SAPI's Role: The API Abstraction Layer
 
-safeAPIFramework provides the **SOFTWARE LAYER** of safety-critical systems:
+safeAPIFramework provides an **API ABSTRACTION LAYER** that isolates safety-critical application logic from OS/RTOS implementation details:
 
 ```
 Complete Safety System:
@@ -164,79 +189,147 @@ Complete Safety System:
 ┌──────────────────────────────────────────────────┐
 │            ERTMS RBC Application                 │
 │     (Your railway safety logic)                  │
+│     (Does NOT directly call OS APIs)             │
 └────────────────────┬─────────────────────────────┘
                      │
-         ┌───────────▼──────────────┐
-         │   safeAPIFramework       │  ← SAPI (THIS PACKAGE)
-         │   (Software Techniques)  │
-         │                          │
-         │   ✓ Vital channels       │
-         │   ✓ Voting logic         │
-         │   ✓ Watchdog monitoring  │
-         │   ✓ Safe-state machine   │
-         │   ✓ Error detection      │
-         │   ✓ Bounded latency      │
-         │   ✓ Type safety          │
-         │   ✓ Defensive checks     │
-         │   ✓ Traceability         │
-         └───────────┬──────────────┘
+         ┌───────────▼──────────────────┐
+         │   safeAPIFramework API       │ ← SAPI (THIS PACKAGE)
+         │   (Abstraction Only)         │
+         │                              │
+         │   Interface definitions for: │
+         │   ✓ Vital channels           │
+         │   ✓ Voting & synchronization │
+         │   ✓ Watchdog monitoring      │
+         │   ✓ Timers, memory, IPC      │
+         │   ✓ Logging, safe-states     │
+         │   ✓ Application lifecycle    │
+         │                              │
+         │   (SAPI = API only,          │
+         │    NOT implementation)       │
+         └───────────┬──────────────────┘
                      │
-       ┌─────────────┴──────────────┐
-       │                            │
-   ┌───▼────────────┐    ┌──────────▼──────┐
-   │  Hardware      │    │  Certification  │
-   │  (Your choice) │    │  (Verification) │
-   │                │    │                 │
-   │ ✓ 2oo2 CPUs    │    │ ✓ MISRA C       │
-   │ ✓ 2oo3 voting  │    │ ✓ EN 50128      │
-   │ ✓ Watchdogs    │    │ ✓ FMEA          │
-   │ ✓ Network      │    │ ✓ Testing       │
-   │ ✓ Diverse CPUs │    │ ✓ Reviews       │
-   │ ✓ Redundancy   │    │ ✓ Audits        │
-   └────────────────┘    └─────────────────┘
+       ┌─────────────┴──────────────────────┐
+       │                                    │
+   ┌───▼──────────────────────┐    ┌──────▼──────────────┐
+   │  OS/RTOS Backend          │    │  Hardware           │
+   │  (Your implementation)    │    │  (Your choice)      │
+   │                           │    │                     │
+   │  Must implement:          │    │  ✓ 1oo1 single CPU  │
+   │  ✓ Timer backend          │    │  ✓ 2oo2 dual CPUs   │
+   │  ✓ IPC (sockets, pipes)   │    │  ✓ 2oo3 triple CPUs │
+   │  ✓ Memory management      │    │  ✓ Watchdog timers  │
+   │  ✓ Watchdog driver        │    │  ✓ Network (UDP/TCP)│
+   │  ✓ Thread/task scheduler  │    │  ✓ CPU diversity    │
+   │  ✓ Non-volatile storage   │    │  ✓ Redundancy       │
+   │  ✓ Reboot mechanism       │    │  ✓ Failover logic   │
+   │  ✓ Logging sink           │    │                     │
+   │                           │    │  + Certification    │
+   │  For QNX: QNX-specific    │    │  + Verification     │
+   │  For Linux: POSIX-specific│    │  + Testing          │
+   │  For bare-metal: HW-direct│    │  + FMEA, reviews    │
+   └───────────────────────────┘    └─────────────────────┘
 ```
 
-**SAPI Provides:**
-1. **Vital Channels** — Redundant communication with voting
-2. **Checkpoint Synchronization** — Ensure all nodes agree before action
-3. **Watchdog Monitoring** — Detect faults (hangs, delays, crashes)
-4. **Safe-State Machine** — Known safe states, safe transitions
-5. **MISRA C:2012 Compliance** — No dynamic memory, type safety, bounded logic
-6. **Error Detection** — Checksums, assertions, timeout handling
-7. **Deterministic Timing** — Predictable, verifiable behavior
-8. **Traceability** — Every function linked to safety requirements
+**Critical Design Point:**
+- SAPI defines the **interface contract** (what functions exist, what they must do)
+- SAPI does **NOT provide implementation** for any specific OS or RTOS
+- Users must provide **OS-specific backend implementations** for each target platform
+- This allows your RBC core code to remain unchanged when:
+  - Switching from Linux to QNX
+  - Upgrading OS version
+  - Changing hardware vendor
+  - Retargeting to different CPU architecture
 
-**YOU Provide:**
-1. **Hardware Configuration** — Choose 1oo1, 2oo2, 2oo3, Online mode, etc.
-2. **CPU Selection** — Single processor, dual CPUs, triple-site, etc.
-3. **Redundancy Strategy** — Which components are vital, which are service
-4. **Verification Plan** — Testing, FMEA, code reviews, certifications
-5. **Deployment** — Network setup, failover mechanisms, monitoring
+**You Must Implement:**
+1. **OS/RTOS Backend** — Concrete implementation for your specific OS
+   - Timer operations (start, stop, wait)
+   - IPC operations (sockets, shared memory, message queues)
+   - Memory allocation (static buffers, pools)
+   - Watchdog integration (if OS provides it)
+   - Non-volatile storage (file system, EEPROM, flash)
+   - Task scheduling (if multi-threaded)
+   - Reboot mechanism (OS-specific)
+   - Logging sink (serial, syslog, database)
 
-### Building a SIL X System: The Configuration Model
+2. **Hardware Configuration** — Choose based on SIL requirements
+   - Single processor (1oo1) for SIL 1/2
+   - Dual/Triple redundancy (2oo2, 2oo3) for SIL 3/4
+   - CPU diversity (prevent common-mode failures)
+   - Watchdog hardware (detect hangs)
+   - Network redundancy (if multi-site)
+
+3. **Safety Strategy** — Define how redundancy/voting works
+   - Which components are vital (must be redundant)
+   - Which are service (best-effort only)
+   - Voting rules (2oo2, 2oo3, NMR)
+   - Checkpoint synchronization strategy
+   - Failover/recovery procedures
+
+4. **Verification & Certification** — Prove system safety
+   - MISRA C:2012 static analysis
+   - FMEA (failure mode analysis)
+   - Testing (unit, integration, system)
+   - Code reviews
+   - EN 50128 compliance audit
+
+### Building a SIL X System: The Integration Model
 
 ```
-Your Application
+Step 1: RBC Application Code
+   ├─ Your safety logic (route calculation, MA creation, etc.)
+   └─ Uses SAPI APIs (does NOT call OS directly)
         ↓
-   [SAPI Framework]  ← Software safety techniques
+Step 2: Select Hardware Configuration
+   ├─ Choose redundancy pattern based on SIL target:
+   │  ├─ SIL 1/2: 1oo1 (single processor)
+   │  ├─ SIL 3: 2oo2 or 2oo2D (dual redundancy)
+   │  └─ SIL 4: 2oo3, Online mode, Hot standby, or NMR
+   └─ Choose specific CPUs, network topology, watchdog strategy
         ↓
-   CONFIGURE FOR HARDWARE
-   (Choose pattern from this guide)
+Step 3: Implement OS-Specific Backend
+   ├─ SAPI expects these OS services:
+   │  ├─ Timers (sapi_timer_start, sapi_timer_wait, etc.)
+   │  ├─ IPC (sapi_ipc_send, sapi_ipc_receive, etc.)
+   │  ├─ Memory (sapi_memory_allocate for init-time, static for runtime)
+   │  ├─ Watchdog (sapi_watchdog_kick, sapi_watchdog_timeout)
+   │  ├─ Logging (sapi_log_write to your sink)
+   │  ├─ Storage (sapi_nvm_read/write to your storage)
+   │  └─ Reboot (sapi_reboot_system when safe-state fails)
+   │
+   └─ Register your OS backend at startup:
+      ├─ sapi_timer_register_backend(posix_timer_ops)
+      ├─ sapi_ipc_register_backend(qnx_ipc_ops)
+      ├─ sapi_memory_register_backend(custom_memory_ops)
+      └─ etc. for each service
         ↓
-┌─ SIL 1: 1oo1 (single system)
-├─ SIL 2: 1oo1 (single system)
-├─ SIL 3: 2oo2 or 2oo2D (dual redundancy)
-└─ SIL 4: 2oo3, Online mode, Hot standby, or NMR
+Step 4: Implement Hardware Strategy
+   ├─ Deploy processors (single, dual, triple sites)
+   ├─ Setup network (UDP for voting, TCP for checkpoint sync)
+   ├─ Configure watchdog timers (system, task, channel, checkpoint)
+   ├─ Setup CPU diversity (if needed for common-mode protection)
+   ├─ Configure failover (if using hot-standby or cluster redundancy)
+   └─ Implement monitoring (health checks, diagnostics)
         ↓
-   [Certified Platform]  ← Hardware safety techniques
-        ↓
-   Verified Safety Case
-   (MISRA + EN 50128 + FMEA + Testing)
+Step 5: Verification & Certification
+   ├─ Static analysis: MISRA C:2012 compliance
+   ├─ FMEA: Failure mode analysis (what can go wrong)
+   ├─ Testing: Unit, integration, system-level
+   ├─ Timing analysis: Prove bounded latencies
+   ├─ Code review: Safety-critical logic inspection
+   ├─ EN 50128 audit: Confirm mandatory techniques
+   └─ Certification body review (if required)
         ↓
    Certified SIL X System
 ```
 
-**Key Insight:** The SAME SAPI code works for SIL 1, 2, 3, and 4 systems by just changing the hardware configuration and verification rigor. SAPI provides the software foundation; you choose the hardware strategy to reach your target SIL level.
+**Key Insight:** 
+
+SAPI provides the **API contract**—your application uses SAPI APIs instead of OS calls. This means:
+- Same RBC code works on Linux, QNX, or bare-metal (just swap backend)
+- Same RBC code works for SIL 1 through SIL 4 (just swap HW + verification)
+- You control the actual redundancy/voting via hardware configuration
+- SAPI stays small, portable, and easy to certify
+- Implementation complexity (OS-specific backends) is decoupled from application safety logic
 
 ### How Failures Determine SIL Requirements
 
@@ -267,20 +360,26 @@ Fault Analysis:
 
 ### Standards and Techniques
 
-SAPI implements these mandatory EN 50128 techniques:
+SAPI defines the API interface through which you implement these mandatory EN 50128 techniques:
 
-| Technique | SAPI Support | Hardware Required |
+| Technique | How SAPI Helps | You Must Implement |
 |-----------|---|---|
-| **Defensive Programming** | ✓ (all code) | Any |
-| **Diverse Redundancy** | ✓ (voting) | Multiple CPUs |
-| **Monitoring & Watchdog** | ✓ (built-in) | Watchdog timer |
-| **Safe-State Machine** | ✓ (core design) | Any |
-| **Initialization & Failure Handling** | ✓ (framework) | Any |
-| **Error Detection & Correction** | ✓ (checksums, voting) | Redundant channels |
-| **Bounded Time & Space** | ✓ (no dynamic mem) | Deterministic CPU |
-| **Formal Verification** | ✓ (traceable) | Any |
-| **Traceability** | ✓ (REQ IDs) | Any |
-| **Testing & Validation** | Enabler | Any |
+| **Defensive Programming** | API forces explicit error handling | Every OS backend validates inputs |
+| **Diverse Redundancy** | Voting API (2oo2, 2oo3, NMR) | Deploy multiple diverse CPUs |
+| **Monitoring & Watchdog** | Watchdog API interface | Integrate OS/hardware watchdog timer |
+| **Safe-State Machine** | Safe-state API (SAPI_SAFESTATE) | Verify safe-state logic in your app |
+| **Initialization & Failure Handling** | Init/shutdown API | Implement recovery procedures |
+| **Error Detection & Correction** | Checkpoint, voting APIs | Implement checkpoint logic in your app |
+| **Bounded Time & Space** | No dynamic allocation after init | Static buffers, no recursion |
+| **Formal Verification** | Requirement traceability (REQ-IDs) | Prove timing, prove algorithm correctness |
+| **Traceability** | REQ-ID linking in SAPI headers | Map your application to requirements |
+| **Testing & Validation** | Framework is testable | Create test suites for your backends |
+
+**Implementation Reality:**
+- SAPI API surface is ~50KB of headers (small, easy to verify)
+- OS backends are ~10-50KB each (you write for your target OS)
+- Application logic is your domain-specific code
+- Together they form a SIL X system (SIL level determined by HW config + verification rigor, NOT by SAPI alone)
 
 ---
 

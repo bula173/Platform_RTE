@@ -94,7 +94,7 @@ safeAPIFramework Alignment:
 | **Static Analysis (Code)** | 7.3.1 | cppcheck + MISRA addon | ✅ |
 | **Requirements Traceability** | 7.4.1 | REQ-ID tags, SRS.md canonical source | ✅ |
 | **Formal Methods** | 7.5.1 | State machine specifications (TBD) | ⏳ |
-| **Fault Tolerance & Recovery** | 7.6.1 | Redundancy, watchdog, safe-state | ✅ |
+| **Fault Tolerance & Recovery** | 7.6.1 | Safe-state (✅), Watchdog (⏳ v0.3.0), Redundancy (⏳ v0.4.0+) | ⏳ |
 | **Testing (Unit, Integration, System)** | 7.7.1 | CTest framework, test suite per module | ✅ |
 | **Code Review** | 7.8.1 | GitHub PR review process | ✅ |
 

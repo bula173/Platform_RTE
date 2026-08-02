@@ -2,9 +2,13 @@
  * @file sapi_watchdog.h
  * @brief Watchdog mechanism for detecting system/task hang conditions
  *
+ * ⚠️ **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
+ * Target availability: safeAPIFramework v0.3.0
+ *
  * Provides system-level, task-level, and channel-level watchdog timers
  * that detect hung components and trigger recovery actions (reboot, safe-state,
- * failover).
+ * failover). Full API is defined below; stub implementations are being replaced
+ * with production code.
  *
  * @defgroup WATCHDOG Watchdog Mechanism
  * @brief Detect hung systems/tasks and trigger recovery

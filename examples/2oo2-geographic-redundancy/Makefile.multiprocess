@@ -1,0 +1,134 @@
+###############################################################################
+# Makefile for Multi-Site Geographic Redundancy with Separate Processes
+#
+# Builds 6 executables: 3 for WEST, 3 for EAST, 1 voter
+#
+#   WEST Site (Online - Primary):
+#     - west_process_a: Vital channel A (CPU0)
+#     - west_process_b: Vital channel B (CPU1)
+#     - west_process_c: Service channel (printf)
+#
+#   EAST Site (Standby - Backup):
+#     - east_process_a: Vital channel A (CPU0, mirrored)
+#     - east_process_b: Vital channel B (CPU1, mirrored)
+#     - east_process_c: Service channel (printf, standby)
+#
+#   Voter:
+#     - voter: 2oo2 voting logic
+#
+# Usage:
+#   make                           # Build all executables
+#   make run                        # Build and run
+#   make clean                      # Clean all
+#   make west                       # Build only WEST
+#   make east                       # Build only EAST
+#   make voter                      # Build only voter
+###############################################################################
+
+CC ?= gcc
+CFLAGS = -std=c99 -Wall -Wextra -O2 -fPIC
+LDFLAGS = -shared -fPIC
+
+# Shared memory header
+SHARED_MEM_H = shared_mem.h
+
+# WEST targets
+WEST_A = west_process_a
+WEST_B = west_process_b
+WEST_C = west_process_c
+
+# EAST targets
+EAST_A = east_process_a
+EAST_B = east_process_b
+EAST_C = east_process_c
+
+# Voter target
+VOTER = voter
+
+# All targets
+TARGETS = $(WEST_A) $(WEST_B) $(WEST_C) $(EAST_A) $(EAST_B) $(EAST_C) $(VOTER)
+
+.PHONY: all west east voter clean run info
+
+all: $(TARGETS)
+
+# WEST Site
+west: $(WEST_A) $(WEST_B) $(WEST_C)
+	@echo "✓ Built WEST site processes"
+
+$(WEST_A): west/process_a.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) west/process_a.c -o $(WEST_A)
+	@echo "  ✓ $(WEST_A)"
+
+$(WEST_B): west/process_b.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) west/process_b.c -o $(WEST_B)
+	@echo "  ✓ $(WEST_B)"
+
+$(WEST_C): west/process_c.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) west/process_c.c -o $(WEST_C)
+	@echo "  ✓ $(WEST_C)"
+
+# EAST Site
+east: $(EAST_A) $(EAST_B) $(EAST_C)
+	@echo "✓ Built EAST site processes"
+
+$(EAST_A): east/process_a.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) east/process_a.c -o $(EAST_A)
+	@echo "  ✓ $(EAST_A)"
+
+$(EAST_B): east/process_b.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) east/process_b.c -o $(EAST_B)
+	@echo "  ✓ $(EAST_B)"
+
+$(EAST_C): east/process_c.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) east/process_c.c -o $(EAST_C)
+	@echo "  ✓ $(EAST_C)"
+
+# Voter
+voter: $(VOTER)
+	@echo "✓ Built voter process"
+
+$(VOTER): voter/voter.c $(SHARED_MEM_H)
+	$(CC) $(CFLAGS) voter/voter.c -o $(VOTER)
+	@echo "  ✓ $(VOTER)"
+
+# Run all processes
+run: all
+	@echo "\nStarting multi-site architecture..."
+	@echo "WEST site:"
+	./$(WEST_A) &
+	./$(WEST_B) &
+	./$(WEST_C) &
+	@echo "EAST site:"
+	./$(EAST_A) &
+	./$(EAST_B) &
+	./$(EAST_C) &
+	@echo "Voter:"
+	./$(VOTER)
+
+clean:
+	rm -f $(TARGETS) *.o
+	@echo "✓ Cleaned all"
+
+info:
+	@echo "Multi-Site Geographic Redundancy Architecture"
+	@echo "=============================================="
+	@echo "WEST Site (Online):"
+	@echo "  $(WEST_A) - Vital Channel A (CPU0)"
+	@echo "  $(WEST_B) - Vital Channel B (CPU1)"
+	@echo "  $(WEST_C) - Service Channel (printf)"
+	@echo ""
+	@echo "EAST Site (Standby):"
+	@echo "  $(EAST_A) - Vital Channel A (mirrored)"
+	@echo "  $(EAST_B) - Vital Channel B (mirrored)"
+	@echo "  $(EAST_C) - Service Channel (standby)"
+	@echo ""
+	@echo "Voter:"
+	@echo "  $(VOTER) - 2oo2 voting logic"
+	@echo ""
+	@echo "Build: make"
+	@echo "Run:   make run"
+	@echo "Clean: make clean"
+
+.SUFFIXES:
+.IMPLICIT:

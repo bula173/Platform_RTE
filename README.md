@@ -12,9 +12,23 @@ registering a different backend, without touching application code.
 
 ## Status
 
-Actively growing framework with SIL 4 safety focus. Core OAL + IPC defined;
-redundancy (vital channels, voting, checkpoints) and watchdog (system/task/channel
-monitoring) in design phase.
+Actively growing framework with SIL 4 safety focus.
+
+**IMPLEMENTED (Production Ready):** 14 core modules
+- Timer, IPC (pubsub + request-reply), Memory, NVM, Task/Thread, Logging, Reboot
+- AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String
+- Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions
+
+**IN PROGRESS:** Watchdog (System/Task/Channel/Checkpoint)
+- API design complete (`include/safeapi/watchdog/sapi_watchdog.h`)
+- Implementation pending (v0.3.0 target)
+- Marks fault detection and recovery actions for SIL 4
+
+**DESIGN PHASE:** Redundancy Framework (Vital Channels, Voting, Checkpoints)
+- Documented in `docs/REDUNDANCY_ARCHITECTURE.md` as design proposal
+- Planned for v0.4.0+
+- Requires implementation of voting logic and checkpoint synchronization for full SIL 4 support
+- See ROADMAP.md for detailed timeline
 
 **Key Documentation:**
 - `docs/architecture/` — Architecture Decision Records (ADRs 001–010) + PlantUML diagrams
