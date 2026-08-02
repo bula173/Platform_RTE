@@ -13,18 +13,18 @@ static sapi_status_t mock_open(sapi_nvm_storage_t *storage,
     return SAPI_STATUS_OK;
 }
 
-static const sapi_nvm_backend_t g_mock_backend = {
+static const sapi_nvm_backend_t g_mock_backend __attribute__((unused)) = {
     mock_open, NULL, NULL, NULL, NULL
 };
 
 int main(void)
 {
-    sapi_nvm_storage_t storage;
+    sapi_nvm_storage_t storage __attribute__((unused));
     sapi_nvm_handle_t handle = NULL;
 
     assert(sapi_nvm_open(NULL, NULL, NULL) == SAPI_STATUS_INVALID_PARAM);
 
-    sapi_nvm_config_t bad_config = {0};
+    sapi_nvm_config_t bad_config __attribute__((unused)) = {0};
     bad_config.region_name = NULL;
     bad_config.region_size = 128U;
     assert(sapi_nvm_open(&storage, &bad_config, &handle) == SAPI_STATUS_INVALID_PARAM);
