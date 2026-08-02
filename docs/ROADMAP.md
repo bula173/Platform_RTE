@@ -15,6 +15,24 @@ This roadmap tracks proposed feature additions and the configuration system for 
 
 ## Tier 1: High Fit (Core RBC Requirements)
 
+### IPC Enhancements (Core Communication Layer)
+- **Status:** `proposed`
+- **Priority:** P1 (High - Communication is critical)
+- **Target Release:** v0.2.0 (parallel with other Tier 1)
+- **Fit for RBC:** Excellent — RBC is multi-task system with heavy IPC
+- **Scope:**
+  - Request-Reply pattern (blocking client/server RPC)
+  - Publish-Subscribe (one-to-many broadcasting)
+  - Message filtering and routing
+  - Priority-based queues
+  - Flow control (back-pressure handling)
+  - IPC statistics and monitoring
+  - Deadlock detection
+- **GitHub Issues:** #17–#23 (7 sub-features)
+- **ADR:** [ADR-020 through ADR-026](docs/architecture/) (pending)
+- **Est. Effort:** 3–4 weeks total (can parallelize some features)
+- **Dependencies:** Base IPC module (already exists)
+
 ### Hierarchical State Machine (HSM)
 - **Status:** `proposed`
 - **Priority:** P1 (High)

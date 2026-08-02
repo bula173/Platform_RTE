@@ -48,6 +48,94 @@ The framework currently provides 13 core modules:
 
 Features that strongly align with RBC (ERTMS Radio Block Centre) safety requirements and address core architectural gaps.
 
+### IPC Enhancements (Communication Patterns)
+
+**Motivation:** Current IPC provides basic point-to-point send/receive. RBC requires sophisticated communication patterns: request-reply (RPC), broadcast, publish-subscribe, priority handling, and flow control.
+
+**What it adds:**
+
+1. **Request-Reply Pattern (Issue #17)**
+   - Synchronous RPC-style communication
+   - Client blocks on reply with timeout
+   - Server processes and sends reply
+   - Essential for command/control scenarios
+
+2. **Publish-Subscribe (Issue #18)**
+   - One publisher, multiple subscribers
+   - Decouple publishers from subscribers
+   - Broadcast signals (e.g., track status changes)
+   - Static subscriber registration
+
+3. **Message Filtering & Routing (Issue #19)**
+   - Route messages by type/tag
+   - Filter by criteria (e.g., train_id >= 100)
+   - Reduce message queue congestion
+   - Enable selective message consumption
+
+4. **Priority Queues (Issue #20)**
+   - Process high-priority messages first
+   - Prevent low-priority messages from blocking critical ones
+   - Safety-critical: emergency stops before routine updates
+   - Static priority levels (0-7)
+
+5. **Flow Control (Issue #21)**
+   - Back-pressure handling (queue full)
+   - Producer blocking vs. message drop strategies
+   - Configurable: drop oldest, drop newest, or block
+   - Prevent silent message loss
+
+6. **IPC Statistics & Monitoring (Issue #22)**
+   - Track sent/received counts
+   - Monitor queue depth
+   - Detect deadlock-like conditions
+   - Health check for IPC layer
+
+7. **Deadlock Detection (Issue #23)**
+   - Detect circular wait patterns
+   - Timeout-based detection
+   - Automatic recovery (break deadlock, log incident)
+   - Safety-critical: prevent system hang
+
+**Why it matters:**
+- RBC involves many tasks (track manager, train controller, dispatcher, logger)
+- Each needs different communication patterns
+- Request-reply for queries, pub-sub for events
+- Priority for safety-critical signals
+- Flow control prevents queue overflow
+
+**Tradeoffs:**
+- Adds complexity to IPC layer
+- Requires careful deadlock analysis
+- Memory overhead for priority queues
+
+**API Sketch:**
+```c
+// Request-Reply
+sapi_status_t sapi_ipc_send_request(handle, request, reply, timeout_ms);
+
+// Pub-Sub
+sapi_status_t sapi_ipc_subscribe(topic, subscriber_queue, filter);
+sapi_status_t sapi_ipc_publish(topic, message);
+
+// Priority
+sapi_status_t sapi_ipc_send_priority(handle, message, priority, timeout_ms);
+
+// Statistics
+sapi_status_t sapi_ipc_get_stats(handle, stats);
+```
+
+**MISRA Considerations:**
+- All dynamic behavior (routing) validated at registration time
+- Deadlock detection must be deterministic
+- No unbounded allocation for subscribers
+
+**Related:**
+- Message Queue (#2 — complementary, but IPC is more powerful)
+- Watchdog (#3 — monitors IPC health)
+- Diagnostics (#5 — logs IPC events)
+
+---
+
 ### Hierarchical State Machine (HSM)
 
 **Motivation:** The RBC must handle complex protocol state machines (ERTMS messaging, mode transitions, safe-state sequencing). Flat conditionals lead to state-explosion bugs and are difficult to verify.
