@@ -74,10 +74,10 @@ Any project using safeAPIFramework must perform:
 - **Requirement:** EN 50128:2011, Section 7.2
 - **What:** Every source file in safeAPIFramework must be reviewed against:
   - MISRA C:2012 Mandatory & Required rules
-  - CLAUDE.md coding standards
   - EN 50128 Section 6 (technical requirements)
+  - CENELEC safety critical coding practices
   - Project-specific coding guidelines
-- **Who:** Project's qualified code review team (not AI-generated review)
+- **Who:** Project's qualified code review team
 - **Output:** Code review report with sign-off
 - **Evidence for Safety Case:** Formal review matrix (file × rule × findings)
 
@@ -431,14 +431,17 @@ Use this checklist for your formal review of safeAPIFramework:
 - [ ] Module interfaces clearly defined
 - [ ] State machine for safe-state transitions correct
 - [ ] Error handling explicit (no exceptions)
-- [ ] Resource allocation static (no malloc)
+- [ ] Resource allocation static (no dynamic memory)
 - [ ] Pointer validation on all entries
-- [ ] Type conversions checked
+- [ ] Type conversions checked and bounded
 - [ ] Timing assumptions documented
+- [ ] No undefined behavior or implementation-defined behavior
+- [ ] Bounded operations (no strcpy, sprintf, etc.)
 
 ### Project-Specific Requirements
-- [ ] [Add your specific coding standards]
-- [ ] [Add your specific safety requirements]
+- [ ] [Add your organization's coding standards]
+- [ ] [Add your specific railway safety requirements]
+- [ ] [Add your RTOS/platform specific requirements]
 
 ---
 
@@ -489,6 +492,6 @@ For questions about these Safety Application Conditions:
 - **Framework Design:** See [docs/architecture/ADR-*.md](architecture/)
 - **EN 50128 Alignment:** See [docs/EN50128_ALIGNMENT.md](EN50128_ALIGNMENT.md)
 - **Integration Guide:** See [docs/INTEGRATION.md](INTEGRATION.md)
-- **Coding Standards:** See [CLAUDE.md](../CLAUDE.md)
+- **Requirements Specification:** See [docs/requirements/SRS.md](requirements/SRS.md)
 
-**Important:** This document is guidance. Your project's Functional Safety Manager is responsible for defining actual Safety Application Conditions based on your system requirements and regulatory context.
+**Important:** This document is guidance only. Your project's Functional Safety Manager is responsible for defining actual Safety Application Conditions based on your system requirements and regulatory context. All commitments in your Safety Application Conditions must be approved by your railway system's certification authority.
