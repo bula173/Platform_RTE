@@ -1,0 +1,84 @@
+@startuml sequence-online-mode
+skinparm sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Site A" as siteA
+participant "Site B" as siteB
+participant "Voting" as voter
+participant "Output" as output
+
+autonumber
+
+note over siteA, siteB
+  Online Mode (Active-Active)
+  All sites process simultaneously
+end note
+
+siteA ->> siteA: receive_input(X)
+siteB ->> siteB: receive_input(X)
+
+siteA ->> siteA: process()
+siteB ->> siteB: process()
+
+siteA ->> siteA: stage_output(A=GREEN)
+siteB ->> siteB: stage_output(B=GREEN)
+
+par Checkpoint Barrier
+    siteA ->> voter: checkpoint(site=A)
+    siteB ->> voter: checkpoint(site=B)
+end
+
+voter ->> voter: wait_all_nodes()
+note right of voter: Wait for all sites\nTimeout: 200ms
+
+par Data Synchronization
+    siteA ->> siteB: exchange_data(result_A)
+    siteB ->> siteA: exchange_data(result_B)
+end
+
+siteA ->> siteA: verify_sync(A, B)
+siteB ->> siteB: verify_sync(A, B)
+
+par Voting
+    siteA ->> voter: vote()
+    siteB ->> voter: vote()
+end
+
+voter ->> voter: voting_2oo2()
+note right of voter: Both must agree\n2oo2 voting
+
+alt AGREEMENT
+    voter ->> voter: commit()
+    voter ->> siteA: commit_ok()
+    voter ->> siteB: commit_ok()
+
+    siteA ->> output: send_output(GREEN)
+    siteB ->> output: send_output(GREEN)
+
+    note right of output: Output transmitted\nAfter full sync + voting
+else DISAGREEMENT
+    voter ->> voter: abort()
+    voter ->> siteA: abort()
+    voter ->> siteB: abort()
+
+    siteA ->> output: safe_state()
+    siteB ->> output: safe_state()
+end
+
+note over siteA, output
+  Online Mode Properties:
+  - All sites ACTIVE continuously
+  - Checkpoint barrier synchronizes timing
+  - Data sync ensures consistency
+  - Voting ensures consensus
+  - Output only after ALL succeed
+  - Better resource utilization
+  - Higher detection latency
+  - SIL 4 suitable
+end note
+
+@enduml

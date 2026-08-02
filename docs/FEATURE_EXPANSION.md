@@ -4,9 +4,17 @@
 
 This document details proposed feature additions to the safeAPIFramework and outlines a configuration system allowing users to select which features to include. It serves as the specification reference for roadmap items and complements the detailed ADRs in `docs/architecture/`.
 
+All features are designed for **EN 50126/50128/50129** compliance, supporting **SIL 4** railway applications.
+
 **Status:** This is a living document. It is updated as features are designed, implemented, and released.
 
 **Last Updated:** 2026-08-02
+
+**Compliance Standards:**
+- ✅ EN 50126:2017 (RAM - Reliability/Availability/Maintainability) — Deterministic design, fault tolerance, graceful degradation
+- ✅ EN 50128:2011 (Software safety) — All 10 mandatory techniques, MISRA C:2012
+- ✅ EN 50129:2018 (Functional safety management) — V&V planning, safety case, requirements traceability
+- ✅ MISRA C:2012 (Code quality) — Mandatory & required rules, no unsafe constructs
 
 ---
 
@@ -220,43 +228,117 @@ sapi_status_t sapi_msgqueue_is_empty(const sapi_msgqueue_t *q, bool *empty);
 
 ---
 
-### Watchdog & Health Monitor
+### Watchdog Mechanism (System / Task / Channel / Checkpoint)
 
-**Motivation:** Safety-critical systems must detect and recover from task starvation, deadlocks, and timeout violations without human intervention.
+**Motivation:** Safety-critical systems must detect and recover from system hangs, task starvation, deadlocks, and channel timeouts without human intervention. EN 50128 SIL 4 requires active liveness monitoring.
 
 **What it does:**
-- Per-task heartbeat tracking
-- Timeout violation detection
-- Automatic safe-state transition on health failure
-- Integration with reboot layer (optional controlled restart)
+- **System Watchdog:** Detects if entire RBC system is hung (no task making progress)
+- **Task Watchdog:** Monitors individual task/thread liveness (heartbeat checking)
+- **Channel Watchdog:** Detects stuck IPC/redundancy channels (no messages flowing)
+- **Checkpoint Watchdog:** Integrated with barrier sync; detects nodes not reaching checkpoint
+- **Recovery Actions:** Configurable responses (log, safe-state, reboot, failover)
 
 **Why it matters:**
 - Unattended operation requires automatic failure recovery
-- Mandatory for SIL 4 certification
-- Bridges task and reboot layers naturally
+- Mandatory for SIL 4 certification (EN 50128 liveness requirement)
+- Integrates with redundancy framework (detect + failover)
+- Critical for real-time systems: detect deadline violations immediately
+- Bridges system monitoring, IPC, redundancy, and reboot layers
 
 **Tradeoffs:**
-- Requires RTOS timer support for callbacks
-- False positives possible if task takes longer than expected (requires tuning)
-- Must not itself deadlock
+- Requires timer support (hardware or software) for periodic ticks
+- False positives possible if application is slower than expected (requires tuning)
+- Watchdog itself must be simple and reliable (no deadlocks in watchdog)
 
-**API Sketch:**
+**Features:**
+1. **Per-Component Monitoring** — System, task, channel, checkpoint
+2. **Configurable Timeouts** — Typical: 100ms–1000ms for task, 200ms for checkpoint
+3. **Recovery Actions** — Log, safe-state, reboot, or custom callback
+4. **Health Status API** — Non-blocking query of kicks, fires, time-remaining
+5. **Integration with Checkpoints** — Auto-detect slow nodes
+6. **Integration with Redundancy** — Failover on watchdog timeout
+7. **Audit Trail** — All watchdog fires logged with timestamps
+
+**API Overview:**
 ```c
-typedef struct {
-    uint32_t task_id;
-    sapi_timer_duration_t timeout_ms;
-    sapi_status_t (*on_timeout)(uint32_t task_id, void *context);
-} sapi_watchdog_task_config_t;
+// Create and manage watchdog
+sapi_watchdog_t wd;
+sapi_watchdog_config_t config = {
+    .type = SAPI_WATCHDOG_SYSTEM,      // or TASK, CHANNEL, CHECKPOINT
+    .name = "rbc_main_wd",
+    .timeout_ms = 1000,                // Deadline
+    .action = SAPI_WATCHDOG_ACTION_SAFESTATE  // Recovery action
+};
+sapi_watchdog_create(&wd, &config);
+sapi_watchdog_start(wd);
 
-sapi_status_t sapi_watchdog_heartbeat(uint32_t task_id);
-sapi_status_t sapi_watchdog_register_task(const sapi_watchdog_task_config_t *cfg);
+// Kick watchdog (reset countdown)
+sapi_watchdog_kick(wd);
+
+// Query status (non-blocking)
+sapi_watchdog_status_t status;
+sapi_watchdog_get_status(wd, &status);
+// status.time_until_fire, status.kicks, status.fires, etc.
+
+// Stop and destroy
+sapi_watchdog_stop(wd);
+sapi_watchdog_destroy(wd);
+```
+
+**Usage Pattern (Main Loop):**
+```c
+while (running) {
+    process_signals();
+    process_trains();
+    update_speed_limits();
+    
+    // Prove we're alive (resets 1-second timeout)
+    sapi_watchdog_kick(wd);
+    
+    sleep_ms(100);
+}
+```
+
+**Usage Pattern (Task-Specific):**
+```c
+// Each task monitors its own progress
+while (running) {
+    // Checkpoint 1
+    sapi_channel_checkpoint(vital_ch, &ckpt1);
+    
+    // Process (must complete within timeout)
+    process_signals(&signals);
+    
+    // Checkpoint 2
+    sapi_channel_checkpoint(vital_ch, &ckpt2);
+    
+    // Prove this task made progress
+    sapi_watchdog_kick(task_wd);
+}
 ```
 
 **MISRA Considerations:**
-- All state transitions must be atomic
-- Timeout handler must be reentrant
+- All state transitions must be atomic (no dynamic lock primitives)
+- Deterministic O(1) operations (no allocation, no loops)
+- Timeout handler reentrant (safe from ISR context)
+- No unbounded recursion or call chains
 
-**Related:** Timer (tracks deadlines), Reboot (triggers restart), Task (monitors scheduler)
+**SIL 4 Safety Properties:**
+- **Detection Latency:** < timeout_ms (e.g., detect hang within 1 second)
+- **False Positives:** None (only fired if no kick received)
+- **Recovery Determinism:** Specified action always taken
+- **Audit Trail:** All fires logged with timestamp
+- **Failsafe:** Default action is safe-state (never silent failure)
+
+**Related:**
+- Timer (provides periodic ticks)
+- Redundancy/Checkpoints (integrated watchdog on barriers)
+- Reboot (triggered on recovery)
+- Task (monitors scheduler liveness)
+- Logging (audit trail)
+
+**Design Doc:** [WATCHDOG_DESIGN.md](docs/WATCHDOG_DESIGN.md)
 
 ---
 

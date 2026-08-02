@@ -1,0 +1,99 @@
+@startuml sequence-distributed-gossip
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Node A" as nodeA
+participant "Node B" as nodeB
+participant "Node C" as nodeC
+participant "Output" as output
+
+autonumber
+
+note over nodeA, nodeC
+  Distributed Voting (Gossip)
+  Peer-to-peer consensus, no central voter
+end note
+
+nodeA ->> nodeA: process()
+nodeB ->> nodeB: process()
+nodeC ->> nodeC: process()
+
+note right of nodeA: A result: GREEN
+note right of nodeB: B result: GREEN
+note right of nodeC: C result: RED (different data)
+
+par Round 1: A→B,C (gossip A's result)
+    nodeA ->> nodeB: gossip(A=GREEN)
+    nodeA ->> nodeC: gossip(A=GREEN)
+end
+
+par Round 2: B→A,C (gossip B's result)
+    nodeB ->> nodeA: gossip(B=GREEN)
+    nodeB ->> nodeC: gossip(B=GREEN)
+end
+
+par Round 3: C→A,B (gossip C's result)
+    nodeC ->> nodeA: gossip(C=RED)
+    nodeC ->> nodeB: gossip(C=RED)
+end
+
+nodeA ->> nodeA: local_state_A
+note right of nodeA: A knows: A=GREEN, B=GREEN, C=RED
+
+nodeB ->> nodeB: local_state_B
+note right of nodeB: B knows: A=GREEN, B=GREEN, C=RED
+
+nodeC ->> nodeC: local_state_C
+note right of nodeC: C knows: A=GREEN, B=GREEN, C=RED
+
+par Voting (all nodes independently vote)
+    nodeA ->> nodeA: vote_A()
+    note right of nodeA: Vote: GREEN (2 vs 1)
+
+    nodeB ->> nodeB: vote_B()
+    note right of nodeB: Vote: GREEN (2 vs 1)
+
+    nodeC ->> nodeC: vote_C()
+    note right of nodeC: Vote: GREEN (2 vs 1, even as minority)
+end
+
+par Consensus Reached
+    nodeA ->> nodeA: decision(GREEN)
+    nodeB ->> nodeB: decision(GREEN)
+    nodeC ->> nodeC: decision(GREEN)
+end
+
+nodeA ->> output: send(GREEN)
+nodeB ->> output: send(GREEN)
+nodeC ->> output: send(GREEN)
+
+output ->> output: execute()
+
+note over nodeA, output
+  Distributed Gossip Properties:
+
+  Advantages:
+  ✓ No single point of failure
+  ✓ Peer-to-peer trust model
+  ✓ Byzantine-fault tolerant
+  ✓ Each node votes independently
+  ✓ Converges to consensus
+
+  Disadvantages:
+  ✗ Higher latency (gossip rounds)
+  ✗ More complex protocol
+  ✗ Network bandwidth overhead
+  ✗ Convergence time variable
+
+  Message Rounds:
+  - Round 1: A tells B,C
+  - Round 2: B tells A,C
+  - Round 3: C tells A,B
+  Total: 3 rounds to consensus
+end note
+
+@enduml

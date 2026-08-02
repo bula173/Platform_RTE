@@ -1,0 +1,71 @@
+@startuml sequence-nmr
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Site A" as siteA
+participant "Site B" as siteB
+participant "Site C" as siteC
+participant "Site D" as siteD
+participant "Voter" as voter
+participant "Output" as output
+
+autonumber
+
+note over siteA, output
+  NMR: N-Modular Redundancy (4oo3)
+  4 channels, 3 needed for majority
+  Tolerates 1 fault
+end note
+
+siteA ->> siteA: process()
+siteB ->> siteB: process()
+siteC ->> siteC: process()
+siteD ->> siteD: process()
+
+siteA ->> voter: submit(A=X)
+siteB ->> voter: submit(B=X)
+siteC ->> voter: submit(C=X)
+siteD ->> voter: submit(D=Y)
+
+voter ->> voter: count_votes()
+note right of voter: Count: X=3, Y=1
+
+voter ->> voter: majority_vote()
+note right of voter: ≥3 out of 4\nX is majority
+
+alt CONSENSUS (≥3 votes for X)
+    voter ->> voter: identify_minority()
+    note right of voter: D disagrees\nD is faulty
+
+    voter ->> voter: flag_faulty_channel()
+    note right of voter: Mark D for isolation
+
+    voter ->> output: send_output(X)
+    note right of output: 3 channels agree\nOutput is safe
+
+    output ->> output: execute()
+
+else NO CONSENSUS (no value gets ≥3)
+    note right of voter: e.g., X=2, Y=2\nNo majority possible
+
+    voter ->> output: safe_state()
+    note right of output: Cannot decide safely\nHalt all outputs
+
+    output ->> output: all_stop()
+end
+
+note over siteA, output
+  NMR Properties:
+  - N channels, each processes independently
+  - Majority vote: ≥ ⌈N/2⌉ must agree
+  - Tolerates ⌊(N-1)/2⌋ faults
+  - Example: 4oo3 tolerates 1 fault
+  - Example: 5oo3 tolerates 2 faults
+  - High reliability, higher complexity
+end note
+
+@enduml

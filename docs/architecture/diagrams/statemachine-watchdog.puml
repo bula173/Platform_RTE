@@ -1,0 +1,61 @@
+@startuml statemachine-watchdog
+skinparam state {
+    BackgroundColor #E1F5FE
+    BorderColor #01579B
+    ArrowColor #01579B
+}
+
+[*] --> CREATED
+
+CREATED --> STOPPED: sapi_watchdog_create()\nwatch <= config
+
+STOPPED --> RUNNING: sapi_watchdog_start()\ncountdown = timeout_ms
+
+RUNNING --> RUNNING: sapi_watchdog_kick() [countdown > 0]\ncountdown = timeout_ms\nkicks++
+
+RUNNING --> TIMEOUT: countdown == 0ms\nfires++
+
+TIMEOUT --> APPLY_RECOVERY: execute recovery action
+
+APPLY_RECOVERY --> SAFE_STATE: action=SAFESTATE
+APPLY_RECOVERY --> REBOOT: action=REBOOT
+APPLY_RECOVERY --> FAILOVER: action=FAILOVER
+APPLY_RECOVERY --> LOG_ONLY: action=LOG
+
+SAFE_STATE --> [*]: system halted\n(critical fault)
+
+REBOOT --> [*]: system reboots\n(clean restart)
+
+FAILOVER --> [*]: cluster failovers\n(active-passive)
+
+LOG_ONLY --> RUNNING: resume (if safe)\nor STOPPED
+
+RUNNING --> STOPPED: sapi_watchdog_stop()\ncountdown = 0
+
+STOPPED --> [*]: sapi_watchdog_destroy()\nresource freed
+
+note right of CREATED
+  Watchdog created but not active
+  Configuration loaded
+  Resources allocated
+end note
+
+note right of RUNNING
+  Countdown running
+  Waiting for kick()
+  Timeout will fire if no kick
+end note
+
+note right of TIMEOUT
+  Watchdog detected system hang
+  Recovery action dispatched
+  Audit logged
+end note
+
+note right of APPLY_RECOVERY
+  System or task faulty detected
+  Recovery action type determined
+  Automatic recovery in progress
+end note
+
+@enduml

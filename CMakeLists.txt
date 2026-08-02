@@ -29,11 +29,16 @@ include(CompilerWarnings)
 # library target (safeapi::<feature>), built and linkable independently.
 # Order matters only where a feature links another (string -> buffer, cast).
 foreach(feature status types buffer cast safestate string
-                timer nvm memory task ipc log reboot)
+                timer nvm memory task ipc log reboot watchdog)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
     endif()
 endforeach()
+
+# App manager depends on status and log, so add it last
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/appmanager/CMakeLists.txt")
+    add_subdirectory(src/appmanager)
+endif()
 
 if(SAFEAPI_BUILD_TESTS)
     enable_testing()
@@ -112,6 +117,7 @@ install(TARGETS
     safeapi_status safeapi_buffer safeapi_cast
     safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
     safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
+    safeapi_watchdog safeapi_appmanager
     ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
     LIBRARY DESTINATION ${LIB_INSTALL_DIR}
     RUNTIME DESTINATION bin

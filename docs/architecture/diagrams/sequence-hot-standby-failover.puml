@@ -1,0 +1,93 @@
+@startuml sequence-hot-standby-failover
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Primary" as primary
+participant "Backup" as backup
+participant "Output" as output
+
+autonumber
+
+note over primary, backup
+  Hot Standby Failover Sequence
+  Primary failure detection & recovery
+end note
+
+primary ->> backup: heartbeat()
+note right of primary: Periodic heartbeat (100ms)
+
+backup ->> backup: receive_heartbeat()
+
+primary ->> primary: process()
+note right of primary: Normal operation
+
+primary ->> backup: heartbeat()
+
+backup ->> backup: receive_heartbeat()
+
+primary ->> primary: CRASH!
+note right of primary: Primary fails (hardware or software)
+
+backup ->> backup: timeout_countdown()
+note right of backup: Heartbeat counter starts
+
+loop Wait for next heartbeat (500ms timeout)
+    backup ->> backup: no_heartbeat_received()
+end
+
+backup ->> backup: heartbeat_timeout()
+note right of backup: Timeout exceeded!\nPrimary is faulty
+
+backup ->> backup: initiate_failover()
+note right of backup: Backup activates
+
+par Failover Sequence
+    backup ->> backup: stop_replicating()
+    backup ->> backup: start_processing()
+    note right of backup: Backup becomes Primary
+end
+
+backup ->> output: send_output()
+note right of output: New Primary sends output
+
+output ->> output: execute()
+note right of output: Output from new Primary
+
+note over backup, output
+  Failover Complete:
+  1. Primary heartbeat missing for 500ms
+  2. Backup detects timeout
+  3. Backup stops replicating state
+  4. Backup starts processing
+  5. Backup becomes new Primary
+
+  Recovery Time: < 1 second
+  No output gap: Backup had state
+end note
+
+primary ->> backup: restart_attempt()
+note right of primary: Primary recovers/restarts
+
+backup ->> primary: demote_to_backup()
+note right of primary: Old Primary rejoins as Backup
+
+par New Cluster Formation
+    backup ->> primary: send_state()
+    note right of backup: Send current state to rejoining Primary
+    primary ->> backup: ack_state()
+    note right of primary: Old Primary accepts new state
+end
+
+note over backup, primary
+  System Recovered:
+  - New Primary: former Backup (now active)
+  - New Backup: former Primary (now standby)
+  - State: Consistent (transferred)
+  - Operation: Resumed normally
+end note
+
+@enduml

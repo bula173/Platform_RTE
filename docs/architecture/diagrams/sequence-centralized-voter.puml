@@ -1,0 +1,79 @@
+@startuml sequence-centralized-voter
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Node A" as nodeA
+participant "Node B" as nodeB
+participant "Node C" as nodeC
+participant "Voter\n(Central)" as voter
+participant "Output" as output
+
+autonumber
+
+note over nodeA, voter
+  Centralized Voter Topology
+  Dedicated voting CPU/processor
+end note
+
+nodeA ->> nodeA: process()
+nodeB ->> nodeB: process()
+nodeC ->> nodeC: process()
+
+nodeA ->> voter: send_result(A=GREEN)
+note right of nodeA: Node A sends its result
+
+nodeB ->> voter: send_result(B=GREEN)
+note right of nodeB: Node B sends its result
+
+nodeC ->> voter: send_result(C=RED)
+note right of nodeC: Node C sends its result (disagrees)
+
+voter ->> voter: receive_all()
+note right of voter: Voter collects all results
+
+voter ->> voter: count_votes()
+note right of voter: Count: GREEN=2, RED=1
+
+voter ->> voter: voting_2oo3()
+note right of voter: Majority vote: GREEN wins
+
+voter ->> voter: identify_fault()
+note right of voter: Node C disagrees\nNode C is faulty
+
+par Broadcast Decision
+    voter ->> nodeA: decision(GREEN)
+    voter ->> nodeB: decision(GREEN)
+    voter ->> nodeC: decision(GREEN)
+    note right of voter: All nodes learn decision
+end
+
+nodeA ->> output: send(GREEN)
+note right of nodeA: A executes decision
+
+nodeB ->> output: send(GREEN)
+note right of nodeB: B executes decision
+
+nodeC ->> output: log_fault()
+note right of nodeC: C logged as faulty\n(optional execute)
+
+output ->> output: execute()
+
+note over nodeA, output
+  Centralized Voter Advantages:
+  ✓ Separates voting from processing
+  ✓ Simpler application logic
+  ✓ Centralized policy/configuration
+  ✓ Easy to debug voting logic
+
+  Centralized Voter Disadvantages:
+  ✗ Voter becomes single point of failure
+  ✗ Network latency critical
+  ✗ Voter node must be certified
+  ✗ Scalability limited by voter throughput
+end note
+
+@enduml

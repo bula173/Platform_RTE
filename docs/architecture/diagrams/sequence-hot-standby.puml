@@ -1,0 +1,72 @@
+@startuml sequence-hot-standby
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Primary" as primary
+participant "Backup" as backup
+participant "Output" as output
+
+autonumber
+
+note over primary, backup
+  Hot Standby Mode (Active-Passive)
+  Primary: ACTIVE | Backup: READY
+end note
+
+primary ->> primary: receive_input(X)
+note right of primary: Only primary processes
+
+primary ->> primary: process()
+note right of primary: Compute result
+
+primary ->> primary: stage_output(result)
+note right of primary: Stage result locally
+
+par Checkpoint & Sync
+    primary ->> backup: checkpoint_sync(result)
+    note right of primary: Send result to backup
+end
+
+backup ->> backup: receive_state(result)
+note right of backup: Backup receives and stores
+
+backup ->> primary: ack_sync()
+note right of backup: Acknowledge sync
+
+par Verification
+    primary ->> primary: verify_backup_ack()
+    note right of primary: Verify backup got it
+end
+
+alt BACKUP ACKNOWLEDGED
+    primary ->> primary: commit()
+    note right of primary: Consensus achieved
+
+    primary ->> output: send_output()
+    note right of output: Primary sends output
+
+    output ->> output: execute()
+
+    primary ->> backup: heartbeat()
+    note right of primary: Keep-alive signal
+
+else BACKUP TIMEOUT
+    primary ->> output: safe_state()
+    note right of output: Backup offline\nCannot proceed safely
+    output ->> output: halt()
+end
+
+note over primary, output
+  Normal Operation:
+  1. Primary processes (low latency)
+  2. Primary sends state to Backup
+  3. Backup confirms sync
+  4. Primary outputs (if backup ready)
+  5. Backup replicates state (hot = ready)
+end note
+
+@enduml

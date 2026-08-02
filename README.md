@@ -12,13 +12,39 @@ registering a different backend, without touching application code.
 
 ## Status
 
-Early skeleton, actively growing. The first abstraction layer — the
-**OS Abstraction Layer (OAL)**, sitting between the RBC core and the
-operating system — is defined as a pure C ABI. See
-`docs/architecture/` for the full set of ADRs (design rationale for every
-decision below); `docs/requirements/SRS.md` for the consolidated
-requirements specification; `docs/MISRA_COMPLIANCE_REPORT.md` for the
-current MISRA C:2012 conformance status.
+Actively growing framework with SIL 4 safety focus. Core OAL + IPC defined;
+redundancy (vital channels, voting, checkpoints) and watchdog (system/task/channel
+monitoring) in design phase.
+
+**Key Documentation:**
+- `docs/architecture/` — Architecture Decision Records (ADRs 001–010) + PlantUML diagrams
+- `docs/requirements/SRS.md` — Consolidated requirements specification
+- `docs/MISRA_COMPLIANCE_REPORT.md` — MISRA C:2012 conformance status
+- `docs/EN_50128_ALIGNMENT.md` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
+  - EN 50128 (Software safety) — All 10 mandatory techniques
+  - EN 50129 (Functional safety management) — Full support
+  - EN 50126 (RAM - Reliability/Availability/Maintainability) — Design features
+- `docs/REDUNDANCY_ARCHITECTURE.md` — Vital channels, voting, checkpoints (5-stage output gate)
+- `docs/WATCHDOG_DESIGN.md` — System/task/channel/checkpoint watchdog & recovery
+- `docs/HARDWARE_PATTERNS_GUIDE.md` — **Choose your SIL & Hardware** ← Start here to select a configuration
+  - SIL 1-2: Single system (1oo1, 1oo1+Watchdog)
+  - SIL 3: Dual-channel (2oo2, 2oo2D)
+  - SIL 4: Triple-channel (2oo3) **← Recommended for ERTMS RBC**
+  - SIL 4 alternatives: Online mode, Hot standby, NMR
+  - Comparison matrix & decision tree
+  - Cost estimates & implementation timeline
+  - Real-world use case examples
+- `docs/HARDWARE_CONFIGURATIONS.md` — **All 9 hardware setup options** ← Detailed technical specs
+  - Single system (non-redundant)
+  - 2oo2 dual-channel (SIL 3)
+  - 2oo3 triple-channel (SIL 4)
+  - NMR (N-modular)
+  - Online mode (active-active cluster)
+  - Hot standby (active-passive failover)
+  - Heterogeneous systems (mixed processors)
+  - Centralized voter topology
+  - Distributed gossip topology
+- `docs/FEATURE_EXPANSION.md` — Feature roadmap & design specs
 
 OAL services, each in its own `include/safeapi/<feature>/` +
 `src/<feature>/` directory (ADR-007): timer, non-volatile memory (NVM),
@@ -30,8 +56,9 @@ Common, layer-agnostic facilities, same per-feature layout: status codes
 with endianness-safe multi-byte access (`buffer`), checked integer casting
 between every fixed-width type and `size_t` (`cast`), safe-state transitions
 / checked assertions (`safestate`: `SAPI_ASSERT`, `SAPI_SAFESTATE`,
-`SAPI_REBOOT`), and bounded string manipulation replacing strcpy/strcat/
-sprintf/atoi/strtok (`string`).
+`SAPI_REBOOT`), bounded string manipulation replacing strcpy/strcat/
+sprintf/atoi/strtok (`string`), and application lifecycle management
+(`appmanager`: single entry point with init→execute→shutdown pattern).
 
 Every OAL service is reached through a **backend registered at startup**
 (`sapi_<service>_register_backend()`) rather than a hardcoded
@@ -160,7 +187,7 @@ docs/MISRA_COMPLIANCE_REPORT.md MISRA C:2012 conformance status
 include/safeapi/<feature>/     one public header per feature (ADR-007):
                                 status, types, buffer, cast, safestate,
                                 string, timer, nvm, memory, task, ipc, log,
-                                reboot
+                                reboot, appmanager
 src/<feature>/                 matching implementation + CMakeLists.txt,
                                 one static library target safeapi::<feature>
 tests/<feature>/                matching CTest test file per feature

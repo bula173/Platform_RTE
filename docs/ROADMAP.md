@@ -63,20 +63,27 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **MISRA Considerations:** Validate queue size at compile time; avoid dynamic growth
 - **Est. Effort:** 1–2 weeks
 
-### Watchdog & Health Monitor
-- **Status:** `proposed`
-- **Priority:** P1 (High)
-- **Target Release:** 0.2.0 or 0.3.0
-- **Fit for RBC:** Excellent — detect task starvation, deadlocks, timeout violations
+### Watchdog Mechanism (System/Task/Channel/Checkpoint)
+- **Status:** `designing` ✓ (design complete, implementation pending)
+- **Priority:** P1 (High - Critical for SIL 4)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Excellent — Detect hung systems, tasks, channels; trigger recovery
 - **Scope:**
-  - Per-task heartbeat tracking
-  - Timeout violation detection
-  - Safe-state transition on health failure
-  - Integration with timer and reboot layers
-- **GitHub Issue:** [#3](https://github.com/bula173/safeAPIFreamwork/issues/3)
-- **ADR:** `docs/architecture/ADR-010-watchdog-health-monitor.md` (pending)
-- **MISRA Considerations:** All state transitions must be atomic
-- **Est. Effort:** 2–3 weeks
+  - System watchdog (overall liveness)
+  - Task watchdog (per-thread monitoring)
+  - Channel watchdog (IPC/redundancy channel monitoring)
+  - Checkpoint watchdog (integrated with barrier sync)
+  - Recovery actions: log, safe-state, reboot, failover
+  - Health status API (non-blocking diagnostics)
+  - Integration with redundancy framework
+- **GitHub Issues:** #32–#35 (4 sub-features)
+- **Documentation:** [WATCHDOG_DESIGN.md](docs/WATCHDOG_DESIGN.md) ✓
+- **API Files:** 
+  - `include/safeapi/watchdog/sapi_watchdog.h` ✓
+  - `src/watchdog/sapi_watchdog.c` (stubs) ✓
+- **MISRA Considerations:** Deterministic, no dynamic allocation, O(1) operations
+- **SIL 4 Safety:** Meets EN 50128 liveness requirement
+- **Est. Effort:** 3–4 weeks (core + examples + testing)
 
 ### Protected Data / Synchronized Access
 - **Status:** `proposed`

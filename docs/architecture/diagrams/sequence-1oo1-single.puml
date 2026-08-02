@@ -1,0 +1,42 @@
+@startuml sequence-1oo1-single
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "RBC Application" as app
+participant "SAPI Framework" as sapi
+participant "IPC" as ipc
+participant "Output" as output
+
+autonumber
+
+app ->> app: receive_signal(X)
+note right of app: Single input received
+
+app ->> sapi: process_signal(X)
+note right of sapi: Single-threaded processing
+
+sapi ->> sapi: compute_result()
+note right of sapi: No voting needed\nNo redundancy\nSingle path
+
+sapi ->> ipc: send_output(result)
+
+ipc ->> output: transmit()
+note right of output: Direct output\nNo synchronization
+
+output ->> output: execute()
+note right of output: Action taken immediately
+
+note over app, output
+  Single System (1oo1):
+  - No redundancy
+  - No fault tolerance
+  - Single point of failure
+  - Fast (no voting overhead)
+  - Suitable: SIL 1/2, development
+end note
+
+@enduml

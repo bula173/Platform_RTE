@@ -1,0 +1,67 @@
+@startuml sequence-2oo3-voting
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ActorBorderColor #01579B
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Site A" as siteA
+participant "Site B" as siteB
+participant "Site C" as siteC
+participant "Voting Engine" as voter
+participant "Output" as output
+
+autonumber
+
+siteA ->> siteA: process_signal()
+note right of siteA: Analyze train position,\ncompute signal state
+
+siteB ->> siteB: process_signal()
+note right of siteB: Analyze train position,\ncompute signal state
+
+siteC ->> siteC: process_signal()
+note right of siteC: Analyze train position,\ncompute signal state\n(different data → RED)
+
+siteA ->> voter: stage_output(GREEN)
+siteB ->> voter: stage_output(GREEN)
+siteC ->> voter: stage_output(RED)
+
+note over voter
+  All outputs staged locally
+  Not yet committed
+end note
+
+voter ->> voter: checkpoint_barrier(200ms)
+note right of voter: Wait for all sites to synchronize\nTimeout if any site slow/faulty
+
+siteA -.-> voter: ack checkpoint
+siteB -.-> voter: ack checkpoint
+siteC -.-> voter: ack checkpoint
+
+voter ->> voter: sync_outputs()
+note right of voter: All sites exchange and verify\ndata consistency
+
+voter ->> voter: voting_2oo3()
+note right of voter: Count: GREEN=2, RED=1\nMajority (≥2) = GREEN\nVoting SUCCEEDS ✓
+
+voter ->> voter: identify_minority()
+note right of voter: Site C disagrees with majority\nMark as faulty\nTrigger health monitoring
+
+voter ->> voter: commit_output(GREEN)
+note right of voter: Atomic commit to decision\nAll nodes agree on result
+
+voter ->> output: send_output(GREEN)
+note right of output: Output transmitted\nto external system\nA and B agreed
+
+output ->> output: execute(GREEN)
+note right of output: Action taken\n(e.g., set signal to GREEN)
+
+note over siteC
+  Site C isolated
+  Health counter incremented
+  May trigger failover if multiple faults
+end note
+
+@enduml

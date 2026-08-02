@@ -1,0 +1,69 @@
+@startuml activity-checkpoint
+skinparam state {
+    BackgroundColor #E1F5FE
+    BorderColor #01579B
+}
+
+start
+:Each node processes input
+independently at its own speed;
+
+:Node A reaches checkpoint|
+:Node B reaches checkpoint|
+:Node C processing... (slow)|;
+
+partition "Checkpoint Barrier (max 200ms)" {
+    if (All nodes reached checkpoint
+    within timeout?) then (YES)
+        :Node C reaches checkpoint ✓;
+        :All nodes SYNCHRONIZED
+        (same logical point);
+        :Proceed to next phase;
+    else (NO - TIMEOUT)
+        :Node C faulty or too slow;
+        :Isolate Node C;
+        :System continues as 2oo2
+        (A + B only);
+        :Watchdog logged timeout;
+        :Health counter incremented;
+    endif
+}
+
+:All nodes exchange data;
+
+:Perform voting/comparison;
+
+partition "Voting Phase" {
+    if (Consensus reached?) then (YES)
+        :Majority vote succeeded;
+        :All nodes agree on output;
+        :Commit to decision;
+        :Mark timestamp;
+    else (NO - DISAGREEMENT)
+        :Minority output rejected;
+        :Faulty node flagged;
+        :Abort output;
+        :Trigger safe-state;
+        :Audit log: "Voting failed";
+        end
+    endif
+}
+
+:All nodes synchronized on
+output data and decision;
+
+:Send output safely;
+
+:Output received by
+external system;
+
+stop
+
+note right
+  Safety Guarantee:
+  Output only after ALL phases succeed
+  Any failure → abort + safe-state
+  No partial or contradictory outputs
+end note
+
+@enduml

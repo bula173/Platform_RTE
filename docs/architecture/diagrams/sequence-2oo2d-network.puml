@@ -1,0 +1,72 @@
+@startuml sequence-2oo2d-network
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "Site A" as siteA
+participant "Network" as network
+participant "Site B" as siteB
+participant "Output" as output
+
+autonumber
+
+siteA ->> siteA: receive_signal(X)
+siteB ->> siteB: receive_signal(X)
+note right of siteA, siteB: Both sites receive\nidentical input
+
+siteA ->> siteA: process_signal()
+note right of siteA: Site A processes
+
+siteB ->> siteB: process_signal()
+note right of siteB: Site B processes
+
+siteA ->> network: serialize(result_A=GREEN)
+note right of siteA: Transmit result over network
+
+network ->> siteB: deliver(result_A)
+note right of network: Network delay < 100ms
+
+siteB ->> siteB: store_remote_result(A)
+note right of siteB: B stores A's result
+
+siteB ->> network: serialize(result_B=GREEN)
+note right of siteB: Transmit B's result
+
+network ->> siteA: deliver(result_B)
+note right of siteA: Network delay < 100ms
+
+siteA ->> siteA: compare(A, B)
+siteB ->> siteB: compare(A, B)
+
+alt AGREEMENT: A = B = GREEN
+    siteA ->> output: send_output(GREEN)
+    siteB ->> output: send_output(GREEN)
+    note right of output: Both sites agree\nOutput transmitted
+    output ->> output: execute()
+else DISAGREEMENT: A ≠ B
+    siteA ->> siteA: detect_fault()
+    siteB ->> siteB: detect_fault()
+    siteA ->> output: safe_state()
+    siteB ->> output: safe_state()
+    note right of output: Network fault or\ncomputation fault
+    output ->> output: both_halt()
+else NETWORK TIMEOUT
+    siteA ->> siteA: timeout_wait_B()
+    note right of siteA: B didn't respond\nwithin 100ms
+    siteA ->> output: safe_state()
+end
+
+note over siteA, output
+  2oo2D (Dual-Site Network):
+  - Network-based 2oo2
+  - Both sites process independently
+  - Exchange results over network
+  - Network latency critical (< 100ms)
+  - Detects network faults
+  - SIL 3 suitable
+end note
+
+@enduml

@@ -638,6 +638,514 @@ NEW: Hardware Redundancy (#24-27)
 
 ---
 
+## Critical Safety Requirement: Checkpoint Synchronization & Pre-Commit
+
+### Checkpoint Barrier Synchronization
+
+**Before any synchronization or voting, all nodes MUST reach the same checkpoint.**
+
+The framework enforces temporal consistency by requiring all nodes to:
+1. Reach a defined checkpoint in their processing logic
+2. Wait at that checkpoint for other nodes (with configurable timeout, e.g., 200ms)
+3. Proceed together once all nodes are synchronized
+4. THEN exchange data and perform voting
+
+This ensures that nodes are processing the **same logical input** at the **same logical point** before any comparison occurs. Without checkpoint synchronization, nodes could be at different stages of processing, making voting meaningless or revealing inconsistent state.
+
+```
+┌──────────────────────────────────────────────────────┐
+│  CHECKPOINT BARRIER SYNCHRONIZATION (Configurable)  │
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│  Site A    │  Site B    │  Site C                   │
+│            │            │                           │
+│  Process   │  Process   │  Process                  │
+│  input     │  input     │  input                    │
+│  (at own   │  (at own   │  (at own                 │
+│   speed)   │   speed)   │   speed)                 │
+│    │       │    │       │    │                     │
+│    ▼       │    ▼       │    ▼                     │
+│  [Checkpoint]│  [Checkpoint]│  [Checkpoint]        │
+│  (ready)   │  (ready)   │  (blocked)              │
+│    │       │    │       │    ║                     │
+│    │       │    │       │    ║ waiting for A & B  │
+│    │       │    │       │    ║ (max 200ms)        │
+│    │       │    │       │    ║                     │
+│  <<────────┼────┼────────────>>                    │
+│  All nodes synchronized at checkpoint               │
+│    │       │    │       │    │                     │
+│  TIMEOUT EXCEEDED? ─→ Fault detected, abort        │
+│    │       │    │       │    │                     │
+│    ▼       ▼    ▼       ▼    ▼                     │
+│  ╔═══════════════════════════════╗                │
+│  ║  All nodes at checkpoint       ║                │
+│  ║  (synchronized in TIME)        ║                │
+│  ║  (same LOGICAL POINT)          ║                │
+│  ║  (same INPUT state)            ║                │
+│  ╚═══════════════════════════════╝                │
+│    │                               │                │
+│    └─────────────┬─────────────────┘                │
+│                  │                                  │
+│          SYNCHRONIZE DATA                          │
+│          EXCHANGE OUTPUTS                          │
+│          PERFORM VOTING                            │
+│          COMMIT & OUTPUT                           │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+```
+
+### Complete Execution Flow: Checkpoint → Sync → Vote → Output
+
+```
+CHANNEL EXECUTION TIMELINE
+══════════════════════════════════════════════════════════════════════
+
+Phase 0: CHECKPOINT BARRIER (Configurable Timeout, e.g., 200ms)
+──────────────────────────────────────────────────────────────────────
+  All nodes process independently until reaching defined checkpoint.
+  Faster nodes wait at barrier for slower nodes.
+  Max delay configurable (typical: 50ms to 500ms).
+  
+  Status: Site A ✓  Site B ✓  Site C ⏳ → Site C ✓ → SYNCHRONIZED
+  
+  On timeout: Faulty node detected, safe-state triggered.
+  Guarantee: All proceeding nodes are at same logical point.
+
+Phase 1: PROCESS (to checkpoint)
+──────────────────────────────────────────────────────────────────────
+  ├─ All nodes receive same input independently
+  ├─ All nodes process until checkpoint
+  ├─ Generate candidate output (staged, not committed)
+  └─ Node processing speed may vary, but result is at checkpoint
+
+Phase 2: CHECKPOINT SYNCHRONIZATION
+──────────────────────────────────────────────────────────────────────
+  ├─ Wait at checkpoint for all nodes to reach it
+  ├─ Exchange checkpoint status (heartbeat)
+  ├─ If any node doesn't reach checkpoint within max_delay
+  │  └─→ Fault detected → Safe-state trigger
+  └─ All nodes proceed only when synchronized
+
+Phase 3: DATA SYNCHRONIZATION
+──────────────────────────────────────────────────────────────────────
+  ├─ Exchange processed data across all nodes
+  ├─ Verify all nodes have identical output data
+  ├─ Backup confirms sync (active-passive mode)
+  └─ Detect disagreements
+
+Phase 4: VOTING / CROSS-COMPARISON
+──────────────────────────────────────────────────────────────────────
+  ├─ Apply voting logic (2oo2, 2oo3, etc.)
+  ├─ If voting FAILS → ABORT (no output)
+  └─ If voting SUCCEEDS → proceed to commit
+
+Phase 5: COMMIT & OUTPUT
+──────────────────────────────────────────────────────────────────────
+  ├─ All nodes commit to decision
+  ├─ All nodes acknowledge commitment
+  └─ Output sent ONLY after checkpoint + sync + vote + commit
+
+Failure Paths (all trigger safe-state):
+  ├─ Checkpoint fails (timeout)  → Faulty node detected
+  ├─ Sync fails (data mismatch)  → Consensus broken
+  ├─ Voting fails (no consensus) → Decision not possible
+  └─ Commit fails (safety fault) → Atomic commit failed
+  
+  ⟹ NO OUTPUT CAN ESCAPE WITHOUT FULL CONSENSUS
+
+════════════════════════════════════════════════════════════════════════
+```
+
+### API Design: Checkpoint-Aware Channels
+
+```c
+/**
+ * @brief Checkpoint configuration
+ *
+ * Defines a synchronization point where all nodes must wait for each other.
+ */
+typedef struct {
+    uint32_t checkpoint_id;         /**< Unique ID for this checkpoint */
+    sapi_duration_ms_t max_delay_ms;/**< Max allowed delay (e.g., 200ms) */
+    uint32_t expected_node_count;   /**< How many nodes to wait for */
+} sapi_checkpoint_config_t;
+
+/**
+ * @brief Register a checkpoint in channel processing
+ *
+ * Called by application at a specific point in processing logic.
+ * Blocks until all nodes reach this checkpoint (or timeout).
+ *
+ * Usage Pattern:
+ *   ① Process input to a known point (same on all nodes)
+ *   ② Call sapi_channel_checkpoint()
+ *   ③ Wait for all nodes to sync (blocking, with timeout)
+ *   ④ All nodes resume together (guaranteed at same logical point)
+ *   ⑤ Continue with data synchronization & voting
+ *
+ * Example:
+ * @code
+ * // All RBC nodes reach checkpoint after signal processing
+ * sapi_checkpoint_config_t ckpt = {
+ *     .checkpoint_id = 1,
+ *     .max_delay_ms = 200,           // Allow 200ms delay for slower node
+ *     .expected_node_count = 3       // Waiting for all 3 sites
+ * };
+ * 
+ * status = sapi_channel_checkpoint(vital_signal, &ckpt);
+ * if (status != SAPI_STATUS_OK) {
+ *     // One node didn't reach checkpoint in time
+ *     // Fault detected → safe-state
+ *     sapi_safestate_trigger();
+ * }
+ * // All nodes guaranteed at same logical point now
+ * @endcode
+ *
+ * @param channel Vital or non-vital channel
+ * @param config Checkpoint configuration
+ * @return SAPI_STATUS_OK if all nodes synchronized at checkpoint
+ *         SAPI_STATUS_TIMEOUT if some nodes didn't reach checkpoint
+ *         SAPI_STATUS_ERROR if channel fault detected
+ */
+sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t channel,
+                                       const sapi_checkpoint_config_t *config);
+
+/**
+ * @brief Query checkpoint status (non-blocking diagnostics)
+ *
+ * Useful for logging and diagnostics. Tells which nodes have reached
+ * which checkpoint without blocking.
+ *
+ * @param channel Vital channel
+ * @param checkpoint_id ID to query
+ * @param status_out Bitmap: bit N = 1 if node N reached checkpoint
+ * @return SAPI_STATUS_OK on success
+ */
+sapi_status_t sapi_channel_checkpoint_status(sapi_vital_channel_t channel,
+                                              uint32_t checkpoint_id,
+                                              uint32_t *status_out);
+
+/**
+ * @brief Stage output (prepare but don't send)
+ *
+ * After checkpoint synchronization and processing, stage the output locally.
+ * Output is NOT sent yet — waiting for data sync + voting.
+ *
+ * @param channel Vital or non-vital channel
+ * @param output_data Candidate output to stage
+ * @param size Output data size
+ * @return SAPI_STATUS_OK on success
+ */
+sapi_status_t sapi_channel_stage_output(sapi_vital_channel_t channel,
+                                         const void *output_data,
+                                         size_t size);
+
+/**
+ * @brief Synchronize staged output across nodes
+ *
+ * Exchange staged outputs between all nodes (now guaranteed at same
+ * checkpoint). Verify that all nodes have identical staged data.
+ *
+ * @param channel Vital channel
+ * @param timeout_ms Max wait for all nodes to sync data
+ * @return SAPI_STATUS_OK if sync succeeded
+ *         SAPI_STATUS_ERROR if nodes disagree
+ *         SAPI_STATUS_TIMEOUT if nodes don't respond
+ */
+sapi_status_t sapi_channel_sync_output(sapi_vital_channel_t channel,
+                                        sapi_duration_ms_t timeout_ms);
+
+/**
+ * @brief Commit output after successful voting
+ *
+ * Only call this if sapi_channel_sync_output() succeeded.
+ * Commits staged output and marks as ready for transmission.
+ *
+ * @param channel Vital channel
+ * @return SAPI_STATUS_OK if commit succeeded
+ *         SAPI_STATUS_ERROR if commit failed (safety fault)
+ */
+sapi_status_t sapi_channel_commit_output(sapi_vital_channel_t channel);
+
+/**
+ * @brief Send output (only after checkpoint + sync + commit)
+ *
+ * Transmit committed output to external system.
+ * Should only be called after:
+ *   1. sapi_channel_checkpoint() succeeded (all nodes at same point)
+ *   2. sapi_channel_sync_output() succeeded (data synchronized)
+ *   3. sapi_channel_commit_output() succeeded (consensus committed)
+ *
+ * @param channel Vital channel
+ * @param output_data Committed output
+ * @param size Output size
+ * @return SAPI_STATUS_OK if send succeeded
+ */
+sapi_status_t sapi_channel_send_output(sapi_vital_channel_t channel,
+                                        const void *output_data,
+                                        size_t size);
+
+/**
+ * @brief Abort staged output (on voting failure)
+ *
+ * Called if voting/cross-comparison fails.
+ * Discards staged output without sending.
+ * Triggers safe-state transition.
+ *
+ * @param channel Vital channel
+ * @return SAPI_STATUS_OK on success
+ */
+sapi_status_t sapi_channel_abort_output(sapi_vital_channel_t channel);
+```
+
+### Application Flow Example (Online Mode - 2oo3)
+
+```c
+// Three RBC sites, 2oo3 voting
+
+// ============================================================================
+// PHASE 1: PROCESS (to checkpoint)
+// ============================================================================
+signal_result_t my_result = process_rbc_signal();
+
+// Stage output locally (not sent yet)
+sapi_channel_stage_output(vital_signal, &my_result, sizeof(my_result));
+SAPI_LOG_INFO("Staged output: signal=%d", my_result.signal_state);
+
+// ============================================================================
+// PHASE 2: CHECKPOINT BARRIER (All nodes synchronized in time)
+// ============================================================================
+// All three sites reach checkpoint after signal processing
+// Slower sites wait for faster sites (max 200ms)
+sapi_checkpoint_config_t ckpt = {
+    .checkpoint_id = 1,
+    .max_delay_ms = 200,           // Allow 200ms delay
+    .expected_node_count = 3       // Waiting for all 3 sites
+};
+
+status = sapi_channel_checkpoint(vital_signal, &ckpt);
+
+if (status != SAPI_STATUS_OK) {
+    SAPI_LOG_ERROR("Checkpoint timeout: one site didn't respond!");
+    // One node is faulty or too slow → safe-state
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();
+    return;
+}
+
+SAPI_LOG_INFO("Checkpoint reached: all 3 sites synchronized (same logical point)");
+
+// ============================================================================
+// PHASE 3: DATA SYNCHRONIZATION (at checkpoint)
+// ============================================================================
+// All three sites now guaranteed at same logical point
+// Exchange their staged outputs
+status = sapi_channel_sync_output(vital_signal, 100);  // 100ms timeout
+
+if (status != SAPI_STATUS_OK) {
+    SAPI_LOG_ERROR("Sync failed: sites disagree on output!");
+    // Data is NOT synchronized — do NOT proceed to output
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();  // Trigger safe-state
+    return;
+}
+
+SAPI_LOG_INFO("Data sync succeeded: all sites have identical output");
+
+// ============================================================================
+// PHASE 4: VOTING (verify consensus)
+// ============================================================================
+sapi_channel_health_t health;
+sapi_vital_get_health(vital_signal, &health);
+
+if (!health.majority_vote_ok) {
+    SAPI_LOG_ERROR("Voting failed: no majority agreement!");
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();
+    return;
+}
+
+SAPI_LOG_INFO("Voting succeeded: ≥2 sites agree");
+
+// ============================================================================
+// PHASE 5: COMMIT & OUTPUT
+// ============================================================================
+// All nodes commit to the decision
+status = sapi_channel_commit_output(vital_signal);
+
+if (status != SAPI_STATUS_OK) {
+    SAPI_LOG_ERROR("Commit failed: safety fault detected!");
+    sapi_safestate_trigger();
+    return;
+}
+
+SAPI_LOG_INFO("Output committed: safe to send");
+
+// NOW send output (after checkpoint + sync + voting + commit)
+status = sapi_channel_send_output(vital_signal, 
+                                   &my_result, sizeof(my_result));
+
+if (status == SAPI_STATUS_OK) {
+    SAPI_LOG_INFO("Output sent successfully (all constraints satisfied)");
+} else {
+    SAPI_LOG_ERROR("Output send failed!");
+    sapi_safestate_trigger();
+}
+```
+
+### Application Flow Example (Hot Standby - Active-Passive)
+
+```c
+// Primary site (active), Backup site (standby)
+
+// ============================================================================
+// PHASE 1: PROCESS (Primary only, to checkpoint)
+// ============================================================================
+signal_result_t result = process_rbc_signal();  // Only primary processes
+
+// Stage output locally
+sapi_channel_stage_output(vital_signal, &result, sizeof(result));
+SAPI_LOG_INFO("Primary staged output");
+
+// ============================================================================
+// PHASE 2: CHECKPOINT BARRIER (Primary waits for Backup readiness)
+// ============================================================================
+// Primary reaches checkpoint and waits for backup to be ready
+// Backup must acknowledge it's ready to receive state
+sapi_checkpoint_config_t ckpt = {
+    .checkpoint_id = 1,
+    .max_delay_ms = 200,           // Allow 200ms for backup to catch up
+    .expected_node_count = 2       // Primary + Backup
+};
+
+status = sapi_channel_checkpoint(vital_signal, &ckpt);
+
+if (status != SAPI_STATUS_OK) {
+    SAPI_LOG_ERROR("Checkpoint timeout: backup not responding!");
+    // Backup is faulty or offline → safe-state
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();
+    return;
+}
+
+SAPI_LOG_INFO("Checkpoint reached: backup confirmed ready (synchronized)");
+
+// ============================================================================
+// PHASE 3: DATA SYNCHRONIZATION (Primary → Backup)
+// ============================================================================
+// Primary now sends staged output to backup
+// Backup must echo back to confirm receipt
+status = sapi_channel_sync_output(vital_signal, 100);
+
+if (status != SAPI_STATUS_OK) {
+    SAPI_LOG_ERROR("Sync with backup failed!");
+    // Backup didn't acknowledge or data mismatch
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();  // Trigger safe-state
+    return;
+}
+
+SAPI_LOG_INFO("Backup confirmed data sync (echoed back correctly)");
+
+// ============================================================================
+// PHASE 4: VOTING (Primary agrees with Backup echo)
+// ============================================================================
+// Backup echoes back the data it received
+// Primary verifies it matches what was sent
+// This is the "2oo2 consensus" in standby mode
+
+sapi_channel_health_t health;
+sapi_vital_get_health(vital_signal, &health);
+
+if (!health.majority_vote_ok) {
+    SAPI_LOG_ERROR("Backup data mismatch detected!");
+    sapi_channel_abort_output(vital_signal);
+    sapi_safestate_trigger();
+    return;
+}
+
+SAPI_LOG_INFO("Voting succeeded: Primary and Backup agree");
+
+// ============================================================================
+// PHASE 5: COMMIT & OUTPUT
+// ============================================================================
+status = sapi_channel_commit_output(vital_signal);
+
+if (status == SAPI_STATUS_OK) {
+    // NOW send output (after checkpoint + backup confirms sync)
+    status = sapi_channel_send_output(vital_signal, 
+                                      &result, sizeof(result));
+    
+    if (status == SAPI_STATUS_OK) {
+        SAPI_LOG_INFO("Output sent (backup in sync, consensus reached)");
+    } else {
+        SAPI_LOG_ERROR("Output send failed!");
+        sapi_safestate_trigger();
+    }
+} else {
+    SAPI_LOG_ERROR("Commit failed: safety fault detected!");
+    sapi_safestate_trigger();
+}
+```
+
+### Safety Guarantees
+
+With checkpoint synchronization + pre-commit pattern:
+
+✅ **Temporal Consistency (Checkpoint Barrier)**
+  - All nodes reach same logical processing point
+  - Faster nodes wait for slower nodes (configurable timeout, e.g., 200ms)
+  - Faulty node detected if checkpoint timeout exceeded
+  - Guarantee: All proceeding nodes are synchronized in TIME
+
+✅ **Logical Consistency (Same Input State)**
+  - All nodes process same input to checkpoint
+  - No node at different logical stage when voting occurs
+  - Voting is meaningful (comparing apples-to-apples)
+  - No race conditions (checkpoint barrier enforces order)
+
+✅ **No Contradictory Outputs**
+  - Output only sent when ALL nodes agree (after checkpoint + sync)
+  - If any node disagrees, output is aborted
+  - No node sends output before consensus
+
+✅ **Atomic Consistency**
+  - Checkpoint synchronization (all nodes at same point)
+  - Data synchronization (all nodes have identical data)
+  - Voting (consensus verified)
+  - Commit (all nodes commit together)
+  - No partial outputs
+
+✅ **Fail-Safe at Every Stage**
+  - Checkpoint timeout → faulty node detected → safe-state
+  - Data sync failure → consensus broken → abort + safe-state
+  - Voting failure → no majority → abort + safe-state
+  - Commit failure → atomic commit failed → abort + safe-state
+  - No output escapes without full consensus
+
+✅ **Audit Trail**
+  - Log checkpoint entry (which nodes reached it, timing)
+  - Log checkpoint completion or timeout
+  - Log data sync status
+  - Log voting results
+  - Log commit status
+  - Full traceability for certification
+
+✅ **Graceful Degradation (2oo3)**
+  - If Site C misses checkpoint (timeout), it's isolated
+  - Only Sites A & B proceed (now 2oo2 mode)
+  - Sites A & B reach checkpoint and vote
+  - No contradictory outputs from any site
+  - Majority decision proceeds
+
+✅ **Configurable Fault Tolerance**
+  - Checkpoint timeout configurable per application (50ms–500ms typical)
+  - Allows tuning for different hardware speeds
+  - Slower CPUs get longer wait times
+  - Faster systems can use shorter timeouts for quicker fault detection
+
+---
+
 ## Cluster Redundancy: Online vs. Hot Standby
 
 ### Online Mode (Active-Active)

@@ -136,10 +136,6 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
         "SAFEAPI_BUILD_TESTS": "OFF"
-      },
-      "environment": {
-        "QNX_HOST": "${env:QNX_HOST}",
-        "QNX_TARGET": "${env:QNX_TARGET}"
       }
     },
     {
@@ -150,10 +146,6 @@
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
         "SAFEAPI_BUILD_TESTS": "OFF"
-      },
-      "environment": {
-        "QNX_HOST": "${env:QNX_HOST}",
-        "QNX_TARGET": "${env:QNX_TARGET}"
       }
     }
   ],

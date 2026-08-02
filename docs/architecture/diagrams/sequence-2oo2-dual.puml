@@ -1,0 +1,53 @@
+@startuml sequence-2oo2-dual
+skinparam sequence {
+    ArrowColor #01579B
+    ActorBackgroundColor #E1F5FE
+    ParticipantBackgroundColor #E1F5FE
+    ParticipantBorderColor #01579B
+}
+
+participant "CPU A" as cpuA
+participant "CPU B" as cpuB
+participant "Voting\nEngine" as voter
+participant "Output" as output
+
+autonumber
+
+cpuA ->> cpuA: process_signal()
+note right of cpuA: CPU A processes\ninput signal
+
+cpuB ->> cpuB: process_signal()
+note right of cpuB: CPU B processes\nidentical input
+
+cpuA ->> voter: submit_result(A=X)
+note right of cpuA: Result from CPU A
+
+cpuB ->> voter: submit_result(B=X)
+note right of cpuB: Result from CPU B
+
+voter ->> voter: compare(A, B)
+note right of voter: 2oo2 Voting:\nBoth must agree
+
+alt AGREEMENT: A = B
+    voter ->> output: send_output(X)
+    note right of output: Both agree → Output safe
+    output ->> output: execute()
+    note right of output: Command executed
+else DISAGREEMENT: A ≠ B
+    voter ->> voter: trigger_fault()
+    note right of voter: IMMEDIATE FAULT
+    voter ->> output: safe_state()
+    note right of output: System halted\nNo contradictory output
+    output ->> output: all_outputs_stop()
+end
+
+note over cpuA, output
+  2oo2 Dual-Channel:
+  - Both channels must agree
+  - Any disagreement = immediate safe-state
+  - Detects single-point failures
+  - SIL 3 suitable
+  - Zero fault tolerance
+end note
+
+@enduml

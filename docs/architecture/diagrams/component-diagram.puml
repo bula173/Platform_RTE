@@ -1,0 +1,114 @@
+@startuml component-sapiframework
+!define DIRECTION top to bottom direction
+skinparam componentStyle uml2
+skinparam component {
+    BackgroundColor #E1F5FE
+    BorderColor #01579B
+    ArrowColor #01579B
+}
+skinparam package {
+    BackgroundColor #F3E5F5
+    BorderColor #4A148C
+}
+
+package "Application Layer" {
+    component [RBC Logic] as rbc_app
+}
+
+package "safeAPIFramework v0.3.0" {
+    package "Common Utilities" {
+        component [status] as status_mod
+        component [types] as types_mod
+        component [buffer] as buffer_mod
+        component [cast] as cast_mod
+        component [safestate] as safestate_mod
+        component [string] as string_mod
+    }
+
+    package "OAL Services" {
+        component [timer] as timer_mod
+        component [nvm] as nvm_mod
+        component [memory] as memory_mod
+        component [task] as task_mod
+        component [ipc] as ipc_mod
+        component [log] as log_mod
+        component [reboot] as reboot_mod
+        component [appmanager] as appmanager_mod
+    }
+
+    package "Safety Features" {
+        component [redundancy] as redundancy_mod
+        component [watchdog] as watchdog_mod
+    }
+}
+
+package "OS Abstraction Layer (Backend)" {
+    component [POSIX Backend] as posix_backend
+    component [QNX Backend] as qnx_backend
+}
+
+package "OS/Hardware Layer" {
+    component [Linux] as linux_os
+    component [QNX RTOS] as qnx_os
+    component [Bare Metal] as baremetal
+}
+
+' Internal dependencies (Common Utilities)
+status_mod --> types_mod: uses
+buffer_mod --> types_mod: uses
+cast_mod --> types_mod: uses
+string_mod --> buffer_mod: uses
+safestate_mod --> log_mod: logs to
+
+' OAL dependencies on Common
+timer_mod --> status_mod: returns
+nvm_mod --> status_mod: returns
+memory_mod --> status_mod: returns
+task_mod --> status_mod: returns
+ipc_mod --> status_mod: returns
+log_mod --> status_mod: returns
+reboot_mod --> status_mod: returns
+appmanager_mod --> status_mod: returns
+
+' Safety features dependencies
+redundancy_mod --> ipc_mod: uses
+redundancy_mod --> status_mod: returns
+watchdog_mod --> timer_mod: uses
+watchdog_mod --> safestate_mod: triggers
+watchdog_mod --> log_mod: logs to
+
+' Application layer
+rbc_app --> redundancy_mod: uses vital channels
+rbc_app --> watchdog_mod: uses monitoring
+rbc_app --> ipc_mod: IPC communication
+rbc_app --> appmanager_mod: lifecycle
+
+' Backend registration
+redundancy_mod -.-> posix_backend: pluggable backend
+redundancy_mod -.-> qnx_backend: pluggable backend
+watchdog_mod -.-> posix_backend: backend
+watchdog_mod -.-> qnx_backend: backend
+
+' Backend to OS
+posix_backend --> linux_os: runs on
+qnx_backend --> qnx_os: runs on
+qnx_backend -.-> baremetal: optional
+
+note bottom of rbc_app
+  Never calls OS directly
+  All services through SAPI
+end note
+
+note bottom of redundancy_mod
+  2oo2/2oo3/NMR voting
+  Checkpoint synchronization
+  Atomic output commit
+end note
+
+note bottom of watchdog_mod
+  System/task/channel/
+  checkpoint monitoring
+  Auto recovery actions
+end note
+
+@enduml
