@@ -25,30 +25,30 @@ static sapi_status_t mock_create(sapi_timer_storage_t *storage,
     return SAPI_STATUS_OK;
 }
 
-static const sapi_timer_backend_t g_mock_backend_full = {
+static const sapi_timer_backend_t g_mock_backend_full __attribute__((unused)) = {
     mock_create, NULL, NULL, NULL, NULL
 };
 
-static const sapi_timer_backend_t g_mock_backend_no_create = {
+static const sapi_timer_backend_t g_mock_backend_no_create __attribute__((unused)) = {
     NULL, NULL, NULL, NULL, NULL
 };
 
 int main(void)
 {
-    sapi_timer_storage_t storage;
-    sapi_timer_handle_t handle = NULL;
+    sapi_timer_storage_t storage __attribute__((unused));
+    sapi_timer_handle_t handle __attribute__((unused)) = NULL;
 
     /* Null-parameter rejection happens before any backend is consulted. */
     assert(sapi_timer_create(NULL, NULL, NULL) == SAPI_STATUS_INVALID_PARAM);
 
     /* Invalid config (missing callback) rejected even with valid pointers. */
-    sapi_timer_config_t bad_config = {0};
+    sapi_timer_config_t bad_config __attribute__((unused)) = {0};
     bad_config.mode = SAPI_TIMER_MODE_ONE_SHOT;
     bad_config.period_ms = 100U;
     bad_config.callback = NULL;
     assert(sapi_timer_create(&storage, &bad_config, &handle) == SAPI_STATUS_INVALID_PARAM);
 
-    sapi_timer_config_t config = {0};
+    sapi_timer_config_t config __attribute__((unused)) = {0};
     config.mode = SAPI_TIMER_MODE_PERIODIC;
     config.period_ms = 100U;
     config.callback = dummy_callback;

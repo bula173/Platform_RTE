@@ -12,8 +12,8 @@ static sapi_status_t mock_request(uint16_t reason_code)
     return SAPI_STATUS_OK;
 }
 
-static const sapi_reboot_backend_t g_mock_backend = { mock_request };
-static const sapi_reboot_backend_t g_mock_backend_empty = { NULL };
+static const sapi_reboot_backend_t g_mock_backend __attribute__((unused)) = { mock_request };
+static const sapi_reboot_backend_t g_mock_backend_empty __attribute__((unused)) = { NULL };
 
 int main(void)
 {

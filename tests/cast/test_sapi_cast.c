@@ -24,7 +24,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -32,7 +32,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int8_t in = (int8_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -44,7 +44,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -52,7 +52,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int8_t in = (int8_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -64,7 +64,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -72,7 +72,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int8_t in = (int8_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -84,7 +84,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -92,7 +92,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int8_t in = (int8_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -100,7 +100,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int8_t in = (int8_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -112,7 +112,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -120,7 +120,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int8_t in = (int8_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -128,7 +128,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int8_t in = (int8_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -140,7 +140,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -148,7 +148,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int8_t in = (int8_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -156,7 +156,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int8_t in = (int8_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -168,7 +168,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int8_t in = (int8_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -176,7 +176,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int8_t in = (int8_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -184,7 +184,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int8_t in = (int8_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i8_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i8_to_u64(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint64_t)SENTINEL_BYTE);
         }
@@ -196,7 +196,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int16_t in = (int16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -204,7 +204,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MAX) + 1);
             int16_t in = (int16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -212,7 +212,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int16_t in = (int16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -220,7 +220,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MIN) - 1);
             int16_t in = (int16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -232,7 +232,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int16_t in = (int16_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -240,7 +240,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MIN);
             int16_t in = (int16_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -252,7 +252,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int16_t in = (int16_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -260,7 +260,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MIN);
             int16_t in = (int16_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -272,7 +272,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT8_MAX);
             int16_t in = (int16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -280,7 +280,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT8_MAX) + 1);
             int16_t in = (int16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -288,7 +288,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int16_t in = (int16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -296,7 +296,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int16_t in = (int16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -308,7 +308,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int16_t in = (int16_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -316,7 +316,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int16_t in = (int16_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -324,7 +324,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int16_t in = (int16_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -336,7 +336,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int16_t in = (int16_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -344,7 +344,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int16_t in = (int16_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -352,7 +352,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int16_t in = (int16_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -364,7 +364,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int16_t in = (int16_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -372,7 +372,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int16_t in = (int16_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -380,7 +380,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int16_t in = (int16_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i16_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i16_to_u64(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint64_t)SENTINEL_BYTE);
         }
@@ -392,7 +392,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int32_t in = (int32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -400,7 +400,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MAX) + 1);
             int32_t in = (int32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -408,7 +408,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int32_t in = (int32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -416,7 +416,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MIN) - 1);
             int32_t in = (int32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -428,7 +428,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int32_t in = (int32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -436,7 +436,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT16_MAX) + 1);
             int32_t in = (int32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -444,7 +444,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MIN);
             int32_t in = (int32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -452,7 +452,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT16_MIN) - 1);
             int32_t in = (int32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -464,7 +464,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MAX);
             int32_t in = (int32_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -472,7 +472,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MIN);
             int32_t in = (int32_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -484,7 +484,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT8_MAX);
             int32_t in = (int32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -492,7 +492,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT8_MAX) + 1);
             int32_t in = (int32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -500,7 +500,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int32_t in = (int32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -508,7 +508,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int32_t in = (int32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -520,7 +520,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT16_MAX);
             int32_t in = (int32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -528,7 +528,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT16_MAX) + 1);
             int32_t in = (int32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -536,7 +536,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int32_t in = (int32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -544,7 +544,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int32_t in = (int32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -556,7 +556,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MAX);
             int32_t in = (int32_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -564,7 +564,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int32_t in = (int32_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -572,7 +572,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int32_t in = (int32_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -584,7 +584,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MAX);
             int32_t in = (int32_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -592,7 +592,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int32_t in = (int32_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -600,7 +600,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int32_t in = (int32_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i32_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i32_to_u64(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint64_t)SENTINEL_BYTE);
         }
@@ -612,7 +612,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MAX);
             int64_t in = (int64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -620,7 +620,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -628,7 +628,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT8_MIN);
             int64_t in = (int64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -636,7 +636,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT8_MIN) - 1);
             int64_t in = (int64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -648,7 +648,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MAX);
             int64_t in = (int64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -656,7 +656,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT16_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -664,7 +664,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT16_MIN);
             int64_t in = (int64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -672,7 +672,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT16_MIN) - 1);
             int64_t in = (int64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -684,7 +684,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MAX);
             int64_t in = (int64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -692,7 +692,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT32_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int32_t)SENTINEL_BYTE);
         }
@@ -700,7 +700,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT32_MIN);
             int64_t in = (int64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -708,7 +708,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(INT32_MIN) - 1);
             int64_t in = (int64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_i32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int32_t)SENTINEL_BYTE);
         }
@@ -720,7 +720,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT8_MAX);
             int64_t in = (int64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -728,7 +728,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT8_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -736,7 +736,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int64_t in = (int64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -744,7 +744,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int64_t in = (int64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -756,7 +756,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT16_MAX);
             int64_t in = (int64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -764,7 +764,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT16_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -772,7 +772,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int64_t in = (int64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -780,7 +780,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int64_t in = (int64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -792,7 +792,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(UINT32_MAX);
             int64_t in = (int64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -800,7 +800,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = ((int64_t)(UINT32_MAX) + 1);
             int64_t in = (int64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -808,7 +808,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int64_t in = (int64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -816,7 +816,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int64_t in = (int64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -828,7 +828,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(INT64_MAX);
             int64_t in = (int64_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -836,7 +836,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)0;
             int64_t in = (int64_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -844,7 +844,7 @@ static void test_fixed_width_pairs(void)
             int64_t in_wide = (int64_t)(-1);
             int64_t in = (int64_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_i64_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_i64_to_u64(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint64_t)SENTINEL_BYTE);
         }
@@ -856,7 +856,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -864,7 +864,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT8_MAX) + 1U);
             uint8_t in = (uint8_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -872,7 +872,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint8_t in = (uint8_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -884,7 +884,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -892,7 +892,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint8_t in = (uint8_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -904,7 +904,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -912,7 +912,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint8_t in = (uint8_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -924,7 +924,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -932,7 +932,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint8_t in = (uint8_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -944,7 +944,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -952,7 +952,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint8_t in = (uint8_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -964,7 +964,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -972,7 +972,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint8_t in = (uint8_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -984,7 +984,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint8_t in = (uint8_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -992,7 +992,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint8_t in = (uint8_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u8_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u8_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1004,7 +1004,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT8_MAX);
             uint16_t in = (uint16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1012,7 +1012,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT8_MAX) + 1U);
             uint16_t in = (uint16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -1020,7 +1020,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint16_t in = (uint16_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1032,7 +1032,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT16_MAX);
             uint16_t in = (uint16_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1040,7 +1040,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT16_MAX) + 1U);
             uint16_t in = (uint16_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -1048,7 +1048,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint16_t in = (uint16_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1060,7 +1060,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint16_t in = (uint16_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1068,7 +1068,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint16_t in = (uint16_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1080,7 +1080,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint16_t in = (uint16_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1088,7 +1088,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint16_t in = (uint16_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1100,7 +1100,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint16_t in = (uint16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1108,7 +1108,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT8_MAX) + 1U);
             uint16_t in = (uint16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -1116,7 +1116,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint16_t in = (uint16_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1128,7 +1128,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint16_t in = (uint16_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1136,7 +1136,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint16_t in = (uint16_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1148,7 +1148,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint16_t in = (uint16_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1156,7 +1156,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint16_t in = (uint16_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u16_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u16_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1168,7 +1168,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT8_MAX);
             uint32_t in = (uint32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1176,7 +1176,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT8_MAX) + 1U);
             uint32_t in = (uint32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -1184,7 +1184,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint32_t in = (uint32_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1196,7 +1196,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT16_MAX);
             uint32_t in = (uint32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1204,7 +1204,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT16_MAX) + 1U);
             uint32_t in = (uint32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -1212,7 +1212,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint32_t in = (uint32_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1224,7 +1224,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT32_MAX);
             uint32_t in = (uint32_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1232,7 +1232,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT32_MAX) + 1U);
             uint32_t in = (uint32_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int32_t)SENTINEL_BYTE);
         }
@@ -1240,7 +1240,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint32_t in = (uint32_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1252,7 +1252,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT32_MAX);
             uint32_t in = (uint32_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1260,7 +1260,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint32_t in = (uint32_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1272,7 +1272,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint32_t in = (uint32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1280,7 +1280,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT8_MAX) + 1U);
             uint32_t in = (uint32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -1288,7 +1288,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint32_t in = (uint32_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1300,7 +1300,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint32_t in = (uint32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1308,7 +1308,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT16_MAX) + 1U);
             uint32_t in = (uint32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -1316,7 +1316,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint32_t in = (uint32_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1328,7 +1328,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT32_MAX);
             uint32_t in = (uint32_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1336,7 +1336,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint32_t in = (uint32_t)in_wide;
             uint64_t out = (uint64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u32_to_u64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u32_to_u64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1348,7 +1348,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT8_MAX);
             uint64_t in = (uint64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1356,7 +1356,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT8_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int8_t)SENTINEL_BYTE);
         }
@@ -1364,7 +1364,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint64_t in = (uint64_t)in_wide;
             int8_t out = (int8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1376,7 +1376,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT16_MAX);
             uint64_t in = (uint64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1384,7 +1384,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT16_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int16_t)SENTINEL_BYTE);
         }
@@ -1392,7 +1392,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint64_t in = (uint64_t)in_wide;
             int16_t out = (int16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1404,7 +1404,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT32_MAX);
             uint64_t in = (uint64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1412,7 +1412,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT32_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int32_t)SENTINEL_BYTE);
         }
@@ -1420,7 +1420,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint64_t in = (uint64_t)in_wide;
             int32_t out = (int32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1432,7 +1432,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(INT64_MAX);
             uint64_t in = (uint64_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1440,7 +1440,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(INT64_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i64(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (int64_t)SENTINEL_BYTE);
         }
@@ -1448,7 +1448,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(0);
             uint64_t in = (uint64_t)in_wide;
             int64_t out = (int64_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_i64(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_i64(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((int64_t)out == (int64_t)in_wide);
         }
@@ -1460,7 +1460,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT8_MAX);
             uint64_t in = (uint64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1468,7 +1468,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT8_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u8(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint8_t)SENTINEL_BYTE);
         }
@@ -1476,7 +1476,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint64_t in = (uint64_t)in_wide;
             uint8_t out = (uint8_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u8(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u8(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1488,7 +1488,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT16_MAX);
             uint64_t in = (uint64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1496,7 +1496,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT16_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u16(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint16_t)SENTINEL_BYTE);
         }
@@ -1504,7 +1504,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint64_t in = (uint64_t)in_wide;
             uint16_t out = (uint16_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u16(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u16(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1516,7 +1516,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)(UINT32_MAX);
             uint64_t in = (uint64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
@@ -1524,7 +1524,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = ((uint64_t)(UINT32_MAX) + 1U);
             uint64_t in = (uint64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u32(in, &out);
             assert(st == SAPI_STATUS_VALUE_OUT_OF_RANGE);
             assert(out == (uint32_t)SENTINEL_BYTE);
         }
@@ -1532,7 +1532,7 @@ static void test_fixed_width_pairs(void)
             uint64_t in_wide = (uint64_t)0;
             uint64_t in = (uint64_t)in_wide;
             uint32_t out = (uint32_t)SENTINEL_BYTE;
-            sapi_status_t st = sapi_cast_u64_to_u32(in, &out);
+            sapi_status_t st __attribute__((unused)) = sapi_cast_u64_to_u32(in, &out);
             assert(st == SAPI_STATUS_OK);
             assert((uint64_t)out == (uint64_t)in_wide);
         }
