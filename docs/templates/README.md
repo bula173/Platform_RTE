@@ -322,3 +322,18 @@ For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document 
 ---
 
 **Ready to build a SIL 4 railway system? Start with [01_SAFETY_PLAN.md](01_SAFETY_PLAN.md)** 🚂🛡️
+
+---
+
+## License & Community Contributions
+
+**These templates are shared under the Community Improvement License (CIL).**
+
+By using these templates:
+- ✅ You can use, modify, and distribute them freely
+- ✅ You must share improvements back to the community via Pull Request
+- ✅ Or at minimum, create a GitHub Issue with your feedback and experience
+
+**Why?** Railway safety is a shared responsibility. Your verification work, bug fixes, and Notified Body feedback help everyone build safer systems.
+
+See [LICENSE.md](../../LICENSE.md) for full terms.
