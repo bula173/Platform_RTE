@@ -17,3 +17,4 @@ docs/latex/
 
 # Local Claude tooling (skill cache, not project source)
 .claude/
+examples/2oo2-redundant-cluster/2oo2-demo
