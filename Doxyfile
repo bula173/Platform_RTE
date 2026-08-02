@@ -1,0 +1,32 @@
+PROJECT_NAME           = "Safe API Framework"
+PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference)"
+OUTPUT_DIRECTORY       = docs/api
+INPUT                  = include src docs/architecture
+FILE_PATTERNS          = *.h *.c *.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = README.md
+
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+GENERATE_XML           = NO
+
+EXTRACT_ALL             = NO
+EXTRACT_STATIC          = YES
+EXTRACT_PRIVATE         = NO
+HIDE_UNDOC_MEMBERS      = NO
+HIDE_UNDOC_CLASSES      = NO
+WARN_IF_UNDOCUMENTED    = YES
+WARN_IF_DOC_ERROR       = YES
+WARN_NO_PARAMDOC        = YES
+
+OPTIMIZE_OUTPUT_FOR_C   = YES
+TYPEDEF_HIDES_STRUCT    = YES
+SORT_MEMBER_DOCS        = NO
+SOURCE_BROWSER          = YES
+
+# Requirement-ID traceability tags (REQ-OAL-*, REQ-COMMON-*) are plain text
+# inside doxygen comments today; ALIASES below let them render as a
+# distinct highlighted note if a future pass wants @req{ID} instead of the
+# current inline "REQ-...:" convention. Not used yet - kept here as the
+# natural place to add it.
+# ALIASES               = "req{1}=\par Requirement:\n\1"

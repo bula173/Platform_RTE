@@ -1,0 +1,19 @@
+build/
+cmake-build-*/
+*.o
+*.obj
+*.out
+compile_commands.json
+.cache/
+
+# Doxygen output
+docs/html/
+docs/latex/
+
+# OS / editor cruft
+.DS_Store
+.vscode/
+*.swp
+
+# Local Claude tooling (skill cache, not project source)
+.claude/
