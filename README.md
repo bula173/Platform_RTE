@@ -93,6 +93,26 @@ ctest --preset coverage
 - `coverage` — Code coverage instrumentation
 - `clang` / `gcc` — Explicit compiler selection
 - `minimal` — Headers only, no tests
+- `linux-native` — Native Linux build (POSIX OAL)
+- `linux-release` — Linux release build
+- `qnx` — QNX RTOS cross-compilation
+- `qnx-release` — QNX RTOS release build
+
+### Cross-Compilation (Linux, QNX, etc.)
+
+For detailed cross-compilation instructions, see [CROSS_COMPILATION.md](docs/CROSS_COMPILATION.md).
+
+**Quick start — Linux:**
+```sh
+./examples/build-linux-native.sh
+```
+
+**Quick start — QNX RTOS:**
+```sh
+export QNX_HOST=/opt/qnx7.0.0/host/linux/x86_64
+export QNX_TARGET=/opt/qnx7.0.0/target/qnx7.0.0/x86_64
+./examples/build-qnx.sh
+```
 
 ### Manual CMake invocation
 

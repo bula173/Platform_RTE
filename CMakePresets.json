@@ -109,6 +109,52 @@
         "SAFEAPI_BUILD_TESTS": "OFF",
         "SAFEAPI_WARNINGS_AS_ERRORS": "OFF"
       }
+    },
+    {
+      "name": "linux-native",
+      "description": "Native Linux build (POSIX OAL)",
+      "inherits": "debug",
+      "displayName": "Linux (Native)",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-Linux.cmake"
+      }
+    },
+    {
+      "name": "linux-release",
+      "description": "Linux release build (optimized)",
+      "inherits": "release",
+      "displayName": "Linux (Release)",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-Linux.cmake"
+      }
+    },
+    {
+      "name": "qnx",
+      "description": "QNX RTOS target build (requires QNX_HOST and QNX_TARGET environment variables)",
+      "inherits": "debug",
+      "displayName": "QNX RTOS",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
+        "SAFEAPI_BUILD_TESTS": "OFF"
+      },
+      "environment": {
+        "QNX_HOST": "${env:QNX_HOST}",
+        "QNX_TARGET": "${env:QNX_TARGET}"
+      }
+    },
+    {
+      "name": "qnx-release",
+      "description": "QNX RTOS release build",
+      "inherits": "release",
+      "displayName": "QNX RTOS (Release)",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
+        "SAFEAPI_BUILD_TESTS": "OFF"
+      },
+      "environment": {
+        "QNX_HOST": "${env:QNX_HOST}",
+        "QNX_TARGET": "${env:QNX_TARGET}"
+      }
     }
   ],
   "buildPresets": [
@@ -158,6 +204,30 @@
       "name": "gcc",
       "configurePreset": "gcc",
       "description": "Build with GCC",
+      "jobs": 0
+    },
+    {
+      "name": "linux-native",
+      "configurePreset": "linux-native",
+      "description": "Build for native Linux (POSIX OAL)",
+      "jobs": 0
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "description": "Build for Linux release",
+      "jobs": 0
+    },
+    {
+      "name": "qnx",
+      "configurePreset": "qnx",
+      "description": "Build for QNX RTOS",
+      "jobs": 0
+    },
+    {
+      "name": "qnx-release",
+      "configurePreset": "qnx-release",
+      "description": "Build for QNX RTOS release",
       "jobs": 0
     }
   ],
@@ -209,6 +279,18 @@
       "name": "coverage",
       "configurePreset": "coverage",
       "description": "Run tests with coverage",
+      "inherits": "default"
+    },
+    {
+      "name": "linux-native",
+      "configurePreset": "linux-native",
+      "description": "Run tests (Linux native)",
+      "inherits": "default"
+    },
+    {
+      "name": "linux-release",
+      "configurePreset": "linux-release",
+      "description": "Run tests (Linux release)",
       "inherits": "default"
     }
   ]
