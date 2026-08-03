@@ -29,7 +29,7 @@ include(CompilerWarnings)
 # library target (safeapi::<feature>), built and linkable independently.
 # Order matters only where a feature links another (string -> buffer, cast).
 foreach(feature status types buffer cast safestate string
-                timer nvm memory task ipc log reboot watchdog)
+                timer nvm memory task ipc log reboot watchdog vital_channel)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
     endif()
