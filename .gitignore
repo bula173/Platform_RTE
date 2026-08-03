@@ -9,6 +9,7 @@ compile_commands.json
 # Doxygen output
 docs/html/
 docs/latex/
+docs/api/
 
 # OS / editor cruft
 .DS_Store

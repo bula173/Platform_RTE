@@ -1,0 +1,67 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches:
+      - master
+      - main
+    paths:
+      - 'include/safeapi/**/*.h'
+      - 'include/safeapi/**/*.md'
+      - 'Doxyfile'
+      - '.github/workflows/generate-docs.yml'
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - 'include/safeapi/**/*.h'
+      - 'include/safeapi/**/*.md'
+      - 'Doxyfile'
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Doxygen
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+          doxygen --version
+
+      - name: Generate Documentation
+        run: |
+          doxygen Doxyfile
+          echo "Documentation generated successfully"
+          ls -lah docs/api/html/ | head -20
+
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-documentation
+          path: docs/api/html/
+          retention-days: 30
+
+      - name: Deploy to GitHub Pages (on master/main push only)
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/api/html/
+          cname: safeapiframework.example.com
+
+      - name: Comment on PR with doc link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📚 **Documentation Preview**\n\nHTML documentation generated. Download the artifact to review:\n- Artifact name: `html-documentation`\n- Format: Doxygen-generated HTML\n- Status pages: Check the "Artifacts" tab'
+            })
