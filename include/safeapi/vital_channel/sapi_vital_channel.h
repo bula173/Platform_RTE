@@ -98,6 +98,9 @@ typedef struct {
     void *context;
 } sapi_vital_channel_config_t;
 
+/** @brief Maximum number of redundant channels supported */
+#define SAPI_VITAL_CHANNEL_MAX_CHANNELS 8
+
 /**
  * @brief Storage for vital channel instance (opaque to caller)
  *
@@ -106,7 +109,7 @@ typedef struct {
  */
 typedef struct {
     sapi_vital_channel_config_t config;
-    sapi_ipc_request_reply_t **channels;
+    void **channels;  /* Opaque channel handles (IPC or other transport) */
     uint32_t channel_count;
     sapi_vital_channel_health_t health[SAPI_VITAL_CHANNEL_MAX_CHANNELS];
 } sapi_vital_channel_storage_t;
@@ -122,11 +125,12 @@ typedef sapi_vital_channel_storage_t sapi_vital_channel_t;
  * @brief Initialize a vital (redundant) channel with voting logic
  *
  * Initializes a pre-allocated vital channel that wraps multiple underlying
- * IPC channels and performs voting-based arbitration on all sends and receives.
+ * channels (IPC or other transport) and performs voting-based arbitration
+ * on all sends and receives.
  *
  * @param[out] storage          Pre-allocated storage for the vital channel (must not be NULL)
  * @param[in]  config           Channel configuration (must not be NULL)
- * @param[in]  channels         Array of underlying IPC channels (must not be NULL)
+ * @param[in]  channels         Array of opaque channel handles (must not be NULL)
  * @param[in]  channel_count    Number of channels in the array
  *
  * @return SAPI_STATUS_OK on success
@@ -140,12 +144,12 @@ typedef sapi_vital_channel_storage_t sapi_vital_channel_t;
  * @post On success, storage contains initialized vital channel state
  *
  * @safety No dynamic memory allocation; caller provides storage.
- *         This function performs no IPC operations; all channels must be
+ *         This function performs no I/O operations; all channels must be
  *         pre-configured and operational before calling this function.
  */
 sapi_status_t sapi_vital_channel_init(sapi_vital_channel_t *storage,
                                       const sapi_vital_channel_config_t *config,
-                                      sapi_ipc_request_reply_t **channels,
+                                      void **channels,
                                       uint32_t channel_count);
 
 /**
