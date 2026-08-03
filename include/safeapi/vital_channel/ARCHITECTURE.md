@@ -1,6 +1,8 @@
 /**
  * @page vital_channel_architecture Vital Channel Communication Architecture
  *
+ * @see vital_channel_topologies for common redundancy patterns (2oo2, 2oo3, hot standby, mirroring)
+ *
  * @section overview Overview
  *
  * **Vital Channels** provide redundancy voting for safety-critical inter-process communication.
