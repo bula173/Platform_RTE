@@ -20,7 +20,7 @@ static const sapi_nvm_backend_t g_mock_backend __attribute__((unused)) = {
 int main(void)
 {
     sapi_nvm_storage_t storage __attribute__((unused));
-    sapi_nvm_handle_t handle = NULL;
+    sapi_nvm_handle_t handle __attribute__((unused)) = NULL;
 
     assert(sapi_nvm_open(NULL, NULL, NULL) == SAPI_STATUS_INVALID_PARAM);
 
@@ -29,7 +29,7 @@ int main(void)
     bad_config.region_size = 128U;
     assert(sapi_nvm_open(&storage, &bad_config, &handle) == SAPI_STATUS_INVALID_PARAM);
 
-    sapi_nvm_config_t config = {0};
+    sapi_nvm_config_t config __attribute__((unused)) = {0};
     config.region_name = "train_db";
     config.region_size = 128U;
 
@@ -42,7 +42,7 @@ int main(void)
     assert(handle != NULL);
 
     /* read/write/sync/close all have NULL vtable slots in this mock. */
-    unsigned char buf[4];
+    unsigned char buf[4] __attribute__((unused));
     assert(sapi_nvm_read(handle, 0U, buf, sizeof(buf)) == SAPI_STATUS_NOT_SUPPORTED);
     assert(sapi_nvm_write(handle, 0U, buf, sizeof(buf)) == SAPI_STATUS_NOT_SUPPORTED);
     assert(sapi_nvm_sync(handle) == SAPI_STATUS_NOT_SUPPORTED);

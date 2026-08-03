@@ -1545,7 +1545,7 @@ static void test_size_t_pairs(void)
      * one past it must fail (meaningful on any host, since UINT8/16/32_MAX
      * are always representable in size_t). */
     {
-        uint8_t out8 = (uint8_t)SENTINEL_BYTE;
+        uint8_t out8 __attribute__((unused)) = (uint8_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_u8((size_t)UINT8_MAX, &out8) == SAPI_STATUS_OK);
         assert(out8 == UINT8_MAX);
         out8 = (uint8_t)SENTINEL_BYTE;
@@ -1553,7 +1553,7 @@ static void test_size_t_pairs(void)
         assert(out8 == (uint8_t)SENTINEL_BYTE);
     }
     {
-        uint16_t out16 = (uint16_t)SENTINEL_BYTE;
+        uint16_t out16 __attribute__((unused)) = (uint16_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_u16((size_t)UINT16_MAX, &out16) == SAPI_STATUS_OK);
         assert(out16 == UINT16_MAX);
         out16 = (uint16_t)SENTINEL_BYTE;
@@ -1561,7 +1561,7 @@ static void test_size_t_pairs(void)
         assert(out16 == (uint16_t)SENTINEL_BYTE);
     }
     {
-        uint32_t out32 = (uint32_t)SENTINEL_BYTE;
+        uint32_t out32 __attribute__((unused)) = (uint32_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_u32((size_t)UINT32_MAX, &out32) == SAPI_STATUS_OK);
         assert(out32 == UINT32_MAX);
         out32 = (uint32_t)SENTINEL_BYTE;
@@ -1570,7 +1570,7 @@ static void test_size_t_pairs(void)
     }
     /* size_t -> u64: always safe per ADR-003's size_t<=64bit assumption. */
     {
-        uint64_t out64 = 0U;
+        uint64_t out64 __attribute__((unused)) = 0U;
         assert(sapi_cast_size_to_u64((size_t)42, &out64) == SAPI_STATUS_OK);
         assert(out64 == 42U);
     }
@@ -1578,7 +1578,7 @@ static void test_size_t_pairs(void)
      * inputs are impossible since size_t is unsigned, so no lower-bound
      * failure case exists for this direction. */
     {
-        int8_t outi8 = (int8_t)SENTINEL_BYTE;
+        int8_t outi8 __attribute__((unused)) = (int8_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_i8((size_t)INT8_MAX, &outi8) == SAPI_STATUS_OK);
         assert(outi8 == INT8_MAX);
         outi8 = (int8_t)SENTINEL_BYTE;
@@ -1586,7 +1586,7 @@ static void test_size_t_pairs(void)
         assert(outi8 == (int8_t)SENTINEL_BYTE);
     }
     {
-        int16_t outi16 = (int16_t)SENTINEL_BYTE;
+        int16_t outi16 __attribute__((unused)) = (int16_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_i16((size_t)INT16_MAX, &outi16) == SAPI_STATUS_OK);
         assert(outi16 == INT16_MAX);
         outi16 = (int16_t)SENTINEL_BYTE;
@@ -1594,7 +1594,7 @@ static void test_size_t_pairs(void)
         assert(outi16 == (int16_t)SENTINEL_BYTE);
     }
     {
-        int32_t outi32 = (int32_t)SENTINEL_BYTE;
+        int32_t outi32 __attribute__((unused)) = (int32_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_i32((size_t)INT32_MAX, &outi32) == SAPI_STATUS_OK);
         assert(outi32 == INT32_MAX);
         outi32 = (int32_t)SENTINEL_BYTE;
@@ -1602,7 +1602,7 @@ static void test_size_t_pairs(void)
         assert(outi32 == (int32_t)SENTINEL_BYTE);
     }
     {
-        int64_t outi64 = (int64_t)SENTINEL_BYTE;
+        int64_t outi64 __attribute__((unused)) = (int64_t)SENTINEL_BYTE;
         assert(sapi_cast_size_to_i64((size_t)INT64_MAX, &outi64) == SAPI_STATUS_OK);
         assert(outi64 == INT64_MAX);
         outi64 = (int64_t)SENTINEL_BYTE;
@@ -1618,7 +1618,7 @@ static void test_size_t_pairs(void)
      * compiled out via #if SIZE_MAX < UINT64_MAX on this host, which is
      * exactly the correct behavior for a 64-bit size_t). */
     {
-        size_t outsz = 0U;
+        size_t outsz __attribute__((unused)) = 0U;
         assert(sapi_cast_u8_to_size(UINT8_MAX, &outsz) == SAPI_STATUS_OK);
         assert(outsz == (size_t)UINT8_MAX);
         assert(sapi_cast_u16_to_size(UINT16_MAX, &outsz) == SAPI_STATUS_OK);
@@ -1630,7 +1630,7 @@ static void test_size_t_pairs(void)
     }
     /* signed -> size_t: negative values must always be rejected. */
     {
-        size_t outsz = 123U;
+        size_t outsz __attribute__((unused)) = 123U;
         assert(sapi_cast_i8_to_size((int8_t)-1, &outsz) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
         assert(outsz == 123U);
         assert(sapi_cast_i16_to_size((int16_t)-1, &outsz) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
@@ -1646,7 +1646,7 @@ static void test_size_t_pairs(void)
 
 static void test_null_and_ok_smoke(void)
 {
-    uint16_t out = 0U;
+    uint16_t out __attribute__((unused)) = 0U;
     assert(sapi_cast_u32_to_u16(100U, NULL) == SAPI_STATUS_INVALID_PARAM);
     assert(sapi_cast_u32_to_u16(100U, &out) == SAPI_STATUS_OK);
     assert(out == 100U);

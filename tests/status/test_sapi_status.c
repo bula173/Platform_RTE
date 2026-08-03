@@ -16,7 +16,7 @@ int main(void)
     size_t i;
     for (i = 0; i < sizeof(codes) / sizeof(codes[0]); ++i)
     {
-        const char *s = sapi_status_to_string(codes[i]);
+        const char *s __attribute__((unused)) = sapi_status_to_string(codes[i]);
         assert(s != NULL);
         assert(strcmp(s, "UNKNOWN_STATUS") != 0);
     }

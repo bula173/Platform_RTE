@@ -43,11 +43,11 @@ static void diverting_handler(sapi_safestate_level_t level,
 
 static int g_degraded_calls;
 
-static void returning_handler(sapi_safestate_level_t level,
-                               sapi_safestate_reason_t reason,
-                               const char *file,
-                               int32_t line,
-                               const char *message)
+static void returning_handler(sapi_safestate_level_t level __attribute__((unused)),
+                               sapi_safestate_reason_t reason __attribute__((unused)),
+                               const char *file __attribute__((unused)),
+                               int32_t line __attribute__((unused)),
+                               const char *message __attribute__((unused)))
 {
     (void)file;
     (void)line;
