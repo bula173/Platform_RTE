@@ -3,7 +3,7 @@ add_library(safeapi_vital_channel STATIC
 )
 
 target_link_libraries(safeapi_vital_channel
-    PUBLIC safeapi::status safeapi::log safeapi::safestate safeapi::ipc_request_reply
+    PUBLIC safeapi::status safeapi::log safeapi::safestate
 )
 
 target_include_directories(safeapi_vital_channel
