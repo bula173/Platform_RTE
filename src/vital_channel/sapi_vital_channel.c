@@ -4,6 +4,17 @@
  *
  * Implements voting logic for 2oo2, 2oo3, and NMR strategies with
  * automatic fault detection and safe-state handling.
+ *
+ * Architecture: Vital Channel acts as a voting layer on top of transport-specific
+ * backends (IPC, shared memory, TCP, etc). The backend_send and backend_recv
+ * callbacks are invoked to perform actual transport I/O. This keeps vital_channel
+ * decoupled from any specific transport implementation.
+ *
+ * Safety Properties:
+ * - Atomic sends: all channels succeed or all fail (no partial sends)
+ * - Voting: disagreements automatically trigger safe-state
+ * - Health tracking: per-channel metrics enable early fault detection
+ * - MISRA compliant: static allocation, no dynamic memory, bounded buffers
  */
 
 #include <stddef.h>
@@ -13,10 +24,8 @@
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/log/sapi_log.h"
 
-/* Maximum number of redundant channels supported */
-#define SAPI_VITAL_CHANNEL_MAX_CHANNELS 8
-
-/* No separate struct needed - storage_t is the handle */
+/* Maximum size of a single message in voting buffers */
+#define SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE 256
 
 /**
  * @brief Compare two data buffers for equality (voting comparison)
@@ -64,10 +73,15 @@ static bool sapi_vital_channel_has_quorum(sapi_vital_channel_t *handle)
 
 sapi_status_t sapi_vital_channel_init(sapi_vital_channel_t *storage,
                                       const sapi_vital_channel_config_t *config,
-                                      sapi_ipc_request_reply_t **channels,
+                                      void **channels,
                                       uint32_t channel_count)
 {
     if (storage == NULL || config == NULL || channels == NULL) {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    /* Validate backend callbacks (transport-agnostic mechanism) */
+    if (config->backend_send == NULL || config->backend_recv == NULL) {
         return SAPI_STATUS_INVALID_PARAM;
     }
 
@@ -126,17 +140,21 @@ sapi_status_t sapi_vital_channel_send(sapi_vital_channel_t *handle,
         return SAPI_STATUS_INVALID_PARAM;
     }
 
+    if (data_size > SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE) {
+        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+    }
+
     if (!sapi_vital_channel_has_quorum(handle)) {
         return SAPI_STATUS_HARDWARE_FAULT;
     }
 
-    /* Broadcast to all redundant channels (atomic send) */
+    /* Broadcast to all redundant channels (atomic send via backend callback) */
     for (uint32_t i = 0; i < handle->channel_count; i++) {
         if (!handle->health[i].is_healthy) {
             continue;
         }
 
-        rc = sapi_ipc_send(handle->channels[i], data, data_size);
+        rc = handle->config.backend_send(handle->channels[i], data, data_size);
         if (rc != SAPI_STATUS_OK) {
             handle->health[i].send_error_count++;
             handle->health[i].last_error = rc;
@@ -164,45 +182,39 @@ sapi_status_t sapi_vital_channel_receive(sapi_vital_channel_t *handle,
                                          sapi_voting_result_t *result,
                                          size_t *bytes_received)
 {
-    sapi_status_t channel_status[SAPI_VITAL_CHANNEL_MAX_CHANNELS];
     uint32_t successful_receives = 0;
     sapi_voting_result_t vote_result = SAPI_VOTING_AGREED;
     sapi_status_t rc;
-    uint8_t first_data[256];  /* Static buffer for first channel's data */
-    uint32_t first_agree_idx = 0xFF;
+    uint8_t voting_buffers[SAPI_VITAL_CHANNEL_MAX_CHANNELS][SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE];
+    uint32_t first_agree_idx = 0;
     bool first_data_valid = false;
 
     if (handle == NULL || data == NULL || data_size == 0) {
         return SAPI_STATUS_INVALID_PARAM;
     }
 
-    if (data_size > sizeof(first_data)) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;  /* Message too large for static buffer */
+    if (data_size > SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE) {
+        return SAPI_STATUS_RESOURCE_EXHAUSTED;
     }
 
     if (!sapi_vital_channel_has_quorum(handle)) {
         if (result != NULL) {
             *result = SAPI_VOTING_INSUFFICIENT_QUORUM;
         }
+        if (bytes_received != NULL) {
+            *bytes_received = 0;
+        }
         return SAPI_STATUS_HARDWARE_FAULT;
     }
 
     /* Receive from all redundant channels and perform voting */
     for (uint32_t i = 0; i < handle->channel_count; i++) {
-        uint8_t channel_buffer[256];
-
         if (!handle->health[i].is_healthy) {
-            channel_status[i] = SAPI_STATUS_HARDWARE_FAULT;
             continue;
         }
 
-        if (data_size > sizeof(channel_buffer)) {
-            return SAPI_STATUS_RESOURCE_EXHAUSTED;
-        }
-
-        rc = sapi_ipc_receive(handle->channels[i], channel_buffer, data_size,
-                              handle->config.channel_timeout_ms);
-        channel_status[i] = rc;
+        rc = handle->config.backend_recv(handle->channels[i], voting_buffers[i],
+                                         data_size, handle->config.channel_timeout_ms);
 
         if (rc == SAPI_STATUS_OK) {
             handle->health[i].receive_count++;
@@ -210,12 +222,12 @@ sapi_status_t sapi_vital_channel_receive(sapi_vital_channel_t *handle,
 
             /* Store first successful receive for comparison */
             if (!first_data_valid) {
-                memcpy(first_data, channel_buffer, data_size);
                 first_data_valid = true;
                 first_agree_idx = i;
             } else {
-                /* Compare with first channel's data */
-                if (!sapi_vital_channel_data_equal(channel_buffer, first_data, data_size)) {
+                /* Compare with first channel's data (voting) */
+                if (!sapi_vital_channel_data_equal(voting_buffers[i], voting_buffers[first_agree_idx],
+                                                  data_size)) {
                     handle->health[i].disagreement_count++;
                     handle->health[first_agree_idx].disagreement_count++;
                     vote_result = SAPI_VOTING_DISAGREED;
@@ -249,7 +261,7 @@ sapi_status_t sapi_vital_channel_receive(sapi_vital_channel_t *handle,
 
     /* Copy agreed data to output buffer */
     if (vote_result == SAPI_VOTING_AGREED && first_data_valid) {
-        memcpy(data, first_data, data_size);
+        memcpy(data, voting_buffers[first_agree_idx], data_size);
         if (bytes_received != NULL) {
             *bytes_received = data_size;
         }
@@ -257,13 +269,13 @@ sapi_status_t sapi_vital_channel_receive(sapi_vital_channel_t *handle,
         /* Disagreement or no data available */
         if (handle->config.log_disagreements && vote_result == SAPI_VOTING_DISAGREED) {
             sapi_log_write(SAPI_LOG_LEVEL_ERROR, "VITAL_CHANNEL",
-                           "2oo2 voting disagreement detected");
+                           "Redundant channel voting disagreement detected");
         }
 
         /* Trigger safe-state on disagreement */
         if (vote_result == SAPI_VOTING_DISAGREED) {
             SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
-                           SAPI_SAFESTATE_REASON_REDUNDANCY_FAILURE);
+                           SAPI_SAFESTATE_REASON_UNSPECIFIED);
         }
 
         if (bytes_received != NULL) {

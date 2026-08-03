@@ -18,7 +18,6 @@
 #include <stddef.h>
 
 #include "safeapi/status/sapi_status.h"
-#include "safeapi/ipc/sapi_ipc_request_reply.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,6 +76,42 @@ typedef struct {
 } sapi_vital_channel_health_t;
 
 /**
+ * @brief Backend send callback (sends data to a single redundant channel)
+ *
+ * Called by vital_channel_send() to dispatch to each underlying transport.
+ *
+ * @param[in] channel       Opaque handle to the channel (void*)
+ * @param[in] data          Data to send
+ * @param[in] data_size     Size of data in bytes
+ *
+ * @return SAPI_STATUS_OK on success
+ * @return SAPI_STATUS_TIMEOUT if operation times out
+ * @return SAPI_STATUS_HARDWARE_FAULT on send error
+ */
+typedef sapi_status_t (*sapi_vital_channel_send_fn)(void *channel,
+                                                     const void *data,
+                                                     size_t data_size);
+
+/**
+ * @brief Backend receive callback (receives data from a single redundant channel)
+ *
+ * Called by vital_channel_receive() to read from each underlying transport.
+ *
+ * @param[in]  channel       Opaque handle to the channel (void*)
+ * @param[out] data          Buffer to receive data
+ * @param[in]  data_size     Size of data buffer
+ * @param[in]  timeout_ms    Timeout in milliseconds
+ *
+ * @return SAPI_STATUS_OK on success
+ * @return SAPI_STATUS_TIMEOUT if operation times out
+ * @return SAPI_STATUS_HARDWARE_FAULT on receive error
+ */
+typedef sapi_status_t (*sapi_vital_channel_recv_fn)(void *channel,
+                                                     void *data,
+                                                     size_t data_size,
+                                                     uint32_t timeout_ms);
+
+/**
  * @brief Vital channel configuration
  *
  * Specifies how the vital channel redundancy is configured.
@@ -96,6 +131,10 @@ typedef struct {
     void (*on_disagreement)(void *context, const sapi_voting_result_t *result);
     /** User context for disagreement callback */
     void *context;
+    /** Backend send function (must not be NULL) */
+    sapi_vital_channel_send_fn backend_send;
+    /** Backend receive function (must not be NULL) */
+    sapi_vital_channel_recv_fn backend_recv;
 } sapi_vital_channel_config_t;
 
 /** @brief Maximum number of redundant channels supported */
@@ -128,16 +167,23 @@ typedef sapi_vital_channel_storage_t sapi_vital_channel_t;
  * channels (IPC or other transport) and performs voting-based arbitration
  * on all sends and receives.
  *
+ * The caller must configure backend_send and backend_recv callbacks in the
+ * config to specify how to invoke transport-specific operations. This design
+ * allows vital_channel to remain transport-agnostic (works with IPC, shared
+ * memory, TCP, or any other mechanism).
+ *
  * @param[out] storage          Pre-allocated storage for the vital channel (must not be NULL)
- * @param[in]  config           Channel configuration (must not be NULL)
+ * @param[in]  config           Channel configuration with callbacks (must not be NULL)
  * @param[in]  channels         Array of opaque channel handles (must not be NULL)
  * @param[in]  channel_count    Number of channels in the array
  *
  * @return SAPI_STATUS_OK on success
- * @return SAPI_STATUS_INVALID_PARAM if parameters are invalid
+ * @return SAPI_STATUS_INVALID_PARAM if parameters are invalid or callbacks are NULL
  *
  * @pre storage != NULL
  * @pre config != NULL
+ * @pre config->backend_send != NULL
+ * @pre config->backend_recv != NULL
  * @pre channels != NULL
  * @pre channel_count >= 2 (at minimum 2 redundant channels required)
  * @pre channel_count <= SAPI_VITAL_CHANNEL_MAX_CHANNELS
