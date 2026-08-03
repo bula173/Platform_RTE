@@ -5,9 +5,9 @@
 
 static void test_copy_and_cstr(void)
 {
-    char storage[8];
-    sapi_string_t s;
-    const char *cstr;
+    char storage[8] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
+    const char *cstr __attribute__((unused));
 
     assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
     assert(sapi_string_length(&s) == 0U);
@@ -22,8 +22,8 @@ static void test_copy_and_cstr(void)
     assert(sapi_string_copy(&s, "toolongtofit") == SAPI_STATUS_RESOURCE_EXHAUSTED);
 
     /* c_str fails when there's no spare byte for the terminator. */
-    char tight_storage[3];
-    sapi_string_t tight;
+    char tight_storage[3] __attribute__((unused));
+    sapi_string_t tight __attribute__((unused));
     assert(sapi_string_init(&tight, tight_storage, sizeof(tight_storage)) == SAPI_STATUS_OK);
     assert(sapi_string_copy(&tight, "abc") == SAPI_STATUS_OK); /* fills capacity exactly */
     assert(sapi_string_c_str(&tight, &cstr) == SAPI_STATUS_RESOURCE_EXHAUSTED);
@@ -31,8 +31,8 @@ static void test_copy_and_cstr(void)
 
 static void test_copy_n_and_concat(void)
 {
-    char storage[8];
-    sapi_string_t s;
+    char storage[8] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
 
     assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
     assert(sapi_string_copy_n(&s, "ab\0cd", 5U) == SAPI_STATUS_OK);
@@ -52,11 +52,11 @@ static void test_copy_n_and_concat(void)
 
 static void test_compare(void)
 {
-    char sa[8];
-    char sb[8];
-    sapi_string_t a;
-    sapi_string_t b;
-    int32_t cmp;
+    char sa[8] __attribute__((unused));
+    char sb[8] __attribute__((unused));
+    sapi_string_t a __attribute__((unused));
+    sapi_string_t b __attribute__((unused));
+    int32_t cmp __attribute__((unused));
 
     assert(sapi_string_init(&a, sa, sizeof(sa)) == SAPI_STATUS_OK);
     assert(sapi_string_init(&b, sb, sizeof(sb)) == SAPI_STATUS_OK);
