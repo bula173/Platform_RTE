@@ -76,7 +76,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload MISRA report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: misra-report
@@ -120,6 +120,11 @@ jobs:
         run: |
           presets=$(cmake --list-presets | grep "^  \"" | sed 's/.*"\([^"]*\)".*/\1/')
           for preset in $presets; do
+            # Skip QNX presets on Linux (no QNX toolchain available)
+            if [[ "$preset" == *"qnx"* ]]; then
+              echo "Skipping QNX preset: $preset (not available on Linux)"
+              continue
+            fi
             echo "Testing preset: $preset"
             rm -rf build
             if cmake --preset "$preset" 2>&1 | grep -q "error"; then
