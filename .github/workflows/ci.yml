@@ -99,7 +99,12 @@ jobs:
         run: |
           echo "Checking code formatting with clang-format..."
           find include src tests -name "*.h" -o -name "*.c" | while read f; do
-            clang-format --dry-run --Werror "$f" || echo "Format issue in $f"
+            if ! clang-format --dry-run "$f" | grep -q "^"; then
+              echo "OK: $f"
+            else
+              echo "Format issue in $f (see details below)"
+              clang-format --dry-run "$f" | head -5
+            fi
           done
         continue-on-error: true
 

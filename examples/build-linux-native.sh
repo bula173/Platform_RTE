@@ -30,23 +30,22 @@ fi
 
 # Create build directory
 mkdir -p "$BUILD_DIR"
-cd "$BUILD_DIR"
 
-# Configure with CMake preset
+# Configure with CMake preset (run from source dir to find CMakePresets.json)
 if [ "$BUILD_TYPE" = "release" ]; then
     echo "Configuring with linux-release preset..."
-    cmake --preset linux-release -S "$SCRIPT_DIR"
+    cmake --preset linux-release -S "$SCRIPT_DIR" -B "$BUILD_DIR"
     echo "Building..."
-    cmake --build --preset linux-release
+    cmake --build "$BUILD_DIR"
     echo "Running tests..."
-    ctest --preset linux-release
+    cd "$BUILD_DIR" && ctest
 else
     echo "Configuring with linux-native preset..."
-    cmake --preset linux-native -S "$SCRIPT_DIR"
+    cmake --preset linux-native -S "$SCRIPT_DIR" -B "$BUILD_DIR"
     echo "Building..."
-    cmake --build --preset linux-native
+    cmake --build "$BUILD_DIR"
     echo "Running tests..."
-    ctest --preset linux-native
+    cd "$BUILD_DIR" && ctest
 fi
 
 echo ""
