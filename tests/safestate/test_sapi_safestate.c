@@ -26,6 +26,7 @@ static int32_t g_captured_line;
 static const char *g_captured_message;
 static int g_handler_calls;
 
+__attribute__((unused))
 static void diverting_handler(sapi_safestate_level_t level,
                                sapi_safestate_reason_t reason,
                                const char *file,
@@ -43,6 +44,7 @@ static void diverting_handler(sapi_safestate_level_t level,
 
 static int g_degraded_calls;
 
+__attribute__((unused))
 static void returning_handler(sapi_safestate_level_t level __attribute__((unused)),
                                sapi_safestate_reason_t reason __attribute__((unused)),
                                const char *file __attribute__((unused)),
