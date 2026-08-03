@@ -77,12 +77,12 @@ static void test_compare(void)
 
 static void test_find(void)
 {
-    char storage[16];
-    char needle_storage[4];
-    sapi_string_t s;
-    sapi_string_t needle;
-    bool found;
-    size_t idx;
+    char storage[16] __attribute__((unused));
+    char needle_storage[4] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
+    sapi_string_t needle __attribute__((unused));
+    bool found __attribute__((unused));
+    size_t idx __attribute__((unused));
 
     assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
     assert(sapi_string_copy(&s, "hello world") == SAPI_STATUS_OK);
@@ -107,11 +107,11 @@ static void test_find(void)
 
 static void test_split(void)
 {
-    char storage[16];
-    sapi_string_t s;
-    size_t cursor = 0U;
-    sapi_const_buffer_t token;
-    bool has_token;
+    char storage[16] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
+    size_t cursor __attribute__((unused)) = 0U;
+    sapi_const_buffer_t token __attribute__((unused));
+    bool has_token __attribute__((unused));
 
     assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
     assert(sapi_string_copy(&s, "a,bb,ccc") == SAPI_STATUS_OK);
@@ -137,12 +137,12 @@ static void test_split(void)
 
 static void test_numeric(void)
 {
-    char storage[24];
-    sapi_string_t s;
-    uint32_t u32;
-    int32_t i32;
-    uint64_t u64;
-    int64_t i64;
+    char storage[24] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
+    uint32_t u32 __attribute__((unused));
+    int32_t i32 __attribute__((unused));
+    uint64_t u64 __attribute__((unused));
+    int64_t i64 __attribute__((unused));
 
     assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
 
