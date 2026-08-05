@@ -41,7 +41,7 @@ include(CompilerWarnings)
 # vital_channel + checkpoint is an open decision, not made by this file.
 foreach(feature status types buffer cast safestate string
                 timer nvm memory task ipc log reboot watchdog checksum
-                vital_channel clocksync checkpoint)
+                vital_channel clocksync checkpoint posix_backend)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
     endif()
@@ -131,6 +131,7 @@ install(TARGETS
     safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
     safeapi_watchdog safeapi_appmanager
     safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint
+    $<$<TARGET_EXISTS:safeapi_posix_backend>:safeapi_posix_backend>
     ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
     LIBRARY DESTINATION ${LIB_INSTALL_DIR}
     RUNTIME DESTINATION bin
