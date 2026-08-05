@@ -62,6 +62,9 @@ typedef uint16_t sapi_safestate_reason_t;
 #define SAPI_SAFESTATE_REASON_UNSPECIFIED    ((sapi_safestate_reason_t)0U)
 /** Set by SAPI_ASSERT() when its condition evaluates to false. */
 #define SAPI_SAFESTATE_REASON_ASSERT_FAILED  ((sapi_safestate_reason_t)1U)
+/** Set by sapi_channel_checkpoint() (ADR-017) when fewer than
+ *  expected_node_count peers confirm a checkpoint within max_delay_ms. */
+#define SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT ((sapi_safestate_reason_t)2U)
 /** First reason code value applications are free to define their own meaning for. */
 #define SAPI_SAFESTATE_REASON_APPLICATION_BASE ((sapi_safestate_reason_t)4096U)
 

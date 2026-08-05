@@ -216,6 +216,30 @@ than an individual `REQ-*` tag on every function:
 - No recursion, no uninitialized variables, no standard `errno`/`assert()`
   in production paths (`SAPI_ASSERT`, §1.4, is the replacement).
 
+## 3a. Distributed channel synchronization (ADR-017)
+
+Not yet backfilled into this document for every module added since the
+sections above were written (`sapi_watchdog`, `sapi_checksum`,
+`sapi_vital_channel`, `sapi_appmanager` currently have no REQ-tagged
+entries here despite existing in `include/`/`src/` — a pre-existing gap,
+not introduced by this section). This section covers the two modules
+added by ADR-017.
+
+### 3a.1 Checkpoint rendezvous — `sapi_checkpoint.h` (ADR-017 §2.2)
+
+| ID | Requirement |
+|---|---|
+| REQ-CHECKPOINT-001 | `sapi_channel_checkpoint()` shall never block longer than `config->max_delay_ms`. |
+| REQ-CHECKPOINT-002 | A checkpoint-arrival reply that fails CRC verification or carries a different `checkpoint_id` shall not count toward `expected_node_count`. |
+| REQ-CHECKPOINT-003 | If fewer than `expected_node_count` valid replies arrive within `max_delay_ms`, `sapi_channel_checkpoint()` shall call `sapi_safestate_enter()` at `SAPI_SAFESTATE_LEVEL_SAFE` with `SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT` before returning `SAPI_STATUS_TIMEOUT`. |
+
+### 3a.2 Clock synchronization (diagnostic only) — `sapi_clocksync.h` (ADR-017 §2.3)
+
+| ID | Requirement |
+|---|---|
+| REQ-CLOCKSYNC-001 | `sapi_clocksync_get_offset_ms()` and `sapi_clocksync_get_quality()` shall return `SAPI_STATUS_NOT_INITIALIZED` if no backend has been registered. |
+| REQ-CLOCKSYNC-002 | This module shall never be called from, or influence the outcome of, `sapi_channel_checkpoint()` or any other vital comparison — checkpoint-ID rendezvous, not clock agreement, is the basis of comparison correctness (ADR-017 §2.3). |
+
 ## 4. Traceability
 
 Every `REQ-*` ID in this document appears verbatim in the corresponding

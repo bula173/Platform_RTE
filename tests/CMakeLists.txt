@@ -18,3 +18,5 @@ safeapi_add_test(test_sapi_timer          timer/test_sapi_timer.c              s
 safeapi_add_test(test_sapi_nvm            nvm/test_sapi_nvm.c                  safeapi::nvm)
 safeapi_add_test(test_sapi_reboot         reboot/test_sapi_reboot.c            safeapi::reboot)
 safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.c safeapi::vital_channel)
+safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::clocksync)
+safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::checkpoint)

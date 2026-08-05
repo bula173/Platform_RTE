@@ -24,6 +24,20 @@ Actively growing framework with SIL 4 safety focus.
 - Implementation pending (v0.3.0 target)
 - Marks fault detection and recovery actions for SIL 4
 
+**IMPLEMENTED:** Distributed channel synchronization (ADR-017)
+- `sapi_checkpoint` — bounded checkpoint-ID rendezvous across vital
+  channels, correct even without wall-clock agreement between nodes;
+  fills in `sapi_channel_checkpoint()` as already specified (but not
+  previously built) in `docs/REDUNDANCY_ARCHITECTURE.md`
+- `sapi_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
+  query (never the basis of vital-comparison correctness — see its header)
+- Example: `examples/geo_distributed_checkpoint_sync.c`
+- Note: `sapi_vital_channel` and `sapi_checksum` (CRC-64) are also present
+  in `include/`/`src/` and used by the two modules above, but are not yet
+  reflected in this status summary's own categorization - see
+  `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1 for
+  what's actually wired together today.
+
 **DESIGN PHASE:** Redundancy Framework (Vital Channels, Voting, Checkpoints)
 - Documented in `docs/REDUNDANCY_ARCHITECTURE.md` as design proposal
 - Planned for v0.4.0+
@@ -31,7 +45,8 @@ Actively growing framework with SIL 4 safety focus.
 - See ROADMAP.md for detailed timeline
 
 **Key Documentation:**
-- `docs/architecture/` — Architecture Decision Records (ADRs 001–010) + PlantUML diagrams
+- `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
+  016-017; 009-015 do not exist) + PlantUML diagrams
 - `docs/requirements/SRS.md` — Consolidated requirements specification
 - `docs/MISRA_COMPLIANCE_REPORT.md` — MISRA C:2012 conformance status
 - `docs/EN_50128_ALIGNMENT.md` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
@@ -201,10 +216,14 @@ docs/MISRA_COMPLIANCE_REPORT.md MISRA C:2012 conformance status
 include/safeapi/<feature>/     one public header per feature (ADR-007):
                                 status, types, buffer, cast, safestate,
                                 string, timer, nvm, memory, task, ipc, log,
-                                reboot, appmanager
+                                reboot, appmanager, watchdog, checksum,
+                                vital_channel, clocksync, checkpoint
 src/<feature>/                 matching implementation + CMakeLists.txt,
                                 one static library target safeapi::<feature>
 tests/<feature>/                matching CTest test file per feature
+examples/                      standalone example programs (see
+                                examples/README.md), e.g.
+                                geo_distributed_checkpoint_sync.c (ADR-017)
 ```
 
 ## Design principles

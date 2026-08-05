@@ -27,9 +27,21 @@ include(CompilerWarnings)
 
 # Each feature (ADR-007) is its own subdirectory with its own small static
 # library target (safeapi::<feature>), built and linkable independently.
-# Order matters only where a feature links another (string -> buffer, cast).
+# Order matters only where a feature links another (string -> buffer, cast;
+# checkpoint -> checksum/watchdog/vital_channel, ADR-017). checksum was
+# never previously wired in here despite having its own CMakeLists.txt -
+# added now because sapi_checkpoint (ADR-017) depends on it.
+#
+# NOTE: "channel" (ADR-008, a standalone 2-channel comparator written
+# before sapi_vital_channel's fuller implementation was known about) is
+# intentionally NOT included here. It currently references a safestate
+# reason code that was reverted along with other clobbered files during
+# reconciliation (see ADR-017 section 1's "Deferred" note) and will not
+# build as-is; whether to fix and re-adopt it or retire it in favor of
+# vital_channel + checkpoint is an open decision, not made by this file.
 foreach(feature status types buffer cast safestate string
-                timer nvm memory task ipc log reboot watchdog vital_channel)
+                timer nvm memory task ipc log reboot watchdog checksum
+                vital_channel clocksync checkpoint)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
     endif()
@@ -118,6 +130,7 @@ install(TARGETS
     safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
     safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
     safeapi_watchdog safeapi_appmanager
+    safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint
     ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
     LIBRARY DESTINATION ${LIB_INSTALL_DIR}
     RUNTIME DESTINATION bin

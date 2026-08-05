@@ -1,0 +1,209 @@
+/**
+ * @file geo_distributed_checkpoint_sync.c
+ * @brief Example: two vital channels on separate "machines", synchronized
+ *        via sapi_checkpoint (ADR-017) instead of wall-clock agreement.
+ *
+ * Demonstrates the answer to "how do channels on different hardware, in
+ * different locations, get compared as if they were the same silicon":
+ * not by making their clocks agree (sapi_clocksync is diagnostic only -
+ * see its header), but by having both sites confirm the same
+ * checkpoint_id to each other within a bounded timeout before the real
+ * vote happens. If a site doesn't confirm in time, that's a fault and
+ * the framework enters safe-state itself - it is not left to the
+ * application to notice.
+ *
+ * This example simulates the network with in-memory mailboxes (one per
+ * site) instead of a real socket/serial link, so it runs standalone with
+ * no external dependencies - swap mock_backend_send/recv for a real
+ * transport (e.g. built on sapi_ipc, TCP, or a serial link) to deploy
+ * this for real, per ADR-017 section 2.2 ("no new backend of its own -
+ * reuses whatever transport is already registered on the vital channel").
+ *
+ * Scenario:
+ *   Cycle 1: both sites confirm checkpoint 1 in time -> vote succeeds.
+ *   Cycle 2: WEST's confirmation is deliberately dropped (simulating a
+ *            lost/delayed message) -> checkpoint fails -> safe-state.
+ *
+ * Compile:
+ *   gcc -std=c99 -Wall -Wextra -o geo_checkpoint_sync \
+ *       geo_distributed_checkpoint_sync.c \
+ *       -I../include -L../build \
+ *       -lsafeapi_checkpoint -lsafeapi_checksum -lsafeapi_vital_channel \
+ *       -lsafeapi_watchdog -lsafeapi_clocksync -lsafeapi_safestate \
+ *       -lsafeapi_buffer -lsafeapi_timer -lsafeapi_log -lsafeapi_status
+ */
+
+#include <setjmp.h>
+#include <stdio.h>
+#include <string.h>
+
+#include "safeapi/checkpoint/sapi_checkpoint.h"
+#include "safeapi/checksum/sapi_checksum.h"
+#include "safeapi/clocksync/sapi_clocksync.h"
+#include "safeapi/safestate/sapi_safestate.h"
+
+/* ============================================================================
+ * Simulated transport: one in-memory mailbox per site (WEST=0, EAST=1)
+ * ========================================================================== */
+
+#define SITE_WEST 0
+#define SITE_EAST 1
+#define SITE_COUNT 2U
+
+static int g_site_index[SITE_COUNT] = { SITE_WEST, SITE_EAST };
+static void *g_channel_handles[SITE_COUNT] = { &g_site_index[SITE_WEST], &g_site_index[SITE_EAST] };
+
+static sapi_vital_message_t g_mailbox[SITE_COUNT];
+static bool g_mail_ready[SITE_COUNT];
+/* Simulates a dead link to a given site: its backend_recv() times out
+ * regardless of what was sent, standing in for a message that was sent
+ * but never arrived (dropped/delayed network, not a local logic error -
+ * a real transport's recv() would time out the same way). */
+static bool g_link_down[SITE_COUNT];
+
+static sapi_status_t mock_send(void *channel, const void *data, size_t data_size)
+{
+    int idx = *(const int *)channel;
+
+    if (data_size != sizeof(sapi_vital_message_t))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    /* Loopback echo for this single-process demo: in a real deployment
+     * this send() would travel over sapi_ipc/a socket/a serial link to
+     * the actual peer process, which would send its own confirmation
+     * back independently - this mock just short-circuits that round
+     * trip for sites whose link is up. */
+    (void)memcpy(&g_mailbox[idx], data, data_size);
+    g_mail_ready[idx] = true;
+    return SAPI_STATUS_OK;
+}
+
+static sapi_status_t mock_recv(void *channel, void *data, size_t data_size, uint32_t timeout_ms)
+{
+    int idx = *(const int *)channel;
+
+    (void)timeout_ms; /* in-memory mailbox: either the mail is there or it isn't */
+    if (data_size != sizeof(sapi_vital_message_t))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (g_link_down[idx] || !g_mail_ready[idx])
+    {
+        return SAPI_STATUS_TIMEOUT;
+    }
+    (void)memcpy(data, &g_mailbox[idx], data_size);
+    return SAPI_STATUS_OK;
+}
+
+/* ============================================================================
+ * A minimal sapi_clocksync backend - diagnostic only, per its own header's
+ * warning: never the basis for deciding whether results are comparable.
+ * ========================================================================== */
+
+static sapi_status_t clocksync_get_offset_ms(int64_t *out_offset_ms)
+{
+    *out_offset_ms = 3; /* pretend WEST's clock is 3ms ahead of EAST's */
+    return SAPI_STATUS_OK;
+}
+
+static sapi_status_t clocksync_get_quality(sapi_clocksync_quality_t *out_quality)
+{
+    *out_quality = SAPI_CLOCKSYNC_SYNCHRONIZED;
+    return SAPI_STATUS_OK;
+}
+
+/* ============================================================================
+ * Safe-state handler for this demo: print and unwind via longjmp instead
+ * of the production infinite loop, so the example can report the outcome
+ * and exit cleanly. A real integrator's SAFE handler drives outputs to
+ * their fail-safe state instead.
+ * ========================================================================== */
+
+static jmp_buf g_safestate_jmp;
+
+static void demo_safestate_handler(sapi_safestate_level_t level, sapi_safestate_reason_t reason, const char *file,
+                                    int32_t line, const char *message)
+{
+    (void)file;
+    (void)message;
+    printf("  [SAFE-STATE] level=%d reason=%u at line %d - withdrawing movement authority\n", (int)level,
+           (unsigned)reason, (int)line);
+    longjmp(g_safestate_jmp, 1);
+}
+
+int main(void)
+{
+    sapi_vital_channel_t vital;
+    sapi_vital_channel_config_t vc_config;
+    sapi_clocksync_backend_t clock_backend;
+    int64_t offset_ms = 0;
+    sapi_clocksync_quality_t quality = SAPI_CLOCKSYNC_UNSYNCHRONIZED;
+
+    (void)sapi_checksum_crc64_init(SAPI_CRC64_ERTMS);
+    (void)sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_SAFE, demo_safestate_handler);
+
+    clock_backend.get_offset_ms = clocksync_get_offset_ms;
+    clock_backend.get_quality = clocksync_get_quality;
+    (void)sapi_clocksync_register_backend(&clock_backend);
+    (void)sapi_clocksync_get_offset_ms(&offset_ms);
+    (void)sapi_clocksync_get_quality(&quality);
+    printf("Diagnostic clock offset WEST-vs-EAST: %lldms (quality=%d) - NOT used for the vote below\n",
+           (long long)offset_ms, (int)quality);
+
+    memset(&vc_config, 0, sizeof(vc_config));
+    vc_config.voting_strategy = SAPI_VOTING_2OO2;
+    vc_config.channel_count = SITE_COUNT;
+    vc_config.channel_timeout_ms = 100U;
+    vc_config.backend_send = mock_send;
+    vc_config.backend_recv = mock_recv;
+    (void)sapi_vital_channel_init(&vital, &vc_config, g_channel_handles, SITE_COUNT);
+
+    /* ---- Cycle 1: both sites confirm in time ---- */
+    {
+        sapi_checkpoint_config_t ckpt;
+        sapi_status_t status;
+
+        g_mail_ready[SITE_WEST] = false;
+        g_mail_ready[SITE_EAST] = false;
+
+        ckpt.checkpoint_id = 1U;
+        ckpt.max_delay_ms = 200U;
+        ckpt.expected_node_count = SITE_COUNT;
+        ckpt.watchdog = NULL;
+
+        printf("\nCycle 1: WEST and EAST both reach checkpoint 1...\n");
+        status = sapi_channel_checkpoint(&vital, &ckpt);
+        printf("  sapi_channel_checkpoint() -> %s\n", sapi_status_to_string(status));
+    }
+
+    /* ---- Cycle 2: EAST's confirmation never arrives (dropped/delayed) ---- */
+    if (setjmp(g_safestate_jmp) == 0)
+    {
+        sapi_checkpoint_config_t ckpt;
+        sapi_status_t status;
+
+        g_mail_ready[SITE_WEST] = false;
+        g_mail_ready[SITE_EAST] = false;
+        g_link_down[SITE_EAST] = true; /* EAST's confirmation will never arrive */
+
+        ckpt.checkpoint_id = 2U;
+        ckpt.max_delay_ms = 50U;
+        ckpt.expected_node_count = SITE_COUNT;
+        ckpt.watchdog = NULL;
+
+        printf("\nCycle 2: EAST's link is down - its confirmation never arrives...\n");
+        status = sapi_channel_checkpoint(&vital, &ckpt);
+        /* Not reached on a real timeout: sapi_channel_checkpoint() enters
+         * safe-state directly (REQ-CHECKPOINT-003) before returning. */
+        printf("  sapi_channel_checkpoint() -> %s (unexpected - should have diverted)\n",
+               sapi_status_to_string(status));
+    }
+    else
+    {
+        printf("  Cycle 2 correctly forced safe-state instead of voting on an unconfirmed cycle.\n");
+    }
+
+    (void)sapi_vital_channel_destroy(&vital);
+    return 0;
+}

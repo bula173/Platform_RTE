@@ -38,6 +38,15 @@ it can be qualified or replaced independently.
 +-----------------------------------------------------+
 ```
 
+**Update:** the L1 slot above is now partially filled - see ADR-017
+(`sapi_checkpoint`, `sapi_clocksync`), which implements the bounded
+checkpoint-rendezvous half of "inter-process safety-related messaging"
+directly on top of L0's `sapi_ipc`/`sapi_timer`. EN 50159-style message
+integrity (sequence number, CRC-64) is provided by `sapi_checksum`,
+reused rather than duplicated by ADR-017; a real transport-authentication
+story for open (untrusted-network) deployments remains open (see ADR-017
+section 3).
+
 Only L0 (OAL) is scoped for this ADR. L1 is referenced so that OAL's IPC
 primitives are designed to be usable as a transport underneath it, but L1's
 message-level safety mechanisms (sequence numbers, timeouts, CRC/ authentication,
