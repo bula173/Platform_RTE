@@ -3,6 +3,25 @@
 Date: 2026-08-05 (updated for `sapi_checkpoint`/`sapi_clocksync`, ADR-017;
 also fixed `sapi_checksum.c`, which did not compile prior to this pass -
 see section 2's new row)
+
+**2026-08-05, later same day - update 2:** the automated checker described
+as unavailable in section 1 below is now actually running for the first
+time (see new section 1a) - both because a real macOS `cmake`/`cppcheck`
+environment became available (this report's original section 1 was
+written from inside a network-isolated sandbox with neither), and because
+two real bugs in this project's own tooling were fixed that had silently
+prevented the `cppcheck` CMake target from ever doing anything despite
+printing success (`CMAKE_EXPORT_COMPILE_COMMANDS` was never set, so
+`compile_commands.json` never existed for `--project=...` to open; then,
+once set, it was set as a plain `set()` instead of a `CACHE` variable,
+which only affects the setting directory and its descendants - meaning it
+never took effect for a downstream project's own targets when this
+framework is consumed via `add_subdirectory()`, e.g. by `safeAPIExample`).
+Section 1a records what the first real run actually found. The three
+CRC-64 lookup tables flagged as incomplete placeholders in section 2 below
+have also been fixed (full, correctly generated 256-entry tables) - see
+`sapi_checksum.c`'s own file-level note for detail.
+
 Scope: `include/` and `src/` (shipped library code only - `tests/` is
 verification tooling, not a deliverable, and is called out separately in
 section 4).
@@ -15,9 +34,11 @@ produced this document and have not had a MISRA pass done against them,
 beyond what was necessary to make `sapi_checksum.c` compile at all (see
 below). Treat sections 2-3 below as covering the modules present when
 this report was first written, plus the two ADR-017 additions - not the
-whole current `src/` tree.
+whole current `src/` tree. Section 1a's real tool run *does* cover the
+whole tree, and is the more reliable source for anything it disagrees
+with below.
 
-## 1. How this report was produced
+## 1. How this report was originally produced (manual review)
 
 **No automated MISRA checker was available to run this review.** This
 sandbox has no network/package-install access (`apt-get`, `pip install`
@@ -29,6 +50,46 @@ directly against the source tree (commands and results below each rule),
 plus a design-level read of every file. It is not a substitute for a real
 MISRA tool and should not be treated as certification evidence on its own
 - see section 5 for how to get one.
+
+## 1a. First real automated run (`cppcheck --addon=misra`), 2026-08-05
+
+Run via `cmake --build build --target cppcheck` (real macOS environment,
+`cppcheck` from Homebrew) after the two tooling fixes described above.
+Output: `build/cppcheck-report.txt`/`.xml`. Note: no `--rule-texts=<file>`
+was supplied (that requires a licensed copy of the MISRA C:2012 document
+to map rule numbers to their actual wording) - findings below are
+identified by rule number only, per cppcheck's own limitation without
+that file; verifying rule *text* against a licensed copy is still required
+before treating any of this as compliance evidence, exactly as section 5
+already said.
+
+Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
+
+| Rule | Count | Note |
+|---|---:|---|
+| 15.5 (single point of exit) | 387 | Matches the deviation already documented in section 3 - consistent guard-clause style across the codebase, not new. |
+| 8.7 (internal linkage) | 138 | Needs manual triage - section 2 claims this rule is compliant-by-construction (`static` on every backend/handler table); a real tool disagreeing with that specific claim across 138 sites needs to be reconciled, not assumed to be a tool false-positive. Not yet triaged as part of this update. |
+| 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
+| 21.6 (banned `<stdio.h>`) | 28 | **Confirmed real, not a tool artifact:** both hits are in `sapi_appmanager.c` and `sapi_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. This closes that specific uncertainty: the gap was real. Not yet fixed here (removing/replacing `<stdio.h>` use in those two files is a separate, scoped follow-up). |
+| 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
+| `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIExample`); not necessarily a real problem, but not yet individually verified either. |
+
+**This is the first ground truth this project has had from a real tool.**
+It broadly confirms section 3's documented 15.5 deviation at scale, and
+confirms the "Known gap" paragraph's suspicion about `appmanager`/
+`watchdog` was correct. The remaining rules (8.7, 17.7, and the smaller
+counts) are **not yet triaged** - listed here rather than silently
+dropped, per this report's own standing instruction not to go stale. Given the
+scale (826 raw findings, many likely legitimate deviations once triaged
+individually, some likely tool noise without `--rule-texts`), a proper
+triage pass is a dedicated follow-up, not something folded into this
+update.
+
+`safeAPIExample` (a separate project, out of this report's own stated
+scope) was also checked incidentally by the same run (496 findings) -
+its own compliance posture is that project's own responsibility to
+document; its README already discloses "No SIL-level V&V, no MISRA/
+cppcheck pass has been run against this project's own source."
 
 ## 2. Compliant by construction
 
@@ -51,16 +112,18 @@ retrofitted, and are verified here by direct search of the shipped source:
 | Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `sapi_checkpoint.c`/`sapi_clocksync.c`: zero hits. `sapi_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `sapi_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `sapi_checksum.c`). |
 | Explicit status codes, no invented enum values | `sapi_checksum.c` fix | The pre-fix file referenced `SAPI_STATUS_ERROR`/`SAPI_STATUS_INVALID`, neither a member of `sapi_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `SAPI_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `SAPI_STATUS_INVALID_PARAM` for bad arguments, `SAPI_STATUS_ALREADY_INITIALIZED` for double-init. |
 
-**Separate, more significant finding in `sapi_checksum.c`, not fixed by
-this pass:** its three CRC-64 lookup tables (`g_crc64_ertms_table` etc.)
-are incomplete placeholders - only ~24 of 256 entries populated for
-ERTMS, 2 of 256 for ISO/XZ, the rest implicitly zero per C array
-initialization rules, and explicitly commented in the source as
-placeholders. Compute-then-verify round-trips are still internally
-self-consistent (useful for testing `sapi_checkpoint`'s logic), but this
-is **not a mathematically correct CRC-64** and must not be treated as
-real integrity protection until proper tables are generated for all
-three polynomials.
+**Update (2026-08-05, same day as the section 1a tooling fix): fixed.**
+`sapi_checksum.c`'s three CRC-64 lookup tables (`g_crc64_ertms_table`
+etc.) were incomplete placeholders - only ~24 of 256 entries populated
+for ERTMS, 2 of 256 for ISO/XZ, the rest implicitly zero per C array
+initialization rules, explicitly commented in the source as placeholders,
+and explicitly called out here as not real integrity protection. All
+three are now full, correctly generated 256-entry tables (standard
+reflected/right-shifting CRC table-generation algorithm against each
+polynomial already declared in `sapi_checksum.h`) - see `sapi_checksum.c`'s
+own file-level note for detail, and `safeAPIExample`'s A<->B peer-link
+CRC-64 integrity check (`channel_ab.c`) for the first real consumer of
+this fix.
 
 ## 3. Known, documented deviations
 
@@ -103,21 +166,30 @@ same rules:
 
 ## 5. Recommended follow-up
 
-This report is a stand-in until a real tool can be run. Once network/tool
-access is available (locally or in CI), the recommended path is:
+Section 1a is that real tool run - it is no longer unavailable, at least
+in a real macOS/Linux dev environment (`cmake --build build --target
+cppcheck`, or directly: `cppcheck --project=build/compile_commands.json
+--addon=misra --std=c99 --enable=all --inconclusive`). What is still
+missing:
 
-```sh
-# cppcheck's MISRA addon (free tool; the addon maps warnings to rule
-# numbers but the official rule *text* still requires a MISRA license to
-# display verbatim - the mapping itself is free to use):
-cppcheck --enable=all --inconclusive --addon=misra \
-         --std=c99 -I include src
-```
+- **Rule-text mapping.** No `--rule-texts=<file>` was supplied, so section
+  1a's findings are rule-number-only; getting the actual rule wording
+  still requires a licensed copy of MISRA C:2012 (or a commercial checker
+  that bundles it) - the mapping cppcheck's addon does for free is not a
+  substitute for verifying against real rule text.
+- **Triage of section 1a's un-triaged rules** (8.7, 17.7, 12.1, 10.4,
+  11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4) - each needs a per-site
+  decision: real violation needing a fix, or a documented deviation to
+  add to section 3, or (less likely, but possible without `--rule-texts`)
+  a tool false-positive.
+- **`sapi_appmanager.c`/`sapi_watchdog.c`'s confirmed `<stdio.h>` use**
+  (Rule 21.6) - a real, now-confirmed finding, not yet fixed.
+- A commercial checker (LDRA, Parasoft C/C++test, PC-lint Plus, Polyspace)
+  for certification-grade evidence, which EN 50128 SIL 3/4 verification
+  will ultimately require rather than cppcheck's free addon or this
+  manual review.
 
-or a commercial checker (LDRA, Parasoft C/C++test, PC-lint Plus, Polyspace)
-for certification-grade evidence, which EN 50128 SIL 3/4 verification will
-ultimately require rather than this manual review. This report should be
-regenerated (or replaced by real tool output) whenever a new module is
-added - the deviation list in section 3 in particular should be reviewed
-by whoever runs the first real static analysis pass, since a tool may
-surface additional Rule 15.5/8.13 instances this manual pass missed.
+This report should be regenerated (or have section 1a re-run and
+refreshed) whenever a new module is added or the un-triaged rule list
+above is worked through - don't let the "not yet triaged" framing above
+become permanent.

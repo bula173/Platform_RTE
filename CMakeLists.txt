@@ -19,6 +19,23 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+# Required for the cppcheck/MISRA target below (--project=compile_commands.json):
+# without this, compile_commands.json is never generated, that target's
+# cppcheck invocation fails at the "open project file" step, and the
+# MISRA check silently never actually ran despite `cppcheck found` and
+# `Built target cppcheck` both printing successfully - discovered while
+# verifying this project's own compliance-report process actually works.
+# Must be a CACHE variable, not a plain set(): a plain set() here is
+# scoped to this directory and its descendants only, so when this
+# framework is add_subdirectory()'d by a downstream project (e.g.
+# safeAPIExample), targets defined in the downstream project's own
+# CMakeLists.txt (a directory-tree sibling/ancestor of this one, not a
+# descendant) would silently NOT get compile_commands.json entries -
+# exactly what was observed (compile_commands.json had all 19 framework
+# targets but none of safeAPIExample's own). CACHE variables are visible
+# project-tree-wide regardless of which directory sets them first.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile_commands.json for MISRA/cppcheck tooling" FORCE)
+
 option(SAFEAPI_BUILD_TESTS "Build unit tests" ON)
 option(SAFEAPI_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 
