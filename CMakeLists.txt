@@ -40,7 +40,7 @@ include(CompilerWarnings)
 # build as-is; whether to fix and re-adopt it or retire it in favor of
 # vital_channel + checkpoint is an open decision, not made by this file.
 foreach(feature status types buffer cast safestate string
-                timer nvm memory task ipc log reboot watchdog checksum
+                timer nvm memory task ipc netlink log reboot watchdog checksum
                 vital_channel clocksync checkpoint)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
@@ -130,7 +130,7 @@ install(TARGETS
     safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
     safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
     safeapi_watchdog safeapi_appmanager
-    safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint
+    safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint safeapi_netlink
     ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
     LIBRARY DESTINATION ${LIB_INSTALL_DIR}
     RUNTIME DESTINATION bin
