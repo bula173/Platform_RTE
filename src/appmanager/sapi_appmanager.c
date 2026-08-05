@@ -9,6 +9,18 @@
 #include <stdlib.h>
 #include "safeapi/appmanager/sapi_appmanager.h"
 
+/* sapi_appmanager_install_default_signal_handlers()'s POSIX detection -
+ * see this file's own implementation below and the function's doc in
+ * sapi_appmanager.h for why this is a scoped, documented exception to
+ * this module (and this framework)'s usual OS-agnosticism. */
+#if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+#define SAPI_APPMANAGER_HAVE_POSIX_SIGNALS 1
+#include <signal.h>
+#include <string.h>
+#else
+#define SAPI_APPMANAGER_HAVE_POSIX_SIGNALS 0
+#endif
+
 /* Global application state (static) */
 static sapi_appmanager_state_t g_app_state = {
     .state = SAPI_APP_STATE_UNINITIALIZED,
@@ -160,3 +172,46 @@ void sapi_appmanager_request_shutdown(void)
 {
     g_shutdown_requested = 1;
 }
+
+#if SAPI_APPMANAGER_HAVE_POSIX_SIGNALS
+
+/* Async-signal-safe: writes one volatile int, nothing else (no I/O, no
+ * allocation) - see sapi_appmanager_request_shutdown()'s own definition
+ * above. */
+static void sapi_appmanager_signal_handler(int signum)
+{
+    (void)signum;
+    sapi_appmanager_request_shutdown();
+}
+
+sapi_status_t sapi_appmanager_install_default_signal_handlers(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = sapi_appmanager_signal_handler;
+    if (sigemptyset(&sa.sa_mask) != 0)
+    {
+        return SAPI_STATUS_INTERNAL_ERROR;
+    }
+    sa.sa_flags = 0;
+
+    if (sigaction(SIGINT, &sa, NULL) != 0)
+    {
+        return SAPI_STATUS_INTERNAL_ERROR;
+    }
+    if (sigaction(SIGTERM, &sa, NULL) != 0)
+    {
+        return SAPI_STATUS_INTERNAL_ERROR;
+    }
+    return SAPI_STATUS_OK;
+}
+
+#else
+
+sapi_status_t sapi_appmanager_install_default_signal_handlers(void)
+{
+    return SAPI_STATUS_NOT_SUPPORTED;
+}
+
+#endif /* SAPI_APPMANAGER_HAVE_POSIX_SIGNALS */

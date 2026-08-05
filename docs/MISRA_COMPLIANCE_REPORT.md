@@ -176,6 +176,33 @@ Being transparent about these rather than silently non-compliant:
   correctly non-`const`; this has not been exhaustively re-verified
   parameter-by-parameter across all 72 `sapi_cast_*` functions plus every
   OAL service by a tool, only by design review during authoring.
+- **Rule 21.5 (required) - `<signal.h>` shall not be used.** Violated,
+  deliberately, in exactly one place:
+  `sapi_appmanager_install_default_signal_handlers()`
+  (`src/appmanager/sapi_appmanager.c`, guarded by
+  `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS`). This is a real, confirmed hit
+  (`misra-c2012-21.5`, cppcheck), not a tool artifact - `<signal.h>` is
+  genuinely included and `sigaction()` genuinely called. Rationale: this
+  is an explicitly opt-in, POSIX-only convenience for stopping a
+  long-running `sapi_appmanager_run()` loop from an operator (Ctrl+C) or
+  process manager (SIGTERM) - see the function's own doc in
+  `sapi_appmanager.h` for the full reasoning, including why this module
+  (already not backend-dispatched, unlike the seven ADR-005 OAL services)
+  was judged the least-bad place for a narrow, explicitly-named exception
+  rather than every downstream POSIX integrator reimplementing the same
+  handful of lines. It is compiled out entirely (returns
+  `SAPI_STATUS_NOT_SUPPORTED`, no `<signal.h>` include at all) on any
+  target where `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS` is not defined, so a
+  SIL-rated build targeting a real RTOS/bare-metal backend never compiles
+  this code path in the first place. The handler itself is minimal by
+  design (writes one `volatile int`, calls nothing else - see
+  `sapi_appmanager_signal_handler()`'s own comment) specifically to avoid
+  the underlying hazard Rule 21.5 exists to prevent (unbounded/unsafe
+  work in signal-handler context). Not currently caller-configurable
+  (always exactly `SIGINT`+`SIGTERM` -> `sapi_appmanager_request_shutdown()`);
+  a caller needing different signals or additional handler logic should
+  install their own via `sigaction()` directly rather than using this
+  convenience function.
 
 ## 4. Explicitly out of scope: `tests/`
 

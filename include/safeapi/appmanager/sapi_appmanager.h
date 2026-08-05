@@ -14,6 +14,19 @@
  *
  * REQ-APPMANAGER-001: Applications shall use the Application Manager for
  * controlled initialization, execution, and shutdown lifecycle.
+ *
+ * @note Unlike the seven OAL services (sapi_timer, sapi_nvm, sapi_memory,
+ * sapi_task, sapi_ipc, sapi_log, sapi_reboot), this module is not
+ * backend-dispatched (ADR-005) - it is a direct, OS-agnostic
+ * implementation, same as sapi_safestate. sapi_appmanager_install_default_signal_handlers()
+ * below is a **deliberate, narrow exception** to that OS-agnosticism: it
+ * is a POSIX-only convenience, compiled out (returns
+ * SAPI_STATUS_NOT_SUPPORTED) on any non-POSIX target. It exists because
+ * "let something external ask a long-running sapi_appmanager_run() loop
+ * to stop" is such a common integration need on POSIX hosts that most
+ * integrators would otherwise reimplement the same few lines of
+ * sigaction() themselves - see that function's own doc for the exact
+ * scope of the exception.
  */
 
 #ifndef SAFEAPI_APPMANAGER_H
@@ -206,6 +219,36 @@ sapi_status_t sapi_appmanager_get_stats(sapi_appmanager_state_t *state);
  * termination. The shutdown may take one iteration to complete.
  */
 void sapi_appmanager_request_shutdown(void);
+
+/**
+ * @brief POSIX-only convenience: installs SIGINT and SIGTERM handlers
+ *        that call sapi_appmanager_request_shutdown(), so an operator
+ *        (Ctrl+C) or process manager (SIGTERM) can stop a
+ *        sapi_appmanager_run() loop gracefully - shutdown() still runs,
+ *        this is not a hard kill.
+ *
+ * This is the one function in this module with an OS dependency - see
+ * this header's own file-level @note for why that is an intentional,
+ * scoped exception rather than a general pattern for this framework.
+ * Safe to call unconditionally on any target: on a non-POSIX build this
+ * compiles to a no-op that returns SAPI_STATUS_NOT_SUPPORTED, so
+ * portable integration code does not need its own \#ifdef around the
+ * call site.
+ *
+ * Call this before sapi_appmanager_run() (or from init()); calling it
+ * more than once re-installs the same handlers (idempotent, matches
+ * sapi_safestate_register_handler()'s "registering again replaces the
+ * previous" convention).
+ *
+ * @return SAPI_STATUS_OK if both handlers were installed;
+ *         SAPI_STATUS_NOT_SUPPORTED on a non-POSIX build;
+ *         SAPI_STATUS_INTERNAL_ERROR if the underlying sigaction() call
+ *         itself failed (see errno at the call site for detail - not
+ *         surfaced here, consistent with this framework not using errno
+ *         in its own public API, CLAUDE.md's "no use of errno in
+ *         production paths").
+ */
+sapi_status_t sapi_appmanager_install_default_signal_handlers(void);
 
 #ifdef __cplusplus
 }
