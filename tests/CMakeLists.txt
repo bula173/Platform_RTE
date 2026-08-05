@@ -21,6 +21,7 @@ safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.
 safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::clocksync)
 safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::checkpoint)
 safeapi_add_test(test_sapi_netlink        netlink/test_sapi_netlink.c          safeapi::netlink)
+safeapi_add_test(test_sapi_watchdog       watchdog/test_sapi_watchdog.c        safeapi::watchdog)
 
 # posix_backend (and its tests) moved to the safeAPIExample project - an
 # OAL backend is an integrator-supplied implementation (ADR-005), not

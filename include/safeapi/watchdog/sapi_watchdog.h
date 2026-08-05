@@ -2,13 +2,12 @@
  * @file sapi_watchdog.h
  * @brief Watchdog mechanism for detecting system/task hang conditions
  *
- * ⚠️ **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
- * Target availability: safeAPIFramework v0.3.0
- *
  * Provides system-level, task-level, and channel-level watchdog timers
- * that detect hung components and trigger recovery actions (reboot, safe-state,
- * failover). Full API is defined below; stub implementations are being replaced
- * with production code.
+ * that detect hung components and trigger recovery actions (log, safe-state,
+ * reboot, failover, or a custom callback). Implemented as a fixed-size
+ * static pool, timed via sapi_timer_now() - see src/watchdog/sapi_watchdog.c
+ * and sapi_watchdog_timer_tick()'s own doc for how expiry is detected
+ * (poll-driven, not an OS-specific interrupt of its own).
  *
  * @defgroup WATCHDOG Watchdog Mechanism
  * @brief Detect hung systems/tasks and trigger recovery
@@ -274,6 +273,23 @@ sapi_status_t sapi_watchdog_manager_shutdown(void);
  * @internal
  */
 void sapi_watchdog_timeout_handler(uint32_t watchdog_id);
+
+/**
+ * @brief Poll all active watchdogs for expiry (call periodically)
+ *
+ * This implementation has no OS-specific interrupt/thread of its own
+ * (consistent with ADR-005: OS-specific timing belongs in an integrator
+ * backend, not in this module). Instead, the integrating application is
+ * responsible for calling this function regularly - e.g. from a
+ * sapi_timer periodic callback, or once per iteration of a
+ * sapi_appmanager execute() cycle - so that any watchdog whose deadline
+ * has passed is detected and its configured recovery action
+ * (sapi_watchdog_timeout_handler()) is dispatched.
+ *
+ * @note Non-blocking; O(N) over the fixed watchdog pool per call.
+ * @note No-op if the watchdog manager has not been initialized.
+ */
+void sapi_watchdog_timer_tick(void);
 
 #ifdef __cplusplus
 }

@@ -1,34 +1,100 @@
 /**
  * @file sapi_watchdog.c
- * @brief Watchdog implementation stubs
+ * @brief Real watchdog implementation: a fixed-size pool of watchdog
+ *        slots, timed via the already-portable sapi_timer_now() OAL
+ *        primitive rather than any new OS-specific timing code of its
+ *        own (REQ-OAL-COMMON-010: no dynamic allocation).
  *
- * TODO: Implement watchdog timer management, kick tracking, timeout detection,
- * and recovery action dispatch.
+ * Timeout detection is polling-based: something (the application's own
+ * loop, or a periodic sapi_timer callback) must call
+ * sapi_watchdog_timer_tick() regularly for a fired watchdog to actually
+ * be detected - see that function's own doc for why a poll-driven design
+ * was chosen here over a true ISR/thread-driven one.
+ *
+ * Replaces a previous stub where kick()/start()/get_status() were all
+ * no-ops and no timeout was ever detected (see git history) - discovered
+ * while wiring a real per-role watchdog into safeAPIExample.
  *
  * @ingroup WATCHDOG
  */
-
-#include <stdio.h>
 #include "safeapi/watchdog/sapi_watchdog.h"
-#include "safeapi/status/sapi_status.h"
 
-/* ============================================================================
- * Watchdog Manager
- * ========================================================================== */
+#include "safeapi/log/sapi_log.h"
+#include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/timer/sapi_timer.h"
+
+#include <stdbool.h>
+#include <string.h>
+
+#ifndef SAPI_WATCHDOG_MAX_COUNT
+/** Fixed pool size. sapi_watchdog_create() returns
+ *  SAPI_STATUS_RESOURCE_EXHAUSTED once this many watchdogs are live at
+ *  once - no dynamic growth, per this framework's no-malloc rule. */
+#define SAPI_WATCHDOG_MAX_COUNT 8U
+#endif
 
 /**
- * @brief Global watchdog manager state
- *
- * TODO: Allocate watchdog storage, track all active watchdogs,
- * manage timer interrupts/callbacks.
+ * One pool slot's full state. The public sapi_watchdog_t handle is a
+ * pointer to one of these slots. This module owns the storage itself (a
+ * static pool), unlike most other OAL services in this framework, which
+ * take caller-owned storage via SAFEAPI_DECLARE_STORAGE - sapi_watchdog.h's
+ * own documented API (sapi_watchdog_create() takes only a config and
+ * returns a handle from an implicit "manager", with no caller-storage
+ * parameter anywhere in its signature or its own doc examples) was
+ * written against a pool-owned design from the start; this implementation
+ * follows that, rather than silently changing the public API's contract.
  */
-typedef struct {
-    uint8_t initialized;
-    uint32_t watchdog_count;
-    /* TODO: watchdog table, timer state, etc. */
-} sapi_watchdog_manager_t;
+typedef struct sapi_watchdog_s
+{
+    uint8_t                in_use;
+    uint8_t                active;
+    uint8_t                fired;      /**< Fired and not yet restarted via start(). */
+    sapi_watchdog_config_t config;
+    sapi_timestamp_ms_t    deadline_ms;
+    sapi_timestamp_ms_t    last_kick_ms;
+    uint32_t               kicks;
+    uint32_t               fires;
+    uint32_t               recoveries;
+} sapi_watchdog_s;
 
-static sapi_watchdog_manager_t g_watchdog_manager = {0};
+static sapi_watchdog_s g_watchdog_pool[SAPI_WATCHDOG_MAX_COUNT];
+static uint8_t          g_manager_initialized = 0U;
+
+/* ============================================================================
+ * Internal helpers
+ * ========================================================================== */
+
+/** Defensive check that handle actually points at one of this module's
+ *  own live pool slots, not an arbitrary caller pointer. Pointer
+ *  comparison against both ends of the same array object is well-defined
+ *  in C (unlike comparing unrelated pointers). */
+static bool is_valid_handle(sapi_watchdog_t watchdog)
+{
+    const sapi_watchdog_s *slot = (const sapi_watchdog_s *)watchdog;
+
+    return (slot != NULL) && (slot >= &g_watchdog_pool[0]) && (slot < &g_watchdog_pool[SAPI_WATCHDOG_MAX_COUNT])
+           && (slot->in_use != 0U);
+}
+
+static bool is_valid_action(sapi_watchdog_action_t action)
+{
+    bool valid;
+
+    switch (action)
+    {
+        case SAPI_WATCHDOG_ACTION_LOG:
+        case SAPI_WATCHDOG_ACTION_SAFESTATE:
+        case SAPI_WATCHDOG_ACTION_REBOOT:
+        case SAPI_WATCHDOG_ACTION_FAILOVER:
+        case SAPI_WATCHDOG_ACTION_CUSTOM:
+            valid = true;
+            break;
+        default:
+            valid = false;
+            break;
+    }
+    return valid;
+}
 
 /* ============================================================================
  * API: Watchdog Manager
@@ -36,26 +102,25 @@ static sapi_watchdog_manager_t g_watchdog_manager = {0};
 
 sapi_status_t sapi_watchdog_manager_initialize(void)
 {
-    /* TODO: Initialize watchdog manager
-     * - Allocate watchdog storage/table
-     * - Initialize system timer for watchdog ticks
-     * - Register interrupt handler (hardware or software timer)
-     * - Return SAPI_STATUS_OK on success
-     */
-    fprintf(stderr, "[WATCHDOG INFO] Initializing watchdog manager\n");
-    g_watchdog_manager.initialized = 1;
+    if (g_manager_initialized == 0U)
+    {
+        (void)memset(g_watchdog_pool, 0, sizeof(g_watchdog_pool));
+        g_manager_initialized = 1U;
+        sapi_log_write(SAPI_LOG_LEVEL_INFO, "watchdog", "manager initialized");
+    }
     return SAPI_STATUS_OK;
 }
 
 sapi_status_t sapi_watchdog_manager_shutdown(void)
 {
-    /* TODO: Shutdown watchdog manager
-     * - Stop all running watchdogs
-     * - Disable timer interrupt
-     * - Deallocate watchdog storage
-     */
-    fprintf(stderr, "[WATCHDOG INFO] Shutting down watchdog manager\n");
-    g_watchdog_manager.initialized = 0;
+    size_t i;
+
+    for (i = 0U; i < (size_t)SAPI_WATCHDOG_MAX_COUNT; i++)
+    {
+        g_watchdog_pool[i].active = 0U;
+    }
+    g_manager_initialized = 0U;
+    sapi_log_write(SAPI_LOG_LEVEL_INFO, "watchdog", "manager shut down");
     return SAPI_STATUS_OK;
 }
 
@@ -63,243 +128,219 @@ sapi_status_t sapi_watchdog_manager_shutdown(void)
  * API: Core Watchdog Operations
  * ========================================================================== */
 
-sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
-                                    const sapi_watchdog_config_t *config)
+sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out, const sapi_watchdog_config_t *config)
 {
-    /* TODO: Create watchdog
-     * - Validate config (timeout > 0, valid type, valid action)
-     * - Allocate watchdog structure from pre-allocated storage
-     * - Initialize: type, name, timeout, action, kicks=0, fires=0
-     * - Store in watchdog table
-     * - Return handle
-     *
-     * Constraints (MISRA C:2012, SIL 4):
-     * - No malloc/free (static allocation only)
-     * - Validate all pointers before use
-     * - Log watchdog creation
-     *
-     * Safety (EN 50128):
-     * - Watchdog count must not exceed MAX_WATCHDOGS
-     * - Watchdog IDs must be unique
-     * - Timeout must be within system limits
-     */
+    size_t i;
 
-    if (handle_out == NULL || config == NULL) {
-        fprintf(stderr, "[WATCHDOG ERROR] Invalid watchdog create arguments\n");
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if ((handle_out == NULL) || (config == NULL) || (config->timeout_ms == 0U) || !is_valid_action(config->action))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if ((config->action == SAPI_WATCHDOG_ACTION_CUSTOM) && (config->custom_action == NULL))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (g_manager_initialized == 0U)
+    {
+        return SAPI_STATUS_NOT_INITIALIZED;
     }
 
-    if (!g_watchdog_manager.initialized) {
-        fprintf(stderr, "[WATCHDOG ERROR] Watchdog manager not initialized\n");
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    for (i = 0U; i < (size_t)SAPI_WATCHDOG_MAX_COUNT; i++)
+    {
+        if (g_watchdog_pool[i].in_use == 0U)
+        {
+            (void)memset(&g_watchdog_pool[i], 0, sizeof(g_watchdog_pool[i]));
+            g_watchdog_pool[i].in_use = 1U;
+            g_watchdog_pool[i].config = *config;
+            *handle_out = (sapi_watchdog_t)&g_watchdog_pool[i];
+            sapi_log_write(SAPI_LOG_LEVEL_INFO, config->name, "watchdog created");
+            return SAPI_STATUS_OK;
+        }
     }
-
-    fprintf(stderr,
-            "[WATCHDOG INFO] Creating watchdog: %s (type=%d, timeout=%u ms, action=%d)\n",
-            config->name, config->type, config->timeout_ms, config->action);
-
-    /* TODO: Allocate from pool, initialize, return handle */
-
-    *handle_out = NULL;  /* TODO: Return actual handle */
-    return SAPI_STATUS_OK;
+    return SAPI_STATUS_RESOURCE_EXHAUSTED;
 }
 
 sapi_status_t sapi_watchdog_start(sapi_watchdog_t watchdog)
 {
-    /* TODO: Start watchdog
-     * - Validate handle
-     * - Set active = 1
-     * - Initialize countdown = timeout_ms
-     * - Log start
-     *
-     * Safety: Cannot start already-running watchdog (check active)
-     */
+    sapi_watchdog_s *slot = (sapi_watchdog_s *)watchdog;
+    sapi_timestamp_ms_t now_ms = 0U;
 
-    if (watchdog == NULL) {
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if (!is_valid_handle(watchdog))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
     }
-
-    fprintf(stderr, "[WATCHDOG INFO] Starting watchdog\n");
-
-    /* TODO: Set up timer countdown */
-
+    (void)sapi_timer_now(&now_ms);
+    slot->active = 1U;
+    slot->fired = 0U;
+    slot->deadline_ms = now_ms + slot->config.timeout_ms;
+    slot->last_kick_ms = now_ms;
     return SAPI_STATUS_OK;
 }
 
 sapi_status_t sapi_watchdog_stop(sapi_watchdog_t watchdog)
 {
-    /* TODO: Stop watchdog
-     * - Validate handle
-     * - Set active = 0
-     * - Cancel countdown
-     * - Log stop
-     *
-     * Safety: Safe to call on already-stopped watchdog
-     */
+    sapi_watchdog_s *slot = (sapi_watchdog_s *)watchdog;
 
-    if (watchdog == NULL) {
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if (!is_valid_handle(watchdog))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
     }
-
-    fprintf(stderr, "[WATCHDOG INFO] Stopping watchdog\n");
-
-    /* TODO: Cancel timer */
-
+    slot->active = 0U;
     return SAPI_STATUS_OK;
 }
 
 sapi_status_t sapi_watchdog_kick(sapi_watchdog_t watchdog)
 {
-    /* TODO: Kick (pet) watchdog
-     * - Validate handle
-     * - Reset countdown = timeout_ms
-     * - Increment kicks counter
-     * - Log kick (at TRACE level to avoid spam)
-     *
-     * Safety (SIL 4, EN 50128):
-     * - Deterministic: O(1) time, no allocation
-     * - Can be called from interrupt context (ISR-safe)
-     * - Non-blocking
-     *
-     * Typical usage:
-     *   while (running) {
-     *       process_events();
-     *       sapi_watchdog_kick(wd);
-     *       sleep_ms(100);
-     *   }
-     */
+    sapi_watchdog_s *slot = (sapi_watchdog_s *)watchdog;
+    sapi_timestamp_ms_t now_ms = 0U;
 
-    if (watchdog == NULL) {
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if (!is_valid_handle(watchdog))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
     }
-
-    /* TODO: Reset countdown to timeout_ms, increment kicks counter */
-
+    if ((slot->active == 0U) || (slot->fired != 0U))
+    {
+        /* Not running, or already fired and awaiting an explicit
+         * start() before it can be kicked again - this codebase's real
+         * status enum has no generic SAPI_STATUS_ERROR (see
+         * sapi_status.h); SAPI_STATUS_INTERNAL_ERROR is the closest
+         * "kick while not in a kickable state" signal available. */
+        return SAPI_STATUS_INTERNAL_ERROR;
+    }
+    (void)sapi_timer_now(&now_ms);
+    slot->deadline_ms = now_ms + slot->config.timeout_ms;
+    slot->last_kick_ms = now_ms;
+    slot->kicks++;
     return SAPI_STATUS_OK;
 }
 
-sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog,
-                                        sapi_watchdog_status_t *status_out)
+sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog, sapi_watchdog_status_t *status_out)
 {
-    /* TODO: Get watchdog status
-     * - Validate handle and output pointer
-     * - Populate status structure:
-     *   - active: 1 if running
-     *   - kicks: total kicks since creation
-     *   - fires: total timeouts since creation
-     *   - recoveries: total recovery actions triggered
-     *   - time_since_last_kick: milliseconds since last kick
-     *   - time_until_fire: milliseconds until next timeout
-     *
-     * Safety:
-     * - Non-blocking read-only query
-     * - Can be called from any context
-     * - No side effects
-     */
+    const sapi_watchdog_s *slot = (const sapi_watchdog_s *)watchdog;
+    sapi_timestamp_ms_t now_ms = 0U;
 
-    if (watchdog == NULL || status_out == NULL) {
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if (!is_valid_handle(watchdog) || (status_out == NULL))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
     }
-
-    /* TODO: Populate status_out from watchdog state */
-    status_out->active = 0;
-    status_out->kicks = 0;
-    status_out->fires = 0;
-    status_out->recoveries = 0;
-    status_out->time_since_last_kick = 0;
-    status_out->time_until_fire = 0;
-
+    (void)sapi_timer_now(&now_ms);
+    status_out->active = slot->active;
+    status_out->kicks = slot->kicks;
+    status_out->fires = slot->fires;
+    status_out->recoveries = slot->recoveries;
+    status_out->time_since_last_kick =
+        (sapi_duration_ms_t)((now_ms >= slot->last_kick_ms) ? (now_ms - slot->last_kick_ms) : 0U);
+    status_out->time_until_fire = (sapi_duration_ms_t)((slot->deadline_ms > now_ms) ? (slot->deadline_ms - now_ms) : 0U);
     return SAPI_STATUS_OK;
 }
 
 sapi_status_t sapi_watchdog_destroy(sapi_watchdog_t watchdog)
 {
-    /* TODO: Destroy watchdog
-     * - Validate handle
-     * - Stop timer if running
-     * - Mark watchdog as available in pool
-     * - Log destruction
-     *
-     * Safety: Safe to call multiple times (idempotent)
-     */
+    sapi_watchdog_s *slot = (sapi_watchdog_s *)watchdog;
 
-    if (watchdog == NULL) {
-        return SAPI_STATUS_NOT_IMPLEMENTED;
+    if (!is_valid_handle(watchdog))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
     }
-
-    fprintf(stderr, "[WATCHDOG INFO] Destroying watchdog\n");
-
-    /* TODO: Return to pool, mark invalid */
-
+    slot->active = 0U;
+    slot->in_use = 0U;
     return SAPI_STATUS_OK;
 }
 
 /* ============================================================================
- * Internal: Timeout Handler
+ * Internal: Timeout Dispatch
  * ========================================================================== */
 
 void sapi_watchdog_timeout_handler(uint32_t watchdog_id)
 {
-    /* TODO: Handle watchdog timeout
-     * - Validate watchdog_id
-     * - Increment fires counter
-     * - Retrieve watchdog config (type, action, context)
-     * - Apply recovery action:
-     *
-     *   if (action == LOG):
-     *     - Log error message
-     *
-     *   if (action == SAFESTATE):
-     *     - Call sapi_safestate_trigger()
-     *
-     *   if (action == REBOOT):
-     *     - Queue reboot request (call sapi_reboot())
-     *
-     *   if (action == FAILOVER):
-     *     - Trigger failover logic (for redundant clusters)
-     *
-     *   if (action == CUSTOM):
-     *     - Call custom_action(context)
-     *
-     * Safety (SIL 4, EN 50128):
-     * - May be called from ISR context (timer interrupt)
-     * - Actions should be async (queued) not synchronous
-     * - Increment recoveries counter
-     * - Log all watchdog fires (audit trail)
-     * - Must be deterministic and non-blocking
-     *
-     * Typical usage (called by framework timer interrupt):
-     *   Timer fires after timeout_ms
-     *   → ISR calls sapi_watchdog_timeout_handler(wd_id)
-     *   → Handler logs and queues recovery action
-     *   → Main loop eventually processes recovery
-     */
+    sapi_watchdog_s *slot;
 
-    fprintf(stderr, "[WATCHDOG ERROR] Watchdog timeout (ID=%u)\n", watchdog_id);
+    if (watchdog_id >= (uint32_t)SAPI_WATCHDOG_MAX_COUNT)
+    {
+        return;
+    }
+    slot = &g_watchdog_pool[watchdog_id];
+    if ((slot->in_use == 0U) || (slot->active == 0U) || (slot->fired != 0U))
+    {
+        return;
+    }
 
-    /* TODO: Apply recovery action based on watchdog config */
+    slot->fired = 1U;
+    slot->fires++;
+
+    switch (slot->config.action)
+    {
+        case SAPI_WATCHDOG_ACTION_LOG:
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout");
+            break;
+        case SAPI_WATCHDOG_ACTION_SAFESTATE:
+            slot->recoveries++;
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - entering SAFE state");
+            sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_UNSPECIFIED, __FILE__,
+                                  (int32_t)__LINE__, slot->config.name);
+            break; /* Not statically unreachable: sapi_safestate_enter() has no
+                    * [[noreturn]]/_Noreturn attribute, so the compiler cannot
+                    * prove this dead - kept for switch-statement completeness. */
+        case SAPI_WATCHDOG_ACTION_REBOOT:
+            slot->recoveries++;
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - requesting reboot");
+            sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_REBOOT, SAPI_SAFESTATE_REASON_UNSPECIFIED, __FILE__,
+                                  (int32_t)__LINE__, slot->config.name);
+            break; /* Same non-return note as SAFESTATE above. */
+        case SAPI_WATCHDOG_ACTION_FAILOVER:
+            slot->recoveries++;
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name,
+                            "watchdog timeout - failover requested (no generic failover primitive in this "
+                            "framework; caller must poll sapi_watchdog_get_status())");
+            break;
+        case SAPI_WATCHDOG_ACTION_CUSTOM:
+            slot->recoveries++;
+            if (slot->config.custom_action != NULL)
+            {
+                slot->config.custom_action(slot->config.context);
+            }
+            break;
+        default:
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - unrecognized action");
+            break;
+    }
 }
 
 /* ============================================================================
- * Timer Integration Hooks (Platform-Specific)
+ * Timer Integration
  * ========================================================================== */
 
-/**
- * @internal
- * @brief Platform-specific timer tick (called by hardware timer ISR)
- *
- * Called periodically (e.g., every 1ms) by the system timer ISR.
- * Decrements all active watchdog countdowns and fires timeouts.
- *
- * TODO: Implement platform-specific timer setup
- * - On POSIX (Linux): setitimer() or clock_nanosleep()
- * - On QNX RTOS: TimerCreate() / TimerSettime()
- * - On baremetal: SysTick_Handler() or similar
- */
 void sapi_watchdog_timer_tick(void)
 {
-    /* TODO: Decrement countdown for each active watchdog
-     * If any countdown reaches 0:
-     *   - Call sapi_watchdog_timeout_handler()
-     */
+    /* Polling design, not an ISR/hardware-timer callback: this framework's
+     * only portable time source is sapi_timer_now() (a plain "read the
+     * clock" query, not a way to register a recurring OS-level interrupt
+     * across every target this framework claims to support - POSIX,
+     * QNX, bare-metal SysTick, etc.). Giving this module its own
+     * platform-specific interrupt setup would duplicate what
+     * safeapi::timer already exists to abstract, and would break the
+     * "backends are integrator-supplied" philosophy (ADR-005) for a
+     * module whose own header was never given a backend vtable. Instead:
+     * whatever already runs periodically in the integrating application
+     * (its own sapi_timer periodic callback, or just its own main loop)
+     * is expected to call this function regularly - each call is an O(N)
+     * scan (N = SAPI_WATCHDOG_MAX_COUNT, a small fixed pool) comparing
+     * each active watchdog's deadline against the current time. */
+    sapi_timestamp_ms_t now_ms = 0U;
+    uint32_t i;
+
+    if (g_manager_initialized == 0U)
+    {
+        return;
+    }
+    (void)sapi_timer_now(&now_ms);
+    for (i = 0U; i < (uint32_t)SAPI_WATCHDOG_MAX_COUNT; i++)
+    {
+        const sapi_watchdog_s *slot = &g_watchdog_pool[i];
+
+        if ((slot->in_use != 0U) && (slot->active != 0U) && (slot->fired == 0U) && (now_ms >= slot->deadline_ms))
+        {
+            sapi_watchdog_timeout_handler(i);
+        }
+    }
 }

@@ -5,7 +5,7 @@ target_include_directories(safeapi_watchdog
         ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(safeapi_watchdog PUBLIC safeapi_status safeapi_log)
+target_link_libraries(safeapi_watchdog PUBLIC safeapi_status safeapi_log safeapi_safestate safeapi_timer)
 
 safeapi_set_warnings(safeapi_watchdog)
 

@@ -4,6 +4,34 @@ Date: 2026-08-05 (updated for `sapi_checkpoint`/`sapi_clocksync`, ADR-017;
 also fixed `sapi_checksum.c`, which did not compile prior to this pass -
 see section 2's new row)
 
+**2026-08-05, update 3:** `sapi_watchdog.c` has been rewritten from a
+non-functional stub (every function was a no-op or empty `/* TODO */`) to
+a real, working implementation: a fixed-size static pool of watchdog
+slots, timed via `sapi_timer_now()` (no dynamic allocation, no new
+OS-specific code of its own). `sapi_watchdog_timer_tick()` now genuinely
+scans for expired watchdogs and dispatches the configured recovery action
+(`LOG` via `sapi_log_write()`, `SAFESTATE`/`REBOOT` via
+`sapi_safestate_enter()`, `CUSTOM` via the caller's callback). As part of
+this, the Rule 21.6 finding recorded below for `sapi_watchdog.c`
+(`<stdio.h>`/`fprintf` use) is now fixed - the new implementation has no
+`<stdio.h>` dependency at all, using only `sapi_log_write()` with static
+string literals (the same convention already used by `sapi_vital_channel.c`).
+`sapi_appmanager.c`'s own Rule 21.6 finding is unrelated and still open.
+Verified via a new real test suite (`tests/watchdog/test_sapi_watchdog.c`,
+13/13 framework tests passing) using a mock `sapi_timer` backend with a
+test-controlled clock: confirms a watchdog does NOT fire while kicked
+regularly, DOES fire once its deadline is genuinely passed, and that each
+of the `LOG`/`SAFESTATE`/`CUSTOM` actions dispatch correctly (SAFESTATE
+verified via the same setjmp/longjmp-diverting-handler technique as
+`tests/safestate/test_sapi_safestate.c`, since `SAPI_SAFESTATE_LEVEL_SAFE`
+is documented to never return). Also fixed a real, previously-latent
+linking bug this work surfaced: `src/watchdog/CMakeLists.txt` only linked
+`safeapi_status`/`safeapi_log`, even though the (stub) implementation's
+public header already implied a dependency on `safeapi_timer`; a
+standalone consumer of `safeapi::watchdog` alone (e.g. the new unit test)
+would have failed to link. Now links `safeapi_safestate`/`safeapi_timer`
+too.
+
 **2026-08-05, later same day - update 2:** the automated checker described
 as unavailable in section 1 below is now actually running for the first
 time (see new section 1a) - both because a real macOS `cmake`/`cppcheck`
@@ -70,7 +98,7 @@ Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
 | 15.5 (single point of exit) | 387 | Matches the deviation already documented in section 3 - consistent guard-clause style across the codebase, not new. |
 | 8.7 (internal linkage) | 138 | Needs manual triage - section 2 claims this rule is compliant-by-construction (`static` on every backend/handler table); a real tool disagreeing with that specific claim across 138 sites needs to be reconciled, not assumed to be a tool false-positive. Not yet triaged as part of this update. |
 | 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
-| 21.6 (banned `<stdio.h>`) | 28 | **Confirmed real, not a tool artifact:** both hits are in `sapi_appmanager.c` and `sapi_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. This closes that specific uncertainty: the gap was real. Not yet fixed here (removing/replacing `<stdio.h>` use in those two files is a separate, scoped follow-up). |
+| 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `sapi_appmanager.c` and `sapi_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `sapi_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `sapi_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
 | 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
 | `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIExample`); not necessarily a real problem, but not yet individually verified either. |
 
