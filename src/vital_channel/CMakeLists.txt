@@ -7,7 +7,7 @@ target_link_libraries(safeapi_vital_channel
 )
 
 target_include_directories(safeapi_vital_channel
-    PUBLIC ${CMAKE_SOURCE_DIR}/include
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
 safeapi_set_warnings(safeapi_vital_channel)

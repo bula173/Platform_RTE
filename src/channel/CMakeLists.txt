@@ -4,7 +4,7 @@ add_library(safeapi_channel STATIC
 
 target_include_directories(safeapi_channel
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 target_link_libraries(safeapi_channel

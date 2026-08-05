@@ -7,7 +7,7 @@ add_library(safeapi_checkpoint STATIC
 
 target_include_directories(safeapi_checkpoint
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 target_link_libraries(safeapi_checkpoint

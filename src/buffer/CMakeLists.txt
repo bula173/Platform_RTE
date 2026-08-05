@@ -4,7 +4,7 @@ add_library(safeapi_buffer STATIC
 
 target_include_directories(safeapi_buffer
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 safeapi_set_warnings(safeapi_buffer)

@@ -4,7 +4,7 @@ add_library(safeapi_nvm STATIC
 
 target_include_directories(safeapi_nvm
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 safeapi_set_warnings(safeapi_nvm)

@@ -2,7 +2,7 @@ add_library(safeapi_appmanager STATIC sapi_appmanager.c)
 
 target_include_directories(safeapi_appmanager
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 # Link against core safeAPI modules that appmanager depends on

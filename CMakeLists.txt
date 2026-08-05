@@ -85,58 +85,75 @@ endif()
 # ---------------------------------------------------------------------------
 # Package and export configuration (for downstream projects)
 # ---------------------------------------------------------------------------
-# Define install paths
-set(INCLUDE_INSTALL_DIR include)
-set(LIB_INSTALL_DIR lib)
-set(CMAKE_INSTALL_DIR lib/cmake/safeAPIFramework)
+# Only meaningful - and only run - when safeAPIFramework is the top-level
+# project being configured directly. A downstream project that pulls this
+# in via add_subdirectory() (e.g. safeAPIExample) shares this same build
+# tree's CMAKE_INSTALL_PREFIX; without this guard, `cmake --install` from
+# the downstream project would also install a full copy of every SAPI
+# header and static library into the downstream project's own install
+# tree (e.g. safeAPIExample/include/safeapi/..., safeAPIExample/lib/*.a)
+# alongside - and easily confusable with - that project's own sources.
+# CMAKE_PROJECT_NAME is the top-level project's name for the whole build;
+# PROJECT_NAME is this CMakeLists.txt's own project() name - they're only
+# equal when this file is the one that was configured directly.
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    # Define install paths
+    set(INCLUDE_INSTALL_DIR include)
+    set(LIB_INSTALL_DIR lib)
+    set(CMAKE_INSTALL_DIR lib/cmake/safeAPIFramework)
 
-# Install public headers
-install(DIRECTORY include/safeapi
-    DESTINATION ${INCLUDE_INSTALL_DIR}
-    COMPONENT development
-)
+    # Install public headers
+    install(DIRECTORY include/safeapi
+        DESTINATION ${INCLUDE_INSTALL_DIR}
+        COMPONENT development
+    )
 
-# Install CMake modules (for reuse by downstream projects)
-install(FILES
-    cmake/CompilerWarnings.cmake
-    cmake/SafeAPIHelpers.cmake
-    DESTINATION ${CMAKE_INSTALL_DIR}
-    COMPONENT development
-)
+    # Install CMake modules (for reuse by downstream projects)
+    install(FILES
+        cmake/CompilerWarnings.cmake
+        cmake/SafeAPIHelpers.cmake
+        DESTINATION ${CMAKE_INSTALL_DIR}
+        COMPONENT development
+    )
 
-# Generate and install config files
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfig.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
-    @ONLY
-)
+    # Generate and install config files
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
+        @ONLY
+    )
 
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfigVersion.cmake.in
-    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
-    @ONLY
-)
+    configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/safeAPIFrameworkConfigVersion.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
+        @ONLY
+    )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_DIR}
-    COMPONENT development
-)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/safeAPIFrameworkConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_DIR}
+        COMPONENT development
+    )
 
-# Install library targets (types is header-only)
-install(TARGETS
-    safeapi_status safeapi_buffer safeapi_cast
-    safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
-    safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
-    safeapi_watchdog safeapi_appmanager
-    safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint safeapi_netlink
-    ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
-    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-    RUNTIME DESTINATION bin
-    COMPONENT libraries
-)
+    # Install library targets (types is header-only)
+    install(TARGETS
+        safeapi_status safeapi_buffer safeapi_cast
+        safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
+        safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
+        safeapi_watchdog safeapi_appmanager
+        safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint safeapi_netlink
+        ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
+        LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+        RUNTIME DESTINATION bin
+        COMPONENT libraries
+    )
 
-message(STATUS "safeAPIFramework package configuration ready")
-message(STATUS "  Install with: cmake --install build")
-message(STATUS "  Use in downstream projects: find_package(safeAPIFramework)")
+    message(STATUS "safeAPIFramework package configuration ready")
+    message(STATUS "  Install with: cmake --install build")
+    message(STATUS "  Use in downstream projects: find_package(safeAPIFramework)")
+else()
+    message(STATUS "safeAPIFramework: consumed via add_subdirectory() by '${CMAKE_PROJECT_NAME}' - "
+                    "skipping this project's own install()/package export rules "
+                    "(the consuming project's own install() controls what gets installed)")
+endif()

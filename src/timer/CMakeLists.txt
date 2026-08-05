@@ -4,7 +4,7 @@ add_library(safeapi_timer STATIC
 
 target_include_directories(safeapi_timer
     PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
+        ${PROJECT_SOURCE_DIR}/include
 )
 
 safeapi_set_warnings(safeapi_timer)

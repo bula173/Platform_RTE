@@ -26,18 +26,14 @@ target_compile_options(safeapi_checksum PRIVATE
 # Create alias for consistency
 add_library(safeapi::checksum ALIAS safeapi_checksum)
 
-# Export for installation
-install(
-    FILES "${PROJECT_SOURCE_DIR}/include/safeapi/checksum/sapi_checksum.h"
-    DESTINATION include/safeapi/checksum
-)
-
-install(
-    TARGETS safeapi_checksum
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-)
+# Installation is handled once, centrally, by the top-level CMakeLists.txt's
+# "Package and export configuration" block (install(DIRECTORY include/safeapi
+# ...) already covers this header; install(TARGETS ... safeapi_checksum ...)
+# already covers this library) - guarded there to only run when
+# safeAPIFramework is the top-level project being configured directly, not
+# when pulled in via add_subdirectory() by a downstream project. Duplicate,
+# unguarded install() rules here previously bypassed that guard and leaked
+# this header/library into any downstream project's own install prefix.
 
 # Add tests if testing is enabled
 if(ENABLE_TESTING)
