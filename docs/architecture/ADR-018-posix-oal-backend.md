@@ -1,9 +1,23 @@
 # ADR-018: A Real POSIX/Linux OAL Backend
 
-Status: Draft
+Status: Superseded (relocated) - Accepted
 Date: 2026-08-05
-Applies to: `src/posix_backend/` (new), and how it plugs into every
+Applies to: the POSIX backend's design, and how it plugs into every
 existing OAL service's backend-registration mechanism (ADR-005).
+
+**Relocation note:** the code this ADR describes (`src/posix_backend/`,
+`include/safeapi/posix_backend/`, `tests/posix_backend/`) has been moved
+out of this repository into the `safeAPIExample` project
+(`src/posix_backend/` there). This is a location change only, not a
+design reversal - the rationale below is unchanged and still describes
+that code accurately. The move itself is a direct consequence of this
+ADR's own reasoning (ADR-005): an OAL backend is an integrator-supplied
+implementation for a specific target, not part of the reusable safety
+framework itself. safeAPIFreamwork now ships only the OAL service
+interfaces and their validate-then-dispatch layers (`sapi_<service>_*()`
++ `sapi_<service>_register_backend()`); any concrete backend - POSIX,
+an RTOS, bare metal - belongs in the application/integration project
+that registers it, which is what `safeAPIExample` now demonstrates.
 
 ## 1. Context
 

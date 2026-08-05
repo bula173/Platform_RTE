@@ -21,7 +21,6 @@ safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.
 safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::clocksync)
 safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::checkpoint)
 
-if(TARGET safeapi::posix_backend)
-    safeapi_add_test(test_sapi_posix_backend        posix_backend/test_sapi_posix_backend.c        safeapi::posix_backend)
-    safeapi_add_test(test_sapi_posix_backend_reboot posix_backend/test_sapi_posix_backend_reboot.c safeapi::posix_backend)
-endif()
+# posix_backend (and its tests) moved to the safeAPIExample project - an
+# OAL backend is an integrator-supplied implementation (ADR-005), not
+# part of this framework. See safeAPIExample's tests/posix_backend/.
