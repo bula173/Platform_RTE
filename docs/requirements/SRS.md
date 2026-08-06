@@ -240,6 +240,19 @@ added by ADR-017.
 | REQ-CLOCKSYNC-001 | `sapi_clocksync_get_offset_ms()` and `sapi_clocksync_get_quality()` shall return `SAPI_STATUS_NOT_INITIALIZED` if no backend has been registered. |
 | REQ-CLOCKSYNC-002 | This module shall never be called from, or influence the outcome of, `sapi_channel_checkpoint()` or any other vital comparison — checkpoint-ID rendezvous, not clock agreement, is the basis of comparison correctness (ADR-017 §2.3). |
 
+## 3b. Watchdog — `sapi_watchdog.h` (partial)
+
+Not a full backfill of this module (see 3a's own note on the pre-existing
+gap) - just the `SAPI_WATCHDOG_ACTION_FAILOVER` action, added when a real
+integrator (safeAPIExample's dual-channel A/B link and SITE<->SITE
+heartbeat) needed a "my redundant peer stopped responding" reaction and
+found the action a documented dead stub.
+
+| ID | Requirement |
+|---|---|
+| REQ-WATCHDOG-001 | `sapi_watchdog_create()` shall return `SAPI_STATUS_INVALID_PARAM` if `config->action` is `SAPI_WATCHDOG_ACTION_FAILOVER` and `config->custom_action` is `NULL` (same requirement already in force for `SAPI_WATCHDOG_ACTION_CUSTOM`). |
+| REQ-WATCHDOG-002 | On timeout, a watchdog configured with `SAPI_WATCHDOG_ACTION_FAILOVER` shall invoke `config->custom_action(config->context)` — identical dispatch to `SAPI_WATCHDOG_ACTION_CUSTOM` — and shall not itself decide what the timeout means; that decision belongs to the integrator's `custom_action`. |
+
 ## 4. Traceability
 
 Every `REQ-*` ID in this document appears verbatim in the corresponding

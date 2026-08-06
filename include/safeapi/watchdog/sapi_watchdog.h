@@ -62,7 +62,8 @@ typedef enum {
                                           *   specifically "my redundant partner stopped
                                           *   responding" (e.g. a dual-channel cross-compare link) -
                                           *   the distinct name documents intent at the call site,
-                                          *   even though the mechanism is identical to CUSTOM. */
+                                          *   even though the mechanism is identical to CUSTOM.
+                                          *   REQ-WATCHDOG-002 */
     SAPI_WATCHDOG_ACTION_CUSTOM         /**< Custom callback */
 } sapi_watchdog_action_t;
 
@@ -80,7 +81,7 @@ typedef struct {
                                           *   returns SAPI_STATUS_INVALID_PARAM otherwise) when
                                           *   action is SAPI_WATCHDOG_ACTION_CUSTOM or
                                           *   SAPI_WATCHDOG_ACTION_FAILOVER; unused for the other
-                                          *   actions. */
+                                          *   actions. REQ-WATCHDOG-001 */
     void *context;                      /**< Context for callback */
 } sapi_watchdog_config_t;
 

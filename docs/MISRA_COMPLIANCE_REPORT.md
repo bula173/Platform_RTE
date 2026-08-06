@@ -1,8 +1,33 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-05 (updated for `sapi_checkpoint`/`sapi_clocksync`, ADR-017;
-also fixed `sapi_checksum.c`, which did not compile prior to this pass -
-see section 2's new row)
+Date: 2026-08-06 (updated for `sapi_watchdog.c`'s new
+`SAPI_WATCHDOG_ACTION_FAILOVER` dispatch and a real portability bug fix in
+`sapi_appmanager.c` - see "update 4" note below)
+
+**2026-08-06, update 4:** two small, targeted changes, no automated
+re-run performed (see caveat below):
+- `sapi_watchdog.c`: `SAPI_WATCHDOG_ACTION_FAILOVER` now dispatches to
+  `config->custom_action(config->context)` on timeout - identical code
+  path to the already-reviewed `SAPI_WATCHDOG_ACTION_CUSTOM` case (same
+  function pointer type, same call site, same NULL-guard), plus a matching
+  `custom_action != NULL` check added to `sapi_watchdog_create()`'s
+  existing validation block for `CUSTOM`. No new construct, no new banned
+  header, no new dynamic allocation - MISRA posture unchanged from what
+  was already reviewed for `CUSTOM`.
+- `sapi_appmanager.c`: added `#define _POSIX_C_SOURCE 200809L` before any
+  header include. This is a feature-test-macro fix, not a new construct -
+  `struct sigaction`/`sigaction()`/`sigemptyset()` were already present
+  and already covered by section 3's Rule 21.5 deviation entry below; this
+  fix is what makes that already-documented, already-reviewed code path
+  actually compile under glibc's strict-C99 mode (caught by a real Linux
+  CI failure - the omission had been silently masked on macOS, whose libc
+  does not gate these declarations the same way). See section 3's Rule
+  21.5 entry for the updated note.
+- **Caveat:** neither change was re-verified with a fresh `cppcheck
+  --addon=misra` run (section 1a's own counts are therefore unchanged and
+  slightly stale as of this update) - both are small, mechanically
+  reasoned as MISRA-neutral above rather than tool-confirmed. A fresh run
+  is still recommended before treating section 1a's numbers as current.
 
 **2026-08-05, update 3:** `sapi_watchdog.c` has been rewritten from a
 non-functional stub (every function was a no-op or empty `/* TODO */`) to
@@ -203,6 +228,18 @@ Being transparent about these rather than silently non-compliant:
   a caller needing different signals or additional handler logic should
   install their own via `sigaction()` directly rather than using this
   convenience function.
+  **Update 2026-08-06:** this code path did not actually compile on
+  Linux/glibc under strict C99 (`struct sigaction`/`sigaction()`/
+  `sigemptyset()` are POSIX.1-2001, hidden by glibc without an explicit
+  feature-test macro) - a real GitHub Actions CI failure caught this,
+  masked locally because macOS's libc does not gate these declarations the
+  same way. Fixed by adding `#define _POSIX_C_SOURCE 200809L` before any
+  header include in `sapi_appmanager.c` (same pattern already used in
+  `safeAPIExample`'s own POSIX application files). No change to the
+  deviation itself - `<signal.h>` is still genuinely included and still
+  guarded by the same `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS` compile-time
+  gate; this only fixes a portability bug in code that was already
+  supposed to work.
 
 ## 4. Explicitly out of scope: `tests/`
 
