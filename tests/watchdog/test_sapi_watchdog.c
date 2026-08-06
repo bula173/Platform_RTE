@@ -16,6 +16,7 @@
 #include "safeapi/watchdog/sapi_watchdog.h"
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/timer/sapi_timer.h"
+#include "safeapi_backend/timer/sapi_timer_backend.h"
 
 /* ---- mock timer backend: caller-controlled clock ---- */
 static sapi_timestamp_ms_t g_mock_now_ms = 0U;

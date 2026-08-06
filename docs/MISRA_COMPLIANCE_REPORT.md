@@ -1,7 +1,37 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for the new `sapi_dual` module, ADR-020 - see
-"update 7" note below)
+Date: 2026-08-06 (updated for the consumer/backend header split, ADR-021
+- see "update 8" note below)
+
+**2026-08-06, update 8 (header restructuring only, no behavior change -
+ADR-021 consumer/OS-backend header split, `sapi_timer` pilot):** no
+automated re-run performed (same caveat as prior updates - still no
+`cppcheck` in this sandbox session); reasoned manually since this change
+is a pure declaration move, not new logic:
+
+- `sapi_timer_backend_t` and `sapi_timer_register_backend()`'s
+  *declarations* moved from `include/safeapi/timer/sapi_timer.h` to the
+  new `include/safeapi_backend/timer/sapi_timer_backend.h`; their
+  *implementation* in `src/timer/sapi_timer.c` is byte-for-byte
+  unchanged, only its `#include` list gained the new header. No new
+  casts, no new control flow, no new dynamic behavior - the existing
+  Rule 8.x (declaration consistency), 17.x, and 21.x findings already
+  covering `sapi_timer.c` in prior updates are unaffected.
+- Every call site that referenced the vtable type
+  (`tests/timer/test_sapi_timer.c`, `tests/watchdog/test_sapi_watchdog.c`,
+  `tests/dual/test_sapi_dual_negotiator.c`, `tests/log/test_sapi_log.c`,
+  safeAPIExample's `sapi_posix_backend.h`/`sapi_posix_backend_timer.c`)
+  gained the new `#include` and were rebuilt; no site needed a logic
+  change.
+- Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
+  all four affected framework unit tests (all pass) plus a full rebuild
+  and live 8-process run of safeAPIExample (0 errors, clean shutdown) -
+  see ADR-021 section 2.3.
+- **Not yet done:** the same split for the other eight backend-bearing
+  modules (`nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
+  `clocksync`) - ADR-021 is a pilot on `sapi_timer` only as of this
+  update. This report will gain a further update per module as each is
+  split.
 
 **2026-08-06, update 7 (new module, `sapi_dual` - ADR-020 dual-transfer
 state negotiation):** no automated re-run performed (same caveat as

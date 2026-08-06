@@ -109,41 +109,13 @@ sapi_status_t sapi_timer_destroy(sapi_timer_handle_t handle);
  */
 sapi_status_t sapi_timer_now(sapi_timestamp_ms_t *out_now_ms);
 
-/**
- * @brief Backend vtable: an integrator's implementation of the timer
- *        service for a specific OS/RTOS/BSP target (ADR-005). Any slot may
- *        be NULL if that operation is unsupported by the backend, in which
- *        case the corresponding sapi_timer_* call returns
- *        SAPI_STATUS_NOT_SUPPORTED.
+/*
+ * The backend vtable (sapi_timer_backend_t) and sapi_timer_register_backend()
+ * live in safeapi_backend/timer/sapi_timer_backend.h, not here (ADR-021).
+ * This header is the consumer-facing surface only - a real application
+ * never needs to see the backend vtable shape; only the platform
+ * integrator wiring a concrete backend does.
  */
-typedef struct sapi_timer_backend_s
-{
-    /** @brief Backend implementation of sapi_timer_create(). May be NULL. */
-    sapi_status_t (*create)(sapi_timer_storage_t *storage,
-                             const sapi_timer_config_t *config,
-                             sapi_timer_handle_t *out_handle);
-    /** @brief Backend implementation of sapi_timer_start(). May be NULL. */
-    sapi_status_t (*start)(sapi_timer_handle_t handle);
-    /** @brief Backend implementation of sapi_timer_stop(). May be NULL. */
-    sapi_status_t (*stop)(sapi_timer_handle_t handle);
-    /** @brief Backend implementation of sapi_timer_destroy(). May be NULL. */
-    sapi_status_t (*destroy)(sapi_timer_handle_t handle);
-    /** @brief Backend implementation of sapi_timer_now(). May be NULL. */
-    sapi_status_t (*now)(sapi_timestamp_ms_t *out_now_ms);
-} sapi_timer_backend_t;
-
-/**
- * @brief Registers the backend implementation used by every sapi_timer_*
- *        call. This is how an integrator supplies their own timer
- *        implementation (ADR-005 section 2.1) - call once at startup,
- *        before any other sapi_timer_* function.
- * @param backend  Must not be NULL. Registering again replaces the
- *                 previously registered backend.
- * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
- *
- * REQ-OAL-TIMER-015
- */
-sapi_status_t sapi_timer_register_backend(const sapi_timer_backend_t *backend);
 
 #ifdef __cplusplus
 }

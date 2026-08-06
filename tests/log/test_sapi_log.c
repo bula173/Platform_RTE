@@ -19,6 +19,7 @@
 #include <string.h>
 #include "safeapi/log/sapi_log.h"
 #include "safeapi/timer/sapi_timer.h"
+#include "safeapi_backend/timer/sapi_timer_backend.h"
 
 /* --- mock log backend: captures the last (level, tag, message) --- */
 static sapi_log_level_t g_last_level;

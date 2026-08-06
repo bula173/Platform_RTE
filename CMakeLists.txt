@@ -119,11 +119,25 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(LIB_INSTALL_DIR lib)
     set(CMAKE_INSTALL_DIR lib/cmake/safeAPIFramework)
 
-    # Install public headers
+    # Install public (consumer-facing) headers.
     install(DIRECTORY include/safeapi
         DESTINATION ${INCLUDE_INSTALL_DIR}
         COMPONENT development
     )
+
+    # Install OS-backend adaptation headers (ADR-021) as their own component -
+    # a real application never includes anything under safeapi_backend/; only
+    # the platform integrator wiring a concrete backend does. Kept as a
+    # separate top-level tree (not a subfolder of include/safeapi) so the
+    # two audiences are visibly, physically separate, not just conventionally
+    # so. Currently only the timer module has been split this way (pilot);
+    # more modules move here incrementally.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_backend")
+        install(DIRECTORY include/safeapi_backend
+            DESTINATION ${INCLUDE_INSTALL_DIR}
+            COMPONENT backend-development
+        )
+    endif()
 
     # Install CMake modules (for reuse by downstream projects)
     install(FILES

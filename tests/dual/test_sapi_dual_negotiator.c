@@ -13,6 +13,7 @@
 #include "safeapi/checksum/sapi_checksum.h"
 #include "safeapi/dual/sapi_dual_negotiator.h"
 #include "safeapi/timer/sapi_timer.h"
+#include "safeapi_backend/timer/sapi_timer_backend.h"
 
 typedef struct
 {

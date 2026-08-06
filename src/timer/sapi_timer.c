@@ -5,6 +5,7 @@
  *        backend registered via sapi_timer_register_backend() (ADR-005).
  */
 #include "safeapi/timer/sapi_timer.h"
+#include "safeapi_backend/timer/sapi_timer_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_timer_backend_t *s_backend = NULL;
