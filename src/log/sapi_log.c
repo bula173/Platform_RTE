@@ -77,28 +77,34 @@ const char *sapi_log_level_to_string(sapi_log_level_t level)
 }
 
 /**
- * @brief Appends "|" then (value, or "" if value is NULL) to *line.
- *        Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from either
- *        concat is silently accepted (line is left truncated at
- *        whatever fit) - REQ-OAL-LOG-001, this must never fail the
- *        caller's control flow, so there is nothing to report here.
+ * @brief Appends " Key=Value" to *line (a leading space, then key, "=",
+ *        then value or "" if value is NULL) - the Key=Value pair
+ *        convention sapi_log_write_event() uses for every field.
+ *        Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from any concat
+ *        is silently accepted (line is left truncated at whatever fit) -
+ *        REQ-OAL-LOG-001, this must never fail the caller's control
+ *        flow, so there is nothing to report here.
  * @param line   Line being built. Must not be NULL.
- * @param value  Field value to append; NULL is treated as an empty field.
+ * @param key    Field key/label (e.g. "Cycle"). Must not be NULL.
+ * @param value  Field value to append; NULL is treated as an empty value.
  */
-static void sapi_log_append_event_field(sapi_string_t *line, const char *value)
+static void sapi_log_append_event_field(sapi_string_t *line, const char *key, const char *value)
 {
-    (void)sapi_string_concat(line, "|");
+    (void)sapi_string_concat(line, " ");
+    (void)sapi_string_concat(line, key);
+    (void)sapi_string_concat(line, "=");
     (void)sapi_string_concat(line, (value != NULL) ? value : "");
 }
 
 /**
- * @brief Formats value in base 10 and appends it as the next field of
- *        *line via sapi_log_append_event_field(). Uses a small local
+ * @brief Formats value in base 10 and appends it as "Key=value" via
+ *        sapi_log_append_event_field(). Uses a small local
  *        sapi_string_t/buffer, independent of *line's own storage.
  * @param line   Line being built. Must not be NULL.
+ * @param key    Field key/label. Must not be NULL.
  * @param value  Value to format.
  */
-static void sapi_log_append_event_field_u32(sapi_string_t *line, uint32_t value)
+static void sapi_log_append_event_field_u32(sapi_string_t *line, const char *key, uint32_t value)
 {
     char num_storage[16];
     sapi_string_t num;
@@ -107,7 +113,7 @@ static void sapi_log_append_event_field_u32(sapi_string_t *line, uint32_t value)
     (void)sapi_string_init(&num, num_storage, sizeof(num_storage));
     (void)sapi_string_from_u32(&num, value);
     (void)sapi_string_c_str(&num, &num_cstr);
-    sapi_log_append_event_field(line, num_cstr);
+    sapi_log_append_event_field(line, key, num_cstr);
 }
 
 void sapi_log_write_event(sapi_log_level_t level,
@@ -140,22 +146,30 @@ void sapi_log_write_event(sapi_log_level_t level,
     /* TIMESTAMP: best-effort - stays 0 (its declared initializer) if no
      * sapi_timer backend is registered or the call otherwise fails; a
      * timer problem must never prevent this event from being logged
-     * (REQ-OAL-LOG-001), so the field is degraded, not the whole call. */
+     * (REQ-OAL-LOG-001), so the field is degraded, not the whole call.
+     * Written directly (no leading space/key on the first field). */
     (void)sapi_timer_now(&now_ms);
     (void)sapi_string_from_u64(&ts, now_ms);
     (void)sapi_string_c_str(&ts, &ts_cstr);
+    (void)sapi_string_concat(&line, "Timestamp=");
     (void)sapi_string_concat(&line, (ts_cstr != NULL) ? ts_cstr : "0");
 
-    sapi_log_append_event_field(&line, sapi_log_level_to_string(level));
-    sapi_log_append_event_field_u32(&line, cycle);
-    sapi_log_append_event_field(&line, source);
-    sapi_log_append_event_field(&line, destination);
-    sapi_log_append_event_field(&line, type);
-    sapi_log_append_event_field(&line, info);
+    sapi_log_append_event_field(&line, "Level", sapi_log_level_to_string(level));
+    sapi_log_append_event_field_u32(&line, "Cycle", cycle);
+    sapi_log_append_event_field(&line, "Source", source);
+    sapi_log_append_event_field(&line, "Destination", destination);
+    sapi_log_append_event_field(&line, "Type", type);
+    sapi_log_append_event_field(&line, "Info", info);
 
     if (extra_fields != NULL)
     {
-        sapi_log_append_event_field(&line, extra_fields);
+        /* extra_fields is already caller-formatted Key=Value text (see
+         * this function's own doc) - appended verbatim behind a single
+         * separating space, not wrapped in another key, so it reads as
+         * more of the same space-separated Key=Value convention rather
+         * than a nested field. */
+        (void)sapi_string_concat(&line, " ");
+        (void)sapi_string_concat(&line, extra_fields);
     }
 
     (void)sapi_string_c_str(&line, &line_cstr);

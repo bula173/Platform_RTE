@@ -92,16 +92,18 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  * errors the caller):
  *
  * @code
- * TIMESTAMP|LEVEL|CYCLE|SOURCE|DESTINATION|TYPE|INFO[|EXTRA_FIELDS]
+ * Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]
  * @endcode
  *
- * as the `message` argument of the registered sapi_log_backend_t::write(),
- * with `source` passed as that call's `tag` argument - an existing
- * backend needs no changes to receive structured events (e.g. the
- * shipped POSIX backend still prefixes its own "[LEVEL] tag: " for
- * terminal readability; a consumer parsing the *structured* fields
- * should parse from the `message` value itself, not whatever cosmetic
- * wrapping a specific backend adds around it).
+ * i.e. space-separated `Key=Value` pairs, one per mandatory field, in
+ * that fixed order, as the `message` argument of the registered
+ * sapi_log_backend_t::write(), with `source` passed as that call's `tag`
+ * argument - an existing backend needs no changes to receive structured
+ * events (e.g. the shipped POSIX backend still prefixes its own
+ * "[LEVEL] tag: " for terminal readability; a consumer parsing the
+ * *structured* `Key=Value` fields should parse from the `message` value
+ * itself, not whatever cosmetic wrapping a specific backend adds around
+ * it).
  *
  * TIMESTAMP is sourced internally via sapi_timer_now() (milliseconds);
  * "0" is emitted if no sapi_timer backend is registered or the call
@@ -122,12 +124,14 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  *                       "M136", "CHECKPOINT_REQUEST", "AGREE"). Must not
  *                       be NULL.
  * @param info          Free-text human-readable detail. May be NULL (an
- *                       empty INFO field is emitted).
- * @param extra_fields  Optional, caller-preformatted additional fields
- *                       (e.g. "D_LRBG=42 CRC=OK"), appended verbatim
- *                       after INFO behind one more field delimiter. May
- *                       be NULL (omitted entirely - no trailing
- *                       delimiter is emitted in that case).
+ *                       empty `Info=` value is emitted).
+ * @param extra_fields  Optional, caller-preformatted additional
+ *                       `Key=Value` text (e.g. "D_LRBG=42 CRC=OK"),
+ *                       appended verbatim after `Info=...` behind one
+ *                       separating space - not wrapped in another key,
+ *                       so it reads as more of the same space-separated
+ *                       `Key=Value` convention. May be NULL (omitted
+ *                       entirely - no trailing space is emitted either).
  *
  * @note Fixed arity, no variadic/`<stdarg.h>` (MISRA C:2012 Rule 17.1) -
  *       the single `extra_fields` parameter is how a caller adds more
