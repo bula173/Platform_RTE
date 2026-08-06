@@ -136,8 +136,15 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out, const sapi_watch
     {
         return SAPI_STATUS_INVALID_PARAM;
     }
-    if ((config->action == SAPI_WATCHDOG_ACTION_CUSTOM) && (config->custom_action == NULL))
+    if (((config->action == SAPI_WATCHDOG_ACTION_CUSTOM) || (config->action == SAPI_WATCHDOG_ACTION_FAILOVER))
+        && (config->custom_action == NULL))
     {
+        /* FAILOVER requires a real handler just like CUSTOM does (see
+         * sapi_watchdog_timeout_handler()'s own doc) - a FAILOVER watchdog
+         * with no handler wired up can only ever log, which is what
+         * ACTION_LOG is already for; requiring custom_action here catches
+         * that misconfiguration at create() time instead of silently
+         * degrading to a log line the first time it actually fires. */
         return SAPI_STATUS_INVALID_PARAM;
     }
     if (g_manager_initialized == 0U)
@@ -289,9 +296,22 @@ void sapi_watchdog_timeout_handler(uint32_t watchdog_id)
             break; /* Same non-return note as SAFESTATE above. */
         case SAPI_WATCHDOG_ACTION_FAILOVER:
             slot->recoveries++;
-            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name,
-                            "watchdog timeout - failover requested (no generic failover primitive in this "
-                            "framework; caller must poll sapi_watchdog_get_status())");
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - failover requested");
+            /* sapi_watchdog_create() requires config.custom_action != NULL
+             * for this action (see its own doc) - dispatched exactly like
+             * ACTION_CUSTOM, just under a name that documents *why* the
+             * integrator registered this watchdog (loss of a redundant
+             * peer/channel) rather than *how* it reacts, which is
+             * identical to CUSTOM's own mechanism. This used to be a dead
+             * stub ("no generic failover primitive in this framework;
+             * caller must poll sapi_watchdog_get_status()") - replaced
+             * once a real integrator (safeAPIExample's dual-channel A/B
+             * link) needed exactly this reaction and found nothing to
+             * call. */
+            if (slot->config.custom_action != NULL)
+            {
+                slot->config.custom_action(slot->config.context);
+            }
             break;
         case SAPI_WATCHDOG_ACTION_CUSTOM:
             slot->recoveries++;

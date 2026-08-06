@@ -1,3 +1,14 @@
+/* _POSIX_C_SOURCE 200809L: struct sigaction/sigaction()/sigemptyset() below
+ * are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is
+ * included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/
+ * monitor_c.c). Without this, glibc's strict-C99 mode hides these
+ * declarations entirely: this exact omission passed on macOS (Apple's
+ * libc does not gate them behind the same feature-test macro) but failed
+ * Linux CI with "storage size of 'sa' isn't known" / implicit-declaration
+ * errors under -Werror - caught via a real GitHub Actions failure, not
+ * local testing. */
+#define _POSIX_C_SOURCE 200809L
+
 /**
  * @file sapi_appmanager.c
  * @brief Application Manager implementation

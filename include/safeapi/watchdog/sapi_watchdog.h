@@ -54,7 +54,15 @@ typedef enum {
     SAPI_WATCHDOG_ACTION_LOG,           /**< Log event only */
     SAPI_WATCHDOG_ACTION_SAFESTATE,     /**< Trigger safe-state */
     SAPI_WATCHDOG_ACTION_REBOOT,        /**< System reboot */
-    SAPI_WATCHDOG_ACTION_FAILOVER,      /**< Failover to backup */
+    SAPI_WATCHDOG_ACTION_FAILOVER,      /**< Loss of a redundant peer/channel detected - invokes
+                                          *   config->custom_action (same dispatch as
+                                          *   SAPI_WATCHDOG_ACTION_CUSTOM; custom_action is required
+                                          *   for this action too - see sapi_watchdog_create()). Use
+                                          *   this over CUSTOM when the *reason* a watchdog exists is
+                                          *   specifically "my redundant partner stopped
+                                          *   responding" (e.g. a dual-channel cross-compare link) -
+                                          *   the distinct name documents intent at the call site,
+                                          *   even though the mechanism is identical to CUSTOM. */
     SAPI_WATCHDOG_ACTION_CUSTOM         /**< Custom callback */
 } sapi_watchdog_action_t;
 
@@ -68,7 +76,11 @@ typedef struct {
     const char *name;                   /**< Watchdog name (for logging) */
     sapi_duration_ms_t timeout_ms;      /**< Timeout deadline (ms) */
     sapi_watchdog_action_t action;      /**< Recovery action on timeout */
-    void (*custom_action)(void *ctx);   /**< Custom action callback (if action=CUSTOM) */
+    void (*custom_action)(void *ctx);   /**< Handler callback - required (sapi_watchdog_create()
+                                          *   returns SAPI_STATUS_INVALID_PARAM otherwise) when
+                                          *   action is SAPI_WATCHDOG_ACTION_CUSTOM or
+                                          *   SAPI_WATCHDOG_ACTION_FAILOVER; unused for the other
+                                          *   actions. */
     void *context;                      /**< Context for callback */
 } sapi_watchdog_config_t;
 

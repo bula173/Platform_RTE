@@ -1,5 +1,13 @@
 name: Generate Documentation
 
+# contents: write - required by peaceiris/actions-gh-pages below to push
+# to the gh-pages branch using the default GITHUB_TOKEN. Missing this was
+# the cause of the observed "Write access to repository not granted" / 403
+# failure (GitHub now defaults the token to read-only unless a workflow
+# explicitly requests write access).
+permissions:
+  contents: write
+
 on:
   push:
     branches:
