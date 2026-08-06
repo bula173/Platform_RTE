@@ -1,10 +1,10 @@
-/* Tests for sapi_log_write_event() (ADR-019-era addition): the
- * "Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst>
- * Type=<type> Info=<info>[ <extra_fields>]" space-separated Key=Value
- * line, NULL info/extra_fields handling, level_to_string mapping,
- * Timestamp degrading to "0" rather than failing when no sapi_timer
- * backend is registered, and the pre-existing sapi_log_write()/no-backend
- * contract being unaffected by this addition.
+/* Tests for sapi_log_write_event(): the
+ * "Site=<site> Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src>
+ * Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]"
+ * space-separated Key=Value line, NULL info/extra_fields handling,
+ * level_to_string mapping, Timestamp degrading to "0" rather than
+ * failing when no sapi_timer backend is registered, and the pre-existing
+ * sapi_log_write()/no-backend contract being unaffected by this addition.
  *
  * Verified via exact expected-line string comparison rather than
  * tokenizing the emitted line: unlike a pipe-delimited format, a
@@ -73,7 +73,7 @@ int main(void)
     /* No backend registered yet: silent no-op, same contract as
      * sapi_log_write() - REQ-OAL-LOG-001. */
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_INFO, 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
+    sapi_log_write_event(SAPI_LOG_LEVEL_INFO, "WEST", 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
     assert(g_write_calls == 0);
 
     assert(sapi_log_register_backend(&g_mock_log_backend) == SAPI_STATUS_OK);
@@ -81,44 +81,55 @@ int main(void)
     /* No sapi_timer backend registered: Timestamp field degrades to "0"
      * rather than the call being skipped or failing. */
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_INFO, 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
+    sapi_log_write_event(SAPI_LOG_LEVEL_INFO, "WEST", 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
     assert(g_write_calls == 1);
     assert(g_last_level == SAPI_LOG_LEVEL_INFO);
     assert(strcmp(g_last_tag, "A/WEST") == 0); /* source is passed as tag */
     (void)snprintf(expected, sizeof(expected),
-                    "Timestamp=0 Level=INFO Cycle=7 Source=A/WEST Destination=B Type=AB_SAMPLE Info=cycle sample");
+                    "Site=WEST Timestamp=0 Level=INFO Cycle=7 Source=A/WEST Destination=B Type=AB_SAMPLE "
+                    "Info=cycle sample");
     assert(strcmp(g_last_message, expected) == 0);
 
     /* With a timer backend registered, Timestamp reflects it. */
     assert(sapi_timer_register_backend(&g_mock_timer_backend) == SAPI_STATUS_OK);
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_ERROR, 42U, "B/EAST", "A", "DISAGREE", "M24 vs M15", NULL);
+    sapi_log_write_event(SAPI_LOG_LEVEL_ERROR, "EAST", 42U, "B/EAST", "A", "DISAGREE", "M24 vs M15", NULL);
     (void)snprintf(expected, sizeof(expected),
-                    "Timestamp=123456789 Level=ERROR Cycle=42 Source=B/EAST Destination=A Type=DISAGREE "
-                    "Info=M24 vs M15");
+                    "Site=EAST Timestamp=123456789 Level=ERROR Cycle=42 Source=B/EAST Destination=A "
+                    "Type=DISAGREE Info=M24 vs M15");
+    assert(strcmp(g_last_message, expected) == 0);
+
+    /* NULL site -> empty Site= value, not a dropped field (Site is
+     * first, so this also checks the very first field's own NULL
+     * handling, distinct from every later field's). */
+    reset_capture();
+    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, NULL, 1U, "C", "-", "M136", "info", NULL);
+    (void)snprintf(expected, sizeof(expected),
+                    "Site= Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 Info=info");
     assert(strcmp(g_last_message, expected) == 0);
 
     /* NULL info -> empty Info= value, not a dropped field. */
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, 1U, "C", "-", "M136", NULL, NULL);
+    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, "WEST", 1U, "C", "-", "M136", NULL, NULL);
     (void)snprintf(expected, sizeof(expected),
-                    "Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 Info=");
+                    "Site=WEST Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 Info=");
     assert(strcmp(g_last_message, expected) == 0);
 
     /* extra_fields, when non-NULL, is appended verbatim after Info=...
      * behind one separating space (not wrapped in another key). */
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, 1U, "C", "-", "M136", "info", "D_LRBG=42 CRC=OK");
+    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, "WEST", 1U, "C", "-", "M136", "info", "D_LRBG=42 CRC=OK");
     (void)snprintf(expected, sizeof(expected),
-                    "Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 Info=info "
-                    "D_LRBG=42 CRC=OK");
+                    "Site=WEST Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 "
+                    "Info=info D_LRBG=42 CRC=OK");
     assert(strcmp(g_last_message, expected) == 0);
 
     /* extra_fields NULL -> no trailing space/text at all after Info=. */
     reset_capture();
-    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, 1U, "C", "-", "M136", "info", NULL);
+    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, "WEST", 1U, "C", "-", "M136", "info", NULL);
     (void)snprintf(expected, sizeof(expected),
-                    "Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 Info=info");
+                    "Site=WEST Timestamp=123456789 Level=DEBUG Cycle=1 Source=C Destination=- Type=M136 "
+                    "Info=info");
     assert(strcmp(g_last_message, expected) == 0);
 
     return 0;

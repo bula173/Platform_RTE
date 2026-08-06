@@ -72,7 +72,7 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  *         one sapi_log_write_event() line - fields are truncated, not
  *         rejected, if the formatted line would exceed this (REQ-OAL-LOG-001:
  *         a formatting limit must never turn into a blocked/failed
- *         caller). Sized generously for the 7 mandatory fields plus a
+ *         caller). Sized generously for the 8 mandatory fields plus a
  *         typical extra_fields value; a longer extra_fields is where
  *         truncation would first show up in practice. */
 #define SAPI_LOG_EVENT_LINE_MAX_LEN 256U
@@ -92,7 +92,7 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  * errors the caller):
  *
  * @code
- * Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]
+ * Site=<site> Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]
  * @endcode
  *
  * i.e. space-separated `Key=Value` pairs, one per mandatory field, in
@@ -105,13 +105,21 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  * itself, not whatever cosmetic wrapping a specific backend adds around
  * it).
  *
- * TIMESTAMP is sourced internally via sapi_timer_now() (milliseconds);
+ * Timestamp is sourced internally via sapi_timer_now() (milliseconds);
  * "0" is emitted if no sapi_timer backend is registered or the call
  * otherwise fails - REQ-OAL-LOG-001 means a timer problem must never
  * prevent this call from returning, so a timestamp failure degrades the
- * TIMESTAMP field rather than skipping the whole event.
+ * Timestamp field rather than skipping the whole event.
  *
  * @param level         Severity.
+ * @param site          Caller-supplied node/site/instance identifier
+ *                       (e.g. "WEST", "EAST") - the framework has no
+ *                       concept of a "site" itself; this is opaque,
+ *                       caller-defined text, first in the emitted line so
+ *                       a log consumer merging output from multiple
+ *                       redundant instances can always tell them apart
+ *                       at a glance. Must not be NULL; pass "" if this
+ *                       integration has no such concept.
  * @param cycle         Cycle/iteration counter this event belongs to
  *                       (e.g. sapi_appmanager_state_t::iteration_count).
  *                       Use 0 if this event has no natural cycle.
@@ -135,7 +143,7 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  *
  * @note Fixed arity, no variadic/`<stdarg.h>` (MISRA C:2012 Rule 17.1) -
  *       the single `extra_fields` parameter is how a caller adds more
- *       than the seven mandatory fields; build it first with
+ *       than the eight mandatory fields; build it first with
  *       `safeapi::string`'s bounded helpers (`sapi_string_concat()` etc.),
  *       the same primitives this function uses internally.
  * @note Every field is truncated, not rejected, if the internal
@@ -146,6 +154,7 @@ const char *sapi_log_level_to_string(sapi_log_level_t level);
  * REQ-OAL-LOG-014
  */
 void sapi_log_write_event(sapi_log_level_t level,
+                           const char *site,
                            uint32_t cycle,
                            const char *source,
                            const char *destination,

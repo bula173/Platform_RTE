@@ -117,6 +117,7 @@ static void sapi_log_append_event_field_u32(sapi_string_t *line, const char *key
 }
 
 void sapi_log_write_event(sapi_log_level_t level,
+                           const char *site,
                            uint32_t cycle,
                            const char *source,
                            const char *destination,
@@ -143,16 +144,18 @@ void sapi_log_write_event(sapi_log_level_t level,
     (void)sapi_string_init(&line, line_storage, sizeof(line_storage));
     (void)sapi_string_init(&ts, ts_storage, sizeof(ts_storage));
 
+    /* Site: written directly (no leading space/key), first field. */
+    (void)sapi_string_concat(&line, "Site=");
+    (void)sapi_string_concat(&line, (site != NULL) ? site : "");
+
     /* TIMESTAMP: best-effort - stays 0 (its declared initializer) if no
      * sapi_timer backend is registered or the call otherwise fails; a
      * timer problem must never prevent this event from being logged
-     * (REQ-OAL-LOG-001), so the field is degraded, not the whole call.
-     * Written directly (no leading space/key on the first field). */
+     * (REQ-OAL-LOG-001), so the field is degraded, not the whole call. */
     (void)sapi_timer_now(&now_ms);
     (void)sapi_string_from_u64(&ts, now_ms);
     (void)sapi_string_c_str(&ts, &ts_cstr);
-    (void)sapi_string_concat(&line, "Timestamp=");
-    (void)sapi_string_concat(&line, (ts_cstr != NULL) ? ts_cstr : "0");
+    sapi_log_append_event_field(&line, "Timestamp", (ts_cstr != NULL) ? ts_cstr : "0");
 
     sapi_log_append_event_field(&line, "Level", sapi_log_level_to_string(level));
     sapi_log_append_event_field_u32(&line, "Cycle", cycle);
