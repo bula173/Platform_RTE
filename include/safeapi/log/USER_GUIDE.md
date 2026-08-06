@@ -1,2 +1,39 @@
 /**
- * @page log_user_guide Logging Module - User Guide\n *\n * @section overview What is Logging?\n *\n * Logging provides bounded ring-buffer logging for diagnostics. All entries\n * go to fixed buffer; oldest entries overwritten when full.\n *\n * @section levels Log Levels\n *\n * DEBUG - Development diagnostics (disabled in production)\n * INFO - Informational events\n * WARNING - Potential issues, continuing\n * ERROR - Failures, recovery attempted\n * CRITICAL - Imminent shutdown\n *\n * @section quick_start Quick Start\n *\n * @code\n * sapi_log_debug(\"value=%d\", x);\n * sapi_log_info(\"System initialized\");\n * sapi_log_warning(\"Low battery\");\n * sapi_log_error(\"Read failed: %s\", reason);\n * sapi_log_critical(\"Entering safe-state\");\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Use appropriate level\n * 2. Include context (what, why, state)\n * 3. Never log secrets (passwords, keys)\n * 4. Flush before shutdown/reboot\n *\n * @section see_also See Also\n *\n * - @ref log_architecture for design\n *\n */\n
+ * @page log_user_guide Logging Module - User Guide
+ *
+ * @section log_user_guide_overview What is Logging?
+ *
+ * Logging provides bounded ring-buffer logging for diagnostics. All entries
+ * go to fixed buffer; oldest entries overwritten when full.
+ *
+ * @section log_user_guide_levels Log Levels
+ *
+ * DEBUG - Development diagnostics (disabled in production)
+ * INFO - Informational events
+ * WARNING - Potential issues, continuing
+ * ERROR - Failures, recovery attempted
+ * CRITICAL - Imminent shutdown
+ *
+ * @section log_user_guide_quick_start Quick Start
+ *
+ * @code
+ * sapi_log_debug("value=%d", x);
+ * sapi_log_info("System initialized");
+ * sapi_log_warning("Low battery");
+ * sapi_log_error("Read failed: %s", reason);
+ * sapi_log_critical("Entering safe-state");
+ * @endcode
+ *
+ * @section log_user_guide_guidelines Best Practices
+ *
+ * 1. Use appropriate level
+ * 2. Include context (what, why, state)
+ * 3. Never log secrets (passwords, keys)
+ * 4. Flush before shutdown/reboot
+ *
+ * @section log_user_guide_see_also See Also
+ *
+ * - @ref log_architecture for design
+ *
+ */
+

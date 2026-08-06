@@ -1,6 +1,7 @@
 /**
  * @file sapi_ipc_request_reply.c
  * @brief IPC Request-Reply implementation
+ * @ingroup IPC
  */
 
 #include "safeapi/ipc/sapi_ipc_request_reply.h"

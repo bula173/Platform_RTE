@@ -11,6 +11,10 @@
  * REQ-OAL-LOG-001: log calls are best-effort and non-blocking; a full
  *                  backend buffer silently drops the newest entries rather
  *                  than blocking or erroring the caller's control flow.
+ *
+ * @defgroup LOG Logging and Diagnostics
+ * @brief Non-safety-related black-box/event-recorder logging (ADR-001)
+ * @{
  */
 #ifndef SAFEAPI_OS_LOG_H
 #define SAFEAPI_OS_LOG_H
@@ -22,12 +26,13 @@
 extern "C" {
 #endif
 
+/** @brief Log message severity, passed to sapi_log_write(). */
 typedef enum sapi_log_level_e
 {
-    SAPI_LOG_LEVEL_DEBUG   = 0,
-    SAPI_LOG_LEVEL_INFO    = 1,
-    SAPI_LOG_LEVEL_WARNING = 2,
-    SAPI_LOG_LEVEL_ERROR   = 3
+    SAPI_LOG_LEVEL_DEBUG   = 0, /**< Verbose diagnostic detail. */
+    SAPI_LOG_LEVEL_INFO    = 1, /**< Normal operational events. */
+    SAPI_LOG_LEVEL_WARNING = 2, /**< Unexpected but recovered condition. */
+    SAPI_LOG_LEVEL_ERROR   = 3  /**< Failure worth operator attention. */
 } sapi_log_level_t;
 
 /**
@@ -58,13 +63,16 @@ void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message
  */
 typedef struct sapi_log_backend_s
 {
+    /** @brief Backend implementation of sapi_log_init(). May be NULL. */
     sapi_status_t (*init)(void);
+    /** @brief Backend implementation of sapi_log_write(). May be NULL. */
     void (*write)(sapi_log_level_t level, const char *tag, const char *message);
 } sapi_log_backend_t;
 
 /**
  * @brief Registers the backend implementation used by sapi_log_init()/
  *        sapi_log_write() (ADR-005 section 2.1/2.5). Call once at startup.
+ * @param backend Vtable of backend function pointers. Must not be NULL.
  * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
  * REQ-OAL-LOG-012
  */
@@ -75,3 +83,5 @@ sapi_status_t sapi_log_register_backend(const sapi_log_backend_t *backend);
 #endif
 
 #endif /* SAFEAPI_OS_LOG_H */
+
+/** @} */ /* LOG */

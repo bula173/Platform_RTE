@@ -1,6 +1,7 @@
 /**
  * @file sapi_ipc_pubsub.c
  * @brief IPC Publish-Subscribe implementation
+ * @ingroup IPC
  */
 
 #include "safeapi/ipc/sapi_ipc_pubsub.h"

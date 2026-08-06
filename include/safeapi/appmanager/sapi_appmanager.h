@@ -27,6 +27,10 @@
  * integrators would otherwise reimplement the same few lines of
  * sigaction() themselves - see that function's own doc for the exact
  * scope of the exception.
+ *
+ * @defgroup APPMANAGER Application Manager
+ * @brief init/execute/shutdown lifecycle entry point for applications
+ * @{
  */
 
 #ifndef SAFEAPI_APPMANAGER_H
@@ -138,10 +142,10 @@ typedef struct {
  * @brief Application manager runtime state
  */
 typedef struct {
-    sapi_app_state_t state;
-    uint32_t iteration_count;
-    uint32_t error_count;
-    sapi_status_t last_error;
+    sapi_app_state_t state;         /**< Current lifecycle state (init/running/etc.). */
+    uint32_t iteration_count;       /**< Number of completed execute() cycles. */
+    uint32_t error_count;           /**< Number of execute() cycles that returned an error. */
+    sapi_status_t last_error;       /**< Most recent non-OK status observed, if any. */
 } sapi_appmanager_state_t;
 
 /* ============================================================================
@@ -255,3 +259,5 @@ sapi_status_t sapi_appmanager_install_default_signal_handlers(void);
 #endif
 
 #endif /* SAFEAPI_APPMANAGER_H */
+
+/** @} */ /* APPMANAGER */

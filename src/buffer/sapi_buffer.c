@@ -1,3 +1,8 @@
+/**
+ * @file sapi_buffer.c
+ * @brief Implementation of the cross-layer data buffer abstraction (ADR-002).
+ * @ingroup BUFFER
+ */
 #include "safeapi/buffer/sapi_buffer.h"
 #include <string.h>
 
@@ -105,8 +110,16 @@ bool sapi_buffer_is_valid(const sapi_buffer_t *buf)
     return (buf->length <= buf->capacity);
 }
 
-/* Appends n raw bytes at buf's current length, advancing it. Shared by
- * every sapi_buffer_write_*_le/be function. */
+/**
+ * @brief Appends n raw bytes at buf's current length, advancing it. Shared
+ *        by every sapi_buffer_write_*_le/be function.
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param bytes  Raw bytes to append. Must not be NULL.
+ * @param n      Number of bytes to append.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if buf or
+ *         bytes is NULL or buf fails its validity check;
+ *         SAPI_STATUS_RESOURCE_EXHAUSTED if n bytes will not fit.
+ */
 static sapi_status_t sapi_buffer_append_bytes(sapi_buffer_t *buf, const unsigned char *bytes, size_t n)
 {
     unsigned char *dest;
@@ -125,8 +138,17 @@ static sapi_status_t sapi_buffer_append_bytes(sapi_buffer_t *buf, const unsigned
     return SAPI_STATUS_OK;
 }
 
-/* Reads n raw bytes starting at offset, without mutating buf. Shared by
- * every sapi_buffer_read_*_le/be function. */
+/**
+ * @brief Reads n raw bytes starting at offset, without mutating buf.
+ *        Shared by every sapi_buffer_read_*_le/be function.
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_bytes  Destination for the raw bytes. Must not be NULL.
+ * @param n          Number of bytes to read.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM for a NULL
+ *         pointer; SAPI_STATUS_RESOURCE_EXHAUSTED if offset+n exceeds
+ *         buf->length.
+ */
 static sapi_status_t sapi_buffer_peek_bytes(const sapi_buffer_t *buf, size_t offset,
                                              unsigned char *out_bytes, size_t n)
 {

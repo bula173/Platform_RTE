@@ -1,6 +1,7 @@
 /**
  * @file sapi_ipc_pubsub.h
  * @brief IPC Publish-Subscribe Pattern (one-to-many broadcasting)
+ * @ingroup IPC
  *
  * Implements publish-subscribe communication where one publisher sends
  * messages to multiple subscribers on a topic. Subscribers are registered

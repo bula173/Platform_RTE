@@ -1,10 +1,12 @@
 /**
  * @file sapi_ipc.c
+ * @ingroup IPC
  * @brief IPC service: validates parameters, then dispatches to the backend
  *        registered via sapi_ipc_register_backend() (ADR-005).
  */
 #include "safeapi/ipc/sapi_ipc.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_ipc_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_ipc_register_backend(const sapi_ipc_backend_t *backend)

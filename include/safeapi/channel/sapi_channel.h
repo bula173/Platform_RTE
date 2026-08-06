@@ -42,6 +42,10 @@
  *                         mismatch between the two inputs shall itself be
  *                         reported as SAPI_CHANNEL_COMPARE_MISMATCH, not
  *                         as an error.
+ *
+ * @defgroup CHANNEL Dual-Channel Identity and Comparison
+ * @brief CCF mitigation support for a 2oo2 vital architecture (ADR-008)
+ * @{
  */
 #ifndef SAFEAPI_COMMON_CHANNEL_H
 #define SAFEAPI_COMMON_CHANNEL_H
@@ -160,3 +164,5 @@ sapi_status_t sapi_channel_compare_and_enter_safestate(sapi_const_buffer_t local
 #endif
 
 #endif /* SAFEAPI_COMMON_CHANNEL_H */
+
+/** @} */ /* CHANNEL */

@@ -1,6 +1,7 @@
 /**
  * @file sapi_clocksync.c
  * @brief Implementation of the pluggable clock-sync backend (ADR-017).
+ * @ingroup CLOCKSYNC
  */
 #include "safeapi/clocksync/sapi_clocksync.h"
 

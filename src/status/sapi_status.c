@@ -1,5 +1,17 @@
+/**
+ * @file sapi_status.c
+ * @brief Implementation of sapi_status_to_string().
+ * @ingroup STATUS
+ */
 #include "safeapi/status/sapi_status.h"
 
+/**
+ * @brief Convert a status code to a short, human-readable string.
+ * @param status Status code to describe.
+ * @return Static, non-NULL string literal naming @p status (e.g.
+ *         "SAPI_STATUS_OK"); an unrecognized value yields "UNKNOWN_STATUS".
+ * @safety Never returns NULL; safe to call with any int-range value.
+ */
 const char *sapi_status_to_string(sapi_status_t status)
 {
     switch (status)

@@ -1,2 +1,27 @@
 /**
- * @page checksum_architecture Checksum Module - Architecture\n *\n * CRC-64 polynomial-based checksums for data integrity. Supports ERTMS,\n * ISO, XZ polynomials. O(n) computation over data buffer.\n *\n * @section init Initialization\n *\n * sapi_checksum_init(polynomial) - Initialize lookup tables\n * Call once at startup before using CRC functions.\n *\n * @section compute Computation\n *\n * sapi_checksum_crc64(data, length) - Compute CRC-64\n * Returns 64-bit checksum for data integrity verification.\n *\n * @section performance O(n) Per Buffer\n *\n * Time proportional to data length. One lookup table per polynomial.\n *\n * @section misra MISRA Compliant\n *\n * ✓ No dynamic allocation\n * ✓ Bounded computation\n *\n */\n
+ * @page checksum_architecture Checksum Module - Architecture
+ *
+ * CRC-64 polynomial-based checksums for data integrity. Supports ERTMS,
+ * ISO, XZ polynomials. O(n) computation over data buffer.
+ *
+ * @section checksum_architecture_init Initialization
+ *
+ * sapi_checksum_init(polynomial) - Initialize lookup tables
+ * Call once at startup before using CRC functions.
+ *
+ * @section checksum_architecture_compute Computation
+ *
+ * sapi_checksum_crc64(data, length) - Compute CRC-64
+ * Returns 64-bit checksum for data integrity verification.
+ *
+ * @section checksum_architecture_performance O(n) Per Buffer
+ *
+ * Time proportional to data length. One lookup table per polynomial.
+ *
+ * @section checksum_architecture_misra MISRA Compliant
+ *
+ * ✓ No dynamic allocation
+ * ✓ Bounded computation
+ *
+ */
+

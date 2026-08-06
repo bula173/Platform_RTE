@@ -9,6 +9,10 @@
  * REQ-OAL-TIMER-001: no dynamic allocation; caller supplies storage.
  * REQ-OAL-TIMER-002: callback execution time is the caller's responsibility
  *                    to bound; the timer service itself must not block.
+ *
+ * @defgroup TIMER Timer Service
+ * @brief One-shot and periodic timers with millisecond resolution (ADR-001)
+ * @{
  */
 #ifndef SAFEAPI_OS_TIMER_H
 #define SAFEAPI_OS_TIMER_H
@@ -26,10 +30,11 @@ SAFEAPI_DECLARE_STORAGE(sapi_timer_storage_t, 64U);
 /** Opaque handle bound to a sapi_timer_storage_t after sapi_timer_create(). */
 typedef struct sapi_timer_impl_s *sapi_timer_handle_t;
 
+/** @brief Whether a timer fires once or repeatedly every period_ms. */
 typedef enum sapi_timer_mode_e
 {
-    SAPI_TIMER_MODE_ONE_SHOT = 0,
-    SAPI_TIMER_MODE_PERIODIC = 1
+    SAPI_TIMER_MODE_ONE_SHOT = 0, /**< Fires once after period_ms, then stops. */
+    SAPI_TIMER_MODE_PERIODIC = 1  /**< Fires every period_ms until stopped. */
 } sapi_timer_mode_t;
 
 /**
@@ -43,6 +48,7 @@ typedef enum sapi_timer_mode_e
  */
 typedef void (*sapi_timer_callback_t)(sapi_timer_handle_t handle, void *user_ctx);
 
+/** @brief Configuration for sapi_timer_create(). */
 typedef struct sapi_timer_config_s
 {
     sapi_timer_mode_t      mode;         /**< One-shot or periodic. */
@@ -112,12 +118,17 @@ sapi_status_t sapi_timer_now(sapi_timestamp_ms_t *out_now_ms);
  */
 typedef struct sapi_timer_backend_s
 {
+    /** @brief Backend implementation of sapi_timer_create(). May be NULL. */
     sapi_status_t (*create)(sapi_timer_storage_t *storage,
                              const sapi_timer_config_t *config,
                              sapi_timer_handle_t *out_handle);
+    /** @brief Backend implementation of sapi_timer_start(). May be NULL. */
     sapi_status_t (*start)(sapi_timer_handle_t handle);
+    /** @brief Backend implementation of sapi_timer_stop(). May be NULL. */
     sapi_status_t (*stop)(sapi_timer_handle_t handle);
+    /** @brief Backend implementation of sapi_timer_destroy(). May be NULL. */
     sapi_status_t (*destroy)(sapi_timer_handle_t handle);
+    /** @brief Backend implementation of sapi_timer_now(). May be NULL. */
     sapi_status_t (*now)(sapi_timestamp_ms_t *out_now_ms);
 } sapi_timer_backend_t;
 
@@ -139,3 +150,5 @@ sapi_status_t sapi_timer_register_backend(const sapi_timer_backend_t *backend);
 #endif
 
 #endif /* SAFEAPI_OS_TIMER_H */
+
+/** @} */ /* TIMER */

@@ -18,6 +18,10 @@
  *                     reading past it.
  * REQ-COMMON-STR-003: content is treated as raw bytes/ASCII; no
  *                     multi-byte/UTF-8-aware operations are provided.
+ *
+ * @defgroup STRING Bounded String Manipulation
+ * @brief Checked replacements for strcpy/strcat/sprintf-style operations (ADR-006)
+ * @{
  */
 #ifndef SAFEAPI_COMMON_STRING_H
 #define SAFEAPI_COMMON_STRING_H
@@ -33,7 +37,7 @@ extern "C" {
 /** @brief Bounded string: buf.length is the string length, not counting a NUL. */
 typedef struct sapi_string_s
 {
-    sapi_buffer_t buf;
+    sapi_buffer_t buf; /**< Backing bounds-checked byte view; length excludes any NUL. */
 } sapi_string_t;
 
 /**
@@ -180,13 +184,39 @@ sapi_status_t sapi_string_split_next(const sapi_string_t *str, char delimiter,
                                       sapi_const_buffer_t *out_token,
                                       bool *out_has_token);
 
-/** @brief Bounded base-10 itoa equivalent for uint32_t. Replaces dest's content. REQ-COMMON-STR-021 */
+/**
+ * @brief Bounded base-10 itoa equivalent for uint32_t. Replaces dest's content.
+ * @param dest   Destination string. Must not be NULL.
+ * @param value  Value to format.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if dest is
+ *         NULL; SAPI_STATUS_RESOURCE_EXHAUSTED if the formatted digits do
+ *         not fit dest's capacity.
+ * REQ-COMMON-STR-021
+ */
 sapi_status_t sapi_string_from_u32(sapi_string_t *dest, uint32_t value);
-/** @brief Bounded base-10 itoa equivalent for int32_t. Replaces dest's content. REQ-COMMON-STR-022 */
+/**
+ * @brief Bounded base-10 itoa equivalent for int32_t. Replaces dest's content.
+ * @param dest   Destination string. Must not be NULL.
+ * @param value  Value to format; a leading '-' is emitted for negative values.
+ * @return Same status contract as sapi_string_from_u32().
+ * REQ-COMMON-STR-022
+ */
 sapi_status_t sapi_string_from_i32(sapi_string_t *dest, int32_t value);
-/** @brief Bounded base-10 itoa equivalent for uint64_t. Replaces dest's content. REQ-COMMON-STR-023 */
+/**
+ * @brief Bounded base-10 itoa equivalent for uint64_t. Replaces dest's content.
+ * @param dest   Destination string. Must not be NULL.
+ * @param value  Value to format.
+ * @return Same status contract as sapi_string_from_u32().
+ * REQ-COMMON-STR-023
+ */
 sapi_status_t sapi_string_from_u64(sapi_string_t *dest, uint64_t value);
-/** @brief Bounded base-10 itoa equivalent for int64_t. Replaces dest's content. REQ-COMMON-STR-024 */
+/**
+ * @brief Bounded base-10 itoa equivalent for int64_t. Replaces dest's content.
+ * @param dest   Destination string. Must not be NULL.
+ * @param value  Value to format; a leading '-' is emitted for negative values.
+ * @return Same status contract as sapi_string_from_u32().
+ * REQ-COMMON-STR-024
+ */
 sapi_status_t sapi_string_from_i64(sapi_string_t *dest, int64_t value);
 
 /**
@@ -200,11 +230,32 @@ sapi_status_t sapi_string_from_i64(sapi_string_t *dest, int64_t value);
  * REQ-COMMON-STR-025
  */
 sapi_status_t sapi_string_to_u32(const sapi_string_t *str, uint32_t *out_value);
-/** @brief As sapi_string_to_u32(), for int32_t; a leading '-' is accepted. REQ-COMMON-STR-026 */
+/**
+ * @brief As sapi_string_to_u32(), for int32_t; a leading '-' is accepted.
+ * @param str        Source string. Must not be NULL; digits with an
+ *                    optional leading '-', no whitespace.
+ * @param out_value  Receives the parsed value. Must not be NULL.
+ * @return Same status contract as sapi_string_to_u32().
+ * REQ-COMMON-STR-026
+ */
 sapi_status_t sapi_string_to_i32(const sapi_string_t *str, int32_t *out_value);
-/** @brief As sapi_string_to_u32(), for uint64_t. REQ-COMMON-STR-027 */
+/**
+ * @brief As sapi_string_to_u32(), for uint64_t.
+ * @param str        Source string. Must not be NULL and must be entirely
+ *                    composed of ASCII digits (no sign, no whitespace).
+ * @param out_value  Receives the parsed value. Must not be NULL.
+ * @return Same status contract as sapi_string_to_u32().
+ * REQ-COMMON-STR-027
+ */
 sapi_status_t sapi_string_to_u64(const sapi_string_t *str, uint64_t *out_value);
-/** @brief As sapi_string_to_i32(), for int64_t. REQ-COMMON-STR-028 */
+/**
+ * @brief As sapi_string_to_i32(), for int64_t.
+ * @param str        Source string. Must not be NULL; digits with an
+ *                    optional leading '-', no whitespace.
+ * @param out_value  Receives the parsed value. Must not be NULL.
+ * @return Same status contract as sapi_string_to_u32().
+ * REQ-COMMON-STR-028
+ */
 sapi_status_t sapi_string_to_i64(const sapi_string_t *str, int64_t *out_value);
 
 #ifdef __cplusplus
@@ -212,3 +263,5 @@ sapi_status_t sapi_string_to_i64(const sapi_string_t *str, int64_t *out_value);
 #endif
 
 #endif /* SAFEAPI_COMMON_STRING_H */
+
+/** @} */ /* STRING */

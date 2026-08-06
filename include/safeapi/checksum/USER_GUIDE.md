@@ -1,1 +1,120 @@
-/**\n * @page checksum_user_guide Checksum Module - User Guide\n *\n * @section overview What is Checksum?\n *\n * The Checksum module provides **data integrity verification**. It computes\n * CRC32 or simple checksum to detect accidental data corruption.\n *\n * **Key idea:** Know when data is corrupted. Don't silently process bad data.\n *\n * @section quick_start Quick Start\n *\n * ```c\n * #include \"safeapi/checksum/sapi_checksum.h\"\n *\n * // Compute checksum\n * uint32_t crc = sapi_checksum_crc32(data, length);\n *\n * // Verify checksum\n * uint32_t stored_crc = get_stored_checksum();\n * if (crc != stored_crc) {\n *     log_error(\"Data corrupted: CRC mismatch\");\n *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);\n * }\n * ```\n *\n * @section functions Functions\n *\n * ```c\n * // Compute CRC32 of entire buffer\n * uint32_t sapi_checksum_crc32(const uint8_t *data, size_t length);\n *\n * // Simple 8-bit checksum (XOR of all bytes)\n * uint8_t sapi_checksum_xor8(const uint8_t *data, size_t length);\n *\n * // CRC16 for smaller data\n * uint16_t sapi_checksum_crc16(const uint8_t *data, size_t length);\n * ```\n *\n * @section examples Practical Examples\n *\n * ### Example 1: Message Integrity Check\n *\n * ```c\n * typedef struct {\n *     uint32_t command_id;\n *     uint8_t data[256];\n *     uint32_t checksum;  // Computed over all previous fields\n * } message_t;\n *\n * sapi_status_t process_message(const message_t *msg) {\n *     // Compute checksum over everything except checksum field\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)msg,\n *                                            offsetof(message_t, checksum));\n *\n *     if (computed != msg->checksum) {\n *         log_error(\"Message corrupted\");\n *         return SAPI_STATUS_INVALID_PARAM;\n *     }\n *\n *     execute_command(msg->command_id, msg->data);\n *     return SAPI_STATUS_OK;\n * }\n * ```\n *\n * ### Example 2: Configuration Validation\n *\n * ```c\n * typedef struct {\n *     uint32_t version;\n *     char device_name[32];\n *     uint32_t timeout_ms;\n *     uint32_t crc;  // Checksum of above\n * } config_t;\n *\n * sapi_status_t load_config(config_t *cfg) {\n *     // Read from NVM\n *     read_nvm(0, (uint8_t *)cfg, sizeof(config_t));\n *\n *     // Verify checksum\n *     size_t data_len = offsetof(config_t, crc);\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)cfg, data_len);\n *\n *     if (computed != cfg->crc) {\n *         log_error(\"Configuration corrupted, using defaults\");\n *         init_default_config(cfg);\n *     }\n *\n *     return SAPI_STATUS_OK;\n * }\n * ```\n *\n * @section guidelines Best Practices\n *\n * 1. **Use CRC32 for Large Data**\n *    - Better collision detection\n *    - Slightly slower but worth it\n *\n * 2. **Checksum Storage**\n *    - Store checksum with data\n *    - Compute over all data except checksum field\n *    - Verify on load/receive\n *\n * 3. **When to Verify**\n *    - After receiving over network\n *    - After reading from storage\n *    - Before executing critical commands\n *\n * 4. **Handling Corruption**\n *    - Don't try to \"fix\" corrupted data\n *    - Log the corruption\n *    - Either reload from backup or trigger safe-state\n *\n * @section see_also See Also\n *\n * - @ref checksum_architecture\n * - @ref nvm_user_guide for stored data integrity\n * - @ref ipc_user_guide for transmission integrity\n *\n */
+/**
+ * @page checksum_user_guide Checksum Module - User Guide
+ *
+ * @section checksum_user_guide_overview What is Checksum?
+ *
+ * The Checksum module provides **data integrity verification**. It computes
+ * CRC32 or simple checksum to detect accidental data corruption.
+ *
+ * **Key idea:** Know when data is corrupted. Don't silently process bad data.
+ *
+ * @section checksum_user_guide_quick_start Quick Start
+ *
+ * ```c
+ * #include "safeapi/checksum/sapi_checksum.h"
+ *
+ * // Compute checksum
+ * uint32_t crc = sapi_checksum_crc32(data, length);
+ *
+ * // Verify checksum
+ * uint32_t stored_crc = get_stored_checksum();
+ * if (crc != stored_crc) {
+ *     log_error("Data corrupted: CRC mismatch");
+ *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);
+ * }
+ * ```
+ *
+ * @section checksum_user_guide_functions Functions
+ *
+ * ```c
+ * // Compute CRC32 of entire buffer
+ * uint32_t sapi_checksum_crc32(const uint8_t *data, size_t length);
+ *
+ * // Simple 8-bit checksum (XOR of all bytes)
+ * uint8_t sapi_checksum_xor8(const uint8_t *data, size_t length);
+ *
+ * // CRC16 for smaller data
+ * uint16_t sapi_checksum_crc16(const uint8_t *data, size_t length);
+ * ```
+ *
+ * @section checksum_user_guide_examples Practical Examples
+ *
+ * ### Example 1: Message Integrity Check
+ *
+ * ```c
+ * typedef struct {
+ *     uint32_t command_id;
+ *     uint8_t data[256];
+ *     uint32_t checksum;  // Computed over all previous fields
+ * } message_t;
+ *
+ * sapi_status_t process_message(const message_t *msg) {
+ *     // Compute checksum over everything except checksum field
+ *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)msg,
+ *                                            offsetof(message_t, checksum));
+ *
+ *     if (computed != msg->checksum) {
+ *         log_error("Message corrupted");
+ *         return SAPI_STATUS_INVALID_PARAM;
+ *     }
+ *
+ *     execute_command(msg->command_id, msg->data);
+ *     return SAPI_STATUS_OK;
+ * }
+ * ```
+ *
+ * ### Example 2: Configuration Validation
+ *
+ * ```c
+ * typedef struct {
+ *     uint32_t version;
+ *     char device_name[32];
+ *     uint32_t timeout_ms;
+ *     uint32_t crc;  // Checksum of above
+ * } config_t;
+ *
+ * sapi_status_t load_config(config_t *cfg) {
+ *     // Read from NVM
+ *     read_nvm(0, (uint8_t *)cfg, sizeof(config_t));
+ *
+ *     // Verify checksum
+ *     size_t data_len = offsetof(config_t, crc);
+ *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)cfg, data_len);
+ *
+ *     if (computed != cfg->crc) {
+ *         log_error("Configuration corrupted, using defaults");
+ *         init_default_config(cfg);
+ *     }
+ *
+ *     return SAPI_STATUS_OK;
+ * }
+ * ```
+ *
+ * @section checksum_user_guide_guidelines Best Practices
+ *
+ * 1. **Use CRC32 for Large Data**
+ *    - Better collision detection
+ *    - Slightly slower but worth it
+ *
+ * 2. **Checksum Storage**
+ *    - Store checksum with data
+ *    - Compute over all data except checksum field
+ *    - Verify on load/receive
+ *
+ * 3. **When to Verify**
+ *    - After receiving over network
+ *    - After reading from storage
+ *    - Before executing critical commands
+ *
+ * 4. **Handling Corruption**
+ *    - Don't try to "fix" corrupted data
+ *    - Log the corruption
+ *    - Either reload from backup or trigger safe-state
+ *
+ * @section checksum_user_guide_see_also See Also
+ *
+ * - @ref checksum_architecture
+ * - @ref nvm_user_guide for stored data integrity
+ * - @ref ipc_guide for transmission integrity
+ *
+ */

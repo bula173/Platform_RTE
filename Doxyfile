@@ -1,7 +1,7 @@
 PROJECT_NAME           = "Safe API Framework"
 PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference)"
 OUTPUT_DIRECTORY       = docs/api
-INPUT                  = include src docs/architecture
+INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.md
 FILE_PATTERNS          = *.h *.c *.md
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = README.md
@@ -30,3 +30,10 @@ SOURCE_BROWSER          = YES
 # current inline "REQ-...:" convention. Not used yet - kept here as the
 # natural place to add it.
 # ALIASES               = "req{1}=\par Requirement:\n\1"
+
+# @safety is used throughout the headers as a one-line safety-critical
+# assumption/guarantee note (e.g. "@safety No dynamic memory allocation;
+# all storage pre-allocated.") - it is not a built-in Doxygen command, so
+# without this alias every use produced a "Found unknown command '@safety'"
+# warning and the text was silently dropped from the generated docs.
+ALIASES                += "safety=\par Safety:^^"

@@ -1,7 +1,7 @@
 /**
  * @page appmanager_integration App Manager Integration with Channels
  *
- * @section overview Overview
+ * @section appmanager_integration_overview Overview
  *
  * The Application Manager provides lifecycle management (init → execute → shutdown).
  * The developer implements the `execute()` function which runs the main loop.
@@ -15,7 +15,7 @@
  *
  * **These are YOUR responsibility** in the `execute()` function.
  *
- * @section architecture Integration Architecture
+ * @section appmanager_integration_architecture Integration Architecture
  *
  * ```
  * sapi_appmanager_run(&config)
@@ -32,7 +32,7 @@
  *     └─ Calls ops->shutdown(&context)  ◄─ You implement this
  * ```
  *
- * @section lifecycle Application Lifecycle
+ * @section appmanager_integration_lifecycle Application Lifecycle
  *
  * ### 1. Initialization (init)
  *
@@ -178,7 +178,7 @@
  * }
  * ```
  *
- * @section complete_example Complete Example
+ * @section appmanager_integration_complete_example Complete Example
  *
  * ### Application Context
  *
@@ -240,7 +240,7 @@
  *    - Closes resources
  * 4. Returns 0 (success) or 1 (failure)
  *
- * @section responsibility Responsibility Summary
+ * @section appmanager_integration_responsibility Responsibility Summary
  *
  * **App Manager Provides:**
  * - ✓ Lifecycle management (init/execute/shutdown)
@@ -258,7 +258,7 @@
  * - ✓ Data processing and preparation
  * - ✓ Sending vital and non-vital outputs
  *
- * @section you_implement What You Need to Implement
+ * @section appmanager_integration_you_implement What You Need to Implement
  *
  * These are NOT provided by the framework - you implement them:
  *
@@ -294,7 +294,7 @@
  * These are project-specific - the framework gives you the patterns,
  * you implement the concrete services.
  *
- * @section guidelines Design Guidelines
+ * @section appmanager_integration_guidelines Design Guidelines
  *
  * 1. **Deterministic Timing**
  *    - Decide fixed cycle time (e.g., 10ms)
@@ -316,7 +316,7 @@
  *    - Must be robust (even if init/execute failed)
  *    - Close resources, log final state
  *
- * @section next_steps Next Steps
+ * @section appmanager_integration_next_steps Next Steps
  *
  * 1. Understand App Manager lifecycle (init/execute/shutdown)
  * 2. Implement channel registry for named channels

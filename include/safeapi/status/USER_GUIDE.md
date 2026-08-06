@@ -1,7 +1,7 @@
 /**
  * @page status_user_guide Status Module - User Guide
  *
- * @section overview What is the Status Module?
+ * @section status_user_guide_overview What is the Status Module?
  *
  * The Status module provides a unified error/status code system for the entire
  * framework. Every operation returns a `sapi_status_t` code indicating success
@@ -10,7 +10,7 @@
  * **Key idea:** All functions return the same status codes, making error handling
  * consistent across the entire framework.
  *
- * @section quick_start Quick Start
+ * @section status_user_guide_quick_start Quick Start
  *
  * ### 1. Check Operation Success
  *
@@ -44,7 +44,7 @@
  *           sapi_status_to_string(rc), rc);
  * ```
  *
- * @section error_handling Error Handling Patterns
+ * @section status_user_guide_error_handling Error Handling Patterns
  *
  * ### Pattern 1: Early Return
  *
@@ -93,7 +93,7 @@
  * }
  * ```
  *
- * @section status_codes Complete Status Code Reference
+ * @section status_user_guide_status_codes Complete Status Code Reference
  *
  * | Code | Meaning | Action |
  * |------|---------|--------|
@@ -105,7 +105,7 @@
  * | `SAPI_STATUS_NOT_INITIALIZED` | Module not ready | Call init first |
  * | `SAPI_STATUS_NOT_SUPPORTED` | Unavailable feature | Use alternative or fail |
  *
- * @section examples Practical Examples
+ * @section status_user_guide_examples Practical Examples
  *
  * ### Example 1: Buffer Operation
  *
@@ -148,7 +148,7 @@
  * }
  * ```
  *
- * @section mapping Status Codes to Safety Actions
+ * @section status_user_guide_mapping Status Codes to Safety Actions
  *
  * **For Safety-Critical Code:**
  *
@@ -174,7 +174,7 @@
  * }
  * ```
  *
- * @section guidelines Best Practices
+ * @section status_user_guide_guidelines Best Practices
  *
  * 1. **Always check return codes** - Don't ignore status codes
  *
@@ -215,10 +215,10 @@
  *    if (diag_rc != SAPI_STATUS_OK) log_debug("...");
  *    ```
  *
- * @section see_also See Also
+ * @section status_user_guide_see_also See Also
  *
  * - @ref status_architecture for internal design
- * - @ref safestate for safe-state triggered on critical failures
- * - @ref log for logging status codes
+ * - @ref safestate_user_guide for safe-state triggered on critical failures
+ * - @ref log_user_guide for logging status codes
  *
  */

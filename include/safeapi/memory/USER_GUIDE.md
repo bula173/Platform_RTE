@@ -1,7 +1,7 @@
 /**
  * @page memory_user_guide Memory Module - User Guide
  *
- * @section overview What is the Memory Module?
+ * @section memory_user_guide_overview What is the Memory Module?
  *
  * The Memory module enforces static-only allocation for the entire framework.
  * No malloc(), no free() — all memory is allocated at compile-time or
@@ -10,14 +10,14 @@
  *
  * Key idea: If you can't statically allocate it, you don't need it.
  *
- * @section rationale Why No Dynamic Allocation?
+ * @section memory_user_guide_rationale Why No Dynamic Allocation?
  *
- * @subsection rationale_comparison Safety-Critical Systems Need Guarantees
+ * @subsection memory_user_guide_rationale_comparison Safety-Critical Systems Need Guarantees
  *
  * Dynamic allocation has unpredictable latency and may fail at runtime.
  * Static allocation has O(1) time, fails at compile-time, no fragmentation.
  *
- * @subsection rationale_example Real-World Impact
+ * @subsection memory_user_guide_rationale_example Real-World Impact
  *
  * Railway signaling system example:
  * @code
@@ -34,15 +34,15 @@
  * // No runtime allocation needed
  * @endcode
  *
- * @section quick_start Quick Start
+ * @section memory_user_guide_quick_start Quick Start
  *
- * @subsection qs_include 1. Include Header
+ * @subsection memory_user_guide_qs_include 1. Include Header
  *
  * @code
  * #include "safeapi/memory/sapi_memory.h"
  * @endcode
  *
- * @subsection qs_allocate 2. Allocate at Compile-Time or Initialization
+ * @subsection memory_user_guide_qs_allocate 2. Allocate at Compile-Time or Initialization
  *
  * @code
  * // Option A: Static buffer (entire program lifetime)
@@ -61,7 +61,7 @@
  * }
  * @endcode
  *
- * @subsection qs_calculate 3. Calculate Required Sizes Upfront
+ * @subsection memory_user_guide_qs_calculate 3. Calculate Required Sizes Upfront
  *
  * @code
  * // At compile-time, calculate requirements
@@ -78,9 +78,9 @@
  * } system_t;
  * @endcode
  *
- * @section allocation_patterns Allocation Patterns
+ * @section memory_user_guide_allocation_patterns Allocation Patterns
  *
- * @subsection pattern_global Pattern 1: Static Global Buffers
+ * @subsection memory_user_guide_pattern_global Pattern 1: Static Global Buffers
  *
  * For singleton objects (one per program):
  *
@@ -98,7 +98,7 @@
  * }
  * @endcode
  *
- * @subsection pattern_app Pattern 2: Application State Structure
+ * @subsection memory_user_guide_pattern_app Pattern 2: Application State Structure
  *
  * For complex applications with multiple subsystems:
  *
@@ -132,7 +132,7 @@
  * }
  * @endcode
  *
- * @subsection pattern_thread Pattern 3: Thread-Local State (Multi-Threaded)
+ * @subsection memory_user_guide_pattern_thread Pattern 3: Thread-Local State (Multi-Threaded)
  *
  * @code
  * // Thread-local buffer (each thread gets own copy)
@@ -145,9 +145,9 @@
  * }
  * @endcode
  *
- * @section sizing Resource Sizing
+ * @section memory_user_guide_sizing Resource Sizing
  *
- * @subsection sizing_calc Calculate Max Requirements
+ * @subsection memory_user_guide_sizing_calc Calculate Max Requirements
  *
  * @code
  * #define MAX_CHANNELS           16
@@ -165,7 +165,7 @@
  * // Total: ~62 KB
  * @endcode
  *
- * @subsection sizing_verify Verify at Compile-Time
+ * @subsection memory_user_guide_sizing_verify Verify at Compile-Time
  *
  * @code
  * // application.h
@@ -178,9 +178,9 @@
  * );
  * @endcode
  *
- * @section examples Practical Examples
+ * @section memory_user_guide_examples Practical Examples
  *
- * @subsection example_train Example 1: Train Control System
+ * @subsection memory_user_guide_example_train Example 1: Train Control System
  *
  * @code
  * typedef struct {
@@ -222,7 +222,7 @@
  * // Total size: ~1 KB (predictable, on-stack or in data section)
  * @endcode
  *
- * @subsection example_ringbuf Example 2: Ring Buffer Without malloc
+ * @subsection memory_user_guide_example_ringbuf Example 2: Ring Buffer Without malloc
  *
  * @code
  * typedef struct {
@@ -249,9 +249,9 @@
  * }
  * @endcode
  *
- * @section patterns Common Patterns
+ * @section memory_user_guide_patterns Common Patterns
  *
- * @subsection common_pool Pattern 1: Pool-Based Allocation
+ * @subsection memory_user_guide_common_pool Pattern 1: Pool-Based Allocation
  *
  * Pre-allocate a pool, hand out slots:
  *
@@ -279,7 +279,7 @@
  * }
  * @endcode
  *
- * @subsection common_queue Pattern 2: Fixed-Size Queues
+ * @subsection memory_user_guide_common_queue Pattern 2: Fixed-Size Queues
  *
  * @code
  * #define QUEUE_SIZE 32
@@ -302,7 +302,7 @@
  * }
  * @endcode
  *
- * @section guidelines Best Practices
+ * @section memory_user_guide_guidelines Best Practices
  *
  * 1. Allocate Everything at Initialization
  *    - No malloc/free in real-time paths
@@ -329,7 +329,7 @@
  *    - List worst-case memory need
  *    - Track memory budget through integration
  *
- * @section error_handling Out-of-Memory
+ * @section memory_user_guide_error_handling Out-of-Memory
  *
  * When allocation fails (pool exhausted):
  *
@@ -350,7 +350,7 @@
  * msg->data = 42;  // Crash if allocation failed!
  * @endcode
  *
- * @section see_also See Also
+ * @section memory_user_guide_see_also See Also
  *
  * - @ref memory_architecture for internal design
  * - @ref buffer_user_guide for buffer management

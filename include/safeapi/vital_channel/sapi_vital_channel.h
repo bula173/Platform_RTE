@@ -147,10 +147,10 @@ typedef struct {
  * Satisfies embedded C requirement of no dynamic memory.
  */
 typedef struct {
-    sapi_vital_channel_config_t config;
-    void **channels;  /* Opaque channel handles (IPC or other transport) */
-    uint32_t channel_count;
-    sapi_vital_channel_health_t health[SAPI_VITAL_CHANNEL_MAX_CHANNELS];
+    sapi_vital_channel_config_t config;   /**< Configuration this instance was initialized with. */
+    void **channels;  /**< Opaque channel handles (IPC or other transport); caller-owned array. */
+    uint32_t channel_count;               /**< Number of entries populated in channels/health. */
+    sapi_vital_channel_health_t health[SAPI_VITAL_CHANNEL_MAX_CHANNELS]; /**< Per-channel health/voting state. */
 } sapi_vital_channel_storage_t;
 
 /**

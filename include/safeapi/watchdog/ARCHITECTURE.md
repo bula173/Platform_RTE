@@ -1,16 +1,16 @@
 /**
  * @page watchdog_architecture Watchdog Module - Architecture
  *
- * @section overview Design Overview
+ * @section watchdog_architecture_overview Design Overview
  *
  * Watchdog tracks liveness via timeout mechanism. Application periodically kicks
  * to reset countdown. On timeout, registered recovery action fires (log, safe-state,
  * reboot, custom callback, or failover). Framework manages global watchdog manager
  * that coordinates all watchdog instances.
  *
- * @section api Core API
+ * @section watchdog_architecture_api Core API
  *
- * @subsection api_create Creation
+ * @subsection watchdog_architecture_api_create Creation
  *
  * @code
  * sapi_status_t sapi_watchdog_create(
@@ -23,7 +23,7 @@
  * Caller provides storage; framework fills it with state. Config specifies type,
  * timeout, and recovery action.
  *
- * @subsection api_lifecycle Lifecycle
+ * @subsection watchdog_architecture_api_lifecycle Lifecycle
  *
  * @code
  * sapi_watchdog_start(handle)     // Begin countdown
@@ -32,7 +32,7 @@
  * sapi_watchdog_destroy(handle)   // Release resources
  * @endcode
  *
- * @subsection api_query Query
+ * @subsection watchdog_architecture_api_query Query
  *
  * @code
  * sapi_watchdog_get_status(handle, &status);
@@ -40,7 +40,7 @@
  *
  * Returns: kicks (total), fires (total timeouts), time_until_fire, active flag.
  *
- * @section manager Watchdog Manager
+ * @section watchdog_architecture_manager Watchdog Manager
  *
  * Global singleton managing all watchdogs:
  *
@@ -51,7 +51,7 @@
  *
  * Manager coordinates timeout callbacks and recovery actions.
  *
- * @section state State Per Watchdog
+ * @section watchdog_architecture_state State Per Watchdog
  *
  * @verbatim
  * Countdown timer      - Current time until timeout
@@ -62,7 +62,7 @@
  * Type/action/config  - Static configuration
  * @endverbatim
  *
- * @section timeout Timeout Mechanics
+ * @section watchdog_architecture_timeout Timeout Mechanics
  *
  * On every tick (typically 1ms from system timer):
  * 1. Decrement countdown for each active watchdog
@@ -75,7 +75,7 @@
  * 1. If not fired: reset countdown to timeout_ms
  * 2. If fired: return error (cannot kick)
  *
- * @section recovery Recovery Actions
+ * @section watchdog_architecture_recovery Recovery Actions
  *
  * Action on timeout depends on configuration:
  *
@@ -87,7 +87,7 @@
  * CUSTOM       - Call custom callback (application-provided)
  * @endverbatim
  *
- * @section performance Performance
+ * @section watchdog_architecture_performance Performance
  *
  * | Operation | Time | Notes |
  * |-----------|------|-------|
@@ -100,7 +100,7 @@
  *
  * System tick is the only O(n) operation; called once per millisecond.
  *
- * @section limits Constraints
+ * @section watchdog_architecture_limits Constraints
  *
  * @verbatim
  * Max watchdog count      - No limit; all static
@@ -109,7 +109,7 @@
  * Watchdog size          - 64 bytes (SAFEAPI_DECLARE_STORAGE)
  * @endverbatim
  *
- * @section integration Integration with Safe-State
+ * @section watchdog_architecture_integration Integration with Safe-State
  *
  * Watchdog recovery action can trigger safe-state:
  *
@@ -121,7 +121,7 @@
  *           └─ Enters safe-state as programmed
  * @endcode
  *
- * @section testing Unit Tests
+ * @section watchdog_architecture_testing Unit Tests
  *
  * **Test 1: Timeout fires recovery action**
  *
@@ -146,7 +146,7 @@
  * ASSERT(status.fires == 0);
  * @endcode
  *
- * @section see_also See Also
+ * @section watchdog_architecture_see_also See Also
  *
  * - @ref watchdog_user_guide for usage patterns
  * - @ref safestate_architecture for safe-state integration

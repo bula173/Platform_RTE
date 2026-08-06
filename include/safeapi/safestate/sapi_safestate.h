@@ -20,6 +20,10 @@
  *                           control to the caller, even if no handler is
  *                           registered or the registered handler itself
  *                           returns (see sapi_safestate_enter()).
+ *
+ * @defgroup SAFESTATE Safe-State Transitions and Checked Assertions
+ * @brief Layer-agnostic fault-reaction facility (ADR-004)
+ * @{
  */
 #ifndef SAFEAPI_COMMON_SAFESTATE_H
 #define SAFEAPI_COMMON_SAFESTATE_H
@@ -170,3 +174,5 @@ void sapi_safestate_enter(sapi_safestate_level_t level,
 #endif
 
 #endif /* SAFEAPI_COMMON_SAFESTATE_H */
+
+/** @} */ /* SAFESTATE */

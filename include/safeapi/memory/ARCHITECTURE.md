@@ -1,1 +1,25 @@
-/**\n * @page memory_architecture Memory Module - Architecture\n *\n * @section overview Static Allocation Only\n *\n * Memory module enforces no dynamic allocation. All memory available at\n * compile-time or initialization. Framework never calls malloc/free.\n *\n * @section strategy Strategy\n *\n * Allocate at compile-time (static arrays, stack) or initialization (once).\n * Pre-calculate max sizes. Use static_assert to verify budget.\n *\n * @section misra MISRA Rule 20.6\n *\n * ✓ No malloc/free\n * ✓ No dynamic allocation\n * ✓ All storage static or stack-scoped\n *\n * @section see_also See Also\n *\n * - @ref memory_user_guide for allocation patterns\n *\n */\n
+/**
+ * @page memory_architecture Memory Module - Architecture
+ *
+ * @section memory_architecture_overview Static Allocation Only
+ *
+ * Memory module enforces no dynamic allocation. All memory available at
+ * compile-time or initialization. Framework never calls malloc/free.
+ *
+ * @section memory_architecture_strategy Strategy
+ *
+ * Allocate at compile-time (static arrays, stack) or initialization (once).
+ * Pre-calculate max sizes. Use static_assert to verify budget.
+ *
+ * @section memory_architecture_misra MISRA Rule 20.6
+ *
+ * ✓ No malloc/free
+ * ✓ No dynamic allocation
+ * ✓ All storage static or stack-scoped
+ *
+ * @section memory_architecture_see_also See Also
+ *
+ * - @ref memory_user_guide for allocation patterns
+ *
+ */
+

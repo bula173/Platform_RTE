@@ -1,10 +1,12 @@
 /**
  * @file sapi_memory.c
+ * @ingroup MEMORY
  * @brief Memory pool service: validates parameters, then dispatches to the
  *        backend registered via sapi_mem_pool_register_backend() (ADR-005).
  */
 #include "safeapi/memory/sapi_memory.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_mem_pool_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_mem_pool_register_backend(const sapi_mem_pool_backend_t *backend)

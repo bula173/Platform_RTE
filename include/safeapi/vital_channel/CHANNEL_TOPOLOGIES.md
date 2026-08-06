@@ -1,13 +1,13 @@
 /**
  * @page vital_channel_topologies Channel Topologies and Redundancy Patterns
  *
- * @section topology_overview Channel Topology Patterns
+ * @section vital_channel_topologies_topology_overview Channel Topology Patterns
  *
  * This document describes common redundancy topologies and how they map to
  * vital_channel configurations. Each pattern supports different failure
  * scenarios and recovery characteristics.
  *
- * @section pattern_single_2oo2 Pattern 1: Single-System 2oo2 (A ↔ B → C)
+ * @section vital_channel_topologies_pattern_single_2oo2 Pattern 1: Single-System 2oo2 (A ↔ B → C)
  *
  * **Your Question: A and B on same unit, communicate with C**
  *
@@ -87,7 +87,7 @@
  * | Both crash | TIMEOUT | TIMEOUT | ✗ VOTING_TIMEOUT, trigger SAFE_STATE |
  * | A ≠ B | OK (A) | OK (B) | ✗ VOTING_DISAGREED, trigger SAFE_STATE |
  *
- * @section pattern_distributed_2oo2 Pattern 2: Distributed 2oo2 (A ↔ B Across Network)
+ * @section vital_channel_topologies_pattern_distributed_2oo2 Pattern 2: Distributed 2oo2 (A ↔ B Across Network)
  *
  * **For remote standby on different host**
  *
@@ -153,7 +153,7 @@
  *   (indicates network corruption or Byzantine failure)
  * ```
  *
- * @section pattern_mirror_hot_standby Pattern 3: Hot Standby with Mirroring
+ * @section vital_channel_topologies_pattern_mirror_hot_standby Pattern 3: Hot Standby with Mirroring
  *
  * **For automatic failover without data loss**
  *
@@ -271,7 +271,7 @@
  *   (both think they're online, both send output)
  *   → Solution: Use arbitration (quorum, UUID-based tie-breaking)
  *
- * @section pattern_2oo3 Pattern 4: Triple Redundancy (2oo3)
+ * @section vital_channel_topologies_pattern_2oo3 Pattern 4: Triple Redundancy (2oo3)
  *
  * **For highest reliability (tolerate 1 fault)**
  *
@@ -352,7 +352,7 @@
  * - ✗ Requires 3 independent systems
  * - ✗ Higher cost
  *
- * @section topology_comparison Summary Comparison
+ * @section vital_channel_topologies_topology_comparison Summary Comparison
  *
  * | Topology | Channels | Transport | Latency | Tolerance | Failover | Best For |
  * |----------|----------|-----------|---------|-----------|----------|----------|
@@ -362,7 +362,7 @@
  * | 2oo3 | 3 | TCP×3 | 50-150ms | 1 | Auto | Mission-critical SIL 4 |
  * | NMR | N | Mixed | Varies | M-quorum | Auto | Distributed consensus |
  *
- * @section selecting_topology How to Choose a Topology
+ * @section vital_channel_topologies_selecting_topology How to Choose a Topology
  *
  * **Question 1: What's the failure tolerance requirement?**
  * - Need to tolerate 0 faults (2oo2) → Must have perfect communication

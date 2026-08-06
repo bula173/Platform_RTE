@@ -1,10 +1,12 @@
 /**
  * @file sapi_timer.c
+ * @ingroup TIMER
  * @brief Timer service: validates parameters, then dispatches to the
  *        backend registered via sapi_timer_register_backend() (ADR-005).
  */
 #include "safeapi/timer/sapi_timer.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_timer_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_timer_register_backend(const sapi_timer_backend_t *backend)

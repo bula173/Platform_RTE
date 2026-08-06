@@ -1,7 +1,7 @@
 /**
  * @page reboot_user_guide Reboot Module - User Guide
  *
- * @section overview What is Reboot?
+ * @section reboot_user_guide_overview What is Reboot?
  *
  * The Reboot module requests a controlled system restart. It's the mechanism
  * you call when unrecoverable errors require a fresh start. The integrator
@@ -10,9 +10,9 @@
  *
  * Key idea: When recovery is impossible, restart cleanly rather than hang.
  *
- * @section quick_start Quick Start
+ * @section reboot_user_guide_quick_start Quick Start
  *
- * @subsection qs_backend 1. Register Backend at Startup
+ * @subsection reboot_user_guide_qs_backend 1. Register Backend at Startup
  *
  * Integrator supplies platform-specific reboot implementation:
  *
@@ -35,7 +35,7 @@
  * sapi_reboot_register_backend(&backend);
  * @endcode
  *
- * @subsection qs_request 2. Request Reboot on Critical Error
+ * @subsection reboot_user_guide_qs_request 2. Request Reboot on Critical Error
  *
  * @code
  * if (unrecoverable_error_detected) {
@@ -48,7 +48,7 @@
  * }
  * @endcode
  *
- * @section integration Integration with Safe-State
+ * @section reboot_user_guide_integration Integration with Safe-State
  *
  * Typically called from SAPI_REBOOT macro or safe-state handler:
  *
@@ -69,7 +69,7 @@
  * }
  * @endcode
  *
- * @section reason_codes Reason Codes
+ * @section reboot_user_guide_reason_codes Reason Codes
  *
  * Pass reason code (16-bit) to identify why reboot was requested:
  *
@@ -83,9 +83,9 @@
  *
  * Backend can persist reason code to NVM for post-reboot diagnostics.
  *
- * @section examples Practical Examples
+ * @section reboot_user_guide_examples Practical Examples
  *
- * @subsection example_watchdog Example 1: Watchdog-Triggered Reboot
+ * @subsection reboot_user_guide_example_watchdog Example 1: Watchdog-Triggered Reboot
  *
  * @code
  * void watchdog_handler(void *context) {
@@ -99,7 +99,7 @@
  * }
  * @endcode
  *
- * @subsection example_memory Example 2: Memory Corruption Detection
+ * @subsection reboot_user_guide_example_memory Example 2: Memory Corruption Detection
  *
  * @code
  * void check_memory_integrity(void) {
@@ -116,7 +116,7 @@
  * }
  * @endcode
  *
- * @subsection example_fallback Example 3: Reboot with Fallback
+ * @subsection reboot_user_guide_example_fallback Example 3: Reboot with Fallback
  *
  * @code
  * void request_reboot_with_timeout(uint32_t timeout_ms) {
@@ -134,7 +134,7 @@
  * }
  * @endcode
  *
- * @section guidelines Best Practices
+ * @section reboot_user_guide_guidelines Best Practices
  *
  * 1. Register backend at startup
  *    - Before any code can request reboot
@@ -161,7 +161,7 @@
  *    - Not for user-initiated shutdown (use graceful exit)
  *    - Only when system state is unsafe to continue
  *
- * @section see_also See Also
+ * @section reboot_user_guide_see_also See Also
  *
  * - @ref reboot_architecture for internal design
  * - @ref safestate_user_guide for SAPI_REBOOT macro

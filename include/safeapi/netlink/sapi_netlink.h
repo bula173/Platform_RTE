@@ -26,6 +26,10 @@
  *                      config->connect_timeout_ms.
  * REQ-OAL-NETLINK-003: send/receive shall accept an explicit timeout and
  *                      shall never block indefinitely by default.
+ *
+ * @defgroup NETLINK Point-to-Point Network Link
+ * @brief Connection-oriented link between independent processes (ADR-001)
+ * @{
  */
 #ifndef SAFEAPI_OS_NETLINK_H
 #define SAFEAPI_OS_NETLINK_H
@@ -37,8 +41,10 @@
 extern "C" {
 #endif
 
+/** @brief Caller-owned, fixed-size storage backing one sapi_netlink_handle_t. */
 SAFEAPI_DECLARE_STORAGE(sapi_netlink_storage_t, 64U);
 
+/** @brief Opaque handle to an established link, returned by sapi_netlink_open(). */
 typedef struct sapi_netlink_impl_s *sapi_netlink_handle_t;
 
 /**
@@ -56,13 +62,16 @@ typedef enum sapi_netlink_role_e
     SAPI_NETLINK_ROLE_CONNECT = 1  /**< Dial config->host:config->port. */
 } sapi_netlink_role_t;
 
+/** @brief Configuration for sapi_netlink_open(). */
 typedef struct sapi_netlink_config_s
 {
+    /** Which side of the connection this link instance plays. */
     sapi_netlink_role_t role;
     /** LISTEN: bind address, backend-defined interpretation of NULL
      *  (typically "any"). CONNECT: target host to dial. Must not be NULL
      *  for CONNECT. Caller-owned; only read during sapi_netlink_open(). */
     const char         *host;
+    /** LISTEN: port to bind. CONNECT: port to dial. */
     uint16_t             port;
     /** Fixed size in bytes of every message exchanged on this link. */
     size_t               message_size;
@@ -141,19 +150,24 @@ sapi_status_t sapi_netlink_close(sapi_netlink_handle_t handle);
  */
 typedef struct sapi_netlink_backend_s
 {
+    /** @brief Backend implementation of sapi_netlink_open(). May be NULL. */
     sapi_status_t (*open)(sapi_netlink_storage_t *storage,
                            const sapi_netlink_config_t *config,
                            sapi_netlink_handle_t *out_handle);
+    /** @brief Backend implementation of sapi_netlink_send(). May be NULL. */
     sapi_status_t (*send)(sapi_netlink_handle_t handle, const void *message,
                            size_t message_size, sapi_duration_ms_t timeout_ms);
+    /** @brief Backend implementation of sapi_netlink_receive(). May be NULL. */
     sapi_status_t (*receive)(sapi_netlink_handle_t handle, void *out_message,
                               size_t buffer_size, sapi_duration_ms_t timeout_ms);
+    /** @brief Backend implementation of sapi_netlink_close(). May be NULL. */
     sapi_status_t (*close)(sapi_netlink_handle_t handle);
 } sapi_netlink_backend_t;
 
 /**
  * @brief Registers the backend implementation used by every
  *        sapi_netlink_* call (ADR-005 section 2.1). Call once at startup.
+ * @param backend Vtable of backend function pointers. Must not be NULL.
  * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
  * REQ-OAL-NETLINK-014
  */
@@ -164,3 +178,5 @@ sapi_status_t sapi_netlink_register_backend(const sapi_netlink_backend_t *backen
 #endif
 
 #endif /* SAFEAPI_OS_NETLINK_H */
+
+/** @} */ /* NETLINK */

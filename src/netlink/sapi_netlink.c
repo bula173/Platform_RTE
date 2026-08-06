@@ -1,11 +1,13 @@
 /**
  * @file sapi_netlink.c
+ * @ingroup NETLINK
  * @brief Network link service: validates parameters, then dispatches to
  *        the backend registered via sapi_netlink_register_backend()
  *        (ADR-005). See sapi_ipc.c for the pattern this follows.
  */
 #include "safeapi/netlink/sapi_netlink.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_netlink_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_netlink_register_backend(const sapi_netlink_backend_t *backend)

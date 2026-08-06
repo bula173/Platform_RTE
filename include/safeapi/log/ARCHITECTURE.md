@@ -1,2 +1,23 @@
 /**
- * @page log_architecture Log Module - Architecture\n *\n * Ring buffer logging. Fixed storage, circular writes. When full, oldest\n * entries overwritten. Never allocates.\n *\n * @section storage Ring Buffer\n *\n * Fixed-size buffer tracks write position. On overflow, wraps and overwrites\n * oldest entries. Preserves recent history.\n *\n * @section format Entry Format\n *\n * [timestamp:4][level:1][message_len:2][message:N]\n * Compact format for bounded storage.\n *\n * @section retrieve Retrieval\n *\n * sapi_log_read() - Read most recent entries\n * Access NVM/flash via backend for persistence.\n *\n */\n
+ * @page log_architecture Log Module - Architecture
+ *
+ * Ring buffer logging. Fixed storage, circular writes. When full, oldest
+ * entries overwritten. Never allocates.
+ *
+ * @section log_architecture_storage Ring Buffer
+ *
+ * Fixed-size buffer tracks write position. On overflow, wraps and overwrites
+ * oldest entries. Preserves recent history.
+ *
+ * @section log_architecture_format Entry Format
+ *
+ * [timestamp:4][level:1][message_len:2][message:N]
+ * Compact format for bounded storage.
+ *
+ * @section log_architecture_retrieve Retrieval
+ *
+ * sapi_log_read() - Read most recent entries
+ * Access NVM/flash via backend for persistence.
+ *
+ */
+

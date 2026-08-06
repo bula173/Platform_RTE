@@ -367,6 +367,7 @@ typedef struct {
     sapi_checksum_stats_t stats;            /**< Statistics counters */
 } sapi_checksum_manager_t;
 
+/** @brief Global checksum module state (single instance; no dynamic allocation). */
 static sapi_checksum_manager_t g_checksum_manager = {0};
 
 /* ============================================================================

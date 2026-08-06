@@ -1,5 +1,6 @@
 /**
  * @file sapi_channel.c
+ * @ingroup CHANNEL
  * @brief Implementation of dual-channel identity and result comparison
  *        (ADR-008).
  */

@@ -11,6 +11,10 @@
  *                     for the lifetime of the buffer view.
  * REQ-COMMON-BUF-002: every copy operation shall be bounds-checked and
  *                     shall never write past the declared capacity.
+ *
+ * @defgroup BUFFER Cross-Layer Data Buffer
+ * @brief Caller-owned, bounds-checked view over static storage (ADR-002)
+ * @{
  */
 #ifndef SAFEAPI_COMMON_BUFFER_H
 #define SAFEAPI_COMMON_BUFFER_H
@@ -136,17 +140,59 @@ bool sapi_buffer_is_valid(const sapi_buffer_t *buf);
  * sapi_buffer_copy_out().
  */
 
-/** @brief Appends a little-endian uint16_t at buf's current length. REQ-COMMON-BUF-020 */
+/**
+ * @brief Appends a little-endian uint16_t at buf's current length.
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if buf is
+ *         NULL; SAPI_STATUS_RESOURCE_EXHAUSTED if 2 bytes will not fit
+ *         before buf->capacity.
+ * REQ-COMMON-BUF-020
+ */
 sapi_status_t sapi_buffer_write_u16_le(sapi_buffer_t *buf, uint16_t value);
-/** @brief Appends a big-endian uint16_t at buf's current length. REQ-COMMON-BUF-021 */
+/**
+ * @brief Appends a big-endian uint16_t. See sapi_buffer_write_u16_le().
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return Same status contract as sapi_buffer_write_u16_le().
+ * REQ-COMMON-BUF-021
+ */
 sapi_status_t sapi_buffer_write_u16_be(sapi_buffer_t *buf, uint16_t value);
-/** @brief Appends a little-endian uint32_t at buf's current length. REQ-COMMON-BUF-022 */
+/**
+ * @brief Appends a little-endian uint32_t at buf's current length.
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if buf is
+ *         NULL; SAPI_STATUS_RESOURCE_EXHAUSTED if 4 bytes will not fit
+ *         before buf->capacity.
+ * REQ-COMMON-BUF-022
+ */
 sapi_status_t sapi_buffer_write_u32_le(sapi_buffer_t *buf, uint32_t value);
-/** @brief Appends a big-endian uint32_t at buf's current length. REQ-COMMON-BUF-023 */
+/**
+ * @brief Appends a big-endian uint32_t. See sapi_buffer_write_u32_le().
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return Same status contract as sapi_buffer_write_u32_le().
+ * REQ-COMMON-BUF-023
+ */
 sapi_status_t sapi_buffer_write_u32_be(sapi_buffer_t *buf, uint32_t value);
-/** @brief Appends a little-endian uint64_t at buf's current length. REQ-COMMON-BUF-024 */
+/**
+ * @brief Appends a little-endian uint64_t at buf's current length.
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if buf is
+ *         NULL; SAPI_STATUS_RESOURCE_EXHAUSTED if 8 bytes will not fit
+ *         before buf->capacity.
+ * REQ-COMMON-BUF-024
+ */
 sapi_status_t sapi_buffer_write_u64_le(sapi_buffer_t *buf, uint64_t value);
-/** @brief Appends a big-endian uint64_t at buf's current length. REQ-COMMON-BUF-025 */
+/**
+ * @brief Appends a big-endian uint64_t. See sapi_buffer_write_u64_le().
+ * @param buf    Destination buffer. Must not be NULL.
+ * @param value  Value to encode and append.
+ * @return Same status contract as sapi_buffer_write_u64_le().
+ * REQ-COMMON-BUF-025
+ */
 sapi_status_t sapi_buffer_write_u64_be(sapi_buffer_t *buf, uint64_t value);
 
 /**
@@ -159,15 +205,52 @@ sapi_status_t sapi_buffer_write_u64_be(sapi_buffer_t *buf, uint64_t value);
  * REQ-COMMON-BUF-026
  */
 sapi_status_t sapi_buffer_read_u16_le(const sapi_buffer_t *buf, size_t offset, uint16_t *out_value);
-/** @brief Reads a big-endian uint16_t. See sapi_buffer_read_u16_le(). REQ-COMMON-BUF-027 */
+/**
+ * @brief Reads a big-endian uint16_t. See sapi_buffer_read_u16_le().
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_value  Receives the decoded value. Must not be NULL.
+ * @return Same status contract as sapi_buffer_read_u16_le().
+ * REQ-COMMON-BUF-027
+ */
 sapi_status_t sapi_buffer_read_u16_be(const sapi_buffer_t *buf, size_t offset, uint16_t *out_value);
-/** @brief Reads a little-endian uint32_t. See sapi_buffer_read_u16_le(). REQ-COMMON-BUF-028 */
+/**
+ * @brief Reads a little-endian uint32_t at the given offset.
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_value  Receives the decoded value. Must not be NULL.
+ * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a NULL pointer;
+ *         SAPI_STATUS_RESOURCE_EXHAUSTED if offset+4 exceeds buf->length.
+ * REQ-COMMON-BUF-028
+ */
 sapi_status_t sapi_buffer_read_u32_le(const sapi_buffer_t *buf, size_t offset, uint32_t *out_value);
-/** @brief Reads a big-endian uint32_t. See sapi_buffer_read_u16_le(). REQ-COMMON-BUF-029 */
+/**
+ * @brief Reads a big-endian uint32_t. See sapi_buffer_read_u32_le().
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_value  Receives the decoded value. Must not be NULL.
+ * @return Same status contract as sapi_buffer_read_u32_le().
+ * REQ-COMMON-BUF-029
+ */
 sapi_status_t sapi_buffer_read_u32_be(const sapi_buffer_t *buf, size_t offset, uint32_t *out_value);
-/** @brief Reads a little-endian uint64_t. See sapi_buffer_read_u16_le(). REQ-COMMON-BUF-030 */
+/**
+ * @brief Reads a little-endian uint64_t at the given offset.
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_value  Receives the decoded value. Must not be NULL.
+ * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a NULL pointer;
+ *         SAPI_STATUS_RESOURCE_EXHAUSTED if offset+8 exceeds buf->length.
+ * REQ-COMMON-BUF-030
+ */
 sapi_status_t sapi_buffer_read_u64_le(const sapi_buffer_t *buf, size_t offset, uint64_t *out_value);
-/** @brief Reads a big-endian uint64_t. See sapi_buffer_read_u16_le(). REQ-COMMON-BUF-031 */
+/**
+ * @brief Reads a big-endian uint64_t. See sapi_buffer_read_u64_le().
+ * @param buf        Source buffer. Must not be NULL.
+ * @param offset     Byte offset within buf's valid bytes to read from.
+ * @param out_value  Receives the decoded value. Must not be NULL.
+ * @return Same status contract as sapi_buffer_read_u64_le().
+ * REQ-COMMON-BUF-031
+ */
 sapi_status_t sapi_buffer_read_u64_be(const sapi_buffer_t *buf, size_t offset, uint64_t *out_value);
 
 #ifdef __cplusplus
@@ -175,3 +258,5 @@ sapi_status_t sapi_buffer_read_u64_be(const sapi_buffer_t *buf, size_t offset, u
 #endif
 
 #endif /* SAFEAPI_COMMON_BUFFER_H */
+
+/** @} */ /* BUFFER */

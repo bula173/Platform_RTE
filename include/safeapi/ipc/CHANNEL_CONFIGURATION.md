@@ -1,7 +1,7 @@
 /**
  * @page channel_configuration Channel Configuration Guide
  *
- * @section overview Channel Configuration Pattern
+ * @section channel_configuration_overview Channel Configuration Pattern
  *
  * The framework provides configuration structures for each channel type.
  * Users fill in these configurations with OS-specific parameters, then
@@ -9,7 +9,7 @@
  *
  * **Key Principle:** Framework defines the interface, user provides the parameters.
  *
- * @section channel_types Supported Channel Types
+ * @section channel_configuration_channel_types Supported Channel Types
  *
  * ### 1. Shared Memory Channels
  *
@@ -277,7 +277,7 @@
  * sapi_ipc_create_udp(&udp_channel, &udp_config);
  * ```
  *
- * @section channel_creation Creating Channels for Vital Communication
+ * @section channel_configuration_channel_creation Creating Channels for Vital Communication
  *
  * ### Example: Online/Standby via TCP/IP
  *
@@ -356,7 +356,7 @@
  * sapi_vital_channel_init(&vital, &vital_cfg, channels, 2);
  * ```
  *
- * @section dispatcher_callback Dispatcher Callback Pattern
+ * @section channel_configuration_dispatcher_callback Dispatcher Callback Pattern
  *
  * Since users might mix different transports, they implement a dispatcher:
  *
@@ -411,7 +411,7 @@
  * }
  * ```
  *
- * @section configuration_summary Configuration Parameter Summary
+ * @section channel_configuration_configuration_summary Configuration Parameter Summary
  *
  * **Shared Memory:**
  * - `descriptor_path`: Where to create shared memory (user specifies)
@@ -440,7 +440,7 @@
  * - `message_size`: Max datagram size (user specifies)
  * - `timeout_ms`: Non-blocking if 0 (user specifies)
  *
- * @section implementation_by_integrator Implementation Responsibility
+ * @section channel_configuration_implementation_by_integrator Implementation Responsibility
  *
  * **Framework provides:**
  * - Configuration structures (what to configure)

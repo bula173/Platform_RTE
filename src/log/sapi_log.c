@@ -1,11 +1,13 @@
 /**
  * @file sapi_log.c
+ * @ingroup LOG
  * @brief Logging service: dispatches to the backend registered via
  *        sapi_log_register_backend() (ADR-005). No backend registered is
  *        not an error for this service - see sapi_log.h.
  */
 #include "safeapi/log/sapi_log.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_log_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_log_register_backend(const sapi_log_backend_t *backend)

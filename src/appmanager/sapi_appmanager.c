@@ -1,17 +1,21 @@
-/* _POSIX_C_SOURCE 200809L: struct sigaction/sigaction()/sigemptyset() below
- * are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is
- * included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/
- * monitor_c.c). Without this, glibc's strict-C99 mode hides these
- * declarations entirely: this exact omission passed on macOS (Apple's
- * libc does not gate them behind the same feature-test macro) but failed
- * Linux CI with "storage size of 'sa' isn't known" / implicit-declaration
- * errors under -Werror - caught via a real GitHub Actions failure, not
- * local testing. */
+/**
+ * @def _POSIX_C_SOURCE
+ * @brief struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001,
+ *        not base ISO C99 - must be defined before ANY header is included
+ *        (same rule/pattern as safeAPIExample's channel_ab.c/site.c/
+ *        monitor_c.c). Without this, glibc's strict-C99 mode hides these
+ *        declarations entirely: this exact omission passed on macOS
+ *        (Apple's libc does not gate them behind the same feature-test
+ *        macro) but failed Linux CI with "storage size of 'sa' isn't
+ *        known" / implicit-declaration errors under -Werror - caught via
+ *        a real GitHub Actions failure, not local testing.
+ */
 #define _POSIX_C_SOURCE 200809L
 
 /**
  * @file sapi_appmanager.c
  * @brief Application Manager implementation
+ * @ingroup APPMANAGER
  *
  * Provides lifecycle management for safety-critical applications.
  */
@@ -24,6 +28,13 @@
  * see this file's own implementation below and the function's doc in
  * sapi_appmanager.h for why this is a scoped, documented exception to
  * this module (and this framework)'s usual OS-agnosticism. */
+/**
+ * @def SAPI_APPMANAGER_HAVE_POSIX_SIGNALS
+ * @brief 1 when compiled on a POSIX-ish target (signal.h available) so
+ *        sapi_appmanager_install_default_signal_handlers() can install a
+ *        real SIGINT/SIGTERM handler; 0 otherwise, in which case that
+ *        function returns SAPI_STATUS_NOT_SUPPORTED.
+ */
 #if defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 #define SAPI_APPMANAGER_HAVE_POSIX_SIGNALS 1
 #include <signal.h>
@@ -32,7 +43,7 @@
 #define SAPI_APPMANAGER_HAVE_POSIX_SIGNALS 0
 #endif
 
-/* Global application state (static) */
+/** @brief Global application state (single instance; no dynamic allocation). */
 static sapi_appmanager_state_t g_app_state = {
     .state = SAPI_APP_STATE_UNINITIALIZED,
     .iteration_count = 0,
@@ -40,6 +51,8 @@ static sapi_appmanager_state_t g_app_state = {
     .last_error = SAPI_STATUS_OK
 };
 
+/** @brief Set by the installed signal handler (or sapi_appmanager_request_shutdown())
+ *         to request that sapi_appmanager_run()'s loop exit cleanly. */
 static volatile int g_shutdown_requested = 0;
 
 /* ============================================================================

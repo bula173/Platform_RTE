@@ -1,7 +1,7 @@
 /**
  * @page buffer_user_guide Buffer Module - User Guide
  *
- * @section overview What is a Buffer?
+ * @section buffer_user_guide_overview What is a Buffer?
  *
  * A Buffer is a lightweight, bounds-tracked view over caller-owned storage.
  * You provide the backing storage (static array, stack buffer), and the buffer
@@ -10,16 +10,16 @@
  *
  * Key concept: Buffer is a VIEW, not the owner of storage.
  *
- * @section quick_start Quick Start
+ * @section buffer_user_guide_quick_start Quick Start
  *
- * @subsection qs_storage 1. Allocate Backing Storage
+ * @subsection buffer_user_guide_qs_storage 1. Allocate Backing Storage
  *
  * @code
  * // Static buffer for 256 bytes
  * static uint8_t buffer_storage[256];
  * @endcode
  *
- * @subsection qs_init 2. Bind Buffer View
+ * @subsection buffer_user_guide_qs_init 2. Bind Buffer View
  *
  * @code
  * sapi_buffer_t buf;
@@ -33,7 +33,7 @@
  * // buf now has: data=buffer_storage, capacity=256, length=0
  * @endcode
  *
- * @subsection qs_use 3. Use Buffer
+ * @subsection buffer_user_guide_qs_use 3. Use Buffer
  *
  * @code
  * // Write data into storage (caller manages writes to data pointer)
@@ -49,7 +49,7 @@
  * sapi_buffer_clear(&buf);  // Sets length=0, keeps data/capacity
  * @endcode
  *
- * @section data_structures Key Structures
+ * @section buffer_user_guide_data_structures Key Structures
  *
  * @code
  * typedef struct {
@@ -66,9 +66,9 @@
  *
  * Invariant: length <= capacity
  *
- * @section examples Practical Examples
+ * @section buffer_user_guide_examples Practical Examples
  *
- * @subsection example_message Example 1: Fixed-Size Message Buffer
+ * @subsection buffer_user_guide_example_message Example 1: Fixed-Size Message Buffer
  *
  * @code
  * typedef struct {
@@ -96,5 +96,89 @@
  * sapi_buffer_clear(&buf);
  * @endcode
  *
- * @subsection example_ringbuf Example 2: Read-Only View\n *\n * @code
- * sapi_buffer_t mutable_buf = {...};\n *\n * // Create read-only view\ * sapi_const_buffer_t view = {\n *     .data = mutable_buf.data,\n *     .length = mutable_buf.length\n * };\n *\n * // Pass to function that should not modify\n * process_read_only(&view);\n * @endcode\n *\n * @section operations Buffer Operations\n *\n * @subsection op_init Initialize\n *\n * @code\n * sapi_buffer_init(&buf, storage, capacity);\n * @endcode\n *\n * - Sets buf.data = storage\n * - Sets buf.capacity = capacity\n * - Sets buf.length = 0\n * - Returns INVALID_PARAM if storage==NULL or capacity==0\n *\n * @subsection op_write Write Data\n *\n * @code\n * // Caller writes to buf.data\n * memcpy(buf.data + offset, input, size);\n *\n * // Mark data as valid\n * sapi_buffer_set_length(&buf, new_length);\n * @endcode\n *\n * sapi_buffer_set_length() fails if new_length > capacity.\n *\n * @subsection op_read Read Data\n *\n * @code\n * // Caller reads from buf.data\n * size_t n = buf.length;  // How much valid data\n * memcpy(output, buf.data, n);\n * @endcode\n *\n * @subsection op_clear Clear\n *\n * @code\n * sapi_buffer_clear(&buf);  // Sets length=0, keeps capacity/data\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Caller owns storage lifetime\n *    - Buffer just tracks state\n *    - Storage must outlive buffer\n *    - Static or stack allocation recommended\n *\n * 2. Check capacity before writing\n *    - Caller responsible for bounds checking\n *    - Buffer tracks length, not write protection\n *    - sapi_buffer_set_length() validates\n *\n * 3. Use sapi_buffer_set_length() for bounds checking\n *    - Always call after writing\n *    - Returns error if length > capacity\n *    - Prevents out-of-bounds bugs\n *\n * 4. Use const_buffer_t for read-only access\n *    - Pass to functions that should not modify\n *    - Type-safe read-only contract\n *\n * 5. Clear when done\n *    - Reset length to 0 for reuse\n *    - Resets valid-data range, not storage\n *\n * @section see_also See Also\n *\n * - @ref buffer_architecture for internal design\n * - @ref memory_user_guide for allocation strategies\n *\n */\n
+ * @subsection buffer_user_guide_example_ringbuf Example 2: Read-Only View
+ *
+ * @code
+ * sapi_buffer_t mutable_buf = {...};
+ *
+ * // Create read-only view
+ * sapi_const_buffer_t view = {
+ *     .data = mutable_buf.data,
+ *     .length = mutable_buf.length
+ * };
+ *
+ * // Pass to function that should not modify
+ * process_read_only(&view);
+ * @endcode
+ *
+ * @section buffer_user_guide_operations Buffer Operations
+ *
+ * @subsection buffer_user_guide_op_init Initialize
+ *
+ * @code
+ * sapi_buffer_init(&buf, storage, capacity);
+ * @endcode
+ *
+ * - Sets buf.data = storage
+ * - Sets buf.capacity = capacity
+ * - Sets buf.length = 0
+ * - Returns INVALID_PARAM if storage==NULL or capacity==0
+ *
+ * @subsection buffer_user_guide_op_write Write Data
+ *
+ * @code
+ * // Caller writes to buf.data
+ * memcpy(buf.data + offset, input, size);
+ *
+ * // Mark data as valid
+ * sapi_buffer_set_length(&buf, new_length);
+ * @endcode
+ *
+ * sapi_buffer_set_length() fails if new_length > capacity.
+ *
+ * @subsection buffer_user_guide_op_read Read Data
+ *
+ * @code
+ * // Caller reads from buf.data
+ * size_t n = buf.length;  // How much valid data
+ * memcpy(output, buf.data, n);
+ * @endcode
+ *
+ * @subsection buffer_user_guide_op_clear Clear
+ *
+ * @code
+ * sapi_buffer_clear(&buf);  // Sets length=0, keeps capacity/data
+ * @endcode
+ *
+ * @section buffer_user_guide_guidelines Best Practices
+ *
+ * 1. Caller owns storage lifetime
+ *    - Buffer just tracks state
+ *    - Storage must outlive buffer
+ *    - Static or stack allocation recommended
+ *
+ * 2. Check capacity before writing
+ *    - Caller responsible for bounds checking
+ *    - Buffer tracks length, not write protection
+ *    - sapi_buffer_set_length() validates
+ *
+ * 3. Use sapi_buffer_set_length() for bounds checking
+ *    - Always call after writing
+ *    - Returns error if length > capacity
+ *    - Prevents out-of-bounds bugs
+ *
+ * 4. Use const_buffer_t for read-only access
+ *    - Pass to functions that should not modify
+ *    - Type-safe read-only contract
+ *
+ * 5. Clear when done
+ *    - Reset length to 0 for reuse
+ *    - Resets valid-data range, not storage
+ *
+ * @section buffer_user_guide_see_also See Also
+ *
+ * - @ref buffer_architecture for internal design
+ * - @ref memory_user_guide for allocation strategies
+ *
+ */
+

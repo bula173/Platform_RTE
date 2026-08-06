@@ -1,7 +1,7 @@
 /**
  * @page safestate_user_guide Safe-State Module - User Guide
  *
- * @section overview What is Safe-State?
+ * @section safestate_user_guide_overview What is Safe-State?
  *
  * Safe-State provides fail-safe transitions for safety-critical systems.
  * When any component detects a critical condition, it can transition the
@@ -12,31 +12,31 @@
  *
  * Key principle: If correctness cannot be guaranteed, enter fail-safe mode.
  *
- * @section levels Safe-State Levels
+ * @section safestate_user_guide_levels Safe-State Levels
  *
  * The module defines three severity levels (in order of escalation):
  *
- * @subsection level_degraded DEGRADED (Level 0)
+ * @subsection safestate_user_guide_level_degraded DEGRADED (Level 0)
  *
  * Reduced capability but system can continue operating.
  * Example: Redundant channel failed, but primary still working.
  * Handler CAN return to caller (system continues execution).
  *
- * @subsection level_safe SAFE (Level 1)
+ * @subsection safestate_user_guide_level_safe SAFE (Level 1)
  *
  * Fail-safe state: critical functions disabled, system in safe configuration.
  * Example: Both channels failed, both must be considered unavailable.
  * Handler MUST NOT return; if it does, framework enters infinite loop.
  *
- * @subsection level_reboot REBOOT (Level 2)
+ * @subsection safestate_user_guide_level_reboot REBOOT (Level 2)
  *
  * Emergency restart required.
  * Example: Critical error detected, recovery only via fresh start.
  * Handler MUST NOT return; if it does, framework enters infinite loop.
  *
- * @section quick_start Quick Start
+ * @section safestate_user_guide_quick_start Quick Start
  *
- * @subsection qs_register 1. Register Handler at Startup
+ * @subsection safestate_user_guide_qs_register 1. Register Handler at Startup
  *
  * @code
  * void my_safe_state_handler(sapi_safestate_level_t level,
@@ -70,7 +70,7 @@
  *                                 my_safe_state_handler);
  * @endcode
  *
- * @subsection qs_assert 2. Use SAPI_ASSERT for Checked Assertions
+ * @subsection safestate_user_guide_qs_assert 2. Use SAPI_ASSERT for Checked Assertions
  *
  * Replace standard assert() with SAPI_ASSERT() - always active, even in production.
  *
@@ -81,7 +81,7 @@
  *
  * On failure: enters SAFE state with SAPI_SAFESTATE_REASON_ASSERT_FAILED.
  *
- * @subsection qs_trigger 3. Trigger Safe-State Explicitly
+ * @subsection safestate_user_guide_qs_trigger 3. Trigger Safe-State Explicitly
  *
  * @code
  * // Critical channel failed
@@ -97,9 +97,9 @@
  * }
  * @endcode
  *
- * @section examples Practical Examples
+ * @section safestate_user_guide_examples Practical Examples
  *
- * @subsection example_voting Example 1: Redundant Channel Voting Failure
+ * @subsection safestate_user_guide_example_voting Example 1: Redundant Channel Voting Failure
  *
  * @code
  * sapi_status_t process_vital_command(const vital_msg_t *msg) {
@@ -127,7 +127,7 @@
  * }
  * @endcode
  *
- * @subsection example_degraded Example 2: Graceful Degradation
+ * @subsection safestate_user_guide_example_degraded Example 2: Graceful Degradation
  *
  * @code
  * void check_system_health(void) {
@@ -157,7 +157,7 @@
  * }
  * @endcode
  *
- * @subsection example_assertion Example 3: Assertion-Based Fault Detection
+ * @subsection safestate_user_guide_example_assertion Example 3: Assertion-Based Fault Detection
  *
  * @code
  * void process_train_command(const train_cmd_t *cmd) {
@@ -173,9 +173,9 @@
  * }
  * @endcode
  *
- * @section patterns Common Patterns
+ * @section safestate_user_guide_patterns Common Patterns
  *
- * @subsection pattern_health Pattern 1: Health Monitoring Loop
+ * @subsection safestate_user_guide_pattern_health Pattern 1: Health Monitoring Loop
  *
  * Periodically check system health and transition accordingly:
  *
@@ -200,7 +200,7 @@
  * }
  * @endcode
  *
- * @subsection pattern_failsafe Pattern 2: Fail-Safe-by-Default
+ * @subsection safestate_user_guide_pattern_failsafe Pattern 2: Fail-Safe-by-Default
  *
  * Assume unsafe unless proven otherwise:
  *
@@ -221,7 +221,7 @@
  * proceed_with_operation();  // Proven safe
  * @endcode
  *
- * @section app_reason_codes Application-Specific Reason Codes
+ * @section safestate_user_guide_app_reason_codes Application-Specific Reason Codes
  *
  * Framework reserves reason codes 0-4095. Applications use 4096 and above:
  *
@@ -236,7 +236,7 @@
  * #define CUSTOM_REASON_RECOVERED 4103
  * @endcode
  *
- * @section guidelines Best Practices
+ * @section safestate_user_guide_guidelines Best Practices
  *
  * 1. Register all three handlers at startup
  *    - Even if not all levels used, register handlers for each
@@ -262,7 +262,7 @@
  *    - Example: communication failure, sensor error
  *    - Failure = system state invalid, must enter safe mode
  *
- * @section see_also See Also
+ * @section safestate_user_guide_see_also See Also
  *
  * - @ref safestate_architecture for internal design
  * - @ref watchdog_user_guide for watchdog integration

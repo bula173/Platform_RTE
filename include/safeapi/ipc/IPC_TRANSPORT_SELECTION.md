@@ -1,7 +1,7 @@
 /**
  * @page ipc_transport_selection IPC Transport Selection Guide
  *
- * @section overview Inter-Process Communication (IPC) Transport Layer
+ * @section ipc_transport_selection_overview Inter-Process Communication (IPC) Transport Layer
  *
  * The safeAPIFramework uses a **backend vtable pattern** for IPC transport abstraction.
  * The application integrator chooses and implements the concrete transport (shared memory,
@@ -12,7 +12,7 @@
  * - **Patterns**: Request-Reply (RPC), Pub-Sub (broadcast)
  * - **Backend Interface**: sapi_ipc_backend_t vtable for plugging in transport
  *
- * @section transport_options Available Transport Options
+ * @section ipc_transport_selection_transport_options Available Transport Options
  *
  * | Transport | Use Case | Latency | Range | Reliability | Setup |
  * |-----------|----------|---------|-------|-------------|-------|
@@ -23,7 +23,7 @@
  * | **QNX MsgPass** | RTOS environments | µs | Local | Deadlock-free | RTOS-specific |
  * | **POSIX MQueue** | POSIX systems | ms | Local | Bounded queues | POSIX |
  *
- * @section backend_vtable Backend Implementation Pattern
+ * @section ipc_transport_selection_backend_vtable Backend Implementation Pattern
  *
  * Each transport implements the backend vtable:
  *
@@ -47,7 +47,7 @@
  * // All subsequent sapi_ipc_* calls use this backend
  * ```
  *
- * @section shared_memory Shared Memory Transport
+ * @section ipc_transport_selection_shared_memory Shared Memory Transport
  *
  * **Best for:** Same-system redundancy (online/standby on same CPU)
  *
@@ -94,7 +94,7 @@
  *
  * **Disadvantages:** Limited to same CPU/board, requires synchronization primitives
  *
- * @section fifo FIFO (Named Pipes) Transport
+ * @section ipc_transport_selection_fifo FIFO (Named Pipes) Transport
  *
  * **Best for:** Same-system inter-process communication (different processes)
  *
@@ -130,7 +130,7 @@
  *
  * **Disadvantages:** Slower than shared memory, file I/O overhead
  *
- * @section tcp_ip TCP/IP Transport
+ * @section ipc_transport_selection_tcp_ip TCP/IP Transport
  *
  * **Best for:** Distributed online/standby across network (LAN/WAN)
  *
@@ -176,7 +176,7 @@
  *
  * **Disadvantages:** Higher latency (~ms), connection management, security concerns
  *
- * @section udp UDP Transport
+ * @section ipc_transport_selection_udp UDP Transport
  *
  * **Best for:** Low-latency distributed communication, best-effort delivery acceptable
  *
@@ -213,7 +213,7 @@
  *
  * **Disadvantages:** Best-effort (packets can be lost), no ordering guarantee, requires vital_channel for reliability
  *
- * @section vital_channel_integration Integration with Vital Channel
+ * @section ipc_transport_selection_vital_channel_integration Integration with Vital Channel
  *
  * Vital Channel provides voting/redundancy ON TOP of any transport. This enables
  * user-controlled selection and multi-transport fallback patterns.
@@ -290,7 +290,7 @@
  * vital_cfg.backend_recv = mixed_backend_recv;
  * ```
  *
- * @section online_standby_patterns Online/Standby Redundancy Patterns
+ * @section ipc_transport_selection_online_standby_patterns Online/Standby Redundancy Patterns
  *
  * Vital Channel supports several redundancy architectures:
  *
@@ -422,7 +422,7 @@
  *         Safe-State: Channels disagree (data corruption) OR timeout
  * ```
  *
- * @section decision_tree Transport Selection Decision Tree
+ * @section ipc_transport_selection_decision_tree Transport Selection Decision Tree
  *
  * ```
  * Is communication local (same CPU/board)?
@@ -441,7 +441,7 @@
  *                    → MITIGATE: Use vital_channel voting for reliability
  * ```
  *
- * @section recommended_configurations Recommended Configurations
+ * @section ipc_transport_selection_recommended_configurations Recommended Configurations
  *
  * ### For Railway ERTMS (SIL 4)
  *
@@ -485,7 +485,7 @@
  * // Channels: TCP to US datacenter + TCP to EU datacenter
  * ```
  *
- * @section implementation_checklist Implementation Checklist
+ * @section ipc_transport_selection_implementation_checklist Implementation Checklist
  *
  * - [ ] Choose transport for your use case (shared memory vs network)
  * - [ ] Decide redundancy pattern (2oo2 vs 2oo3 vs NMR)

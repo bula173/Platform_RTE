@@ -46,28 +46,37 @@
  */
 typedef struct sapi_watchdog_s
 {
-    uint8_t                in_use;
-    uint8_t                active;
+    uint8_t                in_use;       /**< 1 if this pool slot is allocated to a live watchdog. */
+    uint8_t                active;       /**< 1 if counting down (started and not stopped). */
     uint8_t                fired;      /**< Fired and not yet restarted via start(). */
-    sapi_watchdog_config_t config;
-    sapi_timestamp_ms_t    deadline_ms;
-    sapi_timestamp_ms_t    last_kick_ms;
-    uint32_t               kicks;
-    uint32_t               fires;
-    uint32_t               recoveries;
+    sapi_watchdog_config_t config;        /**< Configuration this watchdog was created with. */
+    sapi_timestamp_ms_t    deadline_ms;   /**< Absolute time at which this watchdog next fires. */
+    sapi_timestamp_ms_t    last_kick_ms;  /**< Absolute time of the most recent kick/start. */
+    uint32_t               kicks;         /**< Total number of successful kicks. */
+    uint32_t               fires;         /**< Total number of times this watchdog has fired. */
+    uint32_t               recoveries;    /**< Total number of recovery actions dispatched. */
 } sapi_watchdog_s;
 
+/** @brief Fixed-size static pool backing every sapi_watchdog_t handle. */
 static sapi_watchdog_s g_watchdog_pool[SAPI_WATCHDOG_MAX_COUNT];
+/** @brief 1 once sapi_watchdog_manager_initialize() has been called. */
 static uint8_t          g_manager_initialized = 0U;
 
 /* ============================================================================
  * Internal helpers
  * ========================================================================== */
 
-/** Defensive check that handle actually points at one of this module's
- *  own live pool slots, not an arbitrary caller pointer. Pointer
- *  comparison against both ends of the same array object is well-defined
- *  in C (unlike comparing unrelated pointers). */
+/**
+ * @brief Defensive check that handle actually points at one of this
+ *        module's own live pool slots, not an arbitrary caller pointer.
+ *
+ * Pointer comparison against both ends of the same array object is
+ * well-defined in C (unlike comparing unrelated pointers).
+ *
+ * @param watchdog  Handle to validate.
+ * @return true if watchdog points at an in-use slot of g_watchdog_pool;
+ *         false otherwise (including NULL).
+ */
 static bool is_valid_handle(sapi_watchdog_t watchdog)
 {
     const sapi_watchdog_s *slot = (const sapi_watchdog_s *)watchdog;
@@ -76,6 +85,11 @@ static bool is_valid_handle(sapi_watchdog_t watchdog)
            && (slot->in_use != 0U);
 }
 
+/**
+ * @brief Checks whether action is one of the defined sapi_watchdog_action_t enumerators.
+ * @param action  Value to validate.
+ * @return true if action is a recognized enumerator; false otherwise.
+ */
 static bool is_valid_action(sapi_watchdog_action_t action)
 {
     bool valid;

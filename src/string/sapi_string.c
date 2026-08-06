@@ -1,6 +1,7 @@
 /**
  * @file sapi_string.c
  * @brief Implementation of the bounded string module (ADR-006).
+ * @ingroup STRING
  */
 #include "safeapi/string/sapi_string.h"
 #include "safeapi/cast/sapi_cast.h"
@@ -300,9 +301,14 @@ sapi_status_t sapi_string_split_next(const sapi_string_t *str, char delimiter,
     return SAPI_STATUS_OK;
 }
 
-/* Fills out[0..*out_len) with value's base-10 digits, most-significant
- * first, no leading zeros (except "0" itself). out must have room for at
- * least 20 characters (UINT64_MAX has 20 decimal digits). */
+/**
+ * @brief Fills out[0..*out_len) with value's base-10 digits,
+ *        most-significant first, no leading zeros (except "0" itself).
+ * @param value    Value to format.
+ * @param out      Destination buffer; must have room for at least 20
+ *                 characters (UINT64_MAX has 20 decimal digits).
+ * @param out_len  Receives the number of digit characters written.
+ */
 static void sapi_string_format_u64_digits(uint64_t value, char *out, size_t *out_len)
 {
     char rev[20];

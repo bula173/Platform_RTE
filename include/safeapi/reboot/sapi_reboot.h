@@ -11,6 +11,10 @@
  * REQ-OAL-REBOOT-001: sapi_reboot_request() is not expected to return on
  *                     success; a return only occurs if the backend cannot
  *                     perform the reboot.
+ *
+ * @defgroup REBOOT Controlled Reboot
+ * @brief Backend-defined controlled system restart (ADR-004 section 3)
+ * @{
  */
 #ifndef SAFEAPI_OS_REBOOT_H
 #define SAFEAPI_OS_REBOOT_H
@@ -41,6 +45,7 @@ sapi_status_t sapi_reboot_request(uint16_t reason_code);
  */
 typedef struct sapi_reboot_backend_s
 {
+    /** @brief Backend implementation of sapi_reboot_request(). May be NULL. */
     sapi_status_t (*request)(uint16_t reason_code);
 } sapi_reboot_backend_t;
 
@@ -59,3 +64,5 @@ sapi_status_t sapi_reboot_register_backend(const sapi_reboot_backend_t *backend)
 #endif
 
 #endif /* SAFEAPI_OS_REBOOT_H */
+
+/** @} */ /* REBOOT */

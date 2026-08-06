@@ -1,6 +1,7 @@
 /**
  * @file sapi_ipc_request_reply.h
  * @brief IPC Request-Reply Pattern (RPC-style communication)
+ * @ingroup IPC
  *
  * Implements synchronous request-reply communication where a client sends
  * a request and blocks (with timeout) waiting for a reply. Server receives

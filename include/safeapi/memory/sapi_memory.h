@@ -10,6 +10,10 @@
  * REQ-OAL-MEM-001: all pools are reserved during system initialization;
  *                  reservation after the init phase is backend-defined and
  *                  may be refused (SAPI_STATUS_NOT_SUPPORTED).
+ *
+ * @defgroup MEMORY Static Memory Reservation
+ * @brief Fixed-size memory pools reserved at initialization (ADR-001)
+ * @{
  */
 #ifndef SAFEAPI_OS_MEMORY_H
 #define SAFEAPI_OS_MEMORY_H
@@ -21,10 +25,13 @@
 extern "C" {
 #endif
 
+/** @brief Caller-owned, fixed-size storage backing one sapi_mem_pool_handle_t. */
 SAFEAPI_DECLARE_STORAGE(sapi_mem_pool_storage_t, 64U);
 
+/** @brief Opaque handle to a reserved pool, returned by sapi_mem_pool_create(). */
 typedef struct sapi_mem_pool_impl_s *sapi_mem_pool_handle_t;
 
+/** @brief Configuration for sapi_mem_pool_create(). */
 typedef struct sapi_mem_pool_config_s
 {
     size_t block_size;    /**< Fixed size in bytes of every block in the pool. */
@@ -89,11 +96,15 @@ sapi_status_t sapi_mem_pool_stats(sapi_mem_pool_handle_t handle,
  */
 typedef struct sapi_mem_pool_backend_s
 {
+    /** @brief Backend implementation of sapi_mem_pool_create(). May be NULL. */
     sapi_status_t (*create)(sapi_mem_pool_storage_t *storage,
                              const sapi_mem_pool_config_t *config,
                              sapi_mem_pool_handle_t *out_handle);
+    /** @brief Backend implementation of sapi_mem_pool_acquire(). May be NULL. */
     sapi_status_t (*acquire)(sapi_mem_pool_handle_t handle, void **out_block);
+    /** @brief Backend implementation of sapi_mem_pool_release(). May be NULL. */
     sapi_status_t (*release)(sapi_mem_pool_handle_t handle, void *block);
+    /** @brief Backend implementation of sapi_mem_pool_stats(). May be NULL. */
     sapi_status_t (*stats)(sapi_mem_pool_handle_t handle,
                             size_t *out_free_blocks, size_t *out_used_blocks);
 } sapi_mem_pool_backend_t;
@@ -101,6 +112,7 @@ typedef struct sapi_mem_pool_backend_s
 /**
  * @brief Registers the backend implementation used by every
  *        sapi_mem_pool_* call (ADR-005 section 2.1). Call once at startup.
+ * @param backend Vtable of backend function pointers. Must not be NULL.
  * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
  * REQ-OAL-MEM-014
  */
@@ -111,3 +123,5 @@ sapi_status_t sapi_mem_pool_register_backend(const sapi_mem_pool_backend_t *back
 #endif
 
 #endif /* SAFEAPI_OS_MEMORY_H */
+
+/** @} */ /* MEMORY */

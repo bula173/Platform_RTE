@@ -1,7 +1,7 @@
 /**
  * @page watchdog_user_guide Watchdog Module - User Guide
  *
- * @section overview What is the Watchdog?
+ * @section watchdog_user_guide_overview What is the Watchdog?
  *
  * The Watchdog module detects when a system or task has stopped responding.
  * You create a watchdog with a timeout period, then periodically "kick" it.
@@ -10,7 +10,7 @@
  *
  * Key principle: If you can't prove the system is alive, assume it's dead.
  *
- * @section types Watchdog Types
+ * @section watchdog_user_guide_types Watchdog Types
  *
  * Four types for different monitoring scenarios:
  *
@@ -21,7 +21,7 @@
  * SAPI_WATCHDOG_CHECKPOINT - Execution checkpoint barrier
  * @endverbatim
  *
- * @section actions Recovery Actions
+ * @section watchdog_user_guide_actions Recovery Actions
  *
  * When watchdog times out, it can trigger different actions:
  *
@@ -33,15 +33,15 @@
  * CUSTOM        - Custom callback provided by application
  * @endverbatim
  *
- * @section quick_start Quick Start
+ * @section watchdog_user_guide_quick_start Quick Start
  *
- * @subsection qs_include 1. Include Header
+ * @subsection watchdog_user_guide_qs_include 1. Include Header
  *
  * @code
  * #include "safeapi/watchdog/sapi_watchdog.h"
  * @endcode
  *
- * @subsection qs_create 2. Create Watchdog
+ * @subsection watchdog_user_guide_qs_create 2. Create Watchdog
  *
  * @code
  * // Allocate storage for watchdog state
@@ -61,14 +61,14 @@
  * sapi_watchdog_create(&wd_storage, &config, &wd);
  * @endcode
  *
- * @subsection qs_start 3. Start Watchdog
+ * @subsection watchdog_user_guide_qs_start 3. Start Watchdog
  *
  * @code
  * sapi_watchdog_start(wd);
  * // Watchdog now counting down from 100ms
  * @endcode
  *
- * @subsection qs_kick 4. Kick Watchdog Regularly
+ * @subsection watchdog_user_guide_qs_kick 4. Kick Watchdog Regularly
  *
  * @code
  * while (running) {
@@ -90,9 +90,9 @@
  * }
  * @endcode
  *
- * @section examples Practical Examples
+ * @section watchdog_user_guide_examples Practical Examples
  *
- * @subsection example_system Example 1: System Watchdog (Main Loop Heartbeat)
+ * @subsection watchdog_user_guide_example_system Example 1: System Watchdog (Main Loop Heartbeat)
  *
  * @code
  * // Application state
@@ -144,7 +144,7 @@
  * }
  * @endcode
  *
- * @subsection example_custom Example 2: Custom Callback on Timeout
+ * @subsection watchdog_user_guide_example_custom Example 2: Custom Callback on Timeout
  *
  * @code
  * void my_watchdog_handler(void *context) {
@@ -171,7 +171,7 @@
  * }
  * @endcode
  *
- * @section timeout_tuning Timeout Selection
+ * @section watchdog_user_guide_timeout_tuning Timeout Selection
  *
  * Choose timeout based on your main loop cycle time with safety margin:
  *
@@ -192,9 +192,9 @@
  * Too tight (1-2×): False positives on normal variation
  * Too loose (10×+): Late detection of actual hangs
  *
- * @section patterns Common Patterns
+ * @section watchdog_user_guide_patterns Common Patterns
  *
- * @subsection pattern_conditional Pattern 1: Conditional Kick (Fail-Safe Default)
+ * @subsection watchdog_user_guide_pattern_conditional Pattern 1: Conditional Kick (Fail-Safe Default)
  *
  * Only kick if operation succeeds:
  *
@@ -213,7 +213,7 @@
  * This pattern makes watchdog a health indicator: if operation fails repeatedly,
  * watchdog will eventually timeout and trigger recovery.
  *
- * @subsection pattern_status Pattern 2: Check Watchdog Status
+ * @subsection watchdog_user_guide_pattern_status Pattern 2: Check Watchdog Status
  *
  * Monitor watchdog health:
  *
@@ -229,7 +229,7 @@
  * }
  * @endcode
  *
- * @section guidelines Best Practices
+ * @section watchdog_user_guide_guidelines Best Practices
  *
  * 1. Set timeout to 2-5× your cycle time
  *    - Measured, not guessed
@@ -253,7 +253,7 @@
  *    - Verify timeout and recovery action work
  *    - Part of safety verification
  *
- * @section see_also See Also
+ * @section watchdog_user_guide_see_also See Also
  *
  * - @ref watchdog_architecture for internal design
  * - @ref safestate_user_guide for safe-state integration

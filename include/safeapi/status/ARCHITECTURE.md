@@ -1,7 +1,7 @@
 /**
  * @page status_architecture Status Module - Architecture
  *
- * @section overview Design Overview
+ * @section status_architecture_overview Design Overview
  *
  * The Status module defines a unified error handling system across the entire
  * framework. Every operation returns a `sapi_status_t` code that indicates
@@ -10,7 +10,7 @@
  * **Design principle:** Consistency. All modules use the same status codes,
  * making error handling predictable and consistent.
  *
- * @section status_codes Status Code Definitions
+ * @section status_architecture_status_codes Status Code Definitions
  *
  * ```c
  * typedef enum {
@@ -24,7 +24,7 @@
  * } sapi_status_t;
  * ```
  *
- * @section code_allocation Code Allocation Strategy
+ * @section status_architecture_code_allocation Code Allocation Strategy
  *
  * ```
  * 0: SAPI_STATUS_OK (success - no error)
@@ -33,7 +33,7 @@
  * 1000+: Application-specific error codes (user can extend)
  * ```
  *
- * @section rationale Design Rationale
+ * @section status_architecture_rationale Design Rationale
  *
  * ### Why Unified Status Codes?
  *
@@ -60,7 +60,7 @@
  * - errno values vary by system
  * - MISRA-compliant systems avoid global state
  *
- * @section extension Application-Specific Codes
+ * @section status_architecture_extension Application-Specific Codes
  *
  * Applications can define their own status codes:
  *
@@ -78,7 +78,7 @@
  * } app_status_t;
  * ```
  *
- * @section conversion String Conversion
+ * @section status_architecture_conversion String Conversion
  *
  * The module provides `sapi_status_to_string()` for diagnostics:
  *
@@ -107,7 +107,7 @@
  * }
  * ```
  *
- * @section usage_patterns Usage Patterns in Framework
+ * @section status_architecture_usage_patterns Usage Patterns in Framework
  *
  * ### Pattern 1: Initialization Check
  *
@@ -160,7 +160,7 @@
  * }
  * ```
  *
- * @section safestate Integration with Safe-State
+ * @section status_architecture_safestate Integration with Safe-State
  *
  * Status codes inform safe-state decisions:
  *
@@ -183,7 +183,7 @@
  * }
  * ```
  *
- * @section misra MISRA Compliance
+ * @section status_architecture_misra MISRA Compliance
  *
  * The status module supports MISRA C:2012:
  *
@@ -193,7 +193,7 @@
  * - ✓ Deterministic (same code always means same error)
  * - ✓ Thread-safe (no shared state)
  *
- * @section implementation Implementation Details
+ * @section status_architecture_implementation Implementation Details
  *
  * ### Files
  *
@@ -215,7 +215,7 @@
  * Pros: O(1) lookup, small code size
  * Cons: Must maintain both enum and table (kept in sync via static checks)
  *
- * @section testing Testing Strategy
+ * @section status_architecture_testing Testing Strategy
  *
  * ### Unit Tests
  *
@@ -231,7 +231,7 @@
  * }
  * ```
  *
- * @section future Future Extensions
+ * @section status_architecture_future Future Extensions
  *
  * Possible extensions (reserved code space):
  * - Additional timeout types (READ_TIMEOUT vs WRITE_TIMEOUT)

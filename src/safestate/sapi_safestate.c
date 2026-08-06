@@ -1,6 +1,7 @@
 /**
  * @file sapi_safestate.c
  * @brief Implementation of the safe-state transition facility (ADR-004).
+ * @ingroup SAFESTATE
  */
 #include "safeapi/safestate/sapi_safestate.h"
 
@@ -9,6 +10,8 @@ static sapi_safestate_handler_t s_handlers[3] = { NULL, NULL, NULL };
 
 /**
  * @brief Maps a level enumerator to its handler-array index.
+ * @param level      Level to map.
+ * @param out_index  Receives the handler-array index. Must not be NULL.
  * @return true and sets *out_index if level is a known value; false
  *         (index left unset) otherwise.
  */

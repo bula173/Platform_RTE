@@ -1,7 +1,7 @@
 /**
  * @page ipc_guide IPC (Inter-Process Communication) Guide
  *
- * @section overview Overview
+ * @section ipc_guide_overview Overview
  *
  * The IPC module provides transport-agnostic inter-process/inter-task communication
  * with support for multiple backend implementations (Shared Memory, FIFO, TCP/IP, UDP).
@@ -34,7 +34,7 @@
  *   - OS-agnostic interface
  *   - Users can register custom backends
  *
- * @section layers IPC Architecture Layers
+ * @section ipc_guide_layers IPC Architecture Layers
  *
  * ```
  * Application Layer (vital_channel, app manager)
@@ -53,7 +53,7 @@
  *     └─ Custom: User-provided backends
  * ```
  *
- * @section workflow Typical Workflow for Online/Standby Setup
+ * @section ipc_guide_workflow Typical Workflow for Online/Standby Setup
  *
  * **Step 1: Choose Transports** (See @ref ipc_transport_selection)
  * ```
@@ -98,7 +98,7 @@
  * }
  * ```
  *
- * @section design_principles Design Principles
+ * @section ipc_guide_design_principles Design Principles
  *
  * **1. Transport Independence**
  * - Framework doesn't care what transport you use (SHM, TCP, UDP, FIFO)
@@ -124,7 +124,7 @@
  * - Health tracking per channel
  * - Deterministic timeouts (no indefinite waits)
  *
- * @section examples Quick Examples
+ * @section ipc_guide_examples Quick Examples
  *
  * **Example 1: TCP/IP Online → Standby**
  * ```c
@@ -147,7 +147,7 @@
  * if (is_shm_channel) return shm_send(...);
  * ```
  *
- * @section next_steps Next Steps
+ * @section ipc_guide_next_steps Next Steps
  *
  * 1. Read @ref ipc_transport_selection to understand transport options
  * 2. Read @ref channel_configuration to learn configuration

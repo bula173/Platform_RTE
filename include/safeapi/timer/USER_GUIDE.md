@@ -1,5 +1,138 @@
 /**
  * @page timer_user_guide Timer Module - User Guide
  *
- * @section overview What is a Timer?
- *\n * Timer provides one-shot or periodic timeouts with millisecond resolution.\n * You create a timer with callback, start it, and the framework invokes your\n * callback when the deadline expires. Caller provides storage; no allocation.\n *\n * @section quick_start Quick Start\n *\n * @subsection qs_create 1. Create Timer\n *\n * @code\n * sapi_timer_storage_t storage;  // Caller-owned storage\n *\n * sapi_timer_config_t config = {\n *     .mode = SAPI_TIMER_MODE_PERIODIC,\n *     .period_ms = 100,              // Fire every 100ms\n *     .callback = my_timer_callback,\n *     .user_ctx = my_context\n * };\n *\n * sapi_timer_handle_t timer;\n * sapi_timer_create(&storage, &config, &timer);\n * @endcode\n *\n * @subsection qs_start 2. Start Timer\n *\n * @code\n * sapi_timer_start(timer);\n * // Timer now running, will fire every 100ms\n * @endcode\n *\n * @subsection qs_callback 3. Implement Callback\n *\n * @code\n * void my_timer_callback(sapi_timer_handle_t handle, void *user_ctx) {\n *     app_t *app = (app_t *)user_ctx;\n *     app->timer_fired_count++;\n *     // Do work - keep it short, runs in callback context\n * }\n * @endcode\n *\n * @section modes Timer Modes\n *\n * @verbatim\n * ONE_SHOT - Fire once after delay, then stop\n * PERIODIC - Fire repeatedly at interval\n * @endverbatim\n *\n * @section examples Practical Examples\n *\n * @subsection example_periodic Example 1: Periodic Heartbeat\n *\n * @code\n * void heartbeat_callback(sapi_timer_handle_t handle, void *ctx) {\n *     app_t *app = (app_t *)ctx;\n *     send_heartbeat_message();\n *     app->heartbeat_count++;\n * }\n *\n * void app_init(app_t *app) {\n *     sapi_timer_config_t config = {\n *         .mode = SAPI_TIMER_MODE_PERIODIC,\n *         .period_ms = 1000,          // Every second\n *         .callback = heartbeat_callback,\n *         .user_ctx = app\n *     };\n *     sapi_timer_create(&app->heartbeat_storage, &config, &app->heartbeat_timer);\n *     sapi_timer_start(app->heartbeat_timer);\n * }\n * @endcode\n *\n * @subsection example_oneshot Example 2: One-Shot Timeout\n *\n * @code\n * void timeout_callback(sapi_timer_handle_t handle, void *ctx) {\n *     log_warning(\"Operation timeout!\");\n *     // Timer fired once and stopped\n * }\n *\n * void operation_with_timeout(void) {\n *     sapi_timer_config_t config = {\n *         .mode = SAPI_TIMER_MODE_ONE_SHOT,\n *         .period_ms = 5000,          // 5 second timeout\n *         .callback = timeout_callback,\n *         .user_ctx = NULL\n *     };\n *\n *     sapi_timer_create(&timeout_storage, &config, &timer);\n *     sapi_timer_start(timer);\n *\n *     // Do operation...\n *     if (operation_completed) {\n *         sapi_timer_stop(timer);  // Cancel timeout\n *     }\n *     // If operation takes >5s, timeout fires\n * }\n * @endcode\n *\n * @section operations Timer Operations\n *\n * @code\n * sapi_timer_create(storage, config, out_handle)  // Create\n * sapi_timer_start(handle)                         // Start countdown\n * sapi_timer_stop(handle)                          // Stop (idempotent)\n * sapi_timer_destroy(handle)                       // Release resources\n * sapi_timer_now_ms(out_now_ms)                    // Get current time\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Create at startup, before use\n *    - Call sapi_timer_create() once\n *    - Can start/stop as needed\n *    - Destroy at shutdown\n *\n * 2. Keep callbacks short\n *    - Runs in callback context (may be ISR)\n *    - Minimize time in callback\n *    - Do real work in main loop\n *\n * 3. Use appropriate period for mode\n *    - PERIODIC: main loop cycle time (10-100ms typical)\n *    - ONE_SHOT: operation deadline\n *\n * 4. Stop before destroying\n *    - sapi_timer_stop() then sapi_timer_destroy()\n *    - Ensure timer not firing during cleanup\n *\n * @section see_also See Also\n *\n * - @ref timer_architecture for internal design\n * - @ref watchdog_user_guide for watchdog timing\n *\n */\n
+ * @section timer_user_guide_overview What is a Timer?
+ *
+ * Timer provides one-shot or periodic timeouts with millisecond resolution.
+ * You create a timer with callback, start it, and the framework invokes your
+ * callback when the deadline expires. Caller provides storage; no allocation.
+ *
+ * @section timer_user_guide_quick_start Quick Start
+ *
+ * @subsection timer_user_guide_qs_create 1. Create Timer
+ *
+ * @code
+ * sapi_timer_storage_t storage;  // Caller-owned storage
+ *
+ * sapi_timer_config_t config = {
+ *     .mode = SAPI_TIMER_MODE_PERIODIC,
+ *     .period_ms = 100,              // Fire every 100ms
+ *     .callback = my_timer_callback,
+ *     .user_ctx = my_context
+ * };
+ *
+ * sapi_timer_handle_t timer;
+ * sapi_timer_create(&storage, &config, &timer);
+ * @endcode
+ *
+ * @subsection timer_user_guide_qs_start 2. Start Timer
+ *
+ * @code
+ * sapi_timer_start(timer);
+ * // Timer now running, will fire every 100ms
+ * @endcode
+ *
+ * @subsection timer_user_guide_qs_callback 3. Implement Callback
+ *
+ * @code
+ * void my_timer_callback(sapi_timer_handle_t handle, void *user_ctx) {
+ *     app_t *app = (app_t *)user_ctx;
+ *     app->timer_fired_count++;
+ *     // Do work - keep it short, runs in callback context
+ * }
+ * @endcode
+ *
+ * @section timer_user_guide_modes Timer Modes
+ *
+ * @verbatim
+ * ONE_SHOT - Fire once after delay, then stop
+ * PERIODIC - Fire repeatedly at interval
+ * @endverbatim
+ *
+ * @section timer_user_guide_examples Practical Examples
+ *
+ * @subsection timer_user_guide_example_periodic Example 1: Periodic Heartbeat
+ *
+ * @code
+ * void heartbeat_callback(sapi_timer_handle_t handle, void *ctx) {
+ *     app_t *app = (app_t *)ctx;
+ *     send_heartbeat_message();
+ *     app->heartbeat_count++;
+ * }
+ *
+ * void app_init(app_t *app) {
+ *     sapi_timer_config_t config = {
+ *         .mode = SAPI_TIMER_MODE_PERIODIC,
+ *         .period_ms = 1000,          // Every second
+ *         .callback = heartbeat_callback,
+ *         .user_ctx = app
+ *     };
+ *     sapi_timer_create(&app->heartbeat_storage, &config, &app->heartbeat_timer);
+ *     sapi_timer_start(app->heartbeat_timer);
+ * }
+ * @endcode
+ *
+ * @subsection timer_user_guide_example_oneshot Example 2: One-Shot Timeout
+ *
+ * @code
+ * void timeout_callback(sapi_timer_handle_t handle, void *ctx) {
+ *     log_warning("Operation timeout!");
+ *     // Timer fired once and stopped
+ * }
+ *
+ * void operation_with_timeout(void) {
+ *     sapi_timer_config_t config = {
+ *         .mode = SAPI_TIMER_MODE_ONE_SHOT,
+ *         .period_ms = 5000,          // 5 second timeout
+ *         .callback = timeout_callback,
+ *         .user_ctx = NULL
+ *     };
+ *
+ *     sapi_timer_create(&timeout_storage, &config, &timer);
+ *     sapi_timer_start(timer);
+ *
+ *     // Do operation...
+ *     if (operation_completed) {
+ *         sapi_timer_stop(timer);  // Cancel timeout
+ *     }
+ *     // If operation takes >5s, timeout fires
+ * }
+ * @endcode
+ *
+ * @section timer_user_guide_operations Timer Operations
+ *
+ * @code
+ * sapi_timer_create(storage, config, out_handle)  // Create
+ * sapi_timer_start(handle)                         // Start countdown
+ * sapi_timer_stop(handle)                          // Stop (idempotent)
+ * sapi_timer_destroy(handle)                       // Release resources
+ * sapi_timer_now_ms(out_now_ms)                    // Get current time
+ * @endcode
+ *
+ * @section timer_user_guide_guidelines Best Practices
+ *
+ * 1. Create at startup, before use
+ *    - Call sapi_timer_create() once
+ *    - Can start/stop as needed
+ *    - Destroy at shutdown
+ *
+ * 2. Keep callbacks short
+ *    - Runs in callback context (may be ISR)
+ *    - Minimize time in callback
+ *    - Do real work in main loop
+ *
+ * 3. Use appropriate period for mode
+ *    - PERIODIC: main loop cycle time (10-100ms typical)
+ *    - ONE_SHOT: operation deadline
+ *
+ * 4. Stop before destroying
+ *    - sapi_timer_stop() then sapi_timer_destroy()
+ *    - Ensure timer not firing during cleanup
+ *
+ * @section timer_user_guide_see_also See Also
+ *
+ * - @ref timer_architecture for internal design
+ * - @ref watchdog_user_guide for watchdog timing
+ *
+ */
+

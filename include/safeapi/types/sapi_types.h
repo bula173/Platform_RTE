@@ -7,6 +7,10 @@
  * initialization (REQ-OAL-COMMON-010). Every stateful object is created
  * from storage supplied by the caller, typically a statically allocated
  * struct.
+ *
+ * @defgroup TYPES Common Types
+ * @brief Fixed-width types and the caller-owned-storage handle pattern
+ * @{
  */
 #ifndef SAFEAPI_COMMON_TYPES_H
 #define SAFEAPI_COMMON_TYPES_H
@@ -33,6 +37,16 @@ typedef uint64_t sapi_timestamp_ms_t;
 
 /* Portable alignment specifier: prefer C11 _Alignas, fall back to compiler
  * builtins so the headers remain usable from strict C99 toolchains. */
+/**
+ * @def SAFEAPI_ALIGNED_
+ * @brief Portable alignment specifier used ahead of a storage byte array
+ *        (e.g. in SAFEAPI_DECLARE_STORAGE) so its address is suitable for
+ *        the backend's internal struct layout. Expands to the best
+ *        available mechanism for the compiler (C11 _Alignas, MSVC
+ *        __declspec, or GCC/Clang __attribute__); expands to nothing on
+ *        compilers with no portable alignment control.
+ * @param n Requested alignment in bytes.
+ */
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
 #include <stdalign.h>
 #define SAFEAPI_ALIGNED_(n) _Alignas(n)
@@ -64,3 +78,5 @@ typedef uint64_t sapi_timestamp_ms_t;
 #endif
 
 #endif /* SAFEAPI_COMMON_TYPES_H */
+
+/** @} */ /* TYPES */

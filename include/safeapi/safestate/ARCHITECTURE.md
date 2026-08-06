@@ -1,7 +1,7 @@
 /**
  * @page safestate_architecture Safe-State Module - Architecture
  *
- * @section overview Design Overview
+ * @section safestate_architecture_overview Design Overview
  *
  * Safe-State is a handler registration system for critical events. Applications
  * register handlers for each severity level (DEGRADED, SAFE, REBOOT), then call
@@ -11,7 +11,7 @@
  *
  * No dynamic allocation; handler storage is fixed (3 slots, one per level).
  *
- * @section levels Three Severity Levels
+ * @section safestate_architecture_levels Three Severity Levels
  *
  * @verbatim
  * DEGRADED (0) - Can return to caller
@@ -30,9 +30,9 @@
  *   └─ Behavior: handler runs, MUST NOT return, infinite loop if it does
  * @endverbatim
  *
- * @section api Core API
+ * @section safestate_architecture_api Core API
  *
- * @subsection api_register Registration
+ * @subsection safestate_architecture_api_register Registration
  *
  * @code
  * sapi_status_t sapi_safestate_register_handler(sapi_safestate_level_t level,
@@ -42,7 +42,7 @@
  * Registers handler for one level. Replaces any previous handler for that level.
  * Called at startup before any safe-state transitions are expected.
  *
- * @subsection api_enter Entering a Level
+ * @subsection safestate_architecture_api_enter Entering a Level
  *
  * @code
  * void sapi_safestate_enter(sapi_safestate_level_t level,
@@ -57,7 +57,7 @@
  *
  * Normally called via macros, not directly.
  *
- * @subsection api_macros Convenience Macros
+ * @subsection safestate_architecture_api_macros Convenience Macros
  *
  * @code
  * SAPI_ASSERT(condition)          // If false, SAFE with REASON_ASSERT_FAILED
@@ -67,7 +67,7 @@
  *
  * Macros automatically capture __FILE__ and __LINE__.
  *
- * @section handler_signature Handler Signature
+ * @section safestate_architecture_handler_signature Handler Signature
  *
  * @code
  * typedef void (*sapi_safestate_handler_t)(
@@ -83,9 +83,9 @@
  * For DEGRADED: can return normally.
  * For SAFE/REBOOT: must not return; if it does, framework prevents it.
  *
- * @section reason_codes Reason Code Strategy
+ * @section safestate_architecture_reason_codes Reason Code Strategy
  *
- * @subsection reason_framework Framework Reasons (0-4095)
+ * @subsection safestate_architecture_reason_framework Framework Reasons (0-4095)
  *
  * @verbatim
  * SAPI_SAFESTATE_REASON_UNSPECIFIED (0)    - No specific reason
@@ -93,7 +93,7 @@
  * SAPI_SAFESTATE_REASON_APPLICATION_BASE   - 4096, start of app-specific codes
  * @endverbatim
  *
- * @subsection reason_application Application Reasons (4096+)
+ * @subsection safestate_architecture_reason_application Application Reasons (4096+)
  *
  * Applications define their own reason codes starting at 4096:
  *
@@ -106,7 +106,7 @@
  *
  * Reason codes appear in handler and handler can log/persist them for diagnostics.
  *
- * @section flow Transition Flow
+ * @section safestate_architecture_flow Transition Flow
  *
  * @verbatim
  * Application calls SAPI_SAFESTATE(level, reason)
@@ -130,7 +130,7 @@
  *         └─ Caller never regains control
  * @endverbatim
  *
- * @section storage Storage and Limits
+ * @section safestate_architecture_storage Storage and Limits
  *
  * Fixed storage for 3 handlers (one per level). No dynamic allocation.
  * Handlers must be registered before use (typically at startup).
@@ -141,7 +141,7 @@
  * Level 2 (REBOOT)    ──> Handler C
  * @endverbatim
  *
- * @section assert SAPI_ASSERT Implementation
+ * @section safestate_architecture_assert SAPI_ASSERT Implementation
  *
  * SAPI_ASSERT() is a macro that:
  * 1. Evaluates its condition
@@ -162,7 +162,7 @@
  * This is intentional for safety-critical systems where assertions must catch
  * bugs in production.
  *
- * @section misra MISRA C:2012 Compliance
+ * @section safestate_architecture_misra MISRA C:2012 Compliance
  *
  * @verbatim
  * Rule 2.1   │ ✓ │ No unreachable code
@@ -176,9 +176,9 @@
  *
  * No dynamic allocation; no undefined behavior on entry/exit.
  *
- * @section integration Integration Points
+ * @section safestate_architecture_integration Integration Points
  *
- * @subsection integ_watchdog With Watchdog Module
+ * @subsection safestate_architecture_integ_watchdog With Watchdog Module
  *
  * Watchdog timeouts can trigger safe-state via handler:
  *
@@ -189,14 +189,14 @@
  * }
  * @endcode
  *
- * @subsection integ_reboot With Reboot Module
+ * @subsection safestate_architecture_integ_reboot With Reboot Module
  *
  * SAPI_REBOOT() enters REBOOT level; handler can call sapi_reboot_request()
  * to actually restart the system.
  *
- * @section testing Unit Tests
+ * @section safestate_architecture_testing Unit Tests
  *
- * @subsection test_handler Test 1: Handler Registration and Invocation
+ * @subsection safestate_architecture_test_handler Test 1: Handler Registration and Invocation
  *
  * @code
  * static int handler_called = 0;
@@ -217,7 +217,7 @@
  * }
  * @endcode
  *
- * @subsection test_assert Test 2: SAPI_ASSERT Behavior
+ * @subsection safestate_architecture_test_assert Test 2: SAPI_ASSERT Behavior
  *
  * @code
  * void test_assert_on_failure(void) {
@@ -227,7 +227,7 @@
  * }
  * @endcode
  *
- * @section see_also See Also
+ * @section safestate_architecture_see_also See Also
  *
  * - @ref safestate_user_guide for usage patterns
  * - @ref watchdog_user_guide for watchdog integration

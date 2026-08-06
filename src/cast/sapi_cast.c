@@ -1,5 +1,6 @@
 /**
  * @file sapi_cast.c
+ * @ingroup CAST
  * @brief Generated from ADR-003's template; see sapi_cast.h for behavior.
  *        Every function widens its input to the int64_t/uint64_t matching
  *        the source's signedness, then range-checks against the

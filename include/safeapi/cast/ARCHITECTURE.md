@@ -1,2 +1,24 @@
 /**
- * @page cast_architecture Cast Module - Architecture\n *\n * Range-checked type conversions. Validates value fits destination type before\n * converting. Returns SAPI_STATUS_VALUE_OUT_OF_RANGE if out of bounds.\n *\n * @section functions Conversion Functions\n *\n * sapi_cast_i8_to_i16() - From int8_t to int16_t (and variants)\n * Return: OK if fits, VALUE_OUT_OF_RANGE otherwise\n *\n * @section strategy Check-Before-Convert\n *\n * 1. Check if value in destination range\n * 2. If yes: convert and return OK\n * 3. If no: don't modify output, return error\n *\n * @section misra MISRA Rule 10.1\n *\n * ✓ No implicit conversions\n * ✓ Explicit checked casts only\n *\n */\n
+ * @page cast_architecture Cast Module - Architecture
+ *
+ * Range-checked type conversions. Validates value fits destination type before
+ * converting. Returns SAPI_STATUS_VALUE_OUT_OF_RANGE if out of bounds.
+ *
+ * @section cast_architecture_functions Conversion Functions
+ *
+ * sapi_cast_i8_to_i16() - From int8_t to int16_t (and variants)
+ * Return: OK if fits, VALUE_OUT_OF_RANGE otherwise
+ *
+ * @section cast_architecture_strategy Check-Before-Convert
+ *
+ * 1. Check if value in destination range
+ * 2. If yes: convert and return OK
+ * 3. If no: don't modify output, return error
+ *
+ * @section cast_architecture_misra MISRA Rule 10.1
+ *
+ * ✓ No implicit conversions
+ * ✓ Explicit checked casts only
+ *
+ */
+

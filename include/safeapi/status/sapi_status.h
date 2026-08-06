@@ -5,6 +5,10 @@
  *
  * REQ-OAL-COMMON-001: every fallible API function shall return sapi_status_t
  * and shall not use exceptions or errno-style side channels.
+ *
+ * @defgroup STATUS Common Status and Error Codes
+ * @brief Shared result codes returned by every framework function
+ * @{
  */
 #ifndef SAFEAPI_COMMON_STATUS_H
 #define SAFEAPI_COMMON_STATUS_H
@@ -48,3 +52,5 @@ const char *sapi_status_to_string(sapi_status_t status);
 #endif
 
 #endif /* SAFEAPI_COMMON_STATUS_H */
+
+/** @} */ /* STATUS */

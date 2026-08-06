@@ -1,6 +1,7 @@
 /**
  * @file sapi_vital_channel.c
  * @brief Implementation of vital (redundant) channel abstraction
+ * @ingroup vital_channel
  *
  * Implements voting logic for 2oo2, 2oo3, and NMR strategies with
  * automatic fault detection and safe-state handling.
@@ -24,13 +25,19 @@
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/log/sapi_log.h"
 
-/* Maximum size of a single message in voting buffers */
+/** @brief Maximum size of a single message in voting buffers. */
 #define SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE 256
 
 /**
- * @brief Compare two data buffers for equality (voting comparison)
+ * @brief Compare two data buffers for equality (voting comparison).
  *
  * Used to determine if two channels agree on received data.
+ *
+ * @param a     First buffer, may be NULL.
+ * @param b     Second buffer, may be NULL.
+ * @param size  Number of bytes to compare.
+ * @return true if a and b are both NULL, or both non-NULL and byte-equal
+ *         over size bytes; false otherwise.
  */
 static bool sapi_vital_channel_data_equal(const void *a, const void *b, size_t size)
 {
@@ -41,9 +48,12 @@ static bool sapi_vital_channel_data_equal(const void *a, const void *b, size_t s
 }
 
 /**
- * @brief Check if voting quorum is satisfied
+ * @brief Check if voting quorum is satisfied.
  *
  * Verifies that enough channels are healthy to achieve a valid vote.
+ *
+ * @param handle  Vital channel instance. NULL yields false.
+ * @return true if enough channels are healthy for a valid vote; false otherwise.
  */
 static bool sapi_vital_channel_has_quorum(sapi_vital_channel_t *handle)
 {

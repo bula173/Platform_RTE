@@ -12,6 +12,10 @@
  *                      dereferencing out.
  * REQ-COMMON-CAST-003: a value that does not fit the destination range
  *                      yields SAPI_STATUS_VALUE_OUT_OF_RANGE.
+ *
+ * @defgroup CAST Checked Integer Casting
+ * @brief Bounds-checked conversion between fixed-width types (ADR-003)
+ * @{
  */
 #ifndef SAFEAPI_COMMON_CAST_H
 #define SAFEAPI_COMMON_CAST_H
@@ -820,3 +824,5 @@ sapi_status_t sapi_cast_size_to_u64(size_t in, uint64_t *out);
 #endif
 
 #endif /* SAFEAPI_COMMON_CAST_H */
+
+/** @} */ /* CAST */

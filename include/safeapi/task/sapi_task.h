@@ -10,6 +10,10 @@
  * REQ-OAL-TASK-002: priorities are fixed at creation time; no dynamic
  *                   priority inheritance/inversion handling is assumed by
  *                   this API - that is a backend/RTOS concern.
+ *
+ * @defgroup TASK Task/Thread Scheduling
+ * @brief Periodic/cyclic safety task creation with fixed priorities (ADR-001)
+ * @{
  */
 #ifndef SAFEAPI_OS_TASK_H
 #define SAFEAPI_OS_TASK_H
@@ -21,13 +25,16 @@
 extern "C" {
 #endif
 
+/** @brief Caller-owned, fixed-size storage backing one sapi_task_handle_t. */
 SAFEAPI_DECLARE_STORAGE(sapi_task_storage_t, 128U);
 
+/** @brief Opaque handle to a created task, returned by sapi_task_create(). */
 typedef struct sapi_task_impl_s *sapi_task_handle_t;
 
 /** @brief Task entry point, invoked cyclically at the configured period. */
 typedef void (*sapi_task_entry_t)(void *user_ctx);
 
+/** @brief Configuration for sapi_task_create(). */
 typedef struct sapi_task_config_s
 {
     const char        *name;         /**< Diagnostic name, e.g. for logging. */
@@ -85,17 +92,22 @@ sapi_status_t sapi_task_destroy(sapi_task_handle_t handle);
  */
 typedef struct sapi_task_backend_s
 {
+    /** @brief Backend implementation of sapi_task_create(). May be NULL. */
     sapi_status_t (*create)(sapi_task_storage_t *storage,
                              const sapi_task_config_t *config,
                              sapi_task_handle_t *out_handle);
+    /** @brief Backend implementation of sapi_task_start(). May be NULL. */
     sapi_status_t (*start)(sapi_task_handle_t handle);
+    /** @brief Backend implementation of sapi_task_suspend(). May be NULL. */
     sapi_status_t (*suspend)(sapi_task_handle_t handle);
+    /** @brief Backend implementation of sapi_task_destroy(). May be NULL. */
     sapi_status_t (*destroy)(sapi_task_handle_t handle);
 } sapi_task_backend_t;
 
 /**
  * @brief Registers the backend implementation used by every sapi_task_*
  *        call (ADR-005 section 2.1). Call once at startup.
+ * @param backend Vtable of backend function pointers. Must not be NULL.
  * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
  * REQ-OAL-TASK-014
  */
@@ -106,3 +118,5 @@ sapi_status_t sapi_task_register_backend(const sapi_task_backend_t *backend);
 #endif
 
 #endif /* SAFEAPI_OS_TASK_H */
+
+/** @} */ /* TASK */

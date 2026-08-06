@@ -1,10 +1,12 @@
 /**
  * @file sapi_task.c
+ * @ingroup TASK
  * @brief Task service: validates parameters, then dispatches to the
  *        backend registered via sapi_task_register_backend() (ADR-005).
  */
 #include "safeapi/task/sapi_task.h"
 
+/** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_task_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_task_register_backend(const sapi_task_backend_t *backend)

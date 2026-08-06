@@ -1,6 +1,7 @@
 /**
  * @file sapi_checkpoint.c
  * @brief Implementation of the bounded checkpoint rendezvous (ADR-017).
+ * @ingroup CHECKPOINT
  */
 #include "safeapi/checkpoint/sapi_checkpoint.h"
 
@@ -17,15 +18,24 @@
  *  threading a real per-channel identity through this module. */
 #define SAPI_CHECKPOINT_SENDER_ID ((uint32_t)0xC4EC0001U)
 
-/** checkpoint_id is carried both as the sapi_vital_message_t sequence
- *  number (checked by sapi_checksum_vital_message_verify() for
- *  continuity) and, explicit-endian-encoded, as the 4-byte payload -
- *  belt and suspenders against a reply from a stale or wrong checkpoint
- *  being mistaken for a current one (REQ-CHECKPOINT-002). The payload is
- *  written little-endian rather than a raw struct copy specifically
- *  because the two channels exchanging it may be different machines,
- *  potentially different CPU architectures - a bare memcpy of a uint32_t
- *  would silently corrupt the value across a byte-order mismatch. */
+/**
+ * @brief Builds the checkpoint-arrival marker message.
+ *
+ * checkpoint_id is carried both as the sapi_vital_message_t sequence
+ * number (checked by sapi_checksum_vital_message_verify() for
+ * continuity) and, explicit-endian-encoded, as the 4-byte payload -
+ * belt and suspenders against a reply from a stale or wrong checkpoint
+ * being mistaken for a current one (REQ-CHECKPOINT-002). The payload is
+ * written little-endian rather than a raw struct copy specifically
+ * because the two channels exchanging it may be different machines,
+ * potentially different CPU architectures - a bare memcpy of a uint32_t
+ * would silently corrupt the value across a byte-order mismatch.
+ *
+ * @param checkpoint_id  Checkpoint sequence number to encode.
+ * @param out_msg        Receives the built message. Must not be NULL.
+ * @return SAPI_STATUS_OK on success; a sapi_buffer_t/sapi_checksum error
+ *         status otherwise.
+ */
 static sapi_status_t build_arrival_message(uint32_t checkpoint_id, sapi_vital_message_t *out_msg)
 {
     uint8_t payload_bytes[4];
@@ -49,12 +59,19 @@ static sapi_status_t build_arrival_message(uint32_t checkpoint_id, sapi_vital_me
     return status;
 }
 
-/** Verifies a candidate reply's CRC/sequence (via sapi_checksum) and that
- *  its decoded payload matches checkpoint_id. Returns false - not an
- *  error - for anything that fails either check: a corrupted or
- *  stale/wrong-checkpoint reply must never count toward quorum
- *  (REQ-CHECKPOINT-002), but it is not itself grounds to fail the whole
- *  rendezvous - other channels may still confirm in time. */
+/**
+ * @brief Verifies a candidate reply's CRC/sequence (via sapi_checksum) and
+ *        that its decoded payload matches checkpoint_id.
+ *
+ * Returns false - not an error - for anything that fails either check: a
+ * corrupted or stale/wrong-checkpoint reply must never count toward
+ * quorum (REQ-CHECKPOINT-002), but it is not itself grounds to fail the
+ * whole rendezvous - other channels may still confirm in time.
+ *
+ * @param reply          Candidate reply message. Must not be NULL.
+ * @param checkpoint_id  Expected checkpoint sequence number.
+ * @return true if reply is a valid, current confirmation; false otherwise.
+ */
 static bool reply_confirms_checkpoint(const sapi_vital_message_t *reply, uint32_t checkpoint_id)
 {
     uint8_t payload_out[4];
@@ -87,11 +104,18 @@ static bool reply_confirms_checkpoint(const sapi_vital_message_t *reply, uint32_
     return confirmed;
 }
 
-/** Returns the time budget remaining until start_ms + max_delay_ms, given
- *  the current monotonic time now_ms; 0 if the deadline has already
- *  passed. Keeps the whole rendezvous bounded by max_delay_ms in total
- *  (REQ-CHECKPOINT-001) rather than re-granting a fresh max_delay_ms
- *  budget to every channel polled in sequence. */
+/**
+ * @brief Returns the time budget remaining until start_ms + max_delay_ms.
+ *
+ * Keeps the whole rendezvous bounded by max_delay_ms in total
+ * (REQ-CHECKPOINT-001) rather than re-granting a fresh max_delay_ms
+ * budget to every channel polled in sequence.
+ *
+ * @param start_ms      Monotonic time the rendezvous budget started.
+ * @param now_ms        Current monotonic time.
+ * @param max_delay_ms  Total budget allotted to the rendezvous.
+ * @return Remaining budget in ms; 0 if the deadline has already passed.
+ */
 static sapi_duration_ms_t remaining_budget_ms(sapi_timestamp_ms_t start_ms,
                                                sapi_timestamp_ms_t now_ms,
                                                sapi_duration_ms_t max_delay_ms)

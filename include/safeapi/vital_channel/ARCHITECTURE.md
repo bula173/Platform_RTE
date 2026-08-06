@@ -4,7 +4,7 @@
  * @see vital_channel_topologies for common redundancy patterns (2oo2, 2oo3, hot standby, mirroring)
  * @see ipc_guide for transport selection, configuration, and implementation
  *
- * @section overview Overview
+ * @section vital_channel_architecture_overview Overview
  *
  * **Vital Channels** provide redundancy voting for safety-critical inter-process communication.
  * A vital channel wraps multiple underlying transport channels (IPC, shared memory, TCP, etc.)
@@ -14,7 +14,7 @@
  * depend on any specific IPC implementation—it uses transport-agnostic callbacks to invoke
  * send/receive operations on the underlying channels.
  *
- * @section communication_flow Communication Flow (2oo2 Example)
+ * @section vital_channel_architecture_communication_flow Communication Flow (2oo2 Example)
  *
  * In a typical railway system using 2-out-of-2 voting:
  *
@@ -41,7 +41,7 @@
  *     +-- If Ch0 != Ch1 -> DISAGREE, trigger SAFE-STATE
  * ```
  *
- * @section transport_backends Transport Backends
+ * @section vital_channel_architecture_transport_backends Transport Backends
  *
  * A vital channel operates on opaque `void*` channel handles. The application provides
  * two callback functions to specify HOW to communicate:
@@ -61,7 +61,7 @@
  *
  * This design enables a single vital_channel implementation to work with ANY transport.
  *
- * @section send_semantics Send Semantics (Atomic Broadcast)
+ * @section vital_channel_architecture_send_semantics Send Semantics (Atomic Broadcast)
  *
  * When sapi_vital_channel_send() is called:
  *
@@ -76,7 +76,7 @@
  *
  * 3. **Health Tracking**: Update per-channel send counts and error counters
  *
- * @section receive_semantics Receive Semantics (Voting)
+ * @section vital_channel_architecture_receive_semantics Receive Semantics (Voting)
  *
  * When sapi_vital_channel_receive() is called:
  *
@@ -99,7 +99,7 @@
  *    - Copy agreed data to output buffer
  *    - Return SAPI_STATUS_OK
  *
- * @section quorum Quorum Requirements
+ * @section vital_channel_architecture_quorum Quorum Requirements
  *
  * A vital channel requires sufficient healthy channels to achieve quorum:
  *
@@ -110,7 +110,7 @@
  * If quorum is lost (e.g., both channels in 2oo2 become unhealthy), all operations
  * return SAPI_STATUS_HARDWARE_FAULT with voting result = SAPI_VOTING_INSUFFICIENT_QUORUM.
  *
- * @section health_tracking Health Monitoring
+ * @section vital_channel_architecture_health_tracking Health Monitoring
  *
  * The vital_channel module tracks per-channel metrics:
  *
@@ -131,7 +131,7 @@
  * - Isolate faulty channels (high disagreement_count)
  * - Implement predictive fault detection (before safe-state is triggered)
  *
- * @section integration Application Integration
+ * @section vital_channel_architecture_integration Application Integration
  *
  * Typical application flow:
  *
@@ -175,7 +175,7 @@
  * }
  * ```
  *
- * @section safety_properties Safety Properties
+ * @section vital_channel_architecture_safety_properties Safety Properties
  *
  * The vital_channel module guarantees (for CENELEC EN 50128 SIL 3/4 contexts):
  *
@@ -185,7 +185,7 @@
  * - **Deterministic**: No dynamic allocation, bounded buffers, time-bounded operations
  * - **MISRA Compliant**: No recursion, no uninitialized variables, explicit casts only
  *
- * @section message_size Message Size Limits
+ * @section vital_channel_architecture_message_size Message Size Limits
  *
  * The vital_channel implementation uses static voting buffers:
  * ```c
@@ -198,9 +198,9 @@
  * - Or reduce message size by refactoring data structures
  * - Do NOT use dynamic buffering (MISRA violation)
  *
- * @section examples Usage Examples
+ * @section vital_channel_architecture_examples Usage Examples
  *
- * @subsection example_2oo2 2-out-of-2 Voting (Perfect Agreement Required)
+ * @subsection vital_channel_architecture_example_2oo2 2-out-of-2 Voting (Perfect Agreement Required)
  *
  * Use case: Critical signal transmission where BOTH redundant processes must agree.
  * Example: Train speed command from central interlocking to on-board computer.
@@ -210,7 +210,7 @@
  * // Both channels must return identical data, or SAFE-STATE triggers
  * ```
  *
- * @subsection example_2oo3 2-out-of-3 Voting (Tolerate 1 Fault)
+ * @subsection vital_channel_architecture_example_2oo3 2-out-of-3 Voting (Tolerate 1 Fault)
  *
  * Use case: Three redundant processes; majority vote wins. Tolerate 1 Byzantine fault.
  * Example: Odometer reading from 3 CCTV-based vision systems (different sensors may drift).
@@ -220,7 +220,7 @@
  * // If 2 channels agree, that's the result. If all 3 disagree, SAFE-STATE.
  * ```
  *
- * @subsection example_nmr N-out-of-M Voting
+ * @subsection vital_channel_architecture_example_nmr N-out-of-M Voting
  *
  * Use case: Generalized voter for N processes, requires M of N to agree.
  * Example: 5 GNSS receivers; require 3 to agree within epsilon range.
@@ -230,7 +230,7 @@
  * config.quorum_size = 3;  // At least 3 out of 5 must agree
  * ```
  *
- * @section limitations Known Limitations
+ * @section vital_channel_architecture_limitations Known Limitations
  *
  * - **Static Message Size**: 256 byte limit (MISRA-driven, no dynamic allocation)
  * - **No Byzantine Fault Tolerance**: Designed for benign failures (timeout, corruption);
