@@ -185,7 +185,19 @@ typedef sapi_vital_channel_storage_t sapi_vital_channel_t;
  * @pre config->backend_send != NULL
  * @pre config->backend_recv != NULL
  * @pre channels != NULL
- * @pre channel_count >= 2 (at minimum 2 redundant channels required)
+ * @pre channel_count >= 1 and, per config->voting_strategy, exactly the
+ *      count that strategy requires: 2 for SAPI_VOTING_2OO2, 3 for
+ *      SAPI_VOTING_2OO3, or config->quorum_size <= channel_count (both
+ *      >= 1) for SAPI_VOTING_NMR. channel_count == 1 is only reachable
+ *      via SAPI_VOTING_NMR with quorum_size == 1 - a legitimate
+ *      non-voting use (ADR-019 addendum): a caller that only ever uses
+ *      config->backend_send/backend_recv and channels[]/channel_count
+ *      directly, never sapi_vital_channel_send()/receive()'s own voting
+ *      (sapi_channel_checkpoint(), ADR-017, is exactly such a caller) -
+ *      one node with exactly one transport path to one peer, checkpointing
+ *      with it. Calling sapi_vital_channel_send()/receive() on a
+ *      channel_count == 1 instance is not an error, but its voting can
+ *      only ever trivially agree with itself.
  * @pre channel_count <= SAPI_VITAL_CHANNEL_MAX_CHANNELS
  * @post On success, storage contains initialized vital channel state
  *

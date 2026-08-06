@@ -64,7 +64,7 @@ foreach(feature status types buffer cast safestate string
     endif()
 endforeach()
 
-# App manager depends on status and log, so add it last
+# App manager depends on status, log, and (ADR-019) checkpoint, so add it last
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/appmanager/CMakeLists.txt")
     add_subdirectory(src/appmanager)
 endif()

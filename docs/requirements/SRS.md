@@ -253,6 +253,36 @@ found the action a documented dead stub.
 | REQ-WATCHDOG-001 | `sapi_watchdog_create()` shall return `SAPI_STATUS_INVALID_PARAM` if `config->action` is `SAPI_WATCHDOG_ACTION_FAILOVER` and `config->custom_action` is `NULL` (same requirement already in force for `SAPI_WATCHDOG_ACTION_CUSTOM`). |
 | REQ-WATCHDOG-002 | On timeout, a watchdog configured with `SAPI_WATCHDOG_ACTION_FAILOVER` shall invoke `config->custom_action(config->context)` — identical dispatch to `SAPI_WATCHDOG_ACTION_CUSTOM` — and shall not itself decide what the timeout means; that decision belongs to the integrator's `custom_action`. |
 
+## 3c. Application lifecycle hooks and cycle checkpoint — `sapi_appmanager.h` (ADR-019)
+
+`sapi_appmanager` was one of the modules 3a flagged as not yet backfilled;
+this section starts that backfill with the four `REQ-APPMANAGER-*` IDs
+introduced or already present in the header as of ADR-019, not a full
+retroactive pass over every pre-existing behavior of the module.
+
+| ID | Requirement |
+|---|---|
+| REQ-APPMANAGER-001 | Applications shall use the Application Manager (`sapi_appmanager_run()`) for controlled initialization, execution, and shutdown lifecycle. |
+| REQ-APPMANAGER-002 | Applications shall implement all mandatory operations in `sapi_appmanager_operations_t` (`init`, `execute`, `shutdown`, `get_name`, `get_version`); `pre_execute` and `post_execute` are optional and may be left `NULL`. |
+| REQ-APPMANAGER-006 | `sapi_appmanager_run()` shall treat a `NULL` `pre_execute` or `post_execute` as "skip this stage", not an error, and shall not call it. |
+| REQ-APPMANAGER-007 | `sapi_appmanager_run()` shall handle a checkpoint-stage result identically to `pre_execute`/`execute`/`post_execute`: on non-`SAPI_STATUS_OK`, log it, increment `error_count`, and check `error_threshold` — no separate reaction path for a checkpoint failure/timeout. |
+
+## 3d. `sapi_vital_channel` `channel_count` floor relaxation (ADR-019 addendum)
+
+`sapi_vital_channel` remains one of the modules 3a flagged as not yet
+backfilled with `REQ-*` IDs; this note records a behavior change made to
+it without introducing a new tag, consistent with that pre-existing gap
+rather than adding an isolated one-off ID to an otherwise untagged module.
+
+`sapi_vital_channel_init()` originally required `channel_count >= 2`
+(modeling "2+ redundant transport paths to a peer"). ADR-019 §5.1 relaxed
+this to `channel_count >= 1`, reachable only via `SAPI_VOTING_NMR` with
+`quorum_size == 1`; `SAPI_VOTING_2OO2` and `SAPI_VOTING_2OO3` keep their
+existing floors of exactly 2 and exactly 3 channels respectively, so no
+existing voting strategy's guarantee is weakened by this change. See
+`include/safeapi/vital_channel/sapi_vital_channel.h`'s `@pre channel_count`
+doc on `sapi_vital_channel_init()` for the exact, current conditions.
+
 ## 4. Traceability
 
 Every `REQ-*` ID in this document appears verbatim in the corresponding

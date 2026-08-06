@@ -7,10 +7,17 @@
  *
  * Each application implements the sapi_appmanager_operations_t interface:
  *   - init() — One-time initialization
- *   - execute() — Main application loop
+ *   - pre_execute() — Optional, per-cycle input/prepare stage (may be NULL)
+ *   - execute() — Main application loop (mandatory)
+ *   - post_execute() — Optional, per-cycle output/cleanup stage (may be NULL)
  *   - shutdown() — Graceful cleanup
  *
  * The sapi_appmanager_run() function manages lifecycle and error handling.
+ * Per ADR-019, it can also be configured (sapi_appmanager_config_t::checkpoint)
+ * to perform a bounded sapi_channel_checkpoint() rendezvous (ADR-017) at the
+ * start of every cycle, ahead of pre_execute/execute/post_execute, so a
+ * dual/multi-channel application does not have to hand-roll that call
+ * itself; this is opt-in and defaults to disabled (NULL).
  *
  * REQ-APPMANAGER-001: Applications shall use the Application Manager for
  * controlled initialization, execution, and shutdown lifecycle.
@@ -38,6 +45,9 @@
 
 #include <stdint.h>
 #include "safeapi/status/sapi_status.h"
+#include "safeapi/types/sapi_types.h"
+#include "safeapi/vital_channel/sapi_vital_channel.h"
+#include "safeapi/watchdog/sapi_watchdog.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,8 +77,10 @@ typedef enum {
  * Each application must implement these operations to be managed by the
  * application manager.
  *
- * REQ-APPMANAGER-002: Applications shall implement all operations in the
- * sapi_appmanager_operations_t interface.
+ * REQ-APPMANAGER-002: Applications shall implement all mandatory operations
+ * in the sapi_appmanager_operations_t interface (init, execute, shutdown,
+ * get_name, get_version). pre_execute and post_execute are optional
+ * (ADR-019, REQ-APPMANAGER-006) and may be left NULL.
  */
 typedef struct {
     /**
@@ -83,6 +95,28 @@ typedef struct {
     sapi_status_t (*init)(void *context);
 
     /**
+     * @brief Optional per-cycle input/prepare stage (ADR-019)
+     *
+     * If non-NULL, called once per iteration immediately before execute()
+     * (and, if configured, immediately after that cycle's checkpoint
+     * rendezvous - see sapi_appmanager_config_t::checkpoint). Intended for
+     * "read/prepare this cycle's inputs" work that a dual-channel
+     * application wants to keep separate from its decision logic. May be
+     * NULL, in which case this stage is skipped - existing applications
+     * that only implement execute() are unaffected.
+     *
+     * A non-OK return is handled exactly like execute() returning
+     * non-OK: logged, counted against error_count, and checked against
+     * error_threshold; execute() and post_execute() are still skipped
+     * for that iteration in that case (see sapi_appmanager_run()).
+     *
+     * @param context Application-specific context pointer
+     * @return SAPI_STATUS_OK on normal execution
+     *         Other codes for error conditions
+     */
+    sapi_status_t (*pre_execute)(void *context);
+
+    /**
      * @brief Execute main application logic
      *
      * Called in a loop after initialization. The execute function should
@@ -94,6 +128,26 @@ typedef struct {
      *         Other codes for error conditions
      */
     sapi_status_t (*execute)(void *context);
+
+    /**
+     * @brief Optional per-cycle output/cleanup stage (ADR-019)
+     *
+     * If non-NULL, called once per iteration immediately after execute()
+     * returns SAPI_STATUS_OK. Intended for "send this cycle's outputs"
+     * work that a dual-channel application wants to keep separate from
+     * its decision logic. May be NULL, in which case this stage is
+     * skipped - existing applications that only implement execute() are
+     * unaffected.
+     *
+     * A non-OK return is handled exactly like execute() returning
+     * non-OK: logged, counted against error_count, and checked against
+     * error_threshold.
+     *
+     * @param context Application-specific context pointer
+     * @return SAPI_STATUS_OK on normal execution
+     *         Other codes for error conditions
+     */
+    sapi_status_t (*post_execute)(void *context);
 
     /**
      * @brief Shutdown application
@@ -129,6 +183,44 @@ typedef struct {
 } sapi_appmanager_operations_t;
 
 /**
+ * @brief Optional built-in checkpoint rendezvous configuration (ADR-019).
+ *
+ * When attached to sapi_appmanager_config_t::checkpoint, sapi_appmanager_run()
+ * calls sapi_channel_checkpoint() once at the start of every cycle - before
+ * pre_execute()/execute()/post_execute() - using the running
+ * sapi_appmanager_state_t::iteration_count as the checkpoint's checkpoint_id,
+ * so no separate per-cycle counter is needed. Leave
+ * sapi_appmanager_config_t::checkpoint NULL to disable this entirely (the
+ * default); this is opt-in because sapi_channel_checkpoint() blocks for up
+ * to max_delay_ms, which is only wanted by applications that are actually
+ * part of a synchronized multi-channel group.
+ *
+ * @safety A checkpoint timeout does not introduce a second safety reaction:
+ *         sapi_channel_checkpoint() has already called sapi_safestate_enter()
+ *         at SAPI_SAFESTATE_LEVEL_SAFE (REQ-CHECKPOINT-003) before returning
+ *         SAPI_STATUS_TIMEOUT to sapi_appmanager_run(), which then folds
+ *         that status into its ordinary error_count/error_threshold
+ *         handling like any other failed stage (REQ-APPMANAGER-007). Note
+ *         that with this framework's shipped sapi_safestate.c, entering
+ *         SAPI_SAFESTATE_LEVEL_SAFE is an unconditional, permanent halt
+ *         (REQ-COMMON-SAFESTATE-002), so this error_count path is a
+ *         defensive fallback - correct if ever reached - rather than the
+ *         expected outcome of a real timeout.
+ */
+typedef struct {
+    sapi_vital_channel_t *vital_channel;   /**< Checkpoint target; must be sapi_vital_channel_init()-ed before
+                                             *   sapi_appmanager_run()'s loop reaches it (may still be NULL when
+                                             *   sapi_appmanager_run() is first called, e.g. if an integrator's
+                                             *   own init() is what populates it). May also be set back to NULL
+                                             *   at runtime (e.g. from a background reconnect task) to pause
+                                             *   checkpointing without that being treated as an error - see
+                                             *   sapi_appmanager_run()'s own doc. */
+    sapi_duration_ms_t max_delay_ms;       /**< Forwarded to sapi_checkpoint_config_t::max_delay_ms. */
+    uint32_t expected_node_count;          /**< Forwarded to sapi_checkpoint_config_t::expected_node_count. */
+    sapi_watchdog_t watchdog;              /**< Optional liveness watchdog kicked on success; may be NULL. */
+} sapi_appmanager_checkpoint_config_t;
+
+/**
  * @brief Application manager configuration
  */
 typedef struct {
@@ -136,6 +228,7 @@ typedef struct {
     void *context;                            /**< Application context */
     uint32_t max_iterations;                  /**< Max execute() calls (0 = infinite) */
     uint32_t error_threshold;                 /**< Errors before shutdown (0 = no limit) */
+    const sapi_appmanager_checkpoint_config_t *checkpoint; /**< Optional built-in cycle checkpoint (ADR-019); NULL = disabled (default). */
 } sapi_appmanager_config_t;
 
 /**
@@ -158,12 +251,20 @@ typedef struct {
  * This is the single entry point for all applications. It manages the
  * complete lifecycle:
  *   1. Initialize (init)
- *   2. Execute loop (execute)
+ *   2. Per-cycle loop, in order (ADR-019):
+ *      a. Checkpoint rendezvous, if config->checkpoint is non-NULL
+ *      b. pre_execute(), if ops->pre_execute is non-NULL
+ *      c. execute()
+ *      d. post_execute(), if ops->post_execute is non-NULL
  *   3. Shutdown (shutdown)
  *
  * Error handling:
  * - If init() fails, shutdown() is still called and EXIT_FAILURE is returned
- * - If execute() fails, error is logged and loop continues (unless threshold reached)
+ * - If the checkpoint, pre_execute(), execute(), or post_execute() stage of
+ *   a cycle returns non-OK, that is logged and counted against error_count
+ *   exactly the same way regardless of which stage failed; the remaining
+ *   stages of that same cycle are skipped, and the loop continues to the
+ *   next cycle (unless error_threshold is reached)
  * - If error_threshold is reached, application shuts down
  * - shutdown() is always called, even on error
  *
@@ -171,7 +272,7 @@ typedef struct {
  * @return 0 (EXIT_SUCCESS) if application completed normally
  *         1 (EXIT_FAILURE) if initialization failed or errors exceeded threshold
  *
- * Example:
+ * Example (single-stage, unchanged from before ADR-019):
  * @code
  * const sapi_appmanager_operations_t ops = {
  *     .init = my_app_init,
@@ -186,6 +287,36 @@ typedef struct {
  *     .context = &my_app_context,
  *     .max_iterations = 0,      // Run forever
  *     .error_threshold = 10      // Stop after 10 errors
+ * };
+ *
+ * return sapi_appmanager_run(&config);
+ * @endcode
+ *
+ * Example (pre/post hooks plus a built-in cross-channel checkpoint, ADR-019):
+ * @code
+ * const sapi_appmanager_operations_t ops = {
+ *     .init = my_app_init,
+ *     .pre_execute = my_app_read_inputs,
+ *     .execute = my_app_decide,
+ *     .post_execute = my_app_send_outputs,
+ *     .shutdown = my_app_shutdown,
+ *     .get_name = my_app_get_name,
+ *     .get_version = my_app_get_version
+ * };
+ *
+ * static const sapi_appmanager_checkpoint_config_t checkpoint_cfg = {
+ *     .vital_channel = &my_vital_channel,   // already sapi_vital_channel_init()-ed
+ *     .max_delay_ms = 200,
+ *     .expected_node_count = 1,
+ *     .watchdog = NULL
+ * };
+ *
+ * sapi_appmanager_config_t config = {
+ *     .ops = &ops,
+ *     .context = &my_app_context,
+ *     .max_iterations = 0,
+ *     .error_threshold = 10,
+ *     .checkpoint = &checkpoint_cfg
  * };
  *
  * return sapi_appmanager_run(&config);

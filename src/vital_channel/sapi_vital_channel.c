@@ -95,7 +95,20 @@ sapi_status_t sapi_vital_channel_init(sapi_vital_channel_t *storage,
         return SAPI_STATUS_INVALID_PARAM;
     }
 
-    if (channel_count < 2 || channel_count > SAPI_VITAL_CHANNEL_MAX_CHANNELS) {
+    /* ADR-019 addendum: floor relaxed from 2 to 1. sapi_channel_checkpoint()
+     * (ADR-017) is a legitimate caller that never votes at all - it only
+     * ever reads handle->channels[]/channel_count and calls
+     * config->backend_send/backend_recv directly (see sapi_checkpoint.c) -
+     * so a single-channel instance is a real, valid use: one node with
+     * exactly one transport path to one peer, checkpointing with it. The
+     * voting-strategy switch below still enforces the right shape for
+     * every strategy that actually uses vote-counting logic
+     * (sapi_vital_channel_send()/receive(), via sapi_vital_channel_has_quorum()) -
+     * channel_count == 1 is only reachable through SAPI_VOTING_NMR with
+     * quorum_size == 1, which is a legitimate degenerate case for that
+     * logic too (a 1-channel "vote" trivially always agrees with itself)
+     * rather than a bypass. */
+    if (channel_count < 1 || channel_count > SAPI_VITAL_CHANNEL_MAX_CHANNELS) {
         return SAPI_STATUS_INVALID_PARAM;
     }
 
@@ -112,7 +125,11 @@ sapi_status_t sapi_vital_channel_init(sapi_vital_channel_t *storage,
         }
         break;
     case SAPI_VOTING_NMR:
-        if (config->quorum_size > channel_count || config->quorum_size < 2) {
+        /* quorum_size >= 1 (was >= 2): see this function's own note above
+         * on channel_count == 1 - a 1-channel NMR instance requires
+         * quorum_size == 1, the only combination that is satisfiable at
+         * that count. */
+        if (config->quorum_size > channel_count || config->quorum_size < 1) {
             return SAPI_STATUS_INVALID_PARAM;
         }
         break;

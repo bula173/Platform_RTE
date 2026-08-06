@@ -1,8 +1,45 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for `sapi_watchdog.c`'s new
-`SAPI_WATCHDOG_ACTION_FAILOVER` dispatch and a real portability bug fix in
-`sapi_appmanager.c` - see "update 4" note below)
+Date: 2026-08-06 (updated for ADR-019's `sapi_appmanager`/
+`sapi_vital_channel` changes - see "update 5" note below)
+
+**2026-08-06, update 5 (ADR-019: AppManager cycle hooks + built-in
+checkpoint):** no automated re-run performed (same caveat as update 4 -
+still no `cppcheck` in this sandbox); reasoned manually against the
+already-open findings instead of introducing new ones:
+- `sapi_appmanager.c`/`.h`: adds `pre_execute`/`post_execute` (two more
+  optional function-pointer members, same type/NULL-check pattern already
+  used for `execute`) and a checkpoint stage that calls
+  `sapi_channel_checkpoint()` (already-reviewed under ADR-017, no change
+  to that module - see 2.3 of ADR-019). New `#include
+  "safeapi/checkpoint/sapi_checkpoint.h"` and a new link dependency on
+  `safeapi::checkpoint`; no new banned construct (no dynamic memory, no
+  recursion, no new `<stdio.h>`/`errno`/`assert` use beyond what section
+  1a's un-triaged `sapi_appmanager.c` `21.6` finding already covers). Both
+  modules remain inside this report's pre-existing "Known gap" paragraph
+  (section header above) - this update does not close that gap, it adds
+  to what's inside it.
+- `sapi_vital_channel.c`: `sapi_vital_channel_init()`'s `channel_count`
+  floor relaxed from `>= 2` to `>= 1` (only reachable via
+  `SAPI_VOTING_NMR` with `quorum_size == 1` - `SAPI_VOTING_2OO2`/
+  `SAPI_VOTING_2OO3` floors unchanged). A parameter-validation bound
+  change, not a new construct - no new type, no new header, no new
+  control-flow shape; the existing `switch` on `voting_strategy` still has
+  its `default` clause (Rule 16.1/16.4, section 2).
+- **`safeAPIExample/src/application/AB/channel_ab.c` (separate repo,
+  already out of this report's stated scope, called out here only for
+  completeness since it's the first real consumer of both changes
+  above):** adds a `pthread_mutex_t` (`ctx->peer_send_mutex`) guarding
+  every `sapi_netlink_send()` call on the shared peer link, once the
+  background receive task also needed to send (a checkpoint
+  request/reply auto-responder echo - see ADR-019 §5.2). This is a
+  genuinely new construct for that project (no prior direct pthread
+  primitive exposed in application code; `sapi_task`/`sapi_ipc` already
+  wrap pthreads internally in `posix_backend`, but this is the first
+  direct use in `src/application/`). Framework-level deviation: **N/A**
+  (out of this report's scope, per its own stated boundary); flagged here
+  as a heads-up for that project's own eventual MISRA pass, not resolved
+  by this update.
 
 **2026-08-06, update 4:** two small, targeted changes, no automated
 re-run performed (see caveat below):

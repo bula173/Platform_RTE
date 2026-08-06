@@ -20,9 +20,11 @@
  * Provides lifecycle management for safety-critical applications.
  */
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "safeapi/appmanager/sapi_appmanager.h"
+#include "safeapi/checkpoint/sapi_checkpoint.h"
 
 /* sapi_appmanager_install_default_signal_handlers()'s POSIX detection -
  * see this file's own implementation below and the function's doc in
@@ -55,6 +57,52 @@ static sapi_appmanager_state_t g_app_state = {
  *         to request that sapi_appmanager_run()'s loop exit cleanly. */
 static volatile int g_shutdown_requested = 0;
 
+/**
+ * @brief Records the outcome of one per-cycle stage (checkpoint, pre_execute,
+ *        execute, or post_execute) against the shared error accounting, and
+ *        decides whether the remaining stages of this cycle should run.
+ *
+ * Centralizes the "log, count against error_count, check error_threshold"
+ * behavior that ADR-019's checkpoint/pre_execute/post_execute stages share
+ * with execute()'s pre-existing error handling, so all four stages react to
+ * a non-OK status identically (REQ-APPMANAGER-007).
+ *
+ * @param status          Status returned by the stage that just ran.
+ * @param stage_name      Short, human-readable stage name for the log line
+ *                        on failure (e.g. "checkpoint", "pre_execute").
+ *                        Must not be NULL.
+ * @param error_threshold Errors before shutdown (0 = no limit), forwarded
+ *                        from sapi_appmanager_config_t::error_threshold.
+ * @return true if status is SAPI_STATUS_OK (caller should proceed to the
+ *         next stage of this cycle); false otherwise (caller should skip
+ *         the remaining stages for this cycle - g_app_state.error_count and,
+ *         if error_threshold was reached, g_shutdown_requested have already
+ *         been updated).
+ */
+static bool sapi_appmanager_handle_stage_result(sapi_status_t status,
+                                                  const char *stage_name,
+                                                  uint32_t error_threshold)
+{
+    bool ok = (status == SAPI_STATUS_OK);
+
+    if (!ok) {
+        g_app_state.error_count++;
+        g_app_state.last_error = status;
+
+        fprintf(stderr, "[APPMANAGER ERROR] %s failed: %d\n", stage_name, (int)status);
+
+        if (error_threshold > 0 && g_app_state.error_count >= error_threshold) {
+            fprintf(stderr,
+                    "[APPMANAGER ERROR] Error threshold exceeded (%u/%u), shutting down\n",
+                    g_app_state.error_count,
+                    error_threshold);
+            g_shutdown_requested = 1;
+        }
+    }
+
+    return ok;
+}
+
 /* ============================================================================
  * Public API Implementation
  * ========================================================================== */
@@ -77,6 +125,21 @@ int sapi_appmanager_run(const sapi_appmanager_config_t *config)
         fprintf(stderr, "ERROR: Incomplete sapi_appmanager_operations_t\n");
         return EXIT_FAILURE;
     }
+
+    /* pre_execute/post_execute are optional (ADR-019); no NULL check here
+     * is an error - a NULL value simply means that stage is skipped below. */
+
+    /* Deliberately NOT validated here: config->checkpoint->vital_channel
+     * being NULL at this point. An integrator may legitimately populate
+     * that target inside their own init() (e.g. a checkpoint transport
+     * that is only opened/vital_channel_init()-ed as part of application
+     * startup, not before sapi_appmanager_run() is even called) - the
+     * per-cycle call below already handles a NULL vital_channel safely
+     * (sapi_channel_checkpoint() returns SAPI_STATUS_INVALID_PARAM,
+     * handled identically to any other failed stage, never a crash), so
+     * an integrator can also toggle it to NULL transiently at runtime to
+     * pause checkpointing (e.g. while its own underlying transport is
+     * known down) without that ever being treated as a startup error. */
 
     /* Initialize application manager state */
     g_app_state.state = SAPI_APP_STATE_INITIALIZING;
@@ -122,23 +185,44 @@ int sapi_appmanager_run(const sapi_appmanager_config_t *config)
 
         g_app_state.iteration_count++;
 
-        /* Execute one iteration of application work */
-        status = config->ops->execute(config->context);
+        /* Stage 1 (ADR-019, optional): bounded cross-channel checkpoint
+         * rendezvous, run before any of this cycle's own work so a desynced
+         * peer is caught before either channel acts on this cycle's data.
+         * Reuses iteration_count as the checkpoint_id - see
+         * sapi_appmanager_checkpoint_config_t's own doc for why. */
+        if (config->checkpoint != NULL) {
+            sapi_checkpoint_config_t checkpoint_cfg;
 
-        /* Handle errors */
-        if (status != SAPI_STATUS_OK) {
-            g_app_state.error_count++;
-            g_app_state.last_error = status;
+            checkpoint_cfg.checkpoint_id = g_app_state.iteration_count;
+            checkpoint_cfg.max_delay_ms = config->checkpoint->max_delay_ms;
+            checkpoint_cfg.expected_node_count = config->checkpoint->expected_node_count;
+            checkpoint_cfg.watchdog = config->checkpoint->watchdog;
 
-            /* Check error threshold */
-            if (config->error_threshold > 0 &&
-                g_app_state.error_count >= config->error_threshold) {
-                fprintf(stderr,
-                        "[APPMANAGER ERROR] Error threshold exceeded (%u/%u), shutting down\n",
-                        g_app_state.error_count,
-                        config->error_threshold);
-                g_shutdown_requested = 1;
+            status = sapi_channel_checkpoint(config->checkpoint->vital_channel, &checkpoint_cfg);
+            if (!sapi_appmanager_handle_stage_result(status, "checkpoint", config->error_threshold)) {
+                continue;
             }
+        }
+
+        /* Stage 2 (ADR-019, optional): per-cycle input/prepare stage. */
+        if (config->ops->pre_execute != NULL) {
+            status = config->ops->pre_execute(config->context);
+            if (!sapi_appmanager_handle_stage_result(status, "pre_execute", config->error_threshold)) {
+                continue;
+            }
+        }
+
+        /* Stage 3 (mandatory): main application logic, unchanged. */
+        status = config->ops->execute(config->context);
+        if (!sapi_appmanager_handle_stage_result(status, "execute", config->error_threshold)) {
+            continue;
+        }
+
+        /* Stage 4 (ADR-019, optional): per-cycle output/cleanup stage. Only
+         * reached once execute() itself succeeded. */
+        if (config->ops->post_execute != NULL) {
+            status = config->ops->post_execute(config->context);
+            (void)sapi_appmanager_handle_stage_result(status, "post_execute", config->error_threshold);
         }
     }
 

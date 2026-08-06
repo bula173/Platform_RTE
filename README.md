@@ -44,9 +44,28 @@ Actively growing framework with SIL 4 safety focus.
 - Requires implementation of voting logic and checkpoint synchronization for full SIL 4 support
 - See ROADMAP.md for detailed timeline
 
+**IMPLEMENTED:** AppManager cycle hooks + built-in checkpoint (ADR-019)
+- `pre_execute`/`post_execute` — optional per-cycle hooks bracketing the
+  existing mandatory `execute()`, so a cyclic application's "gather
+  inputs" / "decide" / "send outputs" phases can be three named functions
+  instead of one function with phase-numbered comments; both default to
+  NULL (skipped) and are fully backward-compatible with every existing
+  `sapi_appmanager_operations_t` caller.
+- Optional built-in checkpoint stage — `sapi_appmanager_config_t::checkpoint`
+  (NULL by default) wires a bounded `sapi_channel_checkpoint()` (ADR-017)
+  rendezvous into the loop automatically, ahead of `pre_execute()`, so a
+  dual/multi-channel application no longer hand-rolls that call itself.
+- Addendum (§5): relaxed `sapi_vital_channel_init()`'s `channel_count`
+  floor from `>= 2` to `>= 1` (`SAPI_VOTING_NMR`, `quorum_size == 1` only —
+  2oo2/2oo3 floors unchanged) to support a single-physical-link topology;
+  see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md`
+  for the full retrofit writeup (including the multiplexed-frame wire
+  protocol needed to carry checkpoint traffic on an existing link), first
+  live-verified in `safeAPIExample`'s A/B channel.
+
 **Key Documentation:**
 - `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
-  016-017; 009-015 do not exist) + PlantUML diagrams
+  016-019; 009-015 do not exist) + PlantUML diagrams
 - `docs/requirements/SRS.md` — Consolidated requirements specification
 - `docs/MISRA_COMPLIANCE_REPORT.md` — MISRA C:2012 conformance status
 - `docs/EN_50128_ALIGNMENT.md` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
