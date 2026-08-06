@@ -1,0 +1,5 @@
+<map id="include/safeapi/nvm/sapi_nvm.h" name="include/safeapi/nvm/sapi_nvm.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="5,5,160,45"/>
+<area shape="rect" id="Node000002" href="$sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="7,93,159,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,59,85,93,80,93,80,59"/>
+</map>

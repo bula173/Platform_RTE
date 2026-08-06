@@ -1,0 +1,21 @@
+<map id="src/ipc/sapi_ipc_request_reply.c" name="src/ipc/sapi_ipc_request_reply.c">
+<area shape="rect" id="Node000001" title="IPC Request&#45;Reply implementation." alt="" coords="151,5,328,45"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="88,93,239,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="224,47,191,85,187,81,220,44"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="263,101,370,126"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="258,44,299,88,295,92,255,47"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,255,151,295"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="146,135,127,157,110,183,97,212,88,242,82,240,92,210,105,180,123,154,142,132"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,255,317,295"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="184,132,203,154,220,180,233,210,242,240,237,242,228,212,216,183,199,157,180,135"/>
+<area shape="rect" id="Node000008" href="$sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="120,181,207,207"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="166,134,166,167,161,167,161,134"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="102,343,185,368"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,297,171,336,168,332,220,293"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="209,343,283,368"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,295,249,329,243,329,243,295"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="308,343,379,368"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,293,320,332,317,336,268,297"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="153,209,110,247,107,243,149,205"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="177,205,218,243,214,247,174,209"/>
+</map>

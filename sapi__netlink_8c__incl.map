@@ -1,0 +1,15 @@
+<map id="src/netlink/sapi_netlink.c" name="src/netlink/sapi_netlink.c">
+<area shape="rect" id="Node000001" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="70,5,254,31"/>
+<area shape="rect" id="Node000002" href="$sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="87,79,237,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,121,108,159,104,155,141,117"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="183,117,220,155,216,159,179,121"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="102,255,185,280"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="209,255,283,280"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="308,255,379,280"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
+</map>

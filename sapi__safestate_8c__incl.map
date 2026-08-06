@@ -1,0 +1,15 @@
+<map id="src/safestate/sapi_safestate.c" name="src/safestate/sapi_safestate.c">
+<area shape="rect" id="Node000001" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="93,5,231,45"/>
+<area shape="rect" id="Node000002" href="$sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="79,93,245,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,46,165,79,159,79,159,46"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,151,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,135,108,173,104,170,141,132"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,181,317,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="183,132,220,170,216,173,179,135"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="102,269,185,295"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,224,171,263,168,259,220,219"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="209,269,283,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,222,249,255,243,255,243,222"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="308,269,379,295"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,219,320,258,317,263,268,224"/>
+</map>

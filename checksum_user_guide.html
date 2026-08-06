@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Safe API Framework: Checksum Module - User Guide\n *\n * @section overview What is Checksum?\n *\n * The Checksum module provides &lt;strong&gt;data integrity verification&lt;/strong&gt;. It computes\n * CRC32 or simple checksum to detect accidental data corruption.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Know when data is corrupted. Don&#39;t silently process bad data.\n *\n * @section quick_start Quick Start\n *\n * &lt;tt&gt;c\\n * \#include \\&quot;safeapi/checksum/sapi_checksum.h\\&quot;\\n *\\n * // Compute checksum\\n * uint32_t crc = sapi_checksum_crc32(data, length);\\n *\\n * // Verify checksum\\n * uint32_t stored_crc = get_stored_checksum();\\n * if (crc != stored_crc) {\\n *     log_error(\\&quot;Data corrupted: CRC mismatch\\&quot;);\\n *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);\\n * }\\n *&lt;/tt&gt;\n *\n * @section functions Functions\n *\n * &lt;tt&gt;c\\n * // Compute CRC32 of entire buffer\\n * uint32_t sapi_checksum_crc32(const uint8_t *data, size_t length);\\n *\\n * // Simple 8-bit checksum (XOR of all bytes)\\n * uint8_t sapi_checksum_xor8(const uint8_t *data, size_t length);\\n *\\n * // CRC16 for smaller data\\n * uint16_t sapi_checksum_crc16(const uint8_t *data, size_t length);\\n *&lt;/tt&gt;\n *\n * @section examples Practical Examples\n *\n * ### Example 1: Message Integrity Check\n *\n * &lt;tt&gt;c\\n * typedef struct {\\n *     uint32_t command_id;\\n *     uint8_t data[256];\\n *     uint32_t checksum;  // Computed over all previous fields\\n * } message_t;\\n *\\n * sapi_status_t process_message(const message_t *msg) {\\n *     // Compute checksum over everything except checksum field\\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)msg,\\n *                                            offsetof(message_t, checksum));\\n *\\n *     if (computed != msg-&gt;checksum) {\\n *         log_error(\\&quot;Message corrupted\\&quot;);\\n *         return SAPI_STATUS_INVALID_PARAM;\\n *     }\\n *\\n *     execute_command(msg-&gt;command_id, msg-&gt;data);\\n *     return SAPI_STATUS_OK;\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 2: Configuration Validation\n *\n * &lt;tt&gt;c\\n * typedef struct {\\n *     uint32_t version;\\n *     char device_name[32];\\n *     uint32_t timeout_ms;\\n *     uint32_t crc;  // Checksum of above\\n * } config_t;\\n *\\n * sapi_status_t load_config(config_t *cfg) {\\n *     // Read from NVM\\n *     read_nvm(0, (uint8_t *)cfg, sizeof(config_t));\\n *\\n *     // Verify checksum\\n *     size_t data_len = offsetof(config_t, crc);\\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)cfg, data_len);\\n *\\n *     if (computed != cfg-&gt;crc) {\\n *         log_error(\\&quot;Configuration corrupted, using defaults\\&quot;);\\n *         init_default_config(cfg);\\n *     }\\n *\\n *     return SAPI_STATUS_OK;\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Use CRC32 for Large Data&lt;/strong&gt;\n *    - Better collision detection\n *    - Slightly slower but worth it\n *\n * 2. &lt;strong&gt;Checksum Storage&lt;/strong&gt;\n *    - Store checksum with data\n *    - Compute over all data except checksum field\n *    - Verify on load/receive\n *\n * 3. &lt;strong&gt;When to Verify&lt;/strong&gt;\n *    - After receiving over network\n *    - After reading from storage\n *    - Before executing critical commands\n *\n * 4. &lt;strong&gt;Handling Corruption&lt;/strong&gt;\n *    - Don&#39;t try to \&quot;fix\&quot; corrupted data\n *    - Log the corruption\n *    - Either reload from backup or trigger safe-state\n *\n * @section see_also See Also\n *\n * - @ref checksum_architecture\n * - @ref nvm_user_guide for stored data integrity\n * - @ref ipc_user_guide for transmission integrity\n *\n */</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Safe API Framework
+   </div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generated by Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Search');
+  $(document).ready(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Loading...</div>
+<div class="SRStatus" id="Searching">Searching...</div>
+<div class="SRStatus" id="NoMatches">No Matches</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div><div class="header">
+  <div class="headertitle"><div class="title">Checksum Module - User Guide\n *\n * @section overview What is Checksum?\n *\n * The Checksum module provides &lt;strong&gt;data integrity verification&lt;/strong&gt;. It computes\n * CRC32 or simple checksum to detect accidental data corruption.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Know when data is corrupted. Don't silently process bad data.\n *\n * @section quick_start Quick Start\n *\n * &lt;tt&gt;c\\n * \#include \\"safeapi/checksum/sapi_checksum.h\\"\\n *\\n * // Compute checksum\\n * uint32_t crc = sapi_checksum_crc32(data, length);\\n *\\n * // Verify checksum\\n * uint32_t stored_crc = get_stored_checksum();\\n * if (crc != stored_crc) {\\n *     log_error(\\"Data corrupted: CRC mismatch\\");\\n *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);\\n * }\\n *&lt;/tt&gt;\n *\n * @section functions Functions\n *\n * &lt;tt&gt;c\\n * // Compute CRC32 of entire buffer\\n * uint32_t sapi_checksum_crc32(const uint8_t *data, size_t length);\\n *\\n * // Simple 8-bit checksum (XOR of all bytes)\\n * uint8_t sapi_checksum_xor8(const uint8_t *data, size_t length);\\n *\\n * // CRC16 for smaller data\\n * uint16_t sapi_checksum_crc16(const uint8_t *data, size_t length);\\n *&lt;/tt&gt;\n *\n * @section examples Practical Examples\n *\n * ### Example 1: Message Integrity Check\n *\n * &lt;tt&gt;c\\n * typedef struct {\\n *     uint32_t command_id;\\n *     uint8_t data[256];\\n *     uint32_t checksum;  // Computed over all previous fields\\n * } message_t;\\n *\\n * sapi_status_t process_message(const message_t *msg) {\\n *     // Compute checksum over everything except checksum field\\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)msg,\\n *                                            offsetof(message_t, checksum));\\n *\\n *     if (computed != msg-&amp;gt;checksum) {\\n *         log_error(\\"Message corrupted\\");\\n *         return SAPI_STATUS_INVALID_PARAM;\\n *     }\\n *\\n *     execute_command(msg-&amp;gt;command_id, msg-&amp;gt;data);\\n *     return SAPI_STATUS_OK;\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 2: Configuration Validation\n *\n * &lt;tt&gt;c\\n * typedef struct {\\n *     uint32_t version;\\n *     char device_name[32];\\n *     uint32_t timeout_ms;\\n *     uint32_t crc;  // Checksum of above\\n * } config_t;\\n *\\n * sapi_status_t load_config(config_t *cfg) {\\n *     // Read from NVM\\n *     read_nvm(0, (uint8_t *)cfg, sizeof(config_t));\\n *\\n *     // Verify checksum\\n *     size_t data_len = offsetof(config_t, crc);\\n *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)cfg, data_len);\\n *\\n *     if (computed != cfg-&amp;gt;crc) {\\n *         log_error(\\"Configuration corrupted, using defaults\\");\\n *         init_default_config(cfg);\\n *     }\\n *\\n *     return SAPI_STATUS_OK;\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Use CRC32 for Large Data&lt;/strong&gt;\n *    - Better collision detection\n *    - Slightly slower but worth it\n *\n * 2. &lt;strong&gt;Checksum Storage&lt;/strong&gt;\n *    - Store checksum with data\n *    - Compute over all data except checksum field\n *    - Verify on load/receive\n *\n * 3. &lt;strong&gt;When to Verify&lt;/strong&gt;\n *    - After receiving over network\n *    - After reading from storage\n *    - Before executing critical commands\n *\n * 4. &lt;strong&gt;Handling Corruption&lt;/strong&gt;\n *    - Don't try to \"fix\" corrupted data\n * - Log the corruption\n * - Either reload from backup or trigger safe-state\n *\n * @section see_also See Also\n *\n * - @ref checksum_architecture\n * - @ref nvm_user_guide for stored data integrity\n * - @ref ipc_user_guide for transmission integrity\n *\n */</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"></div></div><!-- contents -->
+</div><!-- PageDoc -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8
+</small></address>
+</body>
+</html>

@@ -1,0 +1,7 @@
+<map id="include/safeapi/appmanager/sapi_appmanager.h" name="include/safeapi/appmanager/sapi_appmanager.h">
+<area shape="rect" id="Node000001" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="5,5,212,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="8,101,79,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,47,63,91,59,88,92,44"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="103,93,248,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="126,44,154,81,150,84,121,47"/>
+</map>

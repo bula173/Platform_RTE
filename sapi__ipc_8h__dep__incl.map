@@ -1,0 +1,13 @@
+<map id="include/safeapi/ipc/sapi_ipc.h" name="include/safeapi/ipc/sapi_ipc.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="228,5,372,45"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc__pubsub_8h.html" title="IPC Publish&#45;Subscribe Pattern (one&#45;to&#45;many broadcasting)" alt="" coords="34,93,179,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="246,53,150,96,148,91,244,49"/>
+<area shape="rect" id="Node000004" href="$sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="207,93,393,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="303,59,303,93,297,93,297,59"/>
+<area shape="rect" id="Node000006" href="$sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba..." alt="" coords="417,101,549,126"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="354,49,459,98,457,103,351,54"/>
+<area shape="rect" id="Node000003" href="$sapi__ipc__pubsub_8c.html" title="IPC Publish&#45;Subscribe implementation." alt="" coords="5,189,192,214"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,147,102,188,97,188,101,147"/>
+<area shape="rect" id="Node000005" href="$sapi__ipc__request__reply_8c.html" title="IPC Request&#45;Reply implementation." alt="" coords="217,181,394,221"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="305,147,307,181,301,181,299,147"/>
+</map>

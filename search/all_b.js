@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['_5fgeneric_20tt_0',['2.5 Why named functions instead of macros or C11 &lt;tt&gt;_Generic&lt;/tt&gt;',['../md_docs_2architecture_2ADR-003-checked-integer-casting.html#autotoc_md29',1,'']]],
+  ['_5fstatic_5fassert_20tt_20n_20n_20section_20misra_20misra_20compliance_20n_20n_20✓_20rule_206_201_20fixed_20width_20types_20only_20n_20✓_20rule_207_202_20proper_20signedness_20n_20✓_20rule_208_203_20type_20compatible_20n_20n_20section_20see_5falso_20see_20also_20n_20n_20ref_20types_5fuser_5fguide_20for_20usage_20patterns_20n_20n_20n_1',['Guaranteed Sizes\n *\n * @code\n * sizeof(uint8_t)  == 1 byte\n * sizeof(uint16_t) == 2 bytes\n * sizeof(uint32_t) == 4 bytes\n * sizeof(uint64_t) == 8 bytes\n * sizeof(bool)     == 1 byte (typically)\n * @endcode\n *\n * Verified by framework at compile-time via &lt;tt&gt;_Static_assert&lt;/tt&gt;.\n *\n * @section misra MISRA Compliance\n *\n * ✓ Rule 6.1 - Fixed-width types only\n * ✓ Rule 7.2 - Proper signedness\n * ✓ Rule 8.3 - Type compatible\n *\n * @section see_also See Also\n *\n * - @ref types_user_guide for usage patterns\n *\n */\n',['../types_architecture.html#sizes',1,'']]]
+];

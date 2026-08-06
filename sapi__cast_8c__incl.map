@@ -1,0 +1,15 @@
+<map id="src/cast/sapi_cast.c" name="src/cast/sapi_cast.c">
+<area shape="rect" id="Node000001" title="Generated from ADR&#45;003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t..." alt="" coords="88,5,236,31"/>
+<area shape="rect" id="Node000002" href="$sapi__cast_8h.html" title="Checked integer casting between all fixed&#45;width types and size_t (ADR&#45;003). Every conversion in the c..." alt="" coords="73,79,251,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,152,151,192"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="151,106,110,145,106,141,148,102"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,152,317,192"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="176,102,218,141,214,145,173,106"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="102,240,185,265"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,194,171,234,168,229,220,190"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="209,240,283,265"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,192,249,226,243,226,243,192"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="308,240,379,265"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,190,320,229,317,233,268,194"/>
+</map>

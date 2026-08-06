@@ -1,0 +1,5 @@
+<map id="include/safeapi/netlink/sapi_netlink.h" name="include/safeapi/netlink/sapi_netlink.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="12,5,183,45"/>
+<area shape="rect" id="Node000002" href="$sapi__netlink_8c.html" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="5,93,189,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,59,100,93,95,93,95,59"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="sapi_string_t" name="sapi_string_t">
+<area shape="rect" id="Node000001" title="Bounded string: buf.length is the string length, not counting a NUL." alt="" coords="6,93,111,119"/>
+<area shape="rect" id="Node000002" href="$structsapi__buffer__t.html" title="Mutable, bounds&#45;tracked view over caller&#45;owned storage." alt="" coords="5,5,112,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="61,45,61,93,56,93,56,45"/>
+</map>

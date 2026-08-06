@@ -1,0 +1,11 @@
+<map id="include/safeapi/timer/sapi_timer.h" name="include/safeapi/timer/sapi_timer.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Timer service." alt="" coords="319,5,479,45"/>
+<area shape="rect" id="Node000002" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="5,93,152,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="316,52,149,96,148,91,314,46"/>
+<area shape="rect" id="Node000003" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="176,101,403,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="365,56,306,102,303,98,362,52"/>
+<area shape="rect" id="Node000004" href="$sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="427,101,589,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="435,52,495,98,491,102,432,56"/>
+<area shape="rect" id="Node000005" href="$sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="614,101,834,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="484,46,681,98,680,103,483,51"/>
+</map>

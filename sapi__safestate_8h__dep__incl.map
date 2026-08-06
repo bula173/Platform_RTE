@@ -1,0 +1,17 @@
+<map id="include/safeapi/safestate/sapi_safestate.h" name="include/safeapi/safestate/sapi_safestate.h">
+<area shape="rect" id="Node000001" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="509,5,695,45"/>
+<area shape="rect" id="Node000002" href="$sapi__channel_8h.html" title="Dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="15,93,191,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="495,47,204,96,192,98,191,93,203,91,494,41"/>
+<area shape="rect" id="Node000004" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="215,93,362,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="521,52,358,96,357,91,519,46"/>
+<area shape="rect" id="Node000005" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="386,101,613,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="570,56,515,102,512,98,567,52"/>
+<area shape="rect" id="Node000006" href="$sapi__safestate_8c.html" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="637,93,775,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="637,52,685,91,681,95,634,56"/>
+<area shape="rect" id="Node000007" href="$sapi__vital__channel_8c.html" title="Implementation of vital (redundant) channel abstraction." alt="" coords="799,93,962,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="677,47,820,91,819,96,675,52"/>
+<area shape="rect" id="Node000008" href="$sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="987,101,1207,126"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="710,43,1031,98,1030,103,709,48"/>
+<area shape="rect" id="Node000003" href="$sapi__channel_8c.html" title="Implementation of dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="5,181,201,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="106,147,106,181,101,181,101,147"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="include/safeapi/reboot/sapi_reboot.h" name="include/safeapi/reboot/sapi_reboot.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Controlled reboot service (ADR&#45;004 section 3)." alt="" coords="11,5,178,45"/>
+<area shape="rect" id="Node000002" href="$sapi__reboot_8c.html" title="Reboot service: dispatches to the backend registered via sapi_reboot_register_backend() (ADR&#45;005)." alt="" coords="5,93,184,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,59,97,93,92,93,92,59"/>
+</map>

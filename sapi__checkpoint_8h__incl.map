@@ -1,0 +1,24 @@
+<map id="include/safeapi/checkpoint/sapi_checkpoint.h" name="include/safeapi/checkpoint/sapi_checkpoint.h">
+<area shape="rect" id="Node000001" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="59,5,255,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="58,269,128,295"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="116,48,83,68,52,95,36,116,26,135,13,182,9,202,13,220,31,243,55,261,52,265,28,247,8,222,3,202,8,181,21,133,31,113,48,92,80,64,113,43"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="188,181,334,221"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="201,43,231,64,255,92,263,111,267,130,268,168,263,168,262,131,258,112,251,95,227,68,198,48"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="22,181,164,221"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="115,48,86,67,63,95,58,113,60,131,74,168,69,170,54,133,53,112,59,92,82,64,112,43"/>
+<area shape="rect" id="Node000007" href="$sapi__vital__channel_8h.html" title="Safety&#45;critical redundant channel abstraction with voting logic." alt="" coords="316,93,478,133"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="211,43,333,86,331,91,209,48"/>
+<area shape="rect" id="Node000008" href="$sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="73,93,241,133"/>
+<area shape="poly" id="edge12_Node000001_Node000008" title=" " alt="" coords="160,46,160,79,154,79,154,46"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="96,222,96,255,90,255,90,222"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="386,269,469,295"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="165,217,374,265,373,271,163,222"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="242,269,317,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="139,219,241,261,239,266,137,224"/>
+<area shape="poly" id="edge8_Node000007_Node000002" title=" " alt="" coords="396,134,380,179,367,203,348,223,311,241,257,256,143,277,142,272,256,251,309,236,345,219,362,200,376,177,391,133"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="369,136,304,176,301,172,366,131"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="416,132,431,154,444,181,447,200,447,220,439,256,434,255,441,220,442,201,438,182,427,157,412,135"/>
+<area shape="poly" id="edge10_Node000007_Node000006" title=" " alt="" coords="404,134,406,176,402,200,393,223,380,238,365,251,331,269,329,264,362,246,376,234,388,220,397,199,401,176,398,134"/>
+<area shape="poly" id="edge13_Node000008_Node000003" title=" " alt="" coords="182,132,229,170,226,174,178,136"/>
+<area shape="poly" id="edge14_Node000008_Node000004" title=" " alt="" coords="145,135,118,172,113,168,141,132"/>
+</map>

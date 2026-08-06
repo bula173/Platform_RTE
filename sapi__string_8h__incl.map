@@ -1,0 +1,17 @@
+<map id="include/safeapi/string/sapi_string.h" name="include/safeapi/string/sapi_string.h">
+<area shape="rect" id="Node000001" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="81,5,243,45"/>
+<area shape="rect" id="Node000002" href="$sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="91,93,233,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,46,165,79,159,79,159,46"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,151,221"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="127,48,101,68,80,95,74,112,72,131,74,168,68,168,66,131,69,111,76,92,97,64,124,43"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="187,181,329,221"/>
+<area shape="poly" id="edge8_Node000001_Node000004" title=" " alt="" coords="198,43,225,64,247,92,260,130,263,167,257,168,255,131,242,95,221,68,194,47"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,135,108,173,104,170,141,132"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="185,132,228,170,225,174,182,136"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="114,269,197,295"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="235,224,183,263,180,259,232,219"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="221,269,295,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="261,222,261,255,255,255,255,222"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="320,269,391,295"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="283,219,332,258,329,263,280,224"/>
+</map>

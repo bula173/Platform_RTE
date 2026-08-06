@@ -1,0 +1,14 @@
+<map id="include/safeapi/clocksync/sapi_clocksync.h" name="include/safeapi/clocksync/sapi_clocksync.h">
+<area shape="rect" id="Node000001" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="5,5,195,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="42,181,113,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="64,48,38,68,17,95,12,113,17,132,31,154,50,171,46,175,27,157,12,134,6,113,12,92,34,64,61,43"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="27,93,173,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="103,46,103,79,97,79,97,46"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="197,93,339,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="138,43,220,85,218,90,136,48"/>
+<area shape="poly" id="edge6_Node000004_Node000002" title=" " alt="" coords="223,136,119,179,117,174,221,131"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="175,181,257,207"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="258,135,234,171,229,168,253,132"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="281,181,356,207"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="283,132,306,168,301,171,278,135"/>
+</map>

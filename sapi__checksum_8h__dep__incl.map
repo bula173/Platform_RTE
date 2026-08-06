@@ -1,0 +1,7 @@
+<map id="include/safeapi/checksum/sapi_checksum.h" name="include/safeapi/checksum/sapi_checksum.h">
+<area shape="rect" id="Node000001" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="89,5,279,45"/>
+<area shape="rect" id="Node000002" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="5,93,152,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="152,56,104,95,100,91,149,52"/>
+<area shape="rect" id="Node000003" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="176,101,403,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="220,52,276,98,273,102,216,56"/>
+</map>

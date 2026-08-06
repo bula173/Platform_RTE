@@ -1,0 +1,13 @@
+<map id="src/appmanager/sapi_appmanager.c" name="src/appmanager/sapi_appmanager.c">
+<area shape="rect" id="Node000001" title="Application Manager implementation." alt="" coords="53,5,211,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,101,72,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,48,63,93,60,89,109,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="97,101,167,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="135,46,135,87,129,87,129,46"/>
+<area shape="rect" id="Node000004" href="$sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="191,93,347,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="164,43,229,84,226,88,161,48"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="167,189,238,214"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="257,135,222,179,218,176,252,132"/>
+<area shape="rect" id="Node000006" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="262,181,407,221"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="286,132,314,169,310,172,282,135"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="include/safeapi/buffer/sapi_buffer.h" name="include/safeapi/buffer/sapi_buffer.h">
+<area shape="rect" id="Node000001" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="319,5,482,45"/>
+<area shape="rect" id="Node000002" href="$sapi__channel_8h.html" title="Dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="22,93,198,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="325,52,174,96,173,91,323,47"/>
+<area shape="rect" id="Node000004" href="$sapi__string_8h.html" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="225,93,387,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="371,57,329,95,325,91,368,53"/>
+<area shape="rect" id="Node000006" href="$sapi__buffer_8c_source.html" title=" " alt="" coords="412,101,581,126"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="434,53,485,98,482,102,430,57"/>
+<area shape="rect" id="Node000007" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="606,93,753,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="476,47,619,91,618,96,474,52"/>
+<area shape="rect" id="Node000003" href="$sapi__channel_8c.html" title="Implementation of dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="5,181,201,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="110,147,107,181,102,181,105,147"/>
+<area shape="rect" id="Node000005" href="$sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="226,181,394,207"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="310,147,312,181,307,181,305,147"/>
+</map>

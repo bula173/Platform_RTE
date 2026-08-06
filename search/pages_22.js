@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['yes_3a_20convert_20and_20return_20ok_20n_203_20if_20no_3a_20don_20t_20modify_20output_20return_20error_20n_20n_20section_20misra_20misra_20rule_2010_201_20n_20n_20✓_20no_20implicit_20conversions_20n_20✓_20explicit_20checked_20casts_20only_20n_20n_20n_0',['Cast Module - Architecture\n *\n * Range-checked type conversions. Validates value fits destination type before\n * converting. Returns SAPI_STATUS_VALUE_OUT_OF_RANGE if out of bounds.\n *\n * @section functions Conversion Functions\n *\n * sapi_cast_i8_to_i16() - From int8_t to int16_t (and variants)\n * Return: OK if fits, VALUE_OUT_OF_RANGE otherwise\n *\n * @section strategy Check-Before-Convert\n *\n * 1. Check if value in destination range\n * 2. If yes: convert and return OK\n * 3. If no: don&apos;t modify output, return error\n *\n * @section misra MISRA Rule 10.1\n *\n * ✓ No implicit conversions\n * ✓ Explicit checked casts only\n *\n */\n',['../cast_architecture.html',1,'']]]
+];
