@@ -1,7 +1,42 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for ADR-019's `sapi_appmanager`/
-`sapi_vital_channel` changes - see "update 5" note below)
+Date: 2026-08-06 (updated for `sapi_log_write_event()`, a new structured
+message-trail logging API - see "update 6" note below)
+
+**2026-08-06, update 6 (structured event logging, `sapi_log_write_event()`):**
+no automated re-run performed (same caveat as updates 4/5). New construct,
+reasoned manually:
+- `sapi_log.c`/`.h`: new `sapi_log_write_event()` and
+  `sapi_log_level_to_string()`. Deliberately **not** a variadic function -
+  MISRA C:2012 Rule 17.1 (required) prohibits `<stdarg.h>`; the optional
+  "more fields" requirement is instead a single fixed `extra_fields`
+  parameter that the caller pre-formats with `safeapi::string`'s own
+  bounded helpers (same primitives this function uses internally to build
+  the rest of the line) - `grep -rn "stdarg.h" include src` confirms zero
+  hits, unchanged by this addition.
+- Fixed-size stack buffers only (`char line_storage[SAPI_LOG_EVENT_LINE_MAX_LEN]`,
+  a small numeric-formatting scratch buffer) - no dynamic allocation, same
+  as every other module (Dir 4.12 in section 2).
+- New dependencies for this module only: `safeapi::string` (bounded
+  concatenation/formatting) and `safeapi::timer` (`sapi_timer_now()` for
+  the TIMESTAMP field) - both already-reviewed leaf OAL/common modules
+  (section 2); no new external header, no new banned construct introduced
+  by depending on them.
+- Every field-append is best-effort (`(void)`-cast `sapi_string_concat()`/
+  `sapi_string_from_u32()`/`sapi_string_from_u64()` return values) -
+  consistent with REQ-OAL-LOG-001's "must never affect caller control
+  flow": a `SAPI_STATUS_RESOURCE_EXHAUSTED` from an oversized field is
+  accepted as truncation, not propagated as an error (this function
+  returns `void`, matching `sapi_log_write()`'s own existing contract).
+- Verified against the existing "no `<stdio.h>`/no recursion/no
+  uninitialized locals/single-point-of-exit-preferred guard-clause style"
+  conventions by direct code read - no deviation from any of those.
+- New tests (`tests/log/test_sapi_log.c`) cover field order/delimiters,
+  `NULL` `info`/`extra_fields` handling, `TIMESTAMP` degrading to `"0"`
+  with no `sapi_timer` backend registered, and the pre-existing
+  `sapi_log_write()`/no-backend silent-no-op contract being unaffected -
+  all passing (manual `gcc` build, exit 0; no `cmake`/`cppcheck` in this
+  sandbox, same standing caveat as every other update in this report).
 
 **2026-08-06, update 5 (ADR-019: AppManager cycle hooks + built-in
 checkpoint):** no automated re-run performed (same caveat as update 4 -

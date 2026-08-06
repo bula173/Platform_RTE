@@ -192,6 +192,8 @@ caveat in section 4); the behavior they describe is what each per-service
 | REQ-OAL-LOG-010 | `sapi_log_init()` shall be safe to call once at startup. |
 | REQ-OAL-LOG-011 | `sapi_log_write()` shall be non-blocking and never fail the caller's control flow. |
 | REQ-OAL-LOG-012 | `sapi_log_register_backend()` per REQ-OAL-BACKEND-001, with the REQ-OAL-BACKEND-003 exception for the unregistered case. |
+| REQ-OAL-LOG-013 | `sapi_log_level_to_string()` shall return a fixed, non-NULL string for every `sapi_log_level_t` value, including an unrecognized one ("UNKNOWN"). |
+| REQ-OAL-LOG-014 | `sapi_log_write_event()` shall emit `TIMESTAMP\|LEVEL\|CYCLE\|SOURCE\|DESTINATION\|TYPE\|INFO[\|EXTRA_FIELDS]` as the `message` passed to the registered backend's `write()`, with `source` as that call's `tag`; TIMESTAMP shall degrade to `0` (never block or skip the event) if no `sapi_timer` backend is registered or `sapi_timer_now()` fails; the whole call shall be a silent no-op under the same conditions as `sapi_log_write()` (REQ-OAL-LOG-001) when no `sapi_log` backend is registered. |
 
 ### 2.7 Controlled reboot — `sapi_reboot.h` (ADR-004 §3)
 

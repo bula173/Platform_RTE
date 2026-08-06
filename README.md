@@ -63,6 +63,19 @@ Actively growing framework with SIL 4 safety focus.
   protocol needed to carry checkpoint traffic on an existing link), first
   live-verified in `safeAPIExample`'s A/B channel.
 
+**IMPLEMENTED:** Structured message-trail logging (`sapi_log_write_event()`)
+- New addition to `sapi_log` alongside the existing free-text
+  `sapi_log_write()`: emits a fixed `TIMESTAMP|LEVEL|CYCLE|SOURCE|
+  DESTINATION|TYPE|INFO[|EXTRA_FIELDS]` line for logging an actual
+  inter-channel message (a frame sent/received, a decision like AGREE/
+  DISAGREE) — the mandatory fields a message-trail log needs, with room
+  for caller-supplied extra fields beyond those seven. Fixed-arity, no
+  `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same backend as
+  `sapi_log_write()` receives it, so no backend changes are required.
+  First real consumer: `safeAPIExample`'s A/B/C/SITE cyclic executives
+  now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
+  DISAGREE, and SITE heartbeat this way.
+
 **Key Documentation:**
 - `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
   016-019; 009-015 do not exist) + PlantUML diagrams
