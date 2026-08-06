@@ -77,6 +77,33 @@ Actively growing framework with SIL 4 safety focus.
   now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
   DISAGREE, and SITE heartbeat this way.
 
+**IMPLEMENTED:** Dual-transfer state negotiation (`sapi_dual`, ADR-020)
+- `sapi_dual_state_t` — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY
+  vocabulary for "which of two redundant instances is active, and how
+  well-backed is the standby one", generalizing the ad hoc versions of
+  this `safeAPIExample`'s `site.c`/`channel_ab.c` each grew independently.
+- `sapi_dual_msgchannel_t` ("Channel") — one EN 50159-defended message
+  channel over a single `sapi_netlink_handle_t`, reusing the framework's
+  existing `sapi_vital_message_t` envelope (sequence/sender/CRC-64) plus a
+  masquerade check against an expected peer ID.
+- `sapi_dual_channel_t` ("DualChannel") — wraps 1..N redundant Channels
+  with always-send + bounded-ACK-wait delivery (the real payload traffic
+  itself is the liveness signal, never gated by negotiated state),
+  aggregate `DOWN`/`DEGRADED`/`FULL` connection-status tracking with an
+  optional change callback, and a second fire-and-forget frame flow for
+  carrying a negotiator's own STATE beacons on the same links.
+- `sapi_dual_negotiator_t` — drives one round of state negotiation per
+  `execute()` call: older-startup-timestamp-wins tie-break for the initial
+  ONLINE/STANDBY decision, and an asymmetric HOT/COLD rule where the
+  *currently-ONLINE* side's own channel health (never the STANDBY side's
+  self-report) determines the STANDBY side's HOTSTANDBY/COLDSTANDBY label.
+  One-directional dependency: the negotiator depends on a DualChannel, a
+  DualChannel has no knowledge of the negotiator.
+- Framework-only in this pass — `safeAPIExample`'s `site.c`/`channel_ab.c`
+  keep their existing hand-rolled logic for now; retrofitting them to
+  `sapi_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
+- See `docs/architecture/ADR-020-dual-transfer-state-negotiation.md`.
+
 **Key Documentation:**
 - `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
   016-019; 009-015 do not exist) + PlantUML diagrams
@@ -250,7 +277,7 @@ include/safeapi/<feature>/     one public header per feature (ADR-007):
                                 status, types, buffer, cast, safestate,
                                 string, timer, nvm, memory, task, ipc, log,
                                 reboot, appmanager, watchdog, checksum,
-                                vital_channel, clocksync, checkpoint
+                                vital_channel, clocksync, checkpoint, dual
 src/<feature>/                 matching implementation + CMakeLists.txt,
                                 one static library target safeapi::<feature>
 tests/<feature>/                matching CTest test file per feature

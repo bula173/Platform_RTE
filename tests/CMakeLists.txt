@@ -24,6 +24,9 @@ safeapi_add_test(test_sapi_netlink        netlink/test_sapi_netlink.c          s
 safeapi_add_test(test_sapi_watchdog       watchdog/test_sapi_watchdog.c        safeapi::watchdog)
 safeapi_add_test(test_sapi_appmanager     appmanager/test_sapi_appmanager.c    safeapi::appmanager)
 safeapi_add_test(test_sapi_log            log/test_sapi_log.c                  safeapi::log)
+safeapi_add_test(test_sapi_dual_msgchannel dual/test_sapi_dual_msgchannel.c     safeapi::dual)
+safeapi_add_test(test_sapi_dual_channel    dual/test_sapi_dual_channel.c        safeapi::dual)
+safeapi_add_test(test_sapi_dual_negotiator dual/test_sapi_dual_negotiator.c     safeapi::dual)
 
 # posix_backend (and its tests) moved to the safeAPIExample project - an
 # OAL backend is an integrator-supplied implementation (ADR-005), not

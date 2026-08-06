@@ -58,7 +58,7 @@ include(CompilerWarnings)
 # vital_channel + checkpoint is an open decision, not made by this file.
 foreach(feature status types buffer cast safestate string
                 timer nvm memory task ipc netlink log reboot watchdog checksum
-                vital_channel clocksync checkpoint)
+                vital_channel clocksync checkpoint dual)
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
         add_subdirectory(src/${feature})
     endif()

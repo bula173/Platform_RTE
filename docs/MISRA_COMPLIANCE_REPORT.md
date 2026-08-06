@@ -1,7 +1,73 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for `sapi_log_write_event()`, a new structured
-message-trail logging API - see "update 6" note below)
+Date: 2026-08-06 (updated for the new `sapi_dual` module, ADR-020 - see
+"update 7" note below)
+
+**2026-08-06, update 7 (new module, `sapi_dual` - ADR-020 dual-transfer
+state negotiation):** no automated re-run performed (same caveat as
+updates 4-6 - still no `cppcheck` in this sandbox session); reasoned
+manually against the four new files (`sapi_dual_types`, `sapi_dual_frames`,
+`sapi_dual_msgchannel`, `sapi_dual_channel`, `sapi_dual_negotiator`):
+
+- No dynamic allocation: every instance (`sapi_dual_msgchannel_t`,
+  `sapi_dual_channel_t`, `sapi_dual_negotiator_t`) is caller-owned storage;
+  `sapi_dual_channel_t`'s redundant links are a fixed
+  `[SAPI_DUAL_CHANNEL_MAX_LINKS]` array (4), never a dynamically-sized one.
+- No recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>`/`<setjmp.h>`,
+  fixed-width types throughout, `const` on every read-only parameter -
+  consistent with the rest of the codebase; `grep -rln
+  "stdio.h\|assert.h\|errno.h\|setjmp.h" src/dual include/safeapi/dual`
+  returns zero hits.
+- The one `switch` in the new code (`sapi_dual_channel.c`'s frame-kind
+  dispatch in `dual_channel_poll_link_once()`) has an explicit `default`
+  clause (Rule 16.1/16.4) - an unrecognized `kind` is defensively ignored,
+  not treated as an error, since it isn't reachable through a conforming
+  sender.
+- **Open finding, not yet fixed - narrows section 2's existing blanket
+  claim.** Section 2's Rule 10.1-10.8 row states "no bare narrowing casts
+  exist elsewhere in `include`/`src`"; that is no longer accurate as of
+  this module. `sapi_dual_channel.c` uses bare C-style casts (not
+  `sapi_cast_*`) to narrow `size_t sizeof(...)` expressions and
+  `raw_size - sizeof(header)` arithmetic down to `uint8_t` at ~8 call
+  sites (e.g. `(uint8_t)sizeof(raw)`, `(uint8_t)(raw_size -
+  (uint8_t)sizeof(header))`, `(uint8_t)sizeof(frame)`), plus two
+  `uint8_t`<->`sapi_dual_frame_kind_t` enum casts for the frame-kind
+  header byte. Risk assessment: every one of these is a compile-time-fixed
+  struct size (`sapi_dual_frame_header_t` = 4B, `sapi_dual_ack_frame_t` and
+  `sapi_dual_state_frame_t` well under 32B, `SAPI_DUAL_MSGCHANNEL_MAX_PAYLOAD`
+  = 248) or a value already bounded by an earlier `SAPI_STATUS_INVALID_PARAM`
+  check (`payload_size <= SAPI_DUAL_CHANNEL_MAX_PAYLOAD` before the
+  `sizeof(header) + payload_size` cast) - none can actually overflow
+  `uint8_t` today, so this is assessed as low-risk, not a live defect. It
+  is recorded here rather than silently claimed compliant because the
+  project's own CLAUDE.md convention (checked-cast helper preferred over a
+  bare C-style cast, precisely so a *future* change - e.g. a larger frame
+  struct - fails loudly via `sapi_cast_size_to_u8()`'s
+  `SAPI_STATUS_VALUE_OUT_OF_RANGE` instead of silently truncating) was not
+  followed for this module. **Follow-up recommendation:** route each site
+  through `sapi_cast_size_to_u8()`/`sapi_cast_u32_to_u8()` (already exist,
+  ADR-003) with the same guard-clause-on-failure style used throughout the
+  rest of this module, as a dedicated, separately-tested change rather than
+  bundled into this one. `(size_t)payload_size`/`(size_t)payload_max_size`
+  widening casts in `sapi_dual_msgchannel.c` are unaffected by this finding
+  - they match the pre-existing widening-cast precedent already in
+  `sapi_watchdog.c` (section 2), which is safe by construction (no value
+  loss possible widening `uint8_t`/`int` into `size_t`) and was never part
+  of the narrowing-cast claim this finding corrects.
+- New tests (`tests/dual/test_sapi_dual_msgchannel.c`,
+  `test_sapi_dual_channel.c`, `test_sapi_dual_negotiator.c`) cover NULL
+  rejection, basic send/receive roundtrips, masquerade rejection (wrong
+  `sender_id`), sequence-continuity `DATA_CORRUPTION` and recovery via
+  `sapi_dual_msgchannel_reset_sequence()`, all three aggregate
+  `FULL`/`DEGRADED`/`DOWN` outcomes with the status callback firing only on
+  change, redundant-link independence (a broken link never counts toward
+  another's ACK), inbound-frame auto-ACK, STATE-frame roundtrip, the
+  older-startup-timestamp-wins tie-break, the asymmetric HOT/COLD
+  determination (REQ-DUAL-NEGOTIATOR-004), and lost-peer-contact
+  degradation to `UNKNOWN` with the "already-`ONLINE`-stays-`ONLINE`"
+  exception - all passing (manual `gcc -std=c11 -Wall -Wextra` build +
+  run, exit 0 each; no `cmake`/`cppcheck` in this sandbox session, same
+  standing caveat as every other update in this report).
 
 **2026-08-06, update 6 (structured event logging, `sapi_log_write_event()`):**
 no automated re-run performed (same caveat as updates 4/5). New construct,

@@ -285,6 +285,55 @@ existing voting strategy's guarantee is weakened by this change. See
 `include/safeapi/vital_channel/sapi_vital_channel.h`'s `@pre channel_count`
 doc on `sapi_vital_channel_init()` for the exact, current conditions.
 
+## 3e. Dual-transfer state negotiation — `sapi_dual` (ADR-020)
+
+Three files under `include/safeapi/dual/`: `sapi_dual_msgchannel.h` (Layer
+1 "Channel", one EN 50159-defended message channel over one
+`sapi_netlink_handle_t`), `sapi_dual_channel.h` ("DualChannel", 1..N
+redundant Layer-1 links with always-send + bounded-ACK-wait delivery and
+connection-status tracking), and `sapi_dual_negotiator.h` (own/peer
+`sapi_dual_state_t` negotiation driven over an attached DualChannel).
+`sapi_dual_types.h` and `sapi_dual_frames.h` hold shared enums/wire
+structs with no behavior of their own beyond what the three modules above
+require.
+
+### 3e.1 Shared types — `sapi_dual_types.h` (ADR-020 Decision §1)
+
+| ID | Requirement |
+|---|---|
+| REQ-DUAL-TYPES-001 | `sapi_dual_state_to_string()` and `sapi_dual_channel_status_to_string()` shall return a non-NULL, static string for every defined enum value and a defensive `"UNKNOWN_STATE"`/`"UNKNOWN_STATUS"` respectively for an unrecognized one (same posture as `sapi_log_level_to_string()`, REQ-OAL-LOG-013). |
+
+### 3e.2 Base Channel — `sapi_dual_msgchannel.h` (ADR-020 §1, Layer 1)
+
+| ID | Requirement |
+|---|---|
+| REQ-DUAL-MSGCHANNEL-001 | No dynamic allocation; caller supplies storage for every `sapi_dual_msgchannel_t`. |
+| REQ-DUAL-MSGCHANNEL-002 | `sapi_dual_msgchannel_send()`/`_receive()` shall never block longer than the caller-supplied timeout waiting on `sapi_netlink_send()`/`_receive()`. |
+| REQ-DUAL-MSGCHANNEL-003 | `sapi_checksum_crc64_init()` must already have been called (process-global, call-once) before any `sapi_dual_msgchannel_t` send/receive is used. |
+| REQ-DUAL-MSGCHANNEL-004 | `sapi_dual_msgchannel_receive()` shall check the received frame's `sender_id` against `expected_peer_id` before verifying its CRC/sequence, and shall reject a mismatch with `SAPI_STATUS_HARDWARE_FAULT` without advancing `expected_sequence` — the masquerade defense EN 50159 requires that `sapi_checksum_vital_message_verify()` alone does not provide. |
+| REQ-DUAL-MSGCHANNEL-005 | A CRC or sequence-continuity failure on receive shall yield `SAPI_STATUS_DATA_CORRUPTION` and leave `expected_sequence` unchanged (the failed frame is not consumed into the sequence stream). |
+
+### 3e.3 DualChannel — `sapi_dual_channel.h` (ADR-020 §2, Layer 2)
+
+| ID | Requirement |
+|---|---|
+| REQ-DUAL-CHANNEL-001 | No dynamic allocation; every `sapi_dual_channel_t` holds a fixed array of at most `SAPI_DUAL_CHANNEL_MAX_LINKS` redundant links. |
+| REQ-DUAL-CHANNEL-002 | `sapi_dual_channel_send()` shall always transmit the DATA frame on every configured link, regardless of any negotiated `sapi_dual_state_t` — it is never gated on state (ADR-020 §2). |
+| REQ-DUAL-CHANNEL-003 | After every configured link has been tried, `sapi_dual_channel_send()` shall recompute the aggregate `sapi_dual_channel_status_t` (`FULL` = all links up, `DEGRADED` = some, `DOWN` = none) and invoke `config->status_callback` only when the aggregate value actually changed. |
+| REQ-DUAL-CHANNEL-004 | DATA traffic (`sapi_dual_channel_send()`/`_receive()`) and STATE-beacon traffic (`_send_state_frame()`/`_receive_state_frame()`) share the same redundant links and the same up/down bookkeeping, but a STATE frame is fire-and-forget (no ACK wait) and shall never be counted toward or against DATA's own ACK accounting. |
+| REQ-DUAL-CHANNEL-005 | `sapi_dual_channel_receive()` and `_receive_state_frame()` shall poll every configured link on every call, even after an earlier link in the same sweep already staged a frame — stopping early would let one link (e.g. one with consistently shorter latency) starve every other redundant link of its own auto-ACK indefinitely. |
+| REQ-DUAL-CHANNEL-006 | An inbound frame shorter than this layer's own 4-byte `sapi_dual_frame_header_t`, or shorter than the full fixed frame its `kind` implies, shall be reported as `SAPI_STATUS_DATA_CORRUPTION` rather than silently ignored or misinterpreted. |
+
+### 3e.4 Dual state negotiator — `sapi_dual_negotiator.h` (ADR-020 §3)
+
+| ID | Requirement |
+|---|---|
+| REQ-DUAL-NEGOTIATOR-001 | No dynamic allocation; caller supplies storage and an already-initialized `sapi_dual_channel_t`. |
+| REQ-DUAL-NEGOTIATOR-002 | `sapi_dual_negotiator_execute()` shall never call `sapi_safestate_enter()` itself — deciding what a sustained `SAPI_DUAL_STATE_UNKNOWN` means for safety stays an application policy decision (ADR-020 §4's "no automatic safety reaction" non-goal). |
+| REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (same rule `safeAPIExample`'s `site.c` `decide_online()` uses today). |
+| REQ-DUAL-NEGOTIATOR-004 | The HOT/COLD determination for whichever side is currently STANDBY shall always be derived from the ONLINE side's own channel-degradation bit — never from the STANDBY side's own self-reported degradation, and never from the ONLINE side's opinion of its own label. This applies symmetrically regardless of which side (own or peer) is the one currently ONLINE. |
+| REQ-DUAL-NEGOTIATOR-005 | Loss of peer contact for longer than `config->peer_lost_timeout_ms` shall set `peer_state` to `SAPI_DUAL_STATE_UNKNOWN`; `own_state` shall degrade to `SAPI_DUAL_STATE_UNKNOWN` too unless it was already `SAPI_DUAL_STATE_ONLINE`, in which case it shall remain `SAPI_DUAL_STATE_ONLINE` (an active instance keeps acting without needing continuous peer confirmation). |
+
 ## 4. Traceability
 
 Every `REQ-*` ID in this document appears verbatim in the corresponding
