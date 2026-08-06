@@ -1,6 +1,7 @@
 /* Tests for the sapi_reboot validate-then-dispatch API (ADR-004/ADR-005). */
 #include <assert.h>
 #include "safeapi/reboot/sapi_reboot.h"
+#include "safeapi_backend/reboot/sapi_reboot_backend.h"
 
 static int g_request_calls;
 static uint16_t g_last_reason;

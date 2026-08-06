@@ -98,35 +98,11 @@ sapi_status_t sapi_ipc_receive(sapi_ipc_handle_t handle,
  */
 sapi_status_t sapi_ipc_destroy(sapi_ipc_handle_t handle);
 
-/**
- * @brief Backend vtable: an integrator's implementation of the IPC service
- *        for a specific OS/RTOS (ADR-005). Any slot may be NULL if
- *        unsupported by the backend (-> SAPI_STATUS_NOT_SUPPORTED).
+/*
+ * The backend vtable (sapi_ipc_backend_t) and sapi_ipc_register_backend()
+ * live in safeapi_backend/ipc/sapi_ipc_backend.h, not here (ADR-021).
+ * This header is the consumer-facing surface only.
  */
-typedef struct sapi_ipc_backend_s
-{
-    /** @brief Backend implementation of sapi_ipc_create(). May be NULL. */
-    sapi_status_t (*create)(sapi_ipc_storage_t *storage,
-                             const sapi_ipc_config_t *config,
-                             sapi_ipc_handle_t *out_handle);
-    /** @brief Backend implementation of sapi_ipc_send(). May be NULL. */
-    sapi_status_t (*send)(sapi_ipc_handle_t handle, const void *message,
-                           size_t message_size, sapi_duration_ms_t timeout_ms);
-    /** @brief Backend implementation of sapi_ipc_receive(). May be NULL. */
-    sapi_status_t (*receive)(sapi_ipc_handle_t handle, void *out_message,
-                              size_t buffer_size, sapi_duration_ms_t timeout_ms);
-    /** @brief Backend implementation of sapi_ipc_destroy(). May be NULL. */
-    sapi_status_t (*destroy)(sapi_ipc_handle_t handle);
-} sapi_ipc_backend_t;
-
-/**
- * @brief Registers the backend implementation used by every sapi_ipc_*
- *        call (ADR-005 section 2.1). Call once at startup.
- * @param backend Vtable of backend function pointers. Must not be NULL.
- * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
- * REQ-OAL-IPC-014
- */
-sapi_status_t sapi_ipc_register_backend(const sapi_ipc_backend_t *backend);
 
 #ifdef __cplusplus
 }

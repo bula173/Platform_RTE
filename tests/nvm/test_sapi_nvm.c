@@ -2,6 +2,7 @@
  * test_sapi_timer.c for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/nvm/sapi_nvm.h"
+#include "safeapi_backend/nvm/sapi_nvm_backend.h"
 
 static sapi_status_t mock_open(sapi_nvm_storage_t *storage,
                                 const sapi_nvm_config_t *config,

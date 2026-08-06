@@ -102,37 +102,11 @@ sapi_status_t sapi_nvm_sync(sapi_nvm_handle_t handle);
  */
 sapi_status_t sapi_nvm_close(sapi_nvm_handle_t handle);
 
-/**
- * @brief Backend vtable: an integrator's implementation of the NVM service
- *        for a specific storage medium (ADR-005). Any slot may be NULL if
- *        unsupported by the backend (-> SAPI_STATUS_NOT_SUPPORTED).
+/*
+ * The backend vtable (sapi_nvm_backend_t) and sapi_nvm_register_backend()
+ * live in safeapi_backend/nvm/sapi_nvm_backend.h, not here (ADR-021).
+ * This header is the consumer-facing surface only.
  */
-typedef struct sapi_nvm_backend_s
-{
-    /** @brief Backend implementation of sapi_nvm_open(). May be NULL. */
-    sapi_status_t (*open)(sapi_nvm_storage_t *storage,
-                           const sapi_nvm_config_t *config,
-                           sapi_nvm_handle_t *out_handle);
-    /** @brief Backend implementation of sapi_nvm_read(). May be NULL. */
-    sapi_status_t (*read)(sapi_nvm_handle_t handle, size_t offset,
-                           void *out_buffer, size_t buffer_size);
-    /** @brief Backend implementation of sapi_nvm_write(). May be NULL. */
-    sapi_status_t (*write)(sapi_nvm_handle_t handle, size_t offset,
-                            const void *buffer, size_t buffer_size);
-    /** @brief Backend implementation of sapi_nvm_sync(). May be NULL. */
-    sapi_status_t (*sync)(sapi_nvm_handle_t handle);
-    /** @brief Backend implementation of sapi_nvm_close(). May be NULL. */
-    sapi_status_t (*close)(sapi_nvm_handle_t handle);
-} sapi_nvm_backend_t;
-
-/**
- * @brief Registers the backend implementation used by every sapi_nvm_*
- *        call (ADR-005 section 2.1). Call once at startup.
- * @param backend Vtable of backend function pointers. Must not be NULL.
- * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
- * REQ-OAL-NVM-015
- */
-sapi_status_t sapi_nvm_register_backend(const sapi_nvm_backend_t *backend);
 
 #ifdef __cplusplus
 }

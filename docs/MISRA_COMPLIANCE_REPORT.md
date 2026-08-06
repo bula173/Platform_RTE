@@ -1,7 +1,46 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for the consumer/backend header split, ADR-021
-- see "update 8" note below)
+Date: 2026-08-06 (updated for the consumer/backend header split
+completing across all 9 modules, ADR-021 - see "update 9" note below)
+
+**2026-08-06, update 9 (header restructuring only, no behavior change -
+ADR-021 consumer/OS-backend header split completed for the remaining 8
+modules: `nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
+`clocksync`):** no automated re-run performed (same caveat as prior
+updates - still no `cppcheck` in this sandbox session); reasoned manually
+since this change is a pure declaration move, not new logic, identical in
+nature to update 8's `sapi_timer` pilot:
+
+- Same pattern as the pilot: each module's `sapi_<feature>_backend_t` and
+  `sapi_<feature>_register_backend()` *declarations* moved from
+  `include/safeapi/<feature>/sapi_<feature>.h` to the new
+  `include/safeapi_backend/<feature>/sapi_<feature>_backend.h`; each
+  service's `.c` implementation (`src/<feature>/sapi_<feature>.c`) is
+  byte-for-byte unchanged apart from the added `#include`. No new casts,
+  no new control flow.
+- `sapi_clocksync.h` was the one header where backend material was
+  interleaved with consumer functions (vtable/register between the
+  quality enum and the two consumer accessor functions) rather than
+  trailing them as in the other 8 - the extraction was still a pure cut,
+  no reordering of surrounding consumer declarations.
+- Every call site that referenced a vtable type or `_register_backend()`
+  gained the corresponding new `#include`: framework tests
+  (`test_sapi_nvm`, `test_sapi_reboot`, `test_sapi_netlink`,
+  `test_sapi_clocksync`, `test_sapi_log`, `test_sapi_dual_msgchannel`,
+  `test_sapi_dual_channel`, `test_sapi_dual_negotiator`), the
+  `examples/geo_distributed_checkpoint_sync.c` sample, and
+  safeAPIExample's umbrella `sapi_posix_backend.h` (now includes all 9
+  backend headers alongside their 9 consumer headers). No site needed a
+  logic change; `task`, `ipc`, and `memory` have no dedicated framework
+  unit tests, so only their `.c` implementation and the POSIX backend
+  umbrella header needed the new include.
+- Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
+  all 16 framework unit tests (all pass, including the 8 directly
+  touched by this change) plus a full rebuild and live 8-process run of
+  safeAPIExample (0 errors, clean shutdown, identical AGREE/checkpoint
+  behavior to before) - see ADR-021 section 2.3.
+- ADR-021 status: all 9 backend-bearing OAL modules now have the
+  consumer/backend header split in place.
 
 **2026-08-06, update 8 (header restructuring only, no behavior change -
 ADR-021 consumer/OS-backend header split, `sapi_timer` pilot):** no

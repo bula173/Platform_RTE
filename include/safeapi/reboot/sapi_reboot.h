@@ -39,25 +39,12 @@ extern "C" {
  */
 sapi_status_t sapi_reboot_request(uint16_t reason_code);
 
-/**
- * @brief Backend vtable: an integrator's implementation of the reboot
- *        mechanism for a specific target (ADR-005).
+/*
+ * The backend vtable (sapi_reboot_backend_t) and
+ * sapi_reboot_register_backend() live in
+ * safeapi_backend/reboot/sapi_reboot_backend.h, not here (ADR-021). This
+ * header is the consumer-facing surface only.
  */
-typedef struct sapi_reboot_backend_s
-{
-    /** @brief Backend implementation of sapi_reboot_request(). May be NULL. */
-    sapi_status_t (*request)(uint16_t reason_code);
-} sapi_reboot_backend_t;
-
-/**
- * @brief Registers the backend implementation used by
- *        sapi_reboot_request() (ADR-005 section 2.1). Call once at startup.
- * @param backend  Backend implementation. Must not be NULL. Registering
- *                 again replaces the previously registered backend.
- * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
- * REQ-OAL-REBOOT-011
- */
-sapi_status_t sapi_reboot_register_backend(const sapi_reboot_backend_t *backend);
 
 #ifdef __cplusplus
 }

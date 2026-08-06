@@ -21,6 +21,7 @@
 
 #include "safeapi/checksum/sapi_checksum.h"
 #include "safeapi/dual/sapi_dual_channel.h"
+#include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 typedef struct
 {

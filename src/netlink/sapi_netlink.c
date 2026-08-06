@@ -6,6 +6,7 @@
  *        (ADR-005). See sapi_ipc.c for the pattern this follows.
  */
 #include "safeapi/netlink/sapi_netlink.h"
+#include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_netlink_backend_t *s_backend = NULL;

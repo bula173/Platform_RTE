@@ -5,6 +5,7 @@
  *        backend registered via sapi_mem_pool_register_backend() (ADR-005).
  */
 #include "safeapi/memory/sapi_memory.h"
+#include "safeapi_backend/memory/sapi_memory_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_mem_pool_backend_t *s_backend = NULL;

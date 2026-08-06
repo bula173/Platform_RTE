@@ -2,6 +2,7 @@
  * tests/timer/test_sapi_timer.c for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/netlink/sapi_netlink.h"
+#include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 static int g_mock_open_calls = 0;
 

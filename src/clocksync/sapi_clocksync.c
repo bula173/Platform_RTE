@@ -4,6 +4,7 @@
  * @ingroup CLOCKSYNC
  */
 #include "safeapi/clocksync/sapi_clocksync.h"
+#include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 
 /** Single global backend, following ADR-005's established convention
  *  (see sapi_timer/sapi_ipc). NULL until sapi_clocksync_register_backend()

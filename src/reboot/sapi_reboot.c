@@ -5,6 +5,7 @@
  *        sapi_reboot_register_backend() (ADR-005).
  */
 #include "safeapi/reboot/sapi_reboot.h"
+#include "safeapi_backend/reboot/sapi_reboot_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_reboot_backend_t *s_backend = NULL;

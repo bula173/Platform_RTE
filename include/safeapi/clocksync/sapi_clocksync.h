@@ -70,31 +70,12 @@ typedef enum
     SAPI_CLOCKSYNC_SYNCHRONIZED = 2
 } sapi_clocksync_quality_t;
 
-/**
- * @brief Backend vtable: an integrator's implementation of clock
- *        synchronization for a specific mechanism (PTP/GPS/NTP/custom).
- *        Any slot may be NULL if unsupported by the backend
- *        (-> SAPI_STATUS_NOT_SUPPORTED).
+/*
+ * The backend vtable (sapi_clocksync_backend_t) and
+ * sapi_clocksync_register_backend() live in
+ * safeapi_backend/clocksync/sapi_clocksync_backend.h, not here (ADR-021).
+ * This header is the consumer-facing surface only.
  */
-typedef struct sapi_clocksync_backend_s
-{
-    /** Reports this node's estimated clock offset, in milliseconds,
-     *  relative to the backend's reference (positive: local clock is
-     *  ahead). */
-    sapi_status_t (*get_offset_ms)(int64_t *out_offset_ms);
-    /** Reports the backend's current confidence in that offset. */
-    sapi_status_t (*get_quality)(sapi_clocksync_quality_t *out_quality);
-} sapi_clocksync_backend_t;
-
-/**
- * @brief Registers the backend implementation used by every
- *        sapi_clocksync_* call (ADR-005-style single global backend).
- * @param backend  Must not be NULL.
- * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK
- *         otherwise. Registering again replaces the previous backend.
- * REQ-CLOCKSYNC-010
- */
-sapi_status_t sapi_clocksync_register_backend(const sapi_clocksync_backend_t *backend);
 
 /**
  * @brief Reports this node's estimated clock offset (diagnostic/timeout-

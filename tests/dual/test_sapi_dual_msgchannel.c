@@ -8,6 +8,7 @@
 
 #include "safeapi/checksum/sapi_checksum.h"
 #include "safeapi/dual/sapi_dual_msgchannel.h"
+#include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 /* --- mock netlink backend: two single-slot mailboxes, wired A<->B --- */
 typedef struct

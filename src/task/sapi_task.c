@@ -5,6 +5,7 @@
  *        backend registered via sapi_task_register_backend() (ADR-005).
  */
 #include "safeapi/task/sapi_task.h"
+#include "safeapi_backend/task/sapi_task_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_task_backend_t *s_backend = NULL;

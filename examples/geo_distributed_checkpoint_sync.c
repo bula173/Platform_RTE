@@ -40,6 +40,7 @@
 #include "safeapi/checkpoint/sapi_checkpoint.h"
 #include "safeapi/checksum/sapi_checksum.h"
 #include "safeapi/clocksync/sapi_clocksync.h"
+#include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 #include "safeapi/safestate/sapi_safestate.h"
 
 /* ============================================================================

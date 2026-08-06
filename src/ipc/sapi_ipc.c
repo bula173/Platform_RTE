@@ -5,6 +5,7 @@
  *        registered via sapi_ipc_register_backend() (ADR-005).
  */
 #include "safeapi/ipc/sapi_ipc.h"
+#include "safeapi_backend/ipc/sapi_ipc_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_ipc_backend_t *s_backend = NULL;

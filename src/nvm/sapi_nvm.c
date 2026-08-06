@@ -5,6 +5,7 @@
  *        registered via sapi_nvm_register_backend() (ADR-005).
  */
 #include "safeapi/nvm/sapi_nvm.h"
+#include "safeapi_backend/nvm/sapi_nvm_backend.h"
 
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_nvm_backend_t *s_backend = NULL;

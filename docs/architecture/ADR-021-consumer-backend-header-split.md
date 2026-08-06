@@ -1,6 +1,6 @@
 # ADR-021: Consumer / OS-Backend Header Separation
 
-Status: Draft (pilot: `sapi_timer` only)
+Status: Accepted - applied to all 9 backend-bearing modules
 Date: 2026-08-06
 Applies to: safeAPIFreamwork, every OAL service with a backend vtable
 (ADR-005): `timer`, `nvm`, `memory`, `task`, `ipc`, `log`, `reboot`,
@@ -71,7 +71,7 @@ structural costs, not ones that recur per feature added later.
   include both, the same as a real backend integrator would for its
   registration call plus any consumer calls the test also exercises.
 
-### 2.3 Rollout: pilot on `sapi_timer`, then replicate
+### 2.3 Rollout: piloted on `sapi_timer`, then replicated to all 9
 
 Given the scale of this change (9 modules, every downstream include),
 `sapi_timer` was split first as a pilot and verified (framework unit
@@ -80,12 +80,18 @@ safeAPIExample 8-process demo rebuilt from source and re-run with
 identical behavior to before the split). The same mechanical split -
 move the vtable struct and `_register_backend()` declaration out, add the
 new backend header, update every file that referenced the vtable type -
-is expected to apply unchanged to `nvm`, `memory`, `task`, `ipc`, `log`,
-`reboot`, `netlink`, and `clocksync`. Each remaining module's split is
-tracked as its own task rather than done in one sweeping pass, so any
-per-module wrinkle (e.g. a service with more than one vtable, or an
-unusual dependency) surfaces against a small diff instead of a
-framework-wide one.
+was then applied unchanged to the remaining eight: `nvm`, `memory`,
+`task`, `ipc`, `log`, `reboot`, `netlink`, and `clocksync`. No per-module
+wrinkle turned up (no service has more than one vtable; `sapi_clocksync`
+was the only header where the backend material was interleaved with
+consumer functions rather than trailing them, but the split was still
+mechanical). Verified the same way as the pilot: every affected framework
+unit test (16 total: status, buffer, cast, safestate, string, timer, nvm,
+reboot, vital_channel, clocksync, checkpoint, netlink, watchdog,
+appmanager, log, and the three `dual/` tests) rebuilt via manual `gcc`
+and passed, and a full safeAPIExample rebuild + live 8-process WEST/EAST
+demo run showed 0 errors and identical AGREE/checkpoint/negotiation
+behavior to before the split.
 
 ## 3. Consequences
 
@@ -110,5 +116,10 @@ framework-wide one.
 
 ## 4. Status
 
-Only `sapi_timer` has been split as of this ADR. The remaining eight
-modules listed above are pending, mechanical follow-ups.
+All 9 backend-bearing modules are split as of this update:
+`include/safeapi/<feature>/sapi_<feature>.h` (consumer) and
+`include/safeapi_backend/<feature>/sapi_<feature>_backend.h` (backend)
+exist side by side for `timer`, `nvm`, `memory`, `task`, `ipc`, `log`,
+`reboot`, `netlink`, and `clocksync`. safeAPIExample's POSIX backend
+(`include/safeapi/posix_backend/sapi_posix_backend.h`) includes both
+headers for every service it implements.
