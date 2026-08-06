@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="types_user_guide_overview"></a>
+What is Types?</h1>
 <ul>
 <li></li>
 <li>Types module defines fixed-width integer types for safety-critical systems.</li>
@@ -90,7 +90,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="types"></a>
+<h1><a class="anchor" id="types_user_guide_types"></a>
 Available Types</h1>
 <ul>
 <li></li>
@@ -110,13 +110,13 @@ Available Types</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="quick_start"></a>
+<h1><a class="anchor" id="types_user_guide_quick_start"></a>
 Quick Start</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_include"></a>
+<h2><a class="anchor" id="types_user_guide_qs_include"></a>
 1. Include Header</h2>
 <ul>
 <li></li>
@@ -126,17 +126,113 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_use"></a>
-3. Use Buffer</h2>
+<h2><a class="anchor" id="types_user_guide_qs_use"></a>
+2. Use Fixed-Width Types</h2>
 <ul>
 <li></li>
-<li><div class="fragment"><div class="line">* // BAD: Platform-dependent\n * int counter;          // Could be 16, 32, or 64 bits!\n * unsigned long value;  // Size varies\n *\n * // GOOD: Platform-independent\n * uint32_t counter;     // Always 32 bits\n * uint64_t value;       // Always 64 bits\n * </div>
-</div><!-- fragment --><br  />
- *<br  />
- *</li>
+<li><div class="fragment"><div class="line">* // BAD: Platform-dependent</div>
+<div class="line">* int counter;          // Could be 16, 32, or 64 bits!</div>
+<div class="line">* unsigned long value;  // Size varies</div>
+<div class="line">*</div>
+<div class="line">* // GOOD: Platform-independent</div>
+<div class="line">* uint32_t counter;     // Always 32 bits</div>
+<div class="line">* uint64_t value;       // Always 64 bits</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="ranges"></a>
-Type Ranges\n *\n * @verbatim\n * uint8_t:   0 to 255\n * uint16_t:  0 to 65,535\n * uint32_t:  0 to 4,294,967,295\n * uint64_t:  0 to (2^64 - 1)\n *\n * int8_t:    -128 to 127\n * int16_t:   -32,768 to 32,767\n * int32_t:   -2,147,483,648 to 2,147,483,647\n * int64_t:   -(2^63) to +(2^63 - 1)\n * @endverbatim\n *\n * @section examples Practical Examples\n *\n * @subsection example_struct Example 1: Type-Safe Structure\n *\n * @code\n * // For wire protocol (network or storage)\n * typedef struct {\n *     uint32_t message_id;      // Always 4 bytes\n *     uint16_t length;          // Always 2 bytes\n *     int16_t temperature;      // -50°C to +50°C\n *     uint8_t flags;            // Bit flags\n * } train_msg_t;\n *\n * // Size is predictable on ALL platforms\n * STATIC_ASSERT(sizeof(train_msg_t) == 9);\n * @endcode\n *\n * @subsection example_counter Example 2: Sized Counters\n *\n * @code\n * uint16_t packet_count;   // 0-65535 packets\n * uint32_t byte_count;     // 0-4B packets\n * uint64_t total_uptime_ms; // Milliseconds since boot\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Never use bare &lt;tt&gt;int&lt;/tt&gt;, &lt;tt&gt;long&lt;/tt&gt;, &lt;tt&gt;char&lt;/tt&gt;\n *    - Always explicit type: &lt;tt&gt;int32_t&lt;/tt&gt;, &lt;tt&gt;uint8_t&lt;/tt&gt;, etc.\n *    - Makes size guarantees visible\n *\n * 2. Match type to purpose\n *    - 16-bit counters: values 0-65535?\n *    - 32-bit time: milliseconds for ~49 days?\n *    - Don't over-allocate\n *\n * 3. Use &lt;tt&gt;uint8_t&lt;/tt&gt; for bytes\n *    - Not &lt;tt&gt;unsigned char&lt;/tt&gt; (confusing)\n *    - Not &lt;tt&gt;int&lt;/tt&gt; (wrong size)\n *    - Always &lt;tt&gt;uint8_t&lt;/tt&gt; for byte arrays\n *\n * 4. Use &lt;tt&gt;bool&lt;/tt&gt; for single flags\n *    - &lt;tt&gt;bool enabled = true;&lt;/tt&gt;\n *    - For multiple flags: &lt;tt&gt;uint32_t flags;&lt;/tt&gt; with bit manipulation\n *\n * 5. Watch for overflow\n *    - &lt;tt&gt;uint8_t max = 255; max++; // Wraps to 0&lt;/tt&gt;\n *    - &lt;tt&gt;int32_t sum = MAX + 1; // Undefined behavior!&lt;/tt&gt;\n *    - Use next size up if needed\n *\n * @section see_also See Also\n *\n * - @ref types_architecture for implementation details\n * - @ref cast_user_guide for safe type conversions\n *\n */\n</h1>
+<h1><a class="anchor" id="types_user_guide_ranges"></a>
+Type Ranges</h1>
+<ul>
+<li></li>
+<li><pre class="fragment"> * uint8_t:   0 to 255
+ * uint16_t:  0 to 65,535
+ * uint32_t:  0 to 4,294,967,295
+ * uint64_t:  0 to (2^64 - 1)
+ *
+ * int8_t:    -128 to 127
+ * int16_t:   -32,768 to 32,767
+ * int32_t:   -2,147,483,648 to 2,147,483,647
+ * int64_t:   -(2^63) to +(2^63 - 1)
+ * </pre></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="types_user_guide_examples"></a>
+Practical Examples</h1>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="types_user_guide_example_struct"></a>
+Example 1: Type-Safe Structure</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* // For wire protocol (network or storage)</div>
+<div class="line">* typedef struct {</div>
+<div class="line">*     uint32_t message_id;      // Always 4 bytes</div>
+<div class="line">*     uint16_t length;          // Always 2 bytes</div>
+<div class="line">*     int16_t temperature;      // -50°C to +50°C</div>
+<div class="line">*     uint8_t flags;            // Bit flags</div>
+<div class="line">* } train_msg_t;</div>
+<div class="line">*</div>
+<div class="line">* // Size is predictable on ALL platforms</div>
+<div class="line">* STATIC_ASSERT(sizeof(train_msg_t) == 9);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="types_user_guide_example_counter"></a>
+Example 2: Sized Counters</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* uint16_t packet_count;   // 0-65535 packets</div>
+<div class="line">* uint32_t byte_count;     // 0-4B packets</div>
+<div class="line">* uint64_t total_uptime_ms; // Milliseconds since boot</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="types_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. Never use bare <code>int</code>, <code>long</code>, <code>char</code></li>
+<li>- Always explicit type: <code>int32_t</code>, <code>uint8_t</code>, etc.</li>
+<li>- Makes size guarantees visible</li>
+<li></li>
+<li>2. Match type to purpose</li>
+<li>- 16-bit counters: values 0-65535?</li>
+<li>- 32-bit time: milliseconds for ~49 days?</li>
+<li>- Don't over-allocate</li>
+<li></li>
+<li>3. Use <code>uint8_t</code> for bytes</li>
+<li>- Not <code>unsigned char</code> (confusing)</li>
+<li>- Not <code>int</code> (wrong size)</li>
+<li>- Always <code>uint8_t</code> for byte arrays</li>
+<li></li>
+<li>4. Use <code>bool</code> for single flags</li>
+<li>- <code>bool enabled = true;</code></li>
+<li>- For multiple flags: <code>uint32_t flags;</code> with bit manipulation</li>
+<li></li>
+<li>5. Watch for overflow</li>
+<li>- <code>uint8_t max = 255; max++; // Wraps to 0</code></li>
+<li>- <code>int32_t sum = MAX + 1; // Undefined behavior!</code></li>
+<li>- Use next size up if needed</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="types_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="types_architecture.html">Types Module - Architecture</a> for implementation details</li>
+<li>- <a class="el" href="cast_user_guide.html">Cast Module - User Guide</a> for safe type conversions</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="watchdog_architecture_overview"></a>
+Design Overview</h1>
 <ul>
 <li></li>
 <li>Watchdog tracks liveness via timeout mechanism. Application periodically kicks</li>
@@ -88,13 +88,13 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="api"></a>
-Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage\n * sapi_buffer_set_length(buf, new_length);      // Mark data as valid\n * sapi_buffer_clear(buf);                       // Reset length to 0\n * @endcode\n *\n * @section invariants Invariants\n *\n * @verbatim\n * buf.data != NULL           - Pointing to valid storage\n * buf.capacity &gt; 0           - Has space\n * buf.length &lt;= buf.capacity - Never overfilled\n * @endverbatim\n *\n * @section ownership Ownership Model\n *\n * Caller owns backing storage:\n * - Must allocate before sapi_buffer_init()\n * - Must keep valid for buffer lifetime\n * - Caller manages writes to buf.data\n *\n * Buffer manages:\n * - Tracking length (valid data)\n * - Validating length &lt;= capacity\n *\n * @section performance O(1) All Operations\n *\n * | Operation | Time |\n * |--------—|---—|\n * | init() | O(1) |\n * | set_length() | O(1) |\n * | clear() | O(1) |\n *\n * No copying, no allocation.\n *\n * @section see_also See Also\n *\n * - @ref buffer_user_guide for usage patterns\n * - @ref memory_user_guide for storage allocation\n *\n */\n</h1>
+<h1><a class="anchor" id="watchdog_architecture_api"></a>
+Core API</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_create"></a>
+<h2><a class="anchor" id="watchdog_architecture_api_create"></a>
 Creation</h2>
 <ul>
 <li></li>
@@ -111,7 +111,7 @@ Creation</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_lifecycle"></a>
+<h2><a class="anchor" id="watchdog_architecture_api_lifecycle"></a>
 Lifecycle</h2>
 <ul>
 <li></li>
@@ -124,7 +124,7 @@ Lifecycle</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_query"></a>
+<h2><a class="anchor" id="watchdog_architecture_api_query"></a>
 Query</h2>
 <ul>
 <li></li>
@@ -136,7 +136,7 @@ Query</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="manager"></a>
+<h1><a class="anchor" id="watchdog_architecture_manager"></a>
 Watchdog Manager</h1>
 <ul>
 <li></li>
@@ -151,7 +151,7 @@ Watchdog Manager</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="state"></a>
+<h1><a class="anchor" id="watchdog_architecture_state"></a>
 State Per Watchdog</h1>
 <ul>
 <li></li>
@@ -165,7 +165,7 @@ State Per Watchdog</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="timeout"></a>
+<h1><a class="anchor" id="watchdog_architecture_timeout"></a>
 Timeout Mechanics</h1>
 <ul>
 <li></li>
@@ -182,7 +182,7 @@ Timeout Mechanics</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="recovery"></a>
+<h1><a class="anchor" id="watchdog_architecture_recovery"></a>
 Recovery Actions</h1>
 <ul>
 <li></li>
@@ -197,7 +197,7 @@ Recovery Actions</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="performance"></a>
+<h1><a class="anchor" id="watchdog_architecture_performance"></a>
 Performance</h1>
 <ul>
 <li></li>
@@ -214,7 +214,7 @@ Performance</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="limits"></a>
+<h1><a class="anchor" id="watchdog_architecture_limits"></a>
 Constraints</h1>
 <ul>
 <li></li>
@@ -226,7 +226,7 @@ Constraints</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="integration"></a>
+<h1><a class="anchor" id="watchdog_architecture_integration"></a>
 Integration with Safe-State</h1>
 <ul>
 <li></li>
@@ -242,7 +242,7 @@ Integration with Safe-State</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="testing"></a>
+<h1><a class="anchor" id="watchdog_architecture_testing"></a>
 Unit Tests</h1>
 <ul>
 <li></li>
@@ -271,7 +271,7 @@ Unit Tests</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="see_also"></a>
+<h1><a class="anchor" id="watchdog_architecture_see_also"></a>
 See Also</h1>
 <ul>
 <li></li>

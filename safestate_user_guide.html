@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="safestate_user_guide_overview"></a>
+What is Safe-State?</h1>
 <ul>
 <li></li>
 <li>Safe-State provides fail-safe transitions for safety-critical systems.</li>
@@ -92,15 +92,15 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="levels"></a>
-Three Severity Levels</h1>
+<h1><a class="anchor" id="safestate_user_guide_levels"></a>
+Safe-State Levels</h1>
 <ul>
 <li></li>
 <li>The module defines three severity levels (in order of escalation):</li>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="level_degraded"></a>
+<h2><a class="anchor" id="safestate_user_guide_level_degraded"></a>
 DEGRADED (Level 0)</h2>
 <ul>
 <li></li>
@@ -110,7 +110,7 @@ DEGRADED (Level 0)</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="level_safe"></a>
+<h2><a class="anchor" id="safestate_user_guide_level_safe"></a>
 SAFE (Level 1)</h2>
 <ul>
 <li></li>
@@ -120,7 +120,7 @@ SAFE (Level 1)</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="level_reboot"></a>
+<h2><a class="anchor" id="safestate_user_guide_level_reboot"></a>
 REBOOT (Level 2)</h2>
 <ul>
 <li></li>
@@ -130,13 +130,13 @@ REBOOT (Level 2)</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="quick_start"></a>
+<h1><a class="anchor" id="safestate_user_guide_quick_start"></a>
 Quick Start</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_register"></a>
+<h2><a class="anchor" id="safestate_user_guide_qs_register"></a>
 1. Register Handler at Startup</h2>
 <ul>
 <li></li>
@@ -174,11 +174,11 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_assert"></a>
+<h2><a class="anchor" id="safestate_user_guide_qs_assert"></a>
 2. Use SAPI_ASSERT for Checked Assertions</h2>
 <ul>
 <li></li>
-<li>Replace standard assert() with <a class="el" href="sapi__safestate_8h.html#af576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> - always active, even in production.</li>
+<li>Replace standard assert() with <a class="el" href="group__SAFESTATE.html#gaf576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> - always active, even in production.</li>
 <li></li>
 <li><div class="fragment"><div class="line">* SAPI_ASSERT(buffer != NULL);           // Always checked</div>
 <div class="line">* SAPI_ASSERT(count &gt; 0 &amp;&amp; count &lt; 256); // Condition must be true</div>
@@ -189,7 +189,7 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_trigger"></a>
+<h2><a class="anchor" id="safestate_user_guide_qs_trigger"></a>
 3. Trigger Safe-State Explicitly</h2>
 <ul>
 <li></li>
@@ -209,13 +209,13 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="examples"></a>
+<h1><a class="anchor" id="safestate_user_guide_examples"></a>
 Practical Examples</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="example_voting"></a>
+<h2><a class="anchor" id="safestate_user_guide_example_voting"></a>
 Example 1: Redundant Channel Voting Failure</h2>
 <ul>
 <li></li>
@@ -247,7 +247,7 @@ Example 1: Redundant Channel Voting Failure</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="example_degraded"></a>
+<h2><a class="anchor" id="safestate_user_guide_example_degraded"></a>
 Example 2: Graceful Degradation</h2>
 <ul>
 <li></li>
@@ -281,7 +281,7 @@ Example 2: Graceful Degradation</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="example_assertion"></a>
+<h2><a class="anchor" id="safestate_user_guide_example_assertion"></a>
 Example 3: Assertion-Based Fault Detection</h2>
 <ul>
 <li></li>
@@ -301,13 +301,13 @@ Example 3: Assertion-Based Fault Detection</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="patterns"></a>
+<h1><a class="anchor" id="safestate_user_guide_patterns"></a>
 Common Patterns</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="pattern_health"></a>
+<h2><a class="anchor" id="safestate_user_guide_pattern_health"></a>
 Pattern 1: Health Monitoring Loop</h2>
 <ul>
 <li></li>
@@ -336,7 +336,7 @@ Pattern 1: Health Monitoring Loop</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="pattern_failsafe"></a>
+<h2><a class="anchor" id="safestate_user_guide_pattern_failsafe"></a>
 Pattern 2: Fail-Safe-by-Default</h2>
 <ul>
 <li></li>
@@ -361,7 +361,7 @@ Pattern 2: Fail-Safe-by-Default</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="app_reason_codes"></a>
+<h1><a class="anchor" id="safestate_user_guide_app_reason_codes"></a>
 Application-Specific Reason Codes</h1>
 <ul>
 <li></li>
@@ -380,8 +380,8 @@ Application-Specific Reason Codes</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="guidelines"></a>
-Design Guidelines</h1>
+<h1><a class="anchor" id="safestate_user_guide_guidelines"></a>
+Best Practices</h1>
 <ul>
 <li></li>
 <li>1. Register all three handlers at startup</li>
@@ -410,7 +410,7 @@ Design Guidelines</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="see_also"></a>
+<h1><a class="anchor" id="safestate_user_guide_see_also"></a>
 See Also</h1>
 <ul>
 <li></li>

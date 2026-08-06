@@ -77,7 +77,7 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
+<h1><a class="anchor" id="ipc_guide_overview"></a>
 Overview</h1>
 <ul>
 <li></li>
@@ -114,7 +114,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="layers"></a>
+<h1><a class="anchor" id="ipc_guide_layers"></a>
 IPC Architecture Layers</h1>
 <ul>
 <li></li>
@@ -136,7 +136,7 @@ IPC Architecture Layers</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="workflow"></a>
+<h1><a class="anchor" id="ipc_guide_workflow"></a>
 Typical Workflow for Online/Standby Setup</h1>
 <ul>
 <li></li>
@@ -170,7 +170,7 @@ Typical Workflow for Online/Standby Setup</h1>
 <li><code>void *channels[2] = { &amp;tcp_channel, &amp;udp_channel };</code></li>
 <li><code>sapi_vital_channel_init(&amp;vital, &amp;vital_cfg, channels, 2); *</code></li>
 <li></li>
-<li><b>Step 4: Use in App Manager</b> (See system_architecture)</li>
+<li><b>Step 4: Use in App Manager</b> (See <a class="el" href="system_architecture.html">System Architecture Overview</a>)</li>
 <li><code>c</code></li>
 <li><code>// Main loop: read vital, process, send vital</code></li>
 <li><code>while (running) {</code></li>
@@ -181,7 +181,7 @@ Typical Workflow for Online/Standby Setup</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="design_principles"></a>
+<h1><a class="anchor" id="ipc_guide_design_principles"></a>
 Design Principles</h1>
 <ul>
 <li></li>
@@ -211,8 +211,8 @@ Design Principles</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="examples"></a>
-Practical Examples</h1>
+<h1><a class="anchor" id="ipc_guide_examples"></a>
+Quick Examples</h1>
 <ul>
 <li></li>
 <li><b>Example 1: TCP/IP Online → Standby</b></li>
@@ -235,7 +235,7 @@ Practical Examples</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="next_steps"></a>
+<h1><a class="anchor" id="ipc_guide_next_steps"></a>
 Next Steps</h1>
 <ul>
 <li></li>
@@ -244,7 +244,7 @@ Next Steps</h1>
 <li>3. Check examples/channel_configuration_example.c for working code</li>
 <li>4. Implement OS-specific backends (sapi_ipc_create_tcp, etc.)</li>
 <li>5. Integrate with vital_channel for voting/redundancy</li>
-<li>6. Review system_architecture for complete system design</li>
+<li>6. Review <a class="el" href="system_architecture.html">System Architecture Overview</a> for complete system design</li>
 <li></li>
 <li><dl class="section see"><dt>See also</dt><dd>vital_channel_architecture for voting and redundancy</dd></dl>
 </li>

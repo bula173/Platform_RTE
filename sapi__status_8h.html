@@ -131,13 +131,13 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="poly" title=" " alt="" coords="2210,32,1785,52,1511,71,1233,96,1222,97,1222,92,1232,91,1510,65,1785,47,2210,27"/>
 <area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="1245,93,1433,133"/>
 <area shape="poly" title=" " alt="" coords="2210,34,1872,55,1660,73,1446,96,1434,98,1433,92,1446,91,1659,67,1872,50,2210,28"/>
-<area shape="rect" href="sapi__status_8c_source.html" title=" " alt="" coords="3937,101,4112,126"/>
+<area shape="rect" href="sapi__status_8c.html" title="Implementation of sapi_status_to_string()." alt="" coords="3937,101,4112,126"/>
 <area shape="poly" title=" " alt="" coords="2402,23,2666,24,3043,32,3481,52,3706,69,3926,91,3973,98,3972,103,3926,96,3705,74,3480,57,3043,37,2666,29,2402,28"/>
 <area shape="rect" href="sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="5,181,164,221"/>
 <area shape="poly" title=" " alt="" coords="128,146,101,183,97,180,124,143"/>
 <area shape="poly" title=" " alt="" coords="514,140,347,184,346,179,512,134"/>
 <area shape="poly" title=" " alt="" coords="636,139,691,179,688,183,633,144"/>
-<area shape="rect" href="sapi__buffer_8c_source.html" title=" " alt="" coords="389,189,559,214"/>
+<area shape="rect" href="sapi__buffer_8c.html" title="Implementation of the cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="389,189,559,214"/>
 <area shape="poly" title=" " alt="" coords="560,144,492,191,489,186,557,139"/>
 <area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="1169,269,1315,309"/>
 <area shape="poly" title=" " alt="" coords="598,147,604,186,611,204,624,219,651,231,703,243,852,261,1023,274,1168,282,1168,287,1023,279,852,266,702,248,650,236,620,223,607,207,599,187,593,148"/>
@@ -202,108 +202,38 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:acaa927d6005081fd4daff3d99df9ed83" id="r_acaa927d6005081fd4daff3d99df9ed83"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> { <br />
-&#160;&#160;<a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a> = 0
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a> = 1
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a> = 2
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af">SAPI_STATUS_ALREADY_INITIALIZED</a> = 3
+<tr class="memitem:gacaa927d6005081fd4daff3d99df9ed83" id="r_gacaa927d6005081fd4daff3d99df9ed83"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> { <br />
+&#160;&#160;<a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a> = 0
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a> = 1
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a> = 2
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af">SAPI_STATUS_ALREADY_INITIALIZED</a> = 3
 , <br />
-&#160;&#160;<a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7">SAPI_STATUS_TIMEOUT</a> = 4
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4">SAPI_STATUS_RESOURCE_EXHAUSTED</a> = 5
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a> = 6
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a3d532cf5bd007184f690329d9a1995a3">SAPI_STATUS_NOT_IMPLEMENTED</a> = 7
+&#160;&#160;<a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7">SAPI_STATUS_TIMEOUT</a> = 4
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4">SAPI_STATUS_RESOURCE_EXHAUSTED</a> = 5
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a> = 6
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a3d532cf5bd007184f690329d9a1995a3">SAPI_STATUS_NOT_IMPLEMENTED</a> = 7
 , <br />
-&#160;&#160;<a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b">SAPI_STATUS_HARDWARE_FAULT</a> = 8
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83ab7963d39f461bd0ab15e661827ac8d55">SAPI_STATUS_DATA_CORRUPTION</a> = 9
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447">SAPI_STATUS_INTERNAL_ERROR</a> = 10
-, <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a> = 11
+&#160;&#160;<a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b">SAPI_STATUS_HARDWARE_FAULT</a> = 8
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83ab7963d39f461bd0ab15e661827ac8d55">SAPI_STATUS_DATA_CORRUPTION</a> = 9
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447">SAPI_STATUS_INTERNAL_ERROR</a> = 10
+, <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a> = 11
 <br />
  }</td></tr>
-<tr class="memdesc:acaa927d6005081fd4daff3d99df9ed83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common result/status codes.  <a href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">More...</a><br /></td></tr>
-<tr class="separator:acaa927d6005081fd4daff3d99df9ed83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:gacaa927d6005081fd4daff3d99df9ed83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common result/status codes.  <a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">More...</a><br /></td></tr>
+<tr class="separator:gacaa927d6005081fd4daff3d99df9ed83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae33bf09c513f285687ec246a4f1806ad" id="r_ae33bf09c513f285687ec246a4f1806ad"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__status_8h.html#ae33bf09c513f285687ec246a4f1806ad">sapi_status_to_string</a> (<a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> status)</td></tr>
-<tr class="memdesc:ae33bf09c513f285687ec246a4f1806ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging only; never on a safety-decision path.  <br /></td></tr>
-<tr class="separator:ae33bf09c513f285687ec246a4f1806ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae33bf09c513f285687ec246a4f1806ad" id="r_gae33bf09c513f285687ec246a4f1806ad"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad">sapi_status_to_string</a> (<a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> status)</td></tr>
+<tr class="memdesc:gae33bf09c513f285687ec246a4f1806ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging only; never on a safety-decision path.  <br /></td></tr>
+<tr class="separator:gae33bf09c513f285687ec246a4f1806ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstraction Layer (OAL) services. </p>
 <p>REQ-OAL-COMMON-001: every fallible API function shall return sapi_status_t and shall not use exceptions or errno-style side channels. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__status_8h_source.html">sapi_status.h</a>.</p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="acaa927d6005081fd4daff3d99df9ed83" name="acaa927d6005081fd4daff3d99df9ed83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acaa927d6005081fd4daff3d99df9ed83">&#9670;&#160;</a></span>sapi_status_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Common result/status codes. </p>
-<p>Explicit numeric values are fixed and part of the ABI: do not renumber existing entries, only append. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30" name="acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"></a>SAPI_STATUS_OK&#160;</td><td class="fielddoc"><p>Operation succeeded. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0" name="acaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0"></a>SAPI_STATUS_INVALID_PARAM&#160;</td><td class="fielddoc"><p>Null pointer or out-of-range argument. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978" name="acaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978"></a>SAPI_STATUS_NOT_INITIALIZED&#160;</td><td class="fielddoc"><p>Object used before create/init. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af" name="acaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af"></a>SAPI_STATUS_ALREADY_INITIALIZED&#160;</td><td class="fielddoc"><p>Object already created/initialized. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7" name="acaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7"></a>SAPI_STATUS_TIMEOUT&#160;</td><td class="fielddoc"><p>Blocking call exceeded its deadline. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4" name="acaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4"></a>SAPI_STATUS_RESOURCE_EXHAUSTED&#160;</td><td class="fielddoc"><p>Static pool/storage/slots full. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122" name="acaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122"></a>SAPI_STATUS_NOT_SUPPORTED&#160;</td><td class="fielddoc"><p>Valid request, backend cannot perform it. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a3d532cf5bd007184f690329d9a1995a3" name="acaa927d6005081fd4daff3d99df9ed83a3d532cf5bd007184f690329d9a1995a3"></a>SAPI_STATUS_NOT_IMPLEMENTED&#160;</td><td class="fielddoc"><p>Backend is a stub (skeleton state). </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b" name="acaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b"></a>SAPI_STATUS_HARDWARE_FAULT&#160;</td><td class="fielddoc"><p>Backend reported a hardware-level fault. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83ab7963d39f461bd0ab15e661827ac8d55" name="acaa927d6005081fd4daff3d99df9ed83ab7963d39f461bd0ab15e661827ac8d55"></a>SAPI_STATUS_DATA_CORRUPTION&#160;</td><td class="fielddoc"><p>Integrity check (e.g. NVM CRC) failed. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447" name="acaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447"></a>SAPI_STATUS_INTERNAL_ERROR&#160;</td><td class="fielddoc"><p>Defensive catch-all: should never happen. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c" name="acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c"></a>SAPI_STATUS_VALUE_OUT_OF_RANGE&#160;</td><td class="fielddoc"><p>Checked cast: value does not fit the destination type. </p>
-</td></tr>
-</table>
-
-<p class="definition">Definition at line <a class="el" href="sapi__status_8h_source.html#l00022">22</a> of file <a class="el" href="sapi__status_8h_source.html">sapi_status.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="ae33bf09c513f285687ec246a4f1806ad" name="ae33bf09c513f285687ec246a4f1806ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae33bf09c513f285687ec246a4f1806ad">&#9670;&#160;</a></span>sapi_status_to_string()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">const char * sapi_status_to_string </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td>
-          <td class="paramname"><em>status</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging only; never on a safety-decision path. </p>
-<p>REQ-OAL-COMMON-002 </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__status_8c_source.html#l00003">3</a> of file <a class="el" href="sapi__status_8c_source.html">sapi_status.c</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

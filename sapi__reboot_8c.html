@@ -77,11 +77,11 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_reboot.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_reboot.c File Reference<div class="ingroups"><a class="el" href="group__REBOOT.html">Controlled Reboot</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Reboot service: dispatches to the backend registered via <a class="el" href="sapi__reboot_8c.html#ab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a> (ADR-005).  
+<p>Reboot service: dispatches to the backend registered via <a class="el" href="group__REBOOT.html#gab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__reboot_8h_source.html">safeapi/reboot/sapi_reboot.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -109,83 +109,24 @@ Include dependency graph for sapi_reboot.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab5638a101dcd6791e7e7be5317a45d04" id="r_ab5638a101dcd6791e7e7be5317a45d04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__reboot_8c.html#ab5638a101dcd6791e7e7be5317a45d04">sapi_reboot_register_backend</a> (const <a class="el" href="structsapi__reboot__backend__t.html">sapi_reboot_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:ab5638a101dcd6791e7e7be5317a45d04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="sapi__reboot_8h.html#a64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a> (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:ab5638a101dcd6791e7e7be5317a45d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64f26841ca5894f2a20569c108c82121" id="r_a64f26841ca5894f2a20569c108c82121"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__reboot_8c.html#a64f26841ca5894f2a20569c108c82121">sapi_reboot_request</a> (uint16_t reason_code)</td></tr>
-<tr class="memdesc:a64f26841ca5894f2a20569c108c82121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a controlled system restart.  <br /></td></tr>
-<tr class="separator:a64f26841ca5894f2a20569c108c82121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5638a101dcd6791e7e7be5317a45d04" id="r_gab5638a101dcd6791e7e7be5317a45d04"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__REBOOT.html#gab5638a101dcd6791e7e7be5317a45d04">sapi_reboot_register_backend</a> (const <a class="el" href="structsapi__reboot__backend__t.html">sapi_reboot_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:gab5638a101dcd6791e7e7be5317a45d04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="group__REBOOT.html#ga64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a> (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
+<tr class="separator:gab5638a101dcd6791e7e7be5317a45d04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga64f26841ca5894f2a20569c108c82121" id="r_ga64f26841ca5894f2a20569c108c82121"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__REBOOT.html#ga64f26841ca5894f2a20569c108c82121">sapi_reboot_request</a> (uint16_t reason_code)</td></tr>
+<tr class="memdesc:ga64f26841ca5894f2a20569c108c82121"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a controlled system restart.  <br /></td></tr>
+<tr class="separator:ga64f26841ca5894f2a20569c108c82121"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a9a799b75bde4855f3fd3237ec9feb446" id="r_a9a799b75bde4855f3fd3237ec9feb446"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structsapi__reboot__backend__t.html">sapi_reboot_backend_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__reboot_8c.html#a9a799b75bde4855f3fd3237ec9feb446">s_backend</a> = NULL</td></tr>
+<tr class="memdesc:a9a799b75bde4855f3fd3237ec9feb446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Currently registered backend, or NULL if none (ADR-005).  <br /></td></tr>
 <tr class="separator:a9a799b75bde4855f3fd3237ec9feb446"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Reboot service: dispatches to the backend registered via <a class="el" href="sapi__reboot_8c.html#ab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>Reboot service: dispatches to the backend registered via <a class="el" href="group__REBOOT.html#gab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="ab5638a101dcd6791e7e7be5317a45d04" name="ab5638a101dcd6791e7e7be5317a45d04"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5638a101dcd6791e7e7be5317a45d04">&#9670;&#160;</a></span>sapi_reboot_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_reboot_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__reboot__backend__t.html">sapi_reboot_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by <a class="el" href="sapi__reboot_8h.html#a64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a> (ADR-005 section 2.1). Call once at startup. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">backend</td><td>Backend implementation. Must not be NULL. Registering again replaces the previously registered backend. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise. REQ-OAL-REBOOT-011 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
-
-</div>
-</div>
-<a id="a64f26841ca5894f2a20569c108c82121" name="a64f26841ca5894f2a20569c108c82121"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64f26841ca5894f2a20569c108c82121">&#9670;&#160;</a></span>sapi_reboot_request()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_reboot_request </td>
-          <td>(</td>
-          <td class="paramtype">uint16_t&#160;</td>
-          <td class="paramname"><em>reason_code</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Requests a controlled system restart. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">reason_code</td><td>Backend-visible diagnostic code (e.g. persisted to NVM/black-box storage before the reset, backend-defined). </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Does not return on success (the CPU resets). Returns SAPI_STATUS_NOT_INITIALIZED if no backend is registered, SAPI_STATUS_NOT_SUPPORTED if the backend cannot perform a reboot, or a backend-defined error status.</dd></dl>
-<p>REQ-OAL-REBOOT-010 </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Variable Documentation</h2>
 <a id="a9a799b75bde4855f3fd3237ec9feb446" name="a9a799b75bde4855f3fd3237ec9feb446"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9a799b75bde4855f3fd3237ec9feb446">&#9670;&#160;</a></span>s_backend</h2>
 
@@ -206,7 +147,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00008">8</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
+<p>Currently registered backend, or NULL if none (ADR-005). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
 
 </div>
 </div>

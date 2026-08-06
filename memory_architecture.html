@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Memory Module - Architecture\n *\n * @section overview Static Allocation Only\n *\n * Memory module enforces no dynamic allocation. All memory available at\n * compile-time or initialization. Framework never calls malloc/free.\n *\n * @section strategy Strategy\n *\n * Allocate at compile-time (static arrays, stack) or initialization (once).\n * Pre-calculate max sizes. Use static_assert to verify budget.\n *\n * @section misra MISRA Rule 20.6\n *\n * ✓ No malloc/free\n * ✓ No dynamic allocation\n * ✓ All storage static or stack-scoped\n *\n * @section see_also See Also\n *\n * - @ref memory_user_guide for allocation patterns\n *\n */\n</title>
+<title>Safe API Framework: Memory Module - Architecture</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,49 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Memory Module - Architecture\n *\n * @section overview Static Allocation Only\n *\n * Memory module enforces no dynamic allocation. All memory available at\n * compile-time or initialization. Framework never calls malloc/free.\n *\n * @section strategy Strategy\n *\n * Allocate at compile-time (static arrays, stack) or initialization (once).\n * Pre-calculate max sizes. Use static_assert to verify budget.\n *\n * @section misra MISRA Rule 20.6\n *\n * ✓ No malloc/free\n * ✓ No dynamic allocation\n * ✓ All storage static or stack-scoped\n *\n * @section see_also See Also\n *\n * - @ref memory_user_guide for allocation patterns\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Memory Module - Architecture</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="memory_architecture_overview"></a>
+Static Allocation Only</h1>
+<ul>
+<li></li>
+<li>Memory module enforces no dynamic allocation. All memory available at</li>
+<li>compile-time or initialization. Framework never calls malloc/free.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="memory_architecture_strategy"></a>
+Strategy</h1>
+<ul>
+<li></li>
+<li>Allocate at compile-time (static arrays, stack) or initialization (once).</li>
+<li>Pre-calculate max sizes. Use static_assert to verify budget.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="memory_architecture_misra"></a>
+MISRA Rule 20.6</h1>
+<ul>
+<li></li>
+<li>✓ No malloc/free</li>
+<li>✓ No dynamic allocation</li>
+<li>✓ All storage static or stack-scoped</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="memory_architecture_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="memory_user_guide.html">Memory Module - User Guide</a> for allocation patterns</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

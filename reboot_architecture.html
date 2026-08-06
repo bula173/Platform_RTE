@@ -77,18 +77,18 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="reboot_architecture_overview"></a>
+Design Overview</h1>
 <ul>
 <li></li>
 <li>Minimal layer providing single entry point: sapi_reboot_request(reason).</li>
-<li>Integrator registers platform-specific backend via <a class="el" href="sapi__reboot_8h.html#ab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a>.</li>
+<li>Integrator registers platform-specific backend via <a class="el" href="group__REBOOT.html#gab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a>.</li>
 <li>No dynamic allocation; single backend pointer storage.</li>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="api"></a>
-Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage\n * sapi_buffer_set_length(buf, new_length);      // Mark data as valid\n * sapi_buffer_clear(buf);                       // Reset length to 0\n * @endcode\n *\n * @section invariants Invariants\n *\n * @verbatim\n * buf.data != NULL           - Pointing to valid storage\n * buf.capacity &gt; 0           - Has space\n * buf.length &lt;= buf.capacity - Never overfilled\n * @endverbatim\n *\n * @section ownership Ownership Model\n *\n * Caller owns backing storage:\n * - Must allocate before sapi_buffer_init()\n * - Must keep valid for buffer lifetime\n * - Caller manages writes to buf.data\n *\n * Buffer manages:\n * - Tracking length (valid data)\n * - Validating length &lt;= capacity\n *\n * @section performance O(1) All Operations\n *\n * | Operation | Time |\n * |--------—|---—|\n * | init() | O(1) |\n * | set_length() | O(1) |\n * | clear() | O(1) |\n *\n * No copying, no allocation.\n *\n * @section see_also See Also\n *\n * - @ref buffer_user_guide for usage patterns\n * - @ref memory_user_guide for storage allocation\n *\n */\n</h1>
+<h1><a class="anchor" id="reboot_architecture_api"></a>
+Public API</h1>
 <ul>
 <li></li>
 <li><div class="fragment"><div class="line">* sapi_status_t sapi_reboot_request(uint16_t reason_code);</div>
@@ -105,7 +105,7 @@ Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind 
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="backend"></a>
+<h1><a class="anchor" id="reboot_architecture_backend"></a>
 Backend Interface</h1>
 <ul>
 <li></li>
@@ -123,7 +123,7 @@ Backend Interface</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="flow"></a>
+<h1><a class="anchor" id="reboot_architecture_flow"></a>
 Reboot Flow</h1>
 <ul>
 <li></li>
@@ -139,7 +139,7 @@ Reboot Flow</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="reason"></a>
+<h1><a class="anchor" id="reboot_architecture_reason"></a>
 Reason Code Handling</h1>
 <ul>
 <li></li>
@@ -153,7 +153,7 @@ Reason Code Handling</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="resource"></a>
+<h1><a class="anchor" id="reboot_architecture_resource"></a>
 Resource Model</h1>
 <ul>
 <li></li>
@@ -164,7 +164,7 @@ Resource Model</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="misra"></a>
+<h1><a class="anchor" id="reboot_architecture_misra"></a>
 MISRA Compliance</h1>
 <ul>
 <li></li>
@@ -175,7 +175,7 @@ MISRA Compliance</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="see_also"></a>
+<h1><a class="anchor" id="reboot_architecture_see_also"></a>
 See Also</h1>
 <ul>
 <li></li>

@@ -77,7 +77,7 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_safestate.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_safestate.c File Reference<div class="ingroups"><a class="el" href="group__SAFESTATE.html">Safe-State Transitions and Checked Assertions</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -109,19 +109,19 @@ Include dependency graph for sapi_safestate.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:aca3b668222ad6f68ace18c758dbf004f" id="r_aca3b668222ad6f68ace18c758dbf004f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#aca3b668222ad6f68ace18c758dbf004f">sapi_safestate_level_to_index</a> (<a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, size_t *out_index)</td></tr>
+<tr class="memitem:aca3b668222ad6f68ace18c758dbf004f" id="r_aca3b668222ad6f68ace18c758dbf004f"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#aca3b668222ad6f68ace18c758dbf004f">sapi_safestate_level_to_index</a> (<a class="el" href="group__SAFESTATE.html#gaa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, size_t *out_index)</td></tr>
 <tr class="memdesc:aca3b668222ad6f68ace18c758dbf004f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps a level enumerator to its handler-array index.  <br /></td></tr>
 <tr class="separator:aca3b668222ad6f68ace18c758dbf004f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a053708e171419eca226445770ff6ab9c" id="r_a053708e171419eca226445770ff6ab9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#a053708e171419eca226445770ff6ab9c">sapi_safestate_register_handler</a> (<a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, <a class="el" href="sapi__safestate_8h.html#aefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a> handler)</td></tr>
-<tr class="memdesc:a053708e171419eca226445770ff6ab9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the reaction handler for one safe-state level. This is how an integrator supplies their own implementation of "what happens when this level is entered" (ADR-004 section 2.2).  <br /></td></tr>
-<tr class="separator:a053708e171419eca226445770ff6ab9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca60cf2b3d730a9997a5887c415ed129" id="r_aca60cf2b3d730a9997a5887c415ed129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#aca60cf2b3d730a9997a5887c415ed129">sapi_safestate_enter</a> (<a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, <a class="el" href="sapi__safestate_8h.html#a21e00aebd55809df7fc153e42d9494a5">sapi_safestate_reason_t</a> reason, const char *file, int32_t line, const char *message)</td></tr>
-<tr class="memdesc:aca60cf2b3d730a9997a5887c415ed129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SAFE and SAPI_SAFESTATE_LEVEL_REBOOT, guarantees the call never returns (REQ-COMMON-SAFESTATE-002) even if no handler was registered or the handler itself returns.  <br /></td></tr>
-<tr class="separator:aca60cf2b3d730a9997a5887c415ed129"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga053708e171419eca226445770ff6ab9c" id="r_ga053708e171419eca226445770ff6ab9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SAFESTATE.html#ga053708e171419eca226445770ff6ab9c">sapi_safestate_register_handler</a> (<a class="el" href="group__SAFESTATE.html#gaa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, <a class="el" href="group__SAFESTATE.html#gaefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a> handler)</td></tr>
+<tr class="memdesc:ga053708e171419eca226445770ff6ab9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the reaction handler for one safe-state level. This is how an integrator supplies their own implementation of "what happens when this level is entered" (ADR-004 section 2.2).  <br /></td></tr>
+<tr class="separator:ga053708e171419eca226445770ff6ab9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaca60cf2b3d730a9997a5887c415ed129" id="r_gaca60cf2b3d730a9997a5887c415ed129"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129">sapi_safestate_enter</a> (<a class="el" href="group__SAFESTATE.html#gaa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a> level, <a class="el" href="group__SAFESTATE.html#ga21e00aebd55809df7fc153e42d9494a5">sapi_safestate_reason_t</a> reason, const char *file, int32_t line, const char *message)</td></tr>
+<tr class="memdesc:gaca60cf2b3d730a9997a5887c415ed129"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SAFE and SAPI_SAFESTATE_LEVEL_REBOOT, guarantees the call never returns (REQ-COMMON-SAFESTATE-002) even if no handler was registered or the handler itself returns.  <br /></td></tr>
+<tr class="separator:gaca60cf2b3d730a9997a5887c415ed129"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:af6f8da9f6dd2b99ed6b78ac848d19525" id="r_af6f8da9f6dd2b99ed6b78ac848d19525"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="sapi__safestate_8h.html#aefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#af6f8da9f6dd2b99ed6b78ac848d19525">s_handlers</a> [3] = { NULL, NULL, NULL }</td></tr>
+<tr class="memitem:af6f8da9f6dd2b99ed6b78ac848d19525" id="r_af6f8da9f6dd2b99ed6b78ac848d19525"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="group__SAFESTATE.html#gaefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__safestate_8c.html#af6f8da9f6dd2b99ed6b78ac848d19525">s_handlers</a> [3] = { NULL, NULL, NULL }</td></tr>
 <tr class="separator:af6f8da9f6dd2b99ed6b78ac848d19525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -141,7 +141,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="memname">static bool sapi_safestate_level_to_index </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__SAFESTATE.html#gaa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a>&#160;</td>
           <td class="paramname"><em>level</em>, </td>
         </tr>
         <tr>
@@ -164,112 +164,16 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maps a level enumerator to its handler-array index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">level</td><td>Level to map. </td></tr>
+    <tr><td class="paramname">out_index</td><td>Receives the handler-array index. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>true and sets *out_index if level is a known value; false (index left unset) otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00015">15</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
-
-</div>
-</div>
-<a id="a053708e171419eca226445770ff6ab9c" name="a053708e171419eca226445770ff6ab9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a053708e171419eca226445770ff6ab9c">&#9670;&#160;</a></span>sapi_safestate_register_handler()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_safestate_register_handler </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a>&#160;</td>
-          <td class="paramname"><em>level</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="sapi__safestate_8h.html#aefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a>&#160;</td>
-          <td class="paramname"><em>handler</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the reaction handler for one safe-state level. This is how an integrator supplies their own implementation of "what happens when this level is entered" (ADR-004 section 2.2). </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">level</td><td>The level to register a handler for. </td></tr>
-    <tr><td class="paramname">handler</td><td>Handler to invoke on entry to this level. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if handler is NULL or level is not a valid sapi_safestate_level_t value; SAPI_STATUS_OK otherwise. Registering again for the same level replaces the previous handler.</dd></dl>
-<p>REQ-COMMON-SAFESTATE-010 </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00040">40</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
-
-</div>
-</div>
-<a id="aca60cf2b3d730a9997a5887c415ed129" name="aca60cf2b3d730a9997a5887c415ed129"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca60cf2b3d730a9997a5887c415ed129">&#9670;&#160;</a></span>sapi_safestate_enter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void sapi_safestate_enter </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__safestate_8h.html#aa98095895e91c2a6a22f189070ef6eb7">sapi_safestate_level_t</a>&#160;</td>
-          <td class="paramname"><em>level</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="sapi__safestate_8h.html#a21e00aebd55809df7fc153e42d9494a5">sapi_safestate_reason_t</a>&#160;</td>
-          <td class="paramname"><em>reason</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>file</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int32_t&#160;</td>
-          <td class="paramname"><em>line</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>message</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SAFE and SAPI_SAFESTATE_LEVEL_REBOOT, guarantees the call never returns (REQ-COMMON-SAFESTATE-002) even if no handler was registered or the handler itself returns. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">level</td><td>Level to enter. </td></tr>
-    <tr><td class="paramname">reason</td><td>Diagnostic reason code. </td></tr>
-    <tr><td class="paramname">file</td><td>Call site file (typically <b>FILE</b>), may be NULL. </td></tr>
-    <tr><td class="paramname">line</td><td>Call site line (typically <b>LINE</b>). </td></tr>
-    <tr><td class="paramname">message</td><td>Optional human-readable detail, may be NULL.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>Prefer the SAPI_ASSERT / SAPI_SAFESTATE / SAPI_REBOOT macros over calling this directly, so <b>FILE</b>/__LINE__ are captured correctly.</dd></dl>
-<p>REQ-COMMON-SAFESTATE-011 </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00053">53</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00018">18</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>
@@ -284,7 +188,7 @@ Variables</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__safestate_8h.html#aefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a> s_handlers[3] = { NULL, NULL, NULL }</td>
+          <td class="memname"><a class="el" href="group__SAFESTATE.html#gaefcfb06364cd3344be647bb308a90a65">sapi_safestate_handler_t</a> s_handlers[3] = { NULL, NULL, NULL }</td>
         </tr>
       </table>
   </td>
@@ -295,7 +199,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>One handler slot per sapi_safestate_level_t value; no dynamic allocation. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00008">8</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00009">9</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>

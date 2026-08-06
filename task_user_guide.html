@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Task Queue Module - User Guide\n *\n * @section overview What is Task Queue?\n *\n * Task Queue provides priority-based deferred work scheduling. Enqueue\n * tasks with priority; dequeue highest priority first. Caller executes tasks.\n *\n * @section quick_start Quick Start\n *\n * @code\n * // Create task\n * sapi_task_t task = {\n *     .priority = 50,\n *     .function = my_task_handler,\n *     .context = &amp;context\n * };\n *\n * // Enqueue\n * sapi_task_queue_enqueue(&amp;queue, &amp;task);\n *\n * // Main loop: dequeue and execute\n * sapi_task_t next;\n * if (sapi_task_queue_dequeue(&amp;queue, &amp;next) == SAPI_STATUS_OK) {\n *     next.function(next.context);\n * }\n * @endcode\n *\n * @section priority Priority Levels\n *\n * 0-100 scale (higher = more urgent)\n * 90-100: Critical (safety, watchdog)\n * 70-89: Important (vital data)\n * 50-69: Normal (command processing)\n * 30-49: Background (diagnostics)\n * 10-29: Low (cleanup)\n *\n * @section patterns Patterns\n *\n * 1. Separate critical from non-critical\n * 2. Keep task execution time bounded\n * 3. Don&#39;t chain dependencies\n * 4. Monitor queue depth\n *\n * @section see_also See Also\n *\n * - @ref task_architecture for design\n *\n */\n</title>
+<title>Safe API Framework: Task Queue Module - User Guide</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,78 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Task Queue Module - User Guide\n *\n * @section overview What is Task Queue?\n *\n * Task Queue provides priority-based deferred work scheduling. Enqueue\n * tasks with priority; dequeue highest priority first. Caller executes tasks.\n *\n * @section quick_start Quick Start\n *\n * @code\n * // Create task\n * sapi_task_t task = {\n * .priority = 50,\n * .function = my_task_handler,\n * .context = &amp;context\n * };\n *\n * // Enqueue\n * sapi_task_queue_enqueue(&amp;queue, &amp;task);\n *\n * // Main loop: dequeue and execute\n * sapi_task_t next;\n * if (sapi_task_queue_dequeue(&amp;queue, &amp;next) == SAPI_STATUS_OK) {\n * next.function(next.context);\n * }\n * @endcode\n *\n * @section priority Priority Levels\n *\n * 0-100 scale (higher = more urgent)\n * 90-100: Critical (safety, watchdog)\n * 70-89: Important (vital data)\n * 50-69: Normal (command processing)\n * 30-49: Background (diagnostics)\n * 10-29: Low (cleanup)\n *\n * @section patterns Patterns\n *\n * 1. Separate critical from non-critical\n * 2. Keep task execution time bounded\n * 3. Don't chain dependencies\n * 4. Monitor queue depth\n *\n * @section see_also See Also\n *\n * - @ref task_architecture for design\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Task Queue Module - User Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_user_guide_overview"></a>
+What is Task Queue?</h1>
+<ul>
+<li></li>
+<li>Task Queue provides priority-based deferred work scheduling. Enqueue</li>
+<li>tasks with priority; dequeue highest priority first. Caller executes tasks.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_user_guide_quick_start"></a>
+Quick Start</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* // Create task</div>
+<div class="line">* sapi_task_t task = {</div>
+<div class="line">*     .priority = 50,</div>
+<div class="line">*     .function = my_task_handler,</div>
+<div class="line">*     .context = &amp;context</div>
+<div class="line">* };</div>
+<div class="line">*</div>
+<div class="line">* // Enqueue</div>
+<div class="line">* sapi_task_queue_enqueue(&amp;queue, &amp;task);</div>
+<div class="line">*</div>
+<div class="line">* // Main loop: dequeue and execute</div>
+<div class="line">* sapi_task_t next;</div>
+<div class="line">* if (sapi_task_queue_dequeue(&amp;queue, &amp;next) == SAPI_STATUS_OK) {</div>
+<div class="line">*     next.function(next.context);</div>
+<div class="line">* }</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_user_guide_priority"></a>
+Priority Levels</h1>
+<ul>
+<li></li>
+<li>0-100 scale (higher = more urgent)</li>
+<li>90-100: Critical (safety, watchdog)</li>
+<li>70-89: Important (vital data)</li>
+<li>50-69: Normal (command processing)</li>
+<li>30-49: Background (diagnostics)</li>
+<li>10-29: Low (cleanup)</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_user_guide_patterns"></a>
+Patterns</h1>
+<ul>
+<li></li>
+<li>1. Separate critical from non-critical</li>
+<li>2. Keep task execution time bounded</li>
+<li>3. Don't chain dependencies</li>
+<li>4. Monitor queue depth</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="task_architecture.html">Task Queue Module - Architecture</a> for design</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

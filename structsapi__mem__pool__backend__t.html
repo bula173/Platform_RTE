@@ -72,7 +72,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_mem_pool_backend_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_mem_pool_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__MEMORY.html">Static Memory Reservation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -83,19 +83,23 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:ae8fbe9e393f70fca73baeb5df777ddf7" id="r_ae8fbe9e393f70fca73baeb5df777ddf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#ae8fbe9e393f70fca73baeb5df777ddf7">create</a> )(sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, sapi_mem_pool_handle_t *out_handle)</td></tr>
+<tr class="memitem:ae8fbe9e393f70fca73baeb5df777ddf7" id="r_ae8fbe9e393f70fca73baeb5df777ddf7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#ae8fbe9e393f70fca73baeb5df777ddf7">create</a> )(sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, <a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:ae8fbe9e393f70fca73baeb5df777ddf7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:ae8fbe9e393f70fca73baeb5df777ddf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abb2fb73051793a89afb3bd6761d377a3" id="r_abb2fb73051793a89afb3bd6761d377a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#abb2fb73051793a89afb3bd6761d377a3">acquire</a> )(sapi_mem_pool_handle_t handle, void **out_block)</td></tr>
+<tr class="memitem:abb2fb73051793a89afb3bd6761d377a3" id="r_abb2fb73051793a89afb3bd6761d377a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#abb2fb73051793a89afb3bd6761d377a3">acquire</a> )(<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void **out_block)</td></tr>
+<tr class="memdesc:abb2fb73051793a89afb3bd6761d377a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__MEMORY.html#ga033f09446764a4568acd23948b421688" title="Acquires one fixed-size block from the pool.">sapi_mem_pool_acquire()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:abb2fb73051793a89afb3bd6761d377a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a429ddb0bd137a23a34423187afd40b64" id="r_a429ddb0bd137a23a34423187afd40b64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#a429ddb0bd137a23a34423187afd40b64">release</a> )(sapi_mem_pool_handle_t handle, void *block)</td></tr>
+<tr class="memitem:a429ddb0bd137a23a34423187afd40b64" id="r_a429ddb0bd137a23a34423187afd40b64"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#a429ddb0bd137a23a34423187afd40b64">release</a> )(<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void *block)</td></tr>
+<tr class="memdesc:a429ddb0bd137a23a34423187afd40b64"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__MEMORY.html#gae61e08f85a309da86d0e0a9ad4ee7a29" title="Returns a previously acquired block to its pool.">sapi_mem_pool_release()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a429ddb0bd137a23a34423187afd40b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a016add5350e232c36959908acfb53385" id="r_a016add5350e232c36959908acfb53385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#a016add5350e232c36959908acfb53385">stats</a> )(sapi_mem_pool_handle_t handle, size_t *out_free_blocks, size_t *out_used_blocks)</td></tr>
+<tr class="memitem:a016add5350e232c36959908acfb53385" id="r_a016add5350e232c36959908acfb53385"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html#a016add5350e232c36959908acfb53385">stats</a> )(<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, size_t *out_free_blocks, size_t *out_used_blocks)</td></tr>
+<tr class="memdesc:a016add5350e232c36959908acfb53385"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__MEMORY.html#gaf3be5304eb88f7c8c179fdc209dbc888" title="Reports current free/used block counts for diagnostics.">sapi_mem_pool_stats()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a016add5350e232c36959908acfb53385"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the memory pool service (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00090">90</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00097">97</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ae8fbe9e393f70fca73baeb5df777ddf7" name="ae8fbe9e393f70fca73baeb5df777ddf7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae8fbe9e393f70fca73baeb5df777ddf7">&#9670;&#160;</a></span>create</h2>
@@ -104,12 +108,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::create) (sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, sapi_mem_pool_handle_t *out_handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::create) (sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, <a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> *out_handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00092">92</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00100">100</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
 
 </div>
 </div>
@@ -120,12 +126,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::acquire) (sapi_mem_pool_handle_t handle, void **out_block)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::acquire) (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void **out_block)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00095">95</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__MEMORY.html#ga033f09446764a4568acd23948b421688" title="Acquires one fixed-size block from the pool.">sapi_mem_pool_acquire()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00104">104</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
 
 </div>
 </div>
@@ -136,12 +144,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::release) (sapi_mem_pool_handle_t handle, void *block)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::release) (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void *block)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00096">96</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__MEMORY.html#gae61e08f85a309da86d0e0a9ad4ee7a29" title="Returns a previously acquired block to its pool.">sapi_mem_pool_release()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00106">106</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
 
 </div>
 </div>
@@ -152,12 +162,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::stats) (sapi_mem_pool_handle_t handle, size_t *out_free_blocks, size_t *out_used_blocks)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_mem_pool_backend_t::stats) (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, size_t *out_free_blocks, size_t *out_used_blocks)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00097">97</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__MEMORY.html#gaf3be5304eb88f7c8c179fdc209dbc888" title="Reports current free/used block counts for diagnostics.">sapi_mem_pool_stats()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00108">108</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
 
 </div>
 </div>

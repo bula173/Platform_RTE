@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Cast Module - User Guide\n *\n * @section overview What is the Cast Module?\n *\n * The Cast module provides &lt;strong&gt;checked type conversions&lt;/strong&gt; to prevent silent truncation\n * and overflow. Instead of C-style casts (which truncate silently), these functions\n * detect out-of-range values and return status codes.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Know when data is lost. Silent truncation is a security hole.\n *\n * @section quick_start Quick Start\n *\n * &lt;tt&gt;c\\n * \#include \\&quot;safeapi/cast/sapi_cast.h\\&quot;\\n *\\n * // ✗ BAD: Silent truncation\\n * int32_t large = 100000;\\n * int16_t small = (int16_t)large;  // 100000 % 65536 = 34464 (wrong!)\\n *\\n * // ✓ GOOD: Checked conversion\\n * int32_t large = 100000;\\n * int16_t small;\\n * sapi_status_t rc = sapi_cast_int32_to_int16(large, \&amp;small);\\n * if (rc == SAPI_STATUS_INVALID_PARAM) {\\n *     log_error(\\&quot;Value d too large for int16_t\\&quot;, large);\\n *     return rc;\\n * }\\n * // small is guaranteed in range\\n *&lt;/tt&gt;\n *\n * @section conversions Available Conversions\n *\n * &lt;strong&gt;Upcasting (safe):&lt;/strong&gt;\n * - int8 → int16, int32, int64\n * - uint8 → uint16, uint32, uint64\n * - int16 → int32, int64\n * - uint16 → uint32, uint64\n * - etc.\n * - Always safe (no overflow possible)\n\n * &lt;strong&gt;Downcasting (checked):&lt;/strong&gt;\n * - int32 → int16, int8\n * - uint32 → uint16, uint8\n * - Returns INVALID_PARAM if out of range\n * - Value only modified if success\n *\n * &lt;strong&gt;Signed to Unsigned:&lt;/strong&gt;\n * - int32 → uint32 (negative → error)\n * - int8 → uint8 (negative → error)\n * - Zero and positive values OK\n *\n * &lt;strong&gt;Floating Point (if supported):&lt;/strong&gt;\n * - float → int32 (checks for infinity, NaN)\n * - double → float (checks for overflow)\n * - Non-finite values return error\n *\n * @section examples Practical Examples\n *\n * ### Example 1: ADC Reading Conversion\n *\n * &lt;tt&gt;c\\n * uint16_t adc_raw = read_adc();  // 0-4095 (12-bit ADC)\\n *\\n * // Need to convert to temperature in 0.1°C units\\n * // Safe conversion (raw fits in uint16_t)\\n * int16_t temp_units;\\n * sapi_status_t rc = sapi_cast_uint16_to_int16(adc_raw, \&amp;temp_units);\\n *\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\&quot;ADC value out of range\\&quot;);\\n *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);\\n * }\\n * // temp_units is now 0-4095 safely\\n *&lt;/tt&gt;\n *\n * ### Example 2: CAN ID Conversion\n *\n * &lt;tt&gt;c\\n * uint32_t can_id = receive_can_id();  // CAN uses 29-bit or 11-bit IDs\\n *\\n * // CAN extended ID uses only 29 bits, 3 bits reserved\\n * if (can_id &gt; 0x1FFFFFFF) {  // 29-bit max\\n *     log_error(\\&quot;Invalid CAN ID: 0xx\\&quot;, can_id);\\n *     return SAPI_STATUS_INVALID_PARAM;\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 3: Pointer to Integer Conversion\n *\n * &lt;tt&gt;c\\n * // When storing pointers as integers (e.g., for debugging)\\n * void *ptr = get_pointer();\\n * uint32_t addr32;\\n *\\n * sapi_status_t rc = sapi_cast_ptr_to_uint32(ptr, \&amp;addr32);\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\&quot;Pointer too large for uint32_t\\&quot;);\\n *     // On 64-bit system, address might not fit in 32 bits\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Always Use Checked Casts for Downcasting&lt;/strong&gt;\n *    - Never (type)value for size reduction\n *    - Always check with sapi_cast_*\n *    - Handle errors, don&#39;t ignore them\n *\n * 2. &lt;strong&gt;Upcasting is Safe&lt;/strong&gt;\n *    - int8 → int32: safe (no loss)\n *    - Can use direct cast if confident\n *    - Or use cast functions for consistency\n *\n * 3. &lt;strong&gt;Handle Errors Appropriately&lt;/strong&gt;\n *    - For safety-critical: trigger safe-state\n *    - For non-critical: log warning\n *    - Always have error path\n *\n * 4. &lt;strong&gt;Document Assumptions&lt;/strong&gt;\n *    - Comment why cast is safe\n *    - Document expected ranges\n *    - Help future maintainers\n *\n * @section see_also See Also\n *\n * - @ref cast_architecture for internal design\n * - @ref types_user_guide for fixed-width types\n * - @ref status_user_guide for error handling\n *\n */</title>
+<title>Safe API Framework: Cast Module - User Guide</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,159 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Cast Module - User Guide\n *\n * @section overview What is the Cast Module?\n *\n * The Cast module provides &lt;strong&gt;checked type conversions&lt;/strong&gt; to prevent silent truncation\n * and overflow. Instead of C-style casts (which truncate silently), these functions\n * detect out-of-range values and return status codes.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Know when data is lost. Silent truncation is a security hole.\n *\n * @section quick_start Quick Start\n *\n * &lt;tt&gt;c\\n * \#include \\"safeapi/cast/sapi_cast.h\\"\\n *\\n * // ✗ BAD: Silent truncation\\n * int32_t large = 100000;\\n * int16_t small = (int16_t)large;  // 100000 % 65536 = 34464 (wrong!)\\n *\\n * // ✓ GOOD: Checked conversion\\n * int32_t large = 100000;\\n * int16_t small;\\n * sapi_status_t rc = sapi_cast_int32_to_int16(large, \&amp;small);\\n * if (rc == SAPI_STATUS_INVALID_PARAM) {\\n *     log_error(\\"Value %d too large for int16_t\\", large);\\n *     return rc;\\n * }\\n * // small is guaranteed in range\\n *&lt;/tt&gt;\n *\n * @section conversions Available Conversions\n *\n * &lt;strong&gt;Upcasting (safe):&lt;/strong&gt;\n * - int8 → int16, int32, int64\n * - uint8 → uint16, uint32, uint64\n * - int16 → int32, int64\n * - uint16 → uint32, uint64\n * - etc.\n * - Always safe (no overflow possible)\n\n * &lt;strong&gt;Downcasting (checked):&lt;/strong&gt;\n * - int32 → int16, int8\n * - uint32 → uint16, uint8\n * - Returns INVALID_PARAM if out of range\n * - Value only modified if success\n *\n * &lt;strong&gt;Signed to Unsigned:&lt;/strong&gt;\n * - int32 → uint32 (negative → error)\n * - int8 → uint8 (negative → error)\n * - Zero and positive values OK\n *\n * &lt;strong&gt;Floating Point (if supported):&lt;/strong&gt;\n * - float → int32 (checks for infinity, NaN)\n * - double → float (checks for overflow)\n * - Non-finite values return error\n *\n * @section examples Practical Examples\n *\n * ### Example 1: ADC Reading Conversion\n *\n * &lt;tt&gt;c\\n * uint16_t adc_raw = read_adc();  // 0-4095 (12-bit ADC)\\n *\\n * // Need to convert to temperature in 0.1°C units\\n * // Safe conversion (raw fits in uint16_t)\\n * int16_t temp_units;\\n * sapi_status_t rc = sapi_cast_uint16_to_int16(adc_raw, \&amp;temp_units);\\n *\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\"ADC value out of range\\");\\n *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);\\n * }\\n * // temp_units is now 0-4095 safely\\n *&lt;/tt&gt;\n *\n * ### Example 2: CAN ID Conversion\n *\n * &lt;tt&gt;c\\n * uint32_t can_id = receive_can_id();  // CAN uses 29-bit or 11-bit IDs\\n *\\n * // CAN extended ID uses only 29 bits, 3 bits reserved\\n * if (can_id &amp;gt; 0x1FFFFFFF) {  // 29-bit max\\n *     log_error(\\"Invalid CAN ID: 0x%x\\", can_id);\\n *     return SAPI_STATUS_INVALID_PARAM;\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 3: Pointer to Integer Conversion\n *\n * &lt;tt&gt;c\\n * // When storing pointers as integers (e.g., for debugging)\\n * void *ptr = get_pointer();\\n * uint32_t addr32;\\n *\\n * sapi_status_t rc = sapi_cast_ptr_to_uint32(ptr, \&amp;addr32);\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\"Pointer too large for uint32_t\\");\\n * // On 64-bit system, address might not fit in 32 bits\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Always Use Checked Casts for Downcasting&lt;/strong&gt;\n * - Never (type)value for size reduction\n * - Always check with sapi_cast_*\n * - Handle errors, don't ignore them\n *\n * 2. &lt;strong&gt;Upcasting is Safe&lt;/strong&gt;\n * - int8 → int32: safe (no loss)\n * - Can use direct cast if confident\n * - Or use cast functions for consistency\n *\n * 3. &lt;strong&gt;Handle Errors Appropriately&lt;/strong&gt;\n * - For safety-critical: trigger safe-state\n * - For non-critical: log warning\n * - Always have error path\n *\n * 4. &lt;strong&gt;Document Assumptions&lt;/strong&gt;\n * - Comment why cast is safe\n * - Document expected ranges\n * - Help future maintainers\n *\n * @section see_also See Also\n *\n * - @ref cast_architecture for internal design\n * - @ref types_user_guide for fixed-width types\n * - @ref status_user_guide for error handling\n *\n */</div></div>
+  <div class="headertitle"><div class="title">Cast Module - User Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_overview"></a>
+What is the Cast Module?</h1>
+<ul>
+<li></li>
+<li>The Cast module provides <b>checked type conversions</b> to prevent silent truncation</li>
+<li>and overflow. Instead of C-style casts (which truncate silently), these functions</li>
+<li>detect out-of-range values and return status codes.</li>
+<li></li>
+<li><b>Key idea:</b> Know when data is lost. Silent truncation is a security hole.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_quick_start"></a>
+Quick Start</h1>
+<ul>
+<li></li>
+<li><code>c</code></li>
+<li><code>#include "safeapi/cast/sapi_cast.h"</code></li>
+<li><code></code></li>
+<li><code>// ✗ BAD: Silent truncation</code></li>
+<li><code>int32_t large = 100000;</code></li>
+<li><code>int16_t small = (int16_t)large; // 100000 % 65536 = 34464 (wrong!)</code></li>
+<li><code></code></li>
+<li><code>// ✓ GOOD: Checked conversion</code></li>
+<li><code>int32_t large = 100000;</code></li>
+<li><code>int16_t small;</code></li>
+<li><code>sapi_status_t rc = sapi_cast_int32_to_int16(large, &amp;small);</code></li>
+<li><code>if (rc == SAPI_STATUS_INVALID_PARAM) {</code></li>
+<li><code> log_error("Value %d too large for int16_t", large);</code></li>
+<li><code> return rc;</code></li>
+<li><code>}</code></li>
+<li><code>// small is guaranteed in range *</code></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_conversions"></a>
+Available Conversions</h1>
+<ul>
+<li></li>
+<li><b>Upcasting (safe):</b></li>
+<li>- int8 → int16, int32, int64</li>
+<li>- uint8 → uint16, uint32, uint64</li>
+<li>- int16 → int32, int64</li>
+<li>- uint16 → uint32, uint64</li>
+<li>- etc.</li>
+<li>- Always safe (no overflow possible)</li>
+<li><b>Downcasting (checked):</b></li>
+<li>- int32 → int16, int8</li>
+<li>- uint32 → uint16, uint8</li>
+<li>- Returns INVALID_PARAM if out of range</li>
+<li>- Value only modified if success</li>
+<li></li>
+<li><b>Signed to Unsigned:</b></li>
+<li>- int32 → uint32 (negative → error)</li>
+<li>- int8 → uint8 (negative → error)</li>
+<li>- Zero and positive values OK</li>
+<li></li>
+<li><b>Floating Point (if supported):</b></li>
+<li>- float → int32 (checks for infinity, NaN)</li>
+<li>- double → float (checks for overflow)</li>
+<li>- Non-finite values return error</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_examples"></a>
+Practical Examples</h1>
+<ul>
+<li></li>
+<li>### Example 1: ADC Reading Conversion</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>uint16_t adc_raw = read_adc(); // 0-4095 (12-bit ADC)</code></li>
+<li><code></code></li>
+<li><code>// Need to convert to temperature in 0.1°C units</code></li>
+<li><code>// Safe conversion (raw fits in uint16_t)</code></li>
+<li><code>int16_t temp_units;</code></li>
+<li><code>sapi_status_t rc = sapi_cast_uint16_to_int16(adc_raw, &amp;temp_units);</code></li>
+<li><code></code></li>
+<li><code>if (rc != SAPI_STATUS_OK) {</code></li>
+<li><code> log_error("ADC value out of range");</code></li>
+<li><code> <a class="el" href="group__SAFESTATE.html#ga5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON)</a>;</code></li>
+<li><code>}</code></li>
+<li><code>// temp_units is now 0-4095 safely *</code></li>
+<li></li>
+<li>### Example 2: CAN ID Conversion</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>uint32_t can_id = receive_can_id(); // CAN uses 29-bit or 11-bit IDs</code></li>
+<li><code></code></li>
+<li><code>// CAN extended ID uses only 29 bits, 3 bits reserved</code></li>
+<li><code>if (can_id &gt; 0x1FFFFFFF) { // 29-bit max</code></li>
+<li><code> log_error("Invalid CAN ID: 0x%x", can_id);</code></li>
+<li><code> return SAPI_STATUS_INVALID_PARAM;</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li>### Example 3: Pointer to Integer Conversion</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>// When storing pointers as integers (e.g., for debugging)</code></li>
+<li><code>void *ptr = get_pointer();</code></li>
+<li><code>uint32_t addr32;</code></li>
+<li><code></code></li>
+<li><code>sapi_status_t rc = sapi_cast_ptr_to_uint32(ptr, &amp;addr32);</code></li>
+<li><code>if (rc != SAPI_STATUS_OK) {</code></li>
+<li><code> log_error("Pointer too large for uint32_t");</code></li>
+<li><code> // On 64-bit system, address might not fit in 32 bits</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. <b>Always Use Checked Casts for Downcasting</b></li>
+<li>- Never (type)value for size reduction</li>
+<li>- Always check with sapi_cast_*</li>
+<li>- Handle errors, don't ignore them</li>
+<li></li>
+<li>2. <b>Upcasting is Safe</b></li>
+<li>- int8 → int32: safe (no loss)</li>
+<li>- Can use direct cast if confident</li>
+<li>- Or use cast functions for consistency</li>
+<li></li>
+<li>3. <b>Handle Errors Appropriately</b></li>
+<li>- For safety-critical: trigger safe-state</li>
+<li>- For non-critical: log warning</li>
+<li>- Always have error path</li>
+<li></li>
+<li>4. <b>Document Assumptions</b></li>
+<li>- Comment why cast is safe</li>
+<li>- Document expected ranges</li>
+<li>- Help future maintainers</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="cast_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="cast_architecture.html">Cast Module - Architecture</a> for internal design</li>
+<li>- <a class="el" href="types_user_guide.html">Types Module - User Guide</a> for fixed-width types</li>
+<li>- <a class="el" href="status_user_guide.html">Status Module - User Guide</a> for error handling</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="status_user_guide_overview"></a>
+What is the Status Module?</h1>
 <ul>
 <li></li>
 <li>The Status module provides a unified error/status code system for the entire</li>
@@ -90,7 +90,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="quick_start"></a>
+<h1><a class="anchor" id="status_user_guide_quick_start"></a>
 Quick Start</h1>
 <ul>
 <li></li>
@@ -125,8 +125,8 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="error_handling"></a>
-Out-of-Memory</h1>
+<h1><a class="anchor" id="status_user_guide_error_handling"></a>
+Error Handling Patterns</h1>
 <ul>
 <li></li>
 <li>### Pattern 1: Early Return</li>
@@ -168,15 +168,15 @@ Out-of-Memory</h1>
 <li><code> if (rc != SAPI_STATUS_OK) {</code></li>
 <li><code> // Safety-critical failure - enter safe-state</code></li>
 <li><code> log_error("Critical failure: %s", sapi_status_to_string(rc));</code></li>
-<li><code> <a class="el" href="sapi__safestate_8h.html#a5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+<li><code> <a class="el" href="group__SAFESTATE.html#ga5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
  *                       SAPI_SAFESTATE_REASON_UNSPECIFIED)</a>;</code></li>
 <li><code> }</code></li>
 <li><code>} *</code></li>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="status_codes"></a>
-Status Code Definitions</h1>
+<h1><a class="anchor" id="status_user_guide_status_codes"></a>
+Complete Status Code Reference</h1>
 <ul>
 <li></li>
 <li>| Code | Meaning | Action |</li>
@@ -191,7 +191,7 @@ Status Code Definitions</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="examples"></a>
+<h1><a class="anchor" id="status_user_guide_examples"></a>
 Practical Examples</h1>
 <ul>
 <li></li>
@@ -236,7 +236,7 @@ Practical Examples</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="mapping"></a>
+<h1><a class="anchor" id="status_user_guide_mapping"></a>
 Status Codes to Safety Actions</h1>
 <ul>
 <li></li>
@@ -264,8 +264,8 @@ Status Codes to Safety Actions</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="guidelines"></a>
-Design Guidelines</h1>
+<h1><a class="anchor" id="status_user_guide_guidelines"></a>
+Best Practices</h1>
 <ul>
 <li></li>
 <li>1. <b>Always check return codes</b> - Don't ignore status codes</li>
@@ -305,13 +305,13 @@ Design Guidelines</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="see_also"></a>
+<h1><a class="anchor" id="status_user_guide_see_also"></a>
 See Also</h1>
 <ul>
 <li></li>
 <li>- <a class="el" href="status_architecture.html">Status Module - Architecture</a> for internal design</li>
-<li>- <a class="el" href="status_architecture.html#safestate">Integration with Safe-State</a> for safe-state triggered on critical failures</li>
-<li>- log for logging status codes</li>
+<li>- <a class="el" href="safestate_user_guide.html">Safe-State Module - User Guide</a> for safe-state triggered on critical failures</li>
+<li>- <a class="el" href="log_user_guide.html">Logging Module - User Guide</a> for logging status codes</li>
 <li>*/ </li>
 </ul>
 </div></div><!-- contents -->

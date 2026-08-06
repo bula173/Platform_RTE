@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Task Queue Module - Architecture\n *\n * Priority queue for deferred work. Higher priority tasks execute first.\n * Fixed storage, no allocation. Application dequeues and executes.\n *\n * @section api Queue Operations\n *\n * sapi_task_queue_enqueue(queue, task) - Add to queue\n * sapi_task_queue_dequeue(queue, task) - Remove highest priority\n *\n * @section priority Priority Ordering\n *\n * Tasks sorted by priority field (higher = first). Same priority: FIFO.\n *\n * @section performance Complexity\n *\n * Enqueue: O(n) insertion sort\n * Dequeue: O(n) shift\n * n = queue size (typically &lt; 64)\n *\n */\n</title>
+<title>Safe API Framework: Task Queue Module - Architecture</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,43 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Task Queue Module - Architecture\n *\n * Priority queue for deferred work. Higher priority tasks execute first.\n * Fixed storage, no allocation. Application dequeues and executes.\n *\n * @section api Queue Operations\n *\n * sapi_task_queue_enqueue(queue, task) - Add to queue\n * sapi_task_queue_dequeue(queue, task) - Remove highest priority\n *\n * @section priority Priority Ordering\n *\n * Tasks sorted by priority field (higher = first). Same priority: FIFO.\n *\n * @section performance Complexity\n *\n * Enqueue: O(n) insertion sort\n * Dequeue: O(n) shift\n * n = queue size (typically &lt; 64)\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Task Queue Module - Architecture</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li>Priority queue for deferred work. Higher priority tasks execute first.</li>
+<li>Fixed storage, no allocation. Application dequeues and executes.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_architecture_api"></a>
+Queue Operations</h1>
+<ul>
+<li></li>
+<li>sapi_task_queue_enqueue(queue, task) - Add to queue</li>
+<li>sapi_task_queue_dequeue(queue, task) - Remove highest priority</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_architecture_priority"></a>
+Priority Ordering</h1>
+<ul>
+<li></li>
+<li>Tasks sorted by priority field (higher = first). Same priority: FIFO.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="task_architecture_performance"></a>
+Complexity</h1>
+<ul>
+<li></li>
+<li>Enqueue: O(n) insertion sort</li>
+<li>Dequeue: O(n) shift</li>
+<li>n = queue size (typically &lt; 64)</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: String Module - User Guide\n *\n * @section overview What is the String Module?\n *\n * The String module provides &lt;strong&gt;bounded string operations&lt;/strong&gt; to prevent buffer overflows.\n * All operations specify maximum lengths and return status codes instead of silently\n * truncating or crashing.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Strings with known boundaries. No overflows, no truncation surprises.\n *\n * @section quick_start Quick Start\n *\n * ### 1. Include Header\n *\n * &lt;tt&gt;c\\n * \#include \\&quot;safeapi/string/sapi_string.h\\&quot;\\n *&lt;/tt&gt;\n *\n * ### 2. Safe Copy\n *\n * &lt;tt&gt;c\\n * // ✗ BAD: Unbounded\\n * strcpy(dest, src);  // What if src is longer than dest?\\n *\\n * // ✓ GOOD: Bounded with status code\\n * sapi_status_t rc = sapi_strncpy(dest, src, 32);\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\&quot;String copy failed: s\\&quot;, sapi_status_to_string(rc));\\n * }\\n *&lt;/tt&gt;\n *\n * ### 3. Safe Concatenation\n *\n * &lt;tt&gt;c\\n * char path[256];\\n * strcpy(path, \\&quot;/home/\\&quot;);\\n *\\n * sapi_status_t rc = sapi_strncat(path, username, 256);\\n * if (rc == SAPI_STATUS_RESOURCE_EXHAUSTED) {\\n *     log_error(\\&quot;Path too long\\&quot;);\\n *     return rc;\\n * }\\n *&lt;/tt&gt;\n *\n * ### 4. Safe String Length\n *\n * &lt;tt&gt;c\\n * size_t len = sapi_strnlen(str, 256);\\n * if (len == 256) {\\n *     log_error(\\&quot;String not null-terminated within 256 bytes\\&quot;);\\n * }\\n *&lt;/tt&gt;\n *\n * @section operations Operations\n *\n * &lt;tt&gt;c\\n * // Copy: Bounded strcpy\\n * sapi_status_t sapi_strncpy(char *dest, const char *src, size_t max_len);\\n *\\n * // Concatenate: Bounded strcat\\n * sapi_status_t sapi_strncat(char *dest, const char *src, size_t max_len);\\n *\\n * // Length: With maximum limit\\n * size_t sapi_strnlen(const char *str, size_t max_len);\\n *\\n * // Comparison: Bounded strcmp\\n * int sapi_strncmp(const char *a, const char *b, size_t max_len);\\n *\\n * // Format: Bounded sprintf\\n * sapi_status_t sapi_snprintf(char *buf, size_t max_len, const char *fmt, ...);\\n *&lt;/tt&gt;\n *\n * @section examples Practical Examples\n *\n * ### Example 1: Command Parsing\n *\n * &lt;tt&gt;c\\n * void parse_command(const char *input) {\\n *     char cmd[32];\\n *     char arg[64];\\n *\\n *     // Parse safely\\n *     if (sscanf(input, \\&quot;%31s %63s\\&quot;, cmd, arg) != 2) {\\n *         log_error(\\&quot;Invalid command format\\&quot;);\\n *         return;\\n *     }\\n *\\n *     // Process command\\n *     if (sapi_strncmp(cmd, \\&quot;status\\&quot;, 32) == 0) {\\n *         handle_status(arg);\\n *     } else if (sapi_strncmp(cmd, \\&quot;reset\\&quot;, 32) == 0) {\\n *         handle_reset(arg);\\n *     }\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 2: Log Message Formatting\n *\n * &lt;tt&gt;c\\n * void log_event(const char *event, int code, const char *detail) {\\n *     char buffer[256];\\n *     sapi_status_t rc = sapi_snprintf(buffer, sizeof(buffer),\\n *         \\&quot;[u] EVENT: s (code=d) - s\\&quot;,\\n *         get_timestamp(), event, code, detail);\\n *\\n *     if (rc != SAPI_STATUS_OK) {\\n *         // Message too long, truncated or failed\\n *         log_error(\\&quot;Log message formatting failed\\&quot;);\\n *         return;\\n *     }\\n *\\n *     write_to_log(buffer);\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Always Specify Maximum Length&lt;/strong&gt;\n *    - No open-ended operations\n *    - Always know buffer size\n *    - Use sizeof(buffer) when possible\n *\n * 2. &lt;strong&gt;Check Return Codes&lt;/strong&gt;\n *    - SAPI_STATUS_OK: Success, string complete\n *    - SAPI_STATUS_RESOURCE_EXHAUSTED: String truncated/overflow\n *    - SAPI_STATUS_INVALID_PARAM: Bad input\n *\n * 3. &lt;strong&gt;Use Fixed-Size Buffers&lt;/strong&gt;\n *    - Never dynamically sized strings\n *    - Allocate statically\n *    - Know max length at compile-time\n *\n * 4. &lt;strong&gt;Prefer snprintf Over sprintf&lt;/strong&gt;\n *    - snprintf has length limit\n *    - sprintf doesn&#39;t (buffer overflow risk)\n *    - Always use sapi_snprintf()\n *\n * @section see_also See Also\n *\n * - @ref string_architecture for internal design\n * - @ref buffer_user_guide for buffer operations\n * - @ref log_user_guide for logging\n *\n */</title>
+<title>Safe API Framework: String Module - User Guide</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,171 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">String Module - User Guide\n *\n * @section overview What is the String Module?\n *\n * The String module provides &lt;strong&gt;bounded string operations&lt;/strong&gt; to prevent buffer overflows.\n * All operations specify maximum lengths and return status codes instead of silently\n * truncating or crashing.\n *\n * &lt;strong&gt;Key idea:&lt;/strong&gt; Strings with known boundaries. No overflows, no truncation surprises.\n *\n * @section quick_start Quick Start\n *\n * ### 1. Include Header\n *\n * &lt;tt&gt;c\\n * \#include \\"safeapi/string/sapi_string.h\\"\\n *&lt;/tt&gt;\n *\n * ### 2. Safe Copy\n *\n * &lt;tt&gt;c\\n * // ✗ BAD: Unbounded\\n * strcpy(dest, src);  // What if src is longer than dest?\\n *\\n * // ✓ GOOD: Bounded with status code\\n * sapi_status_t rc = sapi_strncpy(dest, src, 32);\\n * if (rc != SAPI_STATUS_OK) {\\n *     log_error(\\"String copy failed: %s\\", sapi_status_to_string(rc));\\n * }\\n *&lt;/tt&gt;\n *\n * ### 3. Safe Concatenation\n *\n * &lt;tt&gt;c\\n * char path[256];\\n * strcpy(path, \\"/home/\\");\\n *\\n * sapi_status_t rc = sapi_strncat(path, username, 256);\\n * if (rc == SAPI_STATUS_RESOURCE_EXHAUSTED) {\\n *     log_error(\\"Path too long\\");\\n *     return rc;\\n * }\\n *&lt;/tt&gt;\n *\n * ### 4. Safe String Length\n *\n * &lt;tt&gt;c\\n * size_t len = sapi_strnlen(str, 256);\\n * if (len == 256) {\\n *     log_error(\\"String not null-terminated within 256 bytes\\");\\n * }\\n *&lt;/tt&gt;\n *\n * @section operations Operations\n *\n * &lt;tt&gt;c\\n * // Copy: Bounded strcpy\\n * sapi_status_t sapi_strncpy(char *dest, const char *src, size_t max_len);\\n *\\n * // Concatenate: Bounded strcat\\n * sapi_status_t sapi_strncat(char *dest, const char *src, size_t max_len);\\n *\\n * // Length: With maximum limit\\n * size_t sapi_strnlen(const char *str, size_t max_len);\\n *\\n * // Comparison: Bounded strcmp\\n * int sapi_strncmp(const char *a, const char *b, size_t max_len);\\n *\\n * // Format: Bounded sprintf\\n * sapi_status_t sapi_snprintf(char *buf, size_t max_len, const char *fmt, ...);\\n *&lt;/tt&gt;\n *\n * @section examples Practical Examples\n *\n * ### Example 1: Command Parsing\n *\n * &lt;tt&gt;c\\n * void parse_command(const char *input) {\\n *     char cmd[32];\\n *     char arg[64];\\n *\\n *     // Parse safely\\n *     if (sscanf(input, \\"%31s %63s\\", cmd, arg) != 2) {\\n *         log_error(\\"Invalid command format\\");\\n *         return;\\n *     }\\n *\\n *     // Process command\\n *     if (sapi_strncmp(cmd, \\"status\\", 32) == 0) {\\n *         handle_status(arg);\\n *     } else if (sapi_strncmp(cmd, \\"reset\\", 32) == 0) {\\n *         handle_reset(arg);\\n *     }\\n * }\\n *&lt;/tt&gt;\n *\n * ### Example 2: Log Message Formatting\n *\n * &lt;tt&gt;c\\n * void log_event(const char *event, int code, const char *detail) {\\n *     char buffer[256];\\n *     sapi_status_t rc = sapi_snprintf(buffer, sizeof(buffer),\\n *         \\"[%u] EVENT: %s (code=%d) - %s\\",\\n *         get_timestamp(), event, code, detail);\\n *\\n *     if (rc != SAPI_STATUS_OK) {\\n *         // Message too long, truncated or failed\\n *         log_error(\\"Log message formatting failed\\");\\n * return;\\n * }\\n *\\n * write_to_log(buffer);\\n * }\\n *&lt;/tt&gt;\n *\n * @section guidelines Best Practices\n *\n * 1. &lt;strong&gt;Always Specify Maximum Length&lt;/strong&gt;\n * - No open-ended operations\n * - Always know buffer size\n * - Use sizeof(buffer) when possible\n *\n * 2. &lt;strong&gt;Check Return Codes&lt;/strong&gt;\n * - SAPI_STATUS_OK: Success, string complete\n * - SAPI_STATUS_RESOURCE_EXHAUSTED: String truncated/overflow\n * - SAPI_STATUS_INVALID_PARAM: Bad input\n *\n * 3. &lt;strong&gt;Use Fixed-Size Buffers&lt;/strong&gt;\n * - Never dynamically sized strings\n * - Allocate statically\n * - Know max length at compile-time\n *\n * 4. &lt;strong&gt;Prefer snprintf Over sprintf&lt;/strong&gt;\n * - snprintf has length limit\n * - sprintf doesn't (buffer overflow risk)\n * - Always use sapi_snprintf()\n *\n * @section see_also See Also\n *\n * - @ref string_architecture for internal design\n * - @ref buffer_user_guide for buffer operations\n * - @ref log_user_guide for logging\n *\n */</div></div>
+  <div class="headertitle"><div class="title">String Module - User Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_overview"></a>
+What is the String Module?</h1>
+<ul>
+<li></li>
+<li>The String module provides <b>bounded string operations</b> to prevent buffer overflows.</li>
+<li>All operations specify maximum lengths and return status codes instead of silently</li>
+<li>truncating or crashing.</li>
+<li></li>
+<li><b>Key idea:</b> Strings with known boundaries. No overflows, no truncation surprises.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_quick_start"></a>
+Quick Start</h1>
+<ul>
+<li></li>
+<li>### 1. Include Header</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>#include "safeapi/string/sapi_string.h" *</code></li>
+<li></li>
+<li>### 2. Safe Copy</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>// ✗ BAD: Unbounded</code></li>
+<li><code>strcpy(dest, src); // What if src is longer than dest?</code></li>
+<li><code></code></li>
+<li><code>// ✓ GOOD: Bounded with status code</code></li>
+<li><code>sapi_status_t rc = sapi_strncpy(dest, src, 32);</code></li>
+<li><code>if (rc != SAPI_STATUS_OK) {</code></li>
+<li><code> log_error("String copy failed: %s", sapi_status_to_string(rc));</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li>### 3. Safe Concatenation</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>char path[256];</code></li>
+<li><code>strcpy(path, "/home/");</code></li>
+<li><code></code></li>
+<li><code>sapi_status_t rc = sapi_strncat(path, username, 256);</code></li>
+<li><code>if (rc == SAPI_STATUS_RESOURCE_EXHAUSTED) {</code></li>
+<li><code> log_error("Path too long");</code></li>
+<li><code> return rc;</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li>### 4. Safe String Length</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>size_t len = sapi_strnlen(str, 256);</code></li>
+<li><code>if (len == 256) {</code></li>
+<li><code> log_error("String not null-terminated within 256 bytes");</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_operations"></a>
+Operations</h1>
+<ul>
+<li></li>
+<li><code>c</code></li>
+<li><code>// Copy: Bounded strcpy</code></li>
+<li><code>sapi_status_t sapi_strncpy(char *dest, const char *src, size_t max_len);</code></li>
+<li><code></code></li>
+<li><code>// Concatenate: Bounded strcat</code></li>
+<li><code>sapi_status_t sapi_strncat(char *dest, const char *src, size_t max_len);</code></li>
+<li><code></code></li>
+<li><code>// Length: With maximum limit</code></li>
+<li><code>size_t sapi_strnlen(const char *str, size_t max_len);</code></li>
+<li><code></code></li>
+<li><code>// Comparison: Bounded strcmp</code></li>
+<li><code>int sapi_strncmp(const char *a, const char *b, size_t max_len);</code></li>
+<li><code></code></li>
+<li><code>// Format: Bounded sprintf</code></li>
+<li><code>sapi_status_t sapi_snprintf(char *buf, size_t max_len, const char *fmt, ...); *</code></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_examples"></a>
+Practical Examples</h1>
+<ul>
+<li></li>
+<li>### Example 1: Command Parsing</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>void parse_command(const char *input) {</code></li>
+<li><code> char cmd[32];</code></li>
+<li><code> char arg[64];</code></li>
+<li><code></code></li>
+<li><code> // Parse safely</code></li>
+<li><code> if (sscanf(input, "%31s %63s", cmd, arg) != 2) {</code></li>
+<li><code> log_error("Invalid command format");</code></li>
+<li><code> return;</code></li>
+<li><code> }</code></li>
+<li><code></code></li>
+<li><code> // Process command</code></li>
+<li><code> if (sapi_strncmp(cmd, "status", 32) == 0) {</code></li>
+<li><code> handle_status(arg);</code></li>
+<li><code> } else if (sapi_strncmp(cmd, "reset", 32) == 0) {</code></li>
+<li><code> handle_reset(arg);</code></li>
+<li><code> }</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li>### Example 2: Log Message Formatting</li>
+<li></li>
+<li><code>c</code></li>
+<li><code>void log_event(const char *event, int code, const char *detail) {</code></li>
+<li><code> char buffer[256];</code></li>
+<li><code> sapi_status_t rc = sapi_snprintf(buffer, sizeof(buffer),</code></li>
+<li><code> "[%u] EVENT: %s (code=%d) - %s",</code></li>
+<li><code> get_timestamp(), event, code, detail);</code></li>
+<li><code></code></li>
+<li><code> if (rc != SAPI_STATUS_OK) {</code></li>
+<li><code> // Message too long, truncated or failed</code></li>
+<li><code> log_error("Log message formatting failed");</code></li>
+<li><code> return;</code></li>
+<li><code> }</code></li>
+<li><code></code></li>
+<li><code> write_to_log(buffer);</code></li>
+<li><code>} *</code></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. <b>Always Specify Maximum Length</b></li>
+<li>- No open-ended operations</li>
+<li>- Always know buffer size</li>
+<li>- Use sizeof(buffer) when possible</li>
+<li></li>
+<li>2. <b>Check Return Codes</b></li>
+<li>- SAPI_STATUS_OK: Success, string complete</li>
+<li>- SAPI_STATUS_RESOURCE_EXHAUSTED: String truncated/overflow</li>
+<li>- SAPI_STATUS_INVALID_PARAM: Bad input</li>
+<li></li>
+<li>3. <b>Use Fixed-Size Buffers</b></li>
+<li>- Never dynamically sized strings</li>
+<li>- Allocate statically</li>
+<li>- Know max length at compile-time</li>
+<li></li>
+<li>4. <b>Prefer snprintf Over sprintf</b></li>
+<li>- snprintf has length limit</li>
+<li>- sprintf doesn't (buffer overflow risk)</li>
+<li>- Always use sapi_snprintf()</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="string_architecture.html">String Module - Architecture</a> for internal design</li>
+<li>- <a class="el" href="buffer_user_guide.html">Buffer Module - User Guide</a> for buffer operations</li>
+<li>- <a class="el" href="log_user_guide.html">Logging Module - User Guide</a> for logging</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

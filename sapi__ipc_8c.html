@@ -77,11 +77,11 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_ipc.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_ipc.c File Reference<div class="ingroups"><a class="el" href="group__IPC.html">Inter-Process Communication</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__ipc_8c.html#ac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005).  
+<p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__ipc_8h_source.html">safeapi/ipc/sapi_ipc.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -109,240 +109,33 @@ Include dependency graph for sapi_ipc.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac358505516016f8431e8c6f45be560d3" id="r_ac358505516016f8431e8c6f45be560d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#ac358505516016f8431e8c6f45be560d3">sapi_ipc_register_backend</a> (const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:ac358505516016f8431e8c6f45be560d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:ac358505516016f8431e8c6f45be560d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a026464f85b0ab549c64cdd835e88e8c4" id="r_a026464f85b0ab549c64cdd835e88e8c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#a026464f85b0ab549c64cdd835e88e8c4">sapi_ipc_create</a> (sapi_ipc_storage_t *storage, const <a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> *config, sapi_ipc_handle_t *out_handle)</td></tr>
-<tr class="memdesc:a026464f85b0ab549c64cdd835e88e8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a bounded message channel.  <br /></td></tr>
-<tr class="separator:a026464f85b0ab549c64cdd835e88e8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af9ccd5efd6adc4c9c4c252c700a5da0f" id="r_af9ccd5efd6adc4c9c4c252c700a5da0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#af9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a> (sapi_ipc_handle_t handle, const void *message, size_t message_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
-<tr class="memdesc:af9ccd5efd6adc4c9c4c252c700a5da0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends one message, blocking at most timeout_ms.  <br /></td></tr>
-<tr class="separator:af9ccd5efd6adc4c9c4c252c700a5da0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e576eecff591184e8686fe85421d7a6" id="r_a6e576eecff591184e8686fe85421d7a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#a6e576eecff591184e8686fe85421d7a6">sapi_ipc_receive</a> (sapi_ipc_handle_t handle, void *out_message, size_t buffer_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
-<tr class="memdesc:a6e576eecff591184e8686fe85421d7a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives one message, blocking at most timeout_ms.  <br /></td></tr>
-<tr class="separator:a6e576eecff591184e8686fe85421d7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad58ecff38329de6beeb47b38b2a80bb7" id="r_ad58ecff38329de6beeb47b38b2a80bb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#ad58ecff38329de6beeb47b38b2a80bb7">sapi_ipc_destroy</a> (sapi_ipc_handle_t handle)</td></tr>
-<tr class="memdesc:ad58ecff38329de6beeb47b38b2a80bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a message channel.  <br /></td></tr>
-<tr class="separator:ad58ecff38329de6beeb47b38b2a80bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac358505516016f8431e8c6f45be560d3" id="r_gac358505516016f8431e8c6f45be560d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3">sapi_ipc_register_backend</a> (const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:gac358505516016f8431e8c6f45be560d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
+<tr class="separator:gac358505516016f8431e8c6f45be560d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga026464f85b0ab549c64cdd835e88e8c4" id="r_ga026464f85b0ab549c64cdd835e88e8c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#ga026464f85b0ab549c64cdd835e88e8c4">sapi_ipc_create</a> (sapi_ipc_storage_t *storage, const <a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> *config, <a class="el" href="group__IPC.html#ga2bdbcdff68590e6b32719845e86d5551">sapi_ipc_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:ga026464f85b0ab549c64cdd835e88e8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a bounded message channel.  <br /></td></tr>
+<tr class="separator:ga026464f85b0ab549c64cdd835e88e8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf9ccd5efd6adc4c9c4c252c700a5da0f" id="r_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a> (<a class="el" href="group__IPC.html#ga2bdbcdff68590e6b32719845e86d5551">sapi_ipc_handle_t</a> handle, const void *message, size_t message_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memdesc:gaf9ccd5efd6adc4c9c4c252c700a5da0f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends one message, blocking at most timeout_ms.  <br /></td></tr>
+<tr class="separator:gaf9ccd5efd6adc4c9c4c252c700a5da0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6e576eecff591184e8686fe85421d7a6" id="r_ga6e576eecff591184e8686fe85421d7a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#ga6e576eecff591184e8686fe85421d7a6">sapi_ipc_receive</a> (<a class="el" href="group__IPC.html#ga2bdbcdff68590e6b32719845e86d5551">sapi_ipc_handle_t</a> handle, void *out_message, size_t buffer_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memdesc:ga6e576eecff591184e8686fe85421d7a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives one message, blocking at most timeout_ms.  <br /></td></tr>
+<tr class="separator:ga6e576eecff591184e8686fe85421d7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad58ecff38329de6beeb47b38b2a80bb7" id="r_gad58ecff38329de6beeb47b38b2a80bb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#gad58ecff38329de6beeb47b38b2a80bb7">sapi_ipc_destroy</a> (<a class="el" href="group__IPC.html#ga2bdbcdff68590e6b32719845e86d5551">sapi_ipc_handle_t</a> handle)</td></tr>
+<tr class="memdesc:gad58ecff38329de6beeb47b38b2a80bb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a message channel.  <br /></td></tr>
+<tr class="separator:gad58ecff38329de6beeb47b38b2a80bb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:abf00ed2fda458ec8dad55dff4dbd97ba" id="r_abf00ed2fda458ec8dad55dff4dbd97ba"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__ipc_8c.html#abf00ed2fda458ec8dad55dff4dbd97ba">s_backend</a> = NULL</td></tr>
+<tr class="memdesc:abf00ed2fda458ec8dad55dff4dbd97ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Currently registered backend, or NULL if none (ADR-005).  <br /></td></tr>
 <tr class="separator:abf00ed2fda458ec8dad55dff4dbd97ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__ipc_8c.html#ac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="ac358505516016f8431e8c6f45be560d3" name="ac358505516016f8431e8c6f45be560d3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac358505516016f8431e8c6f45be560d3">&#9670;&#160;</a></span>sapi_ipc_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_ipc_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2.1). Call once at startup. </p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise. REQ-OAL-IPC-014 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-
-</div>
-</div>
-<a id="a026464f85b0ab549c64cdd835e88e8c4" name="a026464f85b0ab549c64cdd835e88e8c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a026464f85b0ab549c64cdd835e88e8c4">&#9670;&#160;</a></span>sapi_ipc_create()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_ipc_create </td>
-          <td>(</td>
-          <td class="paramtype">sapi_ipc_storage_t *&#160;</td>
-          <td class="paramname"><em>storage</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> *&#160;</td>
-          <td class="paramname"><em>config</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sapi_ipc_handle_t *&#160;</td>
-          <td class="paramname"><em>out_handle</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a bounded message channel. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">storage</td><td>Caller-owned storage for the handle's state. Must not be NULL. </td></tr>
-    <tr><td class="paramname">config</td><td>Channel configuration. Must not be NULL; config-&gt;message_size and config-&gt;queue_depth must both be &gt; 0. </td></tr>
-    <tr><td class="paramname">out_handle</td><td>Receives the created channel's handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument; SAPI_STATUS_NOT_INITIALIZED if no backend is registered (<a class="el" href="sapi__ipc_8h.html#ac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a>); SAPI_STATUS_NOT_SUPPORTED if the registered backend does not implement create. REQ-OAL-IPC-010 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-
-</div>
-</div>
-<a id="af9ccd5efd6adc4c9c4c252c700a5da0f" name="af9ccd5efd6adc4c9c4c252c700a5da0f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af9ccd5efd6adc4c9c4c252c700a5da0f">&#9670;&#160;</a></span>sapi_ipc_send()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_ipc_send </td>
-          <td>(</td>
-          <td class="paramtype">sapi_ipc_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const void *&#160;</td>
-          <td class="paramname"><em>message</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>message_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td>
-          <td class="paramname"><em>timeout_ms</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sends one message, blocking at most timeout_ms. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Channel handle. Must not be NULL. </td></tr>
-    <tr><td class="paramname">message</td><td>Message data to send. Must not be NULL. </td></tr>
-    <tr><td class="paramname">message_size</td><td>Size of message in bytes; must be &gt; 0. </td></tr>
-    <tr><td class="paramname">timeout_ms</td><td>Maximum time to wait for queue space. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_TIMEOUT if the queue stays full for the whole timeout; SAPI_STATUS_NOT_INITIALIZED/ SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__ipc_8h.html#a026464f85b0ab549c64cdd835e88e8c4" title="Creates a bounded message channel.">sapi_ipc_create()</a>. REQ-OAL-IPC-011 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-
-</div>
-</div>
-<a id="a6e576eecff591184e8686fe85421d7a6" name="a6e576eecff591184e8686fe85421d7a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e576eecff591184e8686fe85421d7a6">&#9670;&#160;</a></span>sapi_ipc_receive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_ipc_receive </td>
-          <td>(</td>
-          <td class="paramtype">sapi_ipc_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>out_message</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>buffer_size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td>
-          <td class="paramname"><em>timeout_ms</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Receives one message, blocking at most timeout_ms. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Channel handle. Must not be NULL. </td></tr>
-    <tr><td class="paramname">out_message</td><td>Destination buffer. Must not be NULL. </td></tr>
-    <tr><td class="paramname">buffer_size</td><td>Usable size of out_message in bytes; must be &gt; 0. </td></tr>
-    <tr><td class="paramname">timeout_ms</td><td>Maximum time to wait for a message to arrive. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_TIMEOUT if no message arrives within the timeout; SAPI_STATUS_NOT_INITIALIZED/ SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__ipc_8h.html#a026464f85b0ab549c64cdd835e88e8c4" title="Creates a bounded message channel.">sapi_ipc_create()</a>. REQ-OAL-IPC-012 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00064">64</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-
-</div>
-</div>
-<a id="ad58ecff38329de6beeb47b38b2a80bb7" name="ad58ecff38329de6beeb47b38b2a80bb7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad58ecff38329de6beeb47b38b2a80bb7">&#9670;&#160;</a></span>sapi_ipc_destroy()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_ipc_destroy </td>
-          <td>(</td>
-          <td class="paramtype">sapi_ipc_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Destroys a message channel. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Channel handle. Must not be NULL. Invalid to use after this call. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_NOT_INITIALIZED/ SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__ipc_8h.html#a026464f85b0ab549c64cdd835e88e8c4" title="Creates a bounded message channel.">sapi_ipc_create()</a>. REQ-OAL-IPC-013 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00084">84</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Variable Documentation</h2>
 <a id="abf00ed2fda458ec8dad55dff4dbd97ba" name="abf00ed2fda458ec8dad55dff4dbd97ba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abf00ed2fda458ec8dad55dff4dbd97ba">&#9670;&#160;</a></span>s_backend</h2>
 
@@ -363,7 +156,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00008">8</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
+<p>Currently registered backend, or NULL if none (ADR-005). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
 
 </div>
 </div>

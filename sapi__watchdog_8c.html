@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="sapi__timer_8h.html#a5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation).  
+<p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__watchdog_8h_source.html">safeapi/watchdog/sapi_watchdog.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__log_8h_source.html">safeapi/log/sapi_log.h</a>&quot;</code><br />
@@ -143,31 +143,33 @@ Macros</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:a276607429a1cd38238764fc6cd8cef70" id="r_a276607429a1cd38238764fc6cd8cef70"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__watchdog_8c.html#a276607429a1cd38238764fc6cd8cef70">is_valid_handle</a> (sapi_watchdog_t watchdog)</td></tr>
+<tr class="memdesc:a276607429a1cd38238764fc6cd8cef70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defensive check that handle actually points at one of this module's own live pool slots, not an arbitrary caller pointer.  <br /></td></tr>
 <tr class="separator:a276607429a1cd38238764fc6cd8cef70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae80e4fca3c6bbb43bf990420aa97df19" id="r_ae80e4fca3c6bbb43bf990420aa97df19"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__watchdog_8c.html#ae80e4fca3c6bbb43bf990420aa97df19">is_valid_action</a> (<a class="el" href="group__WATCHDOG.html#ga8ea2354635a9eb8b54711c1a5798b052">sapi_watchdog_action_t</a> action)</td></tr>
+<tr class="memdesc:ae80e4fca3c6bbb43bf990420aa97df19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks whether action is one of the defined sapi_watchdog_action_t enumerators.  <br /></td></tr>
 <tr class="separator:ae80e4fca3c6bbb43bf990420aa97df19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga31be658bf401a59aa1fbf7145061e983" id="r_ga31be658bf401a59aa1fbf7145061e983"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga31be658bf401a59aa1fbf7145061e983">sapi_watchdog_manager_initialize</a> (void)</td></tr>
+<tr class="memitem:ga31be658bf401a59aa1fbf7145061e983" id="r_ga31be658bf401a59aa1fbf7145061e983"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga31be658bf401a59aa1fbf7145061e983">sapi_watchdog_manager_initialize</a> (void)</td></tr>
 <tr class="memdesc:ga31be658bf401a59aa1fbf7145061e983"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize watchdog manager (call once at startup)  <br /></td></tr>
 <tr class="separator:ga31be658bf401a59aa1fbf7145061e983"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaae9f8ea8818cc724c3c63f7675a79601" id="r_gaae9f8ea8818cc724c3c63f7675a79601"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gaae9f8ea8818cc724c3c63f7675a79601">sapi_watchdog_manager_shutdown</a> (void)</td></tr>
+<tr class="memitem:gaae9f8ea8818cc724c3c63f7675a79601" id="r_gaae9f8ea8818cc724c3c63f7675a79601"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gaae9f8ea8818cc724c3c63f7675a79601">sapi_watchdog_manager_shutdown</a> (void)</td></tr>
 <tr class="memdesc:gaae9f8ea8818cc724c3c63f7675a79601"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown watchdog manager (call once at shutdown)  <br /></td></tr>
 <tr class="separator:gaae9f8ea8818cc724c3c63f7675a79601"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa459a30f525834a12cad00a0f40f15b8" id="r_gaa459a30f525834a12cad00a0f40f15b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8">sapi_watchdog_create</a> (sapi_watchdog_t *handle_out, const <a class="el" href="structsapi__watchdog__config__t.html">sapi_watchdog_config_t</a> *config)</td></tr>
+<tr class="memitem:gaa459a30f525834a12cad00a0f40f15b8" id="r_gaa459a30f525834a12cad00a0f40f15b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8">sapi_watchdog_create</a> (sapi_watchdog_t *handle_out, const <a class="el" href="structsapi__watchdog__config__t.html">sapi_watchdog_config_t</a> *config)</td></tr>
 <tr class="memdesc:gaa459a30f525834a12cad00a0f40f15b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a watchdog.  <br /></td></tr>
 <tr class="separator:gaa459a30f525834a12cad00a0f40f15b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabc2cd4f23f4c3637b6f96c37a6a4383b" id="r_gabc2cd4f23f4c3637b6f96c37a6a4383b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gabc2cd4f23f4c3637b6f96c37a6a4383b">sapi_watchdog_start</a> (sapi_watchdog_t watchdog)</td></tr>
+<tr class="memitem:gabc2cd4f23f4c3637b6f96c37a6a4383b" id="r_gabc2cd4f23f4c3637b6f96c37a6a4383b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gabc2cd4f23f4c3637b6f96c37a6a4383b">sapi_watchdog_start</a> (sapi_watchdog_t watchdog)</td></tr>
 <tr class="memdesc:gabc2cd4f23f4c3637b6f96c37a6a4383b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start watchdog timer.  <br /></td></tr>
 <tr class="separator:gabc2cd4f23f4c3637b6f96c37a6a4383b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2c14a4fa4ef999250b8be21a6d2e9323" id="r_ga2c14a4fa4ef999250b8be21a6d2e9323"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga2c14a4fa4ef999250b8be21a6d2e9323">sapi_watchdog_stop</a> (sapi_watchdog_t watchdog)</td></tr>
+<tr class="memitem:ga2c14a4fa4ef999250b8be21a6d2e9323" id="r_ga2c14a4fa4ef999250b8be21a6d2e9323"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga2c14a4fa4ef999250b8be21a6d2e9323">sapi_watchdog_stop</a> (sapi_watchdog_t watchdog)</td></tr>
 <tr class="memdesc:ga2c14a4fa4ef999250b8be21a6d2e9323"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop watchdog timer.  <br /></td></tr>
 <tr class="separator:ga2c14a4fa4ef999250b8be21a6d2e9323"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab7deaf1b9fcc7072703e997ff3af0054" id="r_gab7deaf1b9fcc7072703e997ff3af0054"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gab7deaf1b9fcc7072703e997ff3af0054">sapi_watchdog_kick</a> (sapi_watchdog_t watchdog)</td></tr>
+<tr class="memitem:gab7deaf1b9fcc7072703e997ff3af0054" id="r_gab7deaf1b9fcc7072703e997ff3af0054"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#gab7deaf1b9fcc7072703e997ff3af0054">sapi_watchdog_kick</a> (sapi_watchdog_t watchdog)</td></tr>
 <tr class="memdesc:gab7deaf1b9fcc7072703e997ff3af0054"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kick (pet) watchdog - prove liveness.  <br /></td></tr>
 <tr class="separator:gab7deaf1b9fcc7072703e997ff3af0054"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3b92357e5848a5dd4f3abbbe109c1059" id="r_ga3b92357e5848a5dd4f3abbbe109c1059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga3b92357e5848a5dd4f3abbbe109c1059">sapi_watchdog_get_status</a> (sapi_watchdog_t watchdog, <a class="el" href="structsapi__watchdog__status__t.html">sapi_watchdog_status_t</a> *status_out)</td></tr>
+<tr class="memitem:ga3b92357e5848a5dd4f3abbbe109c1059" id="r_ga3b92357e5848a5dd4f3abbbe109c1059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga3b92357e5848a5dd4f3abbbe109c1059">sapi_watchdog_get_status</a> (sapi_watchdog_t watchdog, <a class="el" href="structsapi__watchdog__status__t.html">sapi_watchdog_status_t</a> *status_out)</td></tr>
 <tr class="memdesc:ga3b92357e5848a5dd4f3abbbe109c1059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get watchdog status.  <br /></td></tr>
 <tr class="separator:ga3b92357e5848a5dd4f3abbbe109c1059"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6bda3831233d3e1d02978a0ed7f71e78" id="r_ga6bda3831233d3e1d02978a0ed7f71e78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga6bda3831233d3e1d02978a0ed7f71e78">sapi_watchdog_destroy</a> (sapi_watchdog_t watchdog)</td></tr>
+<tr class="memitem:ga6bda3831233d3e1d02978a0ed7f71e78" id="r_ga6bda3831233d3e1d02978a0ed7f71e78"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga6bda3831233d3e1d02978a0ed7f71e78">sapi_watchdog_destroy</a> (sapi_watchdog_t watchdog)</td></tr>
 <tr class="memdesc:ga6bda3831233d3e1d02978a0ed7f71e78"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroy watchdog.  <br /></td></tr>
 <tr class="separator:ga6bda3831233d3e1d02978a0ed7f71e78"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga86fd7ed9c5dbb72b17713c5702064471" id="r_ga86fd7ed9c5dbb72b17713c5702064471"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__WATCHDOG.html#ga86fd7ed9c5dbb72b17713c5702064471">sapi_watchdog_timeout_handler</a> (uint32_t watchdog_id)</td></tr>
@@ -180,12 +182,14 @@ Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a00aeb3a1796aaf2cacfebdfbdd7dd1c4" id="r_a00aeb3a1796aaf2cacfebdfbdd7dd1c4"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structsapi__watchdog__s.html">sapi_watchdog_s</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__watchdog_8c.html#a00aeb3a1796aaf2cacfebdfbdd7dd1c4">g_watchdog_pool</a> [<a class="el" href="sapi__watchdog_8c.html#a7eef3c0336ef1663e5a7f79a4a5f80a5">SAPI_WATCHDOG_MAX_COUNT</a>]</td></tr>
+<tr class="memdesc:a00aeb3a1796aaf2cacfebdfbdd7dd1c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fixed-size static pool backing every sapi_watchdog_t handle.  <br /></td></tr>
 <tr class="separator:a00aeb3a1796aaf2cacfebdfbdd7dd1c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad3972cd46f458f137a36ece8d1a6279" id="r_aad3972cd46f458f137a36ece8d1a6279"><td class="memItemLeft" align="right" valign="top">static uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__watchdog_8c.html#aad3972cd46f458f137a36ece8d1a6279">g_manager_initialized</a> = 0U</td></tr>
+<tr class="memdesc:aad3972cd46f458f137a36ece8d1a6279"><td class="mdescLeft">&#160;</td><td class="mdescRight">1 once <a class="el" href="group__WATCHDOG.html#ga31be658bf401a59aa1fbf7145061e983" title="Initialize watchdog manager (call once at startup)">sapi_watchdog_manager_initialize()</a> has been called.  <br /></td></tr>
 <tr class="separator:aad3972cd46f458f137a36ece8d1a6279"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="sapi__timer_8h.html#a5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation). </p>
+<div class="textblock"><p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation). </p>
 <p>Timeout detection is polling-based: something (the application's own loop, or a periodic sapi_timer callback) must call <a class="el" href="group__WATCHDOG.html#gad32b54f5e3f62b0ba4f6d2379f970f67" title="Poll all active watchdogs for expiry (call periodically)">sapi_watchdog_timer_tick()</a> regularly for a fired watchdog to actually be detected - see that function's own doc for why a poll-driven design was chosen here over a true ISR/thread-driven one.</p>
 <p>Replaces a previous stub where kick()/start()/get_status() were all no-ops and no timeout was ever detected (see git history) - discovered while wiring a real per-role watchdog into safeAPIExample. </p>
 
@@ -232,9 +236,18 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Defensive check that handle actually points at one of this module's own live pool slots, not an arbitrary caller pointer. Pointer comparison against both ends of the same array object is well-defined in C (unlike comparing unrelated pointers). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00071">71</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p>Defensive check that handle actually points at one of this module's own live pool slots, not an arbitrary caller pointer. </p>
+<p>Pointer comparison against both ends of the same array object is well-defined in C (unlike comparing unrelated pointers).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">watchdog</td><td>Handle to validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if watchdog points at an in-use slot of g_watchdog_pool; false otherwise (including NULL). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00080">80</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -262,7 +275,16 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00079">79</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p>Checks whether action is one of the defined sapi_watchdog_action_t enumerators. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action</td><td>Value to validate. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if action is a recognized enumerator; false otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00093">93</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -287,7 +309,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00060">60</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p>Fixed-size static pool backing every sapi_watchdog_t handle. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00061">61</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -311,7 +335,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00061">61</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p>1 once <a class="el" href="group__WATCHDOG.html#ga31be658bf401a59aa1fbf7145061e983" title="Initialize watchdog manager (call once at startup)">sapi_watchdog_manager_initialize()</a> has been called. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00063">63</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>

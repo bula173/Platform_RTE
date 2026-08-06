@@ -72,7 +72,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_nvm_backend_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_nvm_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__NVM.html">Non-Volatile Memory</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -83,21 +83,26 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:aa767d9fde2916bd4793c64cfad1f9327" id="r_aa767d9fde2916bd4793c64cfad1f9327"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#aa767d9fde2916bd4793c64cfad1f9327">open</a> )(sapi_nvm_storage_t *storage, const <a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a> *config, sapi_nvm_handle_t *out_handle)</td></tr>
+<tr class="memitem:aa767d9fde2916bd4793c64cfad1f9327" id="r_aa767d9fde2916bd4793c64cfad1f9327"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#aa767d9fde2916bd4793c64cfad1f9327">open</a> )(sapi_nvm_storage_t *storage, const <a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a> *config, <a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:aa767d9fde2916bd4793c64cfad1f9327"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NVM.html#ga0124801b6ab70ba06ceb6fb6e971da2e" title="Opens (creating if necessary) a named NVM region.">sapi_nvm_open()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:aa767d9fde2916bd4793c64cfad1f9327"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a946711f74b92fe96d7c0b575c95ffab6" id="r_a946711f74b92fe96d7c0b575c95ffab6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#a946711f74b92fe96d7c0b575c95ffab6">read</a> )(sapi_nvm_handle_t handle, size_t offset, void *out_buffer, size_t buffer_size)</td></tr>
+<tr class="memitem:a946711f74b92fe96d7c0b575c95ffab6" id="r_a946711f74b92fe96d7c0b575c95ffab6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#a946711f74b92fe96d7c0b575c95ffab6">read</a> )(<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle, size_t offset, void *out_buffer, size_t buffer_size)</td></tr>
+<tr class="memdesc:a946711f74b92fe96d7c0b575c95ffab6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NVM.html#ga71f0d30abb2850fd43eda56b2e594c86" title="Reads and integrity-checks data from an NVM region.">sapi_nvm_read()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a946711f74b92fe96d7c0b575c95ffab6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd8403fe9dbd9d44b0360c117fee0ba3" id="r_afd8403fe9dbd9d44b0360c117fee0ba3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#afd8403fe9dbd9d44b0360c117fee0ba3">write</a> )(sapi_nvm_handle_t handle, size_t offset, const void *buffer, size_t buffer_size)</td></tr>
+<tr class="memitem:afd8403fe9dbd9d44b0360c117fee0ba3" id="r_afd8403fe9dbd9d44b0360c117fee0ba3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#afd8403fe9dbd9d44b0360c117fee0ba3">write</a> )(<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle, size_t offset, const void *buffer, size_t buffer_size)</td></tr>
+<tr class="memdesc:afd8403fe9dbd9d44b0360c117fee0ba3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NVM.html#gac9a323d2a9f943944d3690570e1da957" title="Writes data and its integrity metadata to an NVM region.">sapi_nvm_write()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:afd8403fe9dbd9d44b0360c117fee0ba3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3a6f19309893388fb7a79c9429885ad" id="r_aa3a6f19309893388fb7a79c9429885ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#aa3a6f19309893388fb7a79c9429885ad">sync</a> )(sapi_nvm_handle_t handle)</td></tr>
+<tr class="memitem:aa3a6f19309893388fb7a79c9429885ad" id="r_aa3a6f19309893388fb7a79c9429885ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#aa3a6f19309893388fb7a79c9429885ad">sync</a> )(<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle)</td></tr>
+<tr class="memdesc:aa3a6f19309893388fb7a79c9429885ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NVM.html#ga156dc81a446c0f82c0f08bd54fa8f567" title="Forces any buffered writes to durable storage.">sapi_nvm_sync()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:aa3a6f19309893388fb7a79c9429885ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0de5482afe56edabbf9e5337804a69a" id="r_ad0de5482afe56edabbf9e5337804a69a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#ad0de5482afe56edabbf9e5337804a69a">close</a> )(sapi_nvm_handle_t handle)</td></tr>
+<tr class="memitem:ad0de5482afe56edabbf9e5337804a69a" id="r_ad0de5482afe56edabbf9e5337804a69a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html#ad0de5482afe56edabbf9e5337804a69a">close</a> )(<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ad0de5482afe56edabbf9e5337804a69a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NVM.html#ga24800c911fe9ae13f0df7d987450d81a" title="Closes an NVM region handle.">sapi_nvm_close()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:ad0de5482afe56edabbf9e5337804a69a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the NVM service for a specific storage medium (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00103">103</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00110">110</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="aa767d9fde2916bd4793c64cfad1f9327" name="aa767d9fde2916bd4793c64cfad1f9327"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa767d9fde2916bd4793c64cfad1f9327">&#9670;&#160;</a></span>open</h2>
@@ -106,12 +111,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::open) (sapi_nvm_storage_t *storage, const <a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a> *config, sapi_nvm_handle_t *out_handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::open) (sapi_nvm_storage_t *storage, const <a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a> *config, <a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> *out_handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00105">105</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NVM.html#ga0124801b6ab70ba06ceb6fb6e971da2e" title="Opens (creating if necessary) a named NVM region.">sapi_nvm_open()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00113">113</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 
 </div>
 </div>
@@ -122,12 +129,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::read) (sapi_nvm_handle_t handle, size_t offset, void *out_buffer, size_t buffer_size)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::read) (<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle, size_t offset, void *out_buffer, size_t buffer_size)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00108">108</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NVM.html#ga71f0d30abb2850fd43eda56b2e594c86" title="Reads and integrity-checks data from an NVM region.">sapi_nvm_read()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00117">117</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 
 </div>
 </div>
@@ -138,12 +147,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::write) (sapi_nvm_handle_t handle, size_t offset, const void *buffer, size_t buffer_size)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::write) (<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle, size_t offset, const void *buffer, size_t buffer_size)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00110">110</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NVM.html#gac9a323d2a9f943944d3690570e1da957" title="Writes data and its integrity metadata to an NVM region.">sapi_nvm_write()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00120">120</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 
 </div>
 </div>
@@ -154,12 +165,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::sync) (sapi_nvm_handle_t handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::sync) (<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00112">112</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NVM.html#ga156dc81a446c0f82c0f08bd54fa8f567" title="Forces any buffered writes to durable storage.">sapi_nvm_sync()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00123">123</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 
 </div>
 </div>
@@ -170,12 +183,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::close) (sapi_nvm_handle_t handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_nvm_backend_t::close) (<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00113">113</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NVM.html#ga24800c911fe9ae13f0df7d987450d81a" title="Closes an NVM region handle.">sapi_nvm_close()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8h_source.html#l00125">125</a> of file <a class="el" href="sapi__nvm_8h_source.html">sapi_nvm.h</a>.</p>
 
 </div>
 </div>

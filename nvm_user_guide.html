@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Non-Volatile Memory User Guide\n *\n * @section overview What is NVM?\n *\n * NVM provides persistent storage for configuration, state, diagnostics.\n * Caller manages address space and layout. Read/write with checksums.\n *\n * @section quick_start Quick Start\n *\n * @code\n * // Define NVM layout\n * #define CONFIG_ADDR 0\n * #define CONFIG_SIZE 256\n *\n * // Read configuration\n * config_t cfg;\n * sapi_nvm_read(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));\n *\n * // Verify checksum\n * uint32_t crc = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);\n * if (crc != cfg.checksum) {\n *     log_error(\&quot;Config corrupted\&quot;);\n *     use_default_config(&amp;cfg);\n * }\n *\n * // Save configuration\n * cfg.checksum = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);\n * sapi_nvm_write(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Always use checksums\n * 2. Manage wear (limit writes)\n * 3. Plan address layout\n * 4. Version data for evolution\n *\n * @section see_also See Also\n *\n * - @ref nvm_architecture for design\n * - @ref checksum_user_guide for CRC\n *\n */\n</title>
+<title>Safe API Framework: Non-Volatile Memory User Guide</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,69 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Non-Volatile Memory User Guide\n *\n * @section overview What is NVM?\n *\n * NVM provides persistent storage for configuration, state, diagnostics.\n * Caller manages address space and layout. Read/write with checksums.\n *\n * @section quick_start Quick Start\n *\n * @code\n * // Define NVM layout\n * #define CONFIG_ADDR 0\n * #define CONFIG_SIZE 256\n *\n * // Read configuration\n * config_t cfg;\n * sapi_nvm_read(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));\n *\n * // Verify checksum\n * uint32_t crc = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);\n * if (crc != cfg.checksum) {\n * log_error(\"Config corrupted\");\n * use_default_config(&amp;cfg);\n * }\n *\n * // Save configuration\n * cfg.checksum = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);\n * sapi_nvm_write(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Always use checksums\n * 2. Manage wear (limit writes)\n * 3. Plan address layout\n * 4. Version data for evolution\n *\n * @section see_also See Also\n *\n * - @ref nvm_architecture for design\n * - @ref checksum_user_guide for CRC\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Non-Volatile Memory User Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="nvm_user_guide_overview"></a>
+What is NVM?</h1>
+<ul>
+<li></li>
+<li>NVM provides persistent storage for configuration, state, diagnostics.</li>
+<li>Caller manages address space and layout. Read/write with checksums.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="nvm_user_guide_quick_start"></a>
+Quick Start</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* // Define NVM layout</div>
+<div class="line">* #define CONFIG_ADDR 0</div>
+<div class="line">* #define CONFIG_SIZE 256</div>
+<div class="line">*</div>
+<div class="line">* // Read configuration</div>
+<div class="line">* config_t cfg;</div>
+<div class="line">* sapi_nvm_read(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));</div>
+<div class="line">*</div>
+<div class="line">* // Verify checksum</div>
+<div class="line">* uint32_t crc = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);</div>
+<div class="line">* if (crc != cfg.checksum) {</div>
+<div class="line">*     log_error(&quot;Config corrupted&quot;);</div>
+<div class="line">*     use_default_config(&amp;cfg);</div>
+<div class="line">* }</div>
+<div class="line">*</div>
+<div class="line">* // Save configuration</div>
+<div class="line">* cfg.checksum = compute_crc((uint8_t *)&amp;cfg, sizeof(cfg) - 4);</div>
+<div class="line">* sapi_nvm_write(CONFIG_ADDR, (uint8_t *)&amp;cfg, sizeof(cfg));</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="nvm_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. Always use checksums</li>
+<li>2. Manage wear (limit writes)</li>
+<li>3. Plan address layout</li>
+<li>4. Version data for evolution</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="nvm_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="nvm_architecture.html">Non-Volatile Memory Architecture</a> for design</li>
+<li>- <a class="el" href="checksum_user_guide.html">Checksum Module - User Guide</a> for CRC</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -97,7 +97,7 @@ Collaboration diagram for sapi_vital_channel_storage_t:</div>
 Data Fields</h2></td></tr>
 <tr class="memitem:a6bab703ba7f263d049c88c9e30e15dfa" id="r_a6bab703ba7f263d049c88c9e30e15dfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsapi__vital__channel__config__t.html">sapi_vital_channel_config_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__vital__channel__storage__t.html#a6bab703ba7f263d049c88c9e30e15dfa">config</a></td></tr>
 <tr class="separator:a6bab703ba7f263d049c88c9e30e15dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a411d6a2b474919b71d66a10c281bcc32" id="r_a411d6a2b474919b71d66a10c281bcc32"><td class="memItemLeft" align="right" valign="top">void **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__vital__channel__storage__t.html#a411d6a2b474919b71d66a10c281bcc32">channels</a></td></tr>
+<tr class="memitem:a411d6a2b474919b71d66a10c281bcc32" id="r_a411d6a2b474919b71d66a10c281bcc32"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsapi__vital__channel__storage__t.html#a1dc78d0ad1031be80b1e2d569081fb07">void</a> **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__vital__channel__storage__t.html#a411d6a2b474919b71d66a10c281bcc32">channels</a></td></tr>
 <tr class="separator:a411d6a2b474919b71d66a10c281bcc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dc78d0ad1031be80b1e2d569081fb07" id="r_a1dc78d0ad1031be80b1e2d569081fb07"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__vital__channel__storage__t.html#a1dc78d0ad1031be80b1e2d569081fb07">channel_count</a></td></tr>
 <tr class="separator:a1dc78d0ad1031be80b1e2d569081fb07"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,6 +121,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Configuration this instance was initialized with. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__vital__channel_8h_source.html#l00150">150</a> of file <a class="el" href="sapi__vital__channel_8h_source.html">sapi_vital_channel.h</a>.</p>
 
@@ -133,10 +134,11 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void** sapi_vital_channel_storage_t::channels</td>
+          <td class="memname"><a class="el" href="structsapi__vital__channel__storage__t.html#a1dc78d0ad1031be80b1e2d569081fb07">void</a>** sapi_vital_channel_storage_t::channels</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Opaque channel handles (IPC or other transport); caller-owned array. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__vital__channel_8h_source.html#l00151">151</a> of file <a class="el" href="sapi__vital__channel_8h_source.html">sapi_vital_channel.h</a>.</p>
 
@@ -153,6 +155,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Number of entries populated in channels/health. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__vital__channel_8h_source.html#l00152">152</a> of file <a class="el" href="sapi__vital__channel_8h_source.html">sapi_vital_channel.h</a>.</p>
 
@@ -169,6 +172,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Per-channel health/voting state. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__vital__channel_8h_source.html#l00153">153</a> of file <a class="el" href="sapi__vital__channel_8h_source.html">sapi_vital_channel.h</a>.</p>
 

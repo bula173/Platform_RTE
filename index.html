@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: safeAPIFramework Architecture Diagrams</title>
+<title>Safe API Framework: Safe API Framework</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,169 +70,180 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">safeAPIFramework Architecture Diagrams </div></div>
+  <div class="headertitle"><div class="title">Safe API Framework </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="md_docs_2architecture_2diagrams_2README"></a> This directory contains PlantUML diagrams for the safeAPIFramework architecture.</p>
-<h1><a class="anchor" id="autotoc_md156"></a>
-Diagram Index</h1>
-<h2><a class="anchor" id="autotoc_md157"></a>
-Structural Diagrams</h2>
-<ol type="1">
-<li><b>component-diagram.puml</b> — Module dependencies and architecture overview<ul>
-<li>Shows 13+ core modules and their relationships</li>
-<li>Application → Framework → OAL → OS/Hardware layers</li>
+<div class="textblock"><p><a class="anchor" id="md_README"></a> A layered C/C++ API framework for building safety-related applications whose layers communicate through well-defined software interfaces, so each layer can be developed and verified independently. The reference application driving the design is an ERTMS Radio Block Centre (RBC), a SIL 4 function under CENELEC EN 50128 / EN 50129.</p>
+<p>Applications never call OS/system APIs directly - every service is reached through SAPI, so an application can be retargeted to a different OS/RTOS by registering a different backend, without touching application code.</p>
+<h1><a class="anchor" id="autotoc_md1"></a>
+Status</h1>
+<p>Actively growing framework with SIL 4 safety focus.</p>
+<p><b>IMPLEMENTED (Production Ready):</b> 14 core modules</p><ul>
+<li>Timer, IPC (pubsub + request-reply), Memory, NVM, Task/Thread, Logging, Reboot</li>
+<li>AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String</li>
+<li>Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions</li>
+</ul>
+<p><b>IN PROGRESS:</b> Watchdog (System/Task/Channel/Checkpoint)</p><ul>
+<li>API design complete (<code><a class="el" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions.">include/safeapi/watchdog/sapi_watchdog.h</a></code>)</li>
+<li>Implementation pending (v0.3.0 target)</li>
+<li>Marks fault detection and recovery actions for SIL 4</li>
+</ul>
+<p><b>IMPLEMENTED:</b> Distributed channel synchronization (ADR-017)</p><ul>
+<li><code>sapi_checkpoint</code> — bounded checkpoint-ID rendezvous across vital channels, correct even without wall-clock agreement between nodes; fills in <code><a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a></code> as already specified (but not previously built) in <code>docs/REDUNDANCY_ARCHITECTURE.md</code></li>
+<li><code>sapi_clocksync</code> — pluggable, diagnostic-only wall-clock offset/quality query (never the basis of vital-comparison correctness — see its header)</li>
+<li>Example: <code>examples/geo_distributed_checkpoint_sync.c</code></li>
+<li>Note: <code>sapi_vital_channel</code> and <code>sapi_checksum</code> (CRC-64) are also present in <code>include/</code>/<code>src/</code> and used by the two modules above, but are not yet reflected in this status summary's own categorization - see <code>docs/architecture/ADR-017-checkpoint-and-clock-sync.md</code> section 1 for what's actually wired together today.</li>
+</ul>
+<p><b>DESIGN PHASE:</b> Redundancy Framework (Vital Channels, Voting, Checkpoints)</p><ul>
+<li>Documented in <code>docs/REDUNDANCY_ARCHITECTURE.md</code> as design proposal</li>
+<li>Planned for v0.4.0+</li>
+<li>Requires implementation of voting logic and checkpoint synchronization for full SIL 4 support</li>
+<li>See ROADMAP.md for detailed timeline</li>
+</ul>
+<p><b>Key Documentation:</b></p><ul>
+<li><code>docs/architecture/</code> — Architecture Decision Records (ADRs 001-008, 016-017; 009-015 do not exist) + PlantUML diagrams</li>
+<li><code>docs/requirements/SRS.md</code> — Consolidated requirements specification</li>
+<li><code>docs/MISRA_COMPLIANCE_REPORT.md</code> — MISRA C:2012 conformance status</li>
+<li><code>docs/EN_50128_ALIGNMENT.md</code> — <b>EN 50126/50128/50129 alignment &amp; safety case</b> ← Start here for certification<ul>
+<li>EN 50128 (Software safety) — All 10 mandatory techniques</li>
+<li>EN 50129 (Functional safety management) — Full support</li>
+<li>EN 50126 (RAM - Reliability/Availability/Maintainability) — Design features</li>
 </ul>
 </li>
-<li><b>deployment-2oo3-cluster.puml</b> — Hardware deployment (2oo3 redundancy)<ul>
-<li>Three RBC sites with voting engine</li>
-<li>Network connections between sites</li>
-<li>Watchdog and health monitoring</li>
+<li><code>docs/REDUNDANCY_ARCHITECTURE.md</code> — Vital channels, voting, checkpoints (5-stage output gate)</li>
+<li><code>docs/WATCHDOG_DESIGN.md</code> — System/task/channel/checkpoint watchdog &amp; recovery</li>
+<li><code>docs/HARDWARE_PATTERNS_GUIDE.md</code> — <b>Choose your SIL &amp; Hardware</b> ← Start here to select a configuration<ul>
+<li>SIL 1-2: Single system (1oo1, 1oo1+Watchdog)</li>
+<li>SIL 3: Dual-channel (2oo2, 2oo2D)</li>
+<li>SIL 4: Triple-channel (2oo3) <b>← Recommended for ERTMS RBC</b></li>
+<li>SIL 4 alternatives: Online mode, Hot standby, NMR</li>
+<li>Comparison matrix &amp; decision tree</li>
+<li>Cost estimates &amp; implementation timeline</li>
+<li>Real-world use case examples</li>
 </ul>
 </li>
-</ol>
-<h2><a class="anchor" id="autotoc_md158"></a>
-Behavioral Diagrams - Configuration Sequences</h2>
-<p><b>Single &amp; Dual-Channel:</b></p><ol type="1">
-<li><b>sequence-1oo1-single.puml</b> — Single System (Non-Redundant)<ul>
-<li>No redundancy, no voting</li>
-<li>Fast, low overhead</li>
-<li>SIL 1/2 suitable</li>
+<li><code>docs/HARDWARE_CONFIGURATIONS.md</code> — <b>All 9 hardware setup options</b> ← Detailed technical specs<ul>
+<li>Single system (non-redundant)</li>
+<li>2oo2 dual-channel (SIL 3)</li>
+<li>2oo3 triple-channel (SIL 4)</li>
+<li>NMR (N-modular)</li>
+<li>Online mode (active-active cluster)</li>
+<li>Hot standby (active-passive failover)</li>
+<li>Heterogeneous systems (mixed processors)</li>
+<li>Centralized voter topology</li>
+<li>Distributed gossip topology</li>
 </ul>
 </li>
-<li><b>sequence-2oo2-dual.puml</b> — Dual-Channel (2oo2)<ul>
-<li>Both channels must agree</li>
-<li>Any disagreement = immediate safe-state</li>
-<li>Zero fault tolerance</li>
-<li>SIL 3 suitable</li>
+<li><code>docs/FEATURE_EXPANSION.md</code> — Feature roadmap &amp; design specs</li>
 </ul>
-</li>
-<li><b>sequence-2oo2d-network.puml</b> — Dual-Site Network (2oo2D)<ul>
-<li>Network-based 2oo2 communication</li>
-<li>Result exchange over network</li>
-<li>Latency-sensitive (&lt; 100ms)</li>
-<li>SIL 3 suitable</li>
+<p>OAL services, each in its own <code>include/safeapi/&lt;feature&gt;/</code> + <code>src/&lt;feature&gt;/</code> directory (ADR-007): timer, non-volatile memory (NVM), static memory reservation, task/thread scheduling, inter-process/inter-task communication (IPC), logging/diagnostics, and controlled reboot.</p>
+<p>Common, layer-agnostic facilities, same per-feature layout: status codes (<code>status</code>) and fixed-width types (<code>types</code>), the cross-layer data buffer view with endianness-safe multi-byte access (<code>buffer</code>), checked integer casting between every fixed-width type and <code>size_t</code> (<code>cast</code>), safe-state transitions / checked assertions (<code>safestate</code>: <code>SAPI_ASSERT</code>, <code>SAPI_SAFESTATE</code>, <code>SAPI_REBOOT</code>), bounded string manipulation replacing strcpy/strcat/ sprintf/atoi/strtok (<code>string</code>), and application lifecycle management (<code>appmanager</code>: single entry point with init→execute→shutdown pattern).</p>
+<p>Every OAL service is reached through a <b>backend registered at startup</b> (<code>sapi_&lt;service&gt;_register_backend()</code>) rather than a hardcoded implementation — this is how an integrator supplies their own implementation (POSIX for host-side dev/test, an RTOS backend for target hardware) without editing framework source. See <code>docs/architecture/ADR-005-oal-backend-registration.md</code>.</p>
+<h1><a class="anchor" id="autotoc_md2"></a>
+Building</h1>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Using CMake Presets (recommended)</h2>
+<p>CMake presets provide standardized build configurations. List available presets:</p>
+<div class="fragment"><div class="line">cmake --list-presets</div>
+</div><!-- fragment --><p><b>Common workflows:</b></p>
+<div class="fragment"><div class="line"># Debug build with tests</div>
+<div class="line">cmake --preset debug</div>
+<div class="line">cmake --build --preset debug</div>
+<div class="line">ctest --preset debug</div>
+<div class="line"> </div>
+<div class="line"># Release build (optimized)</div>
+<div class="line">cmake --preset release</div>
+<div class="line">cmake --build --preset release</div>
+<div class="line">ctest --preset release</div>
+<div class="line"> </div>
+<div class="line"># CI build (strict checks, fail on warnings)</div>
+<div class="line">cmake --preset ci</div>
+<div class="line">cmake --build --preset ci</div>
+<div class="line">ctest --preset ci</div>
+<div class="line"> </div>
+<div class="line"># Memory sanitizer (detect use-after-free, buffer overflows)</div>
+<div class="line">cmake --preset asan</div>
+<div class="line">cmake --build --preset asan</div>
+<div class="line">ctest --preset asan</div>
+<div class="line"> </div>
+<div class="line"># Undefined behavior sanitizer</div>
+<div class="line">cmake --preset ubsan</div>
+<div class="line">cmake --build --preset ubsan</div>
+<div class="line">ctest --preset ubsan</div>
+<div class="line"> </div>
+<div class="line"># Code coverage</div>
+<div class="line">cmake --preset coverage</div>
+<div class="line">cmake --build --preset coverage</div>
+<div class="line">ctest --preset coverage</div>
+</div><!-- fragment --><p><b>Available presets:</b></p><ul>
+<li><code>debug</code> — Debug build, all warnings, tests enabled</li>
+<li><code>release</code> — Optimized release build, tests enabled</li>
+<li><code>ci</code> — CI strict mode (warnings→errors, stop on test failure)</li>
+<li><code>asan</code> — AddressSanitizer (memory errors)</li>
+<li><code>ubsan</code> — UndefinedBehaviorSanitizer (undefined behavior)</li>
+<li><code>coverage</code> — Code coverage instrumentation</li>
+<li><code>clang</code> / <code>gcc</code> — Explicit compiler selection</li>
+<li><code>minimal</code> — Headers only, no tests</li>
+<li><code>linux-native</code> — Native Linux build (POSIX OAL)</li>
+<li><code>linux-release</code> — Linux release build</li>
+<li><code>qnx</code> — QNX RTOS cross-compilation</li>
+<li><code>qnx-release</code> — QNX RTOS release build</li>
 </ul>
-</li>
-</ol>
-<p><b>Triple-Channel &amp; Multi-Site:</b></p><ol type="1">
-<li><b>sequence-2oo3-voting.puml</b> — Triple-Channel (2oo3) ← [Already exists]<ul>
-<li>Majority vote (≥2 out of 3)</li>
-<li>Tolerates 1 fault</li>
-<li>Minority site flagged as faulty</li>
-<li>SIL 4 suitable</li>
-</ul>
-</li>
-<li><b>sequence-online-mode.puml</b> — Online Mode (Active-Active Cluster)<ul>
-<li>All sites process simultaneously</li>
-<li>Checkpoint barrier synchronization</li>
-<li>Data synchronization required</li>
-<li>Voting before output</li>
-<li>Better resource utilization</li>
-<li>Higher detection latency</li>
-<li>SIL 4 suitable</li>
-</ul>
-</li>
-<li><b>sequence-hot-standby.puml</b> — Hot Standby (Active-Passive)<ul>
-<li>Primary active, Backup replicates state</li>
-<li>Heartbeat for liveness</li>
-<li>Backup ready for immediate failover</li>
-<li>Lower processing latency</li>
-<li>SIL 4 suitable</li>
-</ul>
-</li>
-<li><b>sequence-hot-standby-failover.puml</b> — Hot Standby Failover<ul>
-<li>Primary failure detection (500ms timeout)</li>
-<li>Automatic backup promotion</li>
-<li>State transfer to rejoining primary</li>
-<li>Failover time &lt; 1 second</li>
-<li>No output gap (backup had state)</li>
-</ul>
-</li>
-</ol>
-<p><b>Scalable &amp; Advanced:</b></p><ol type="1">
-<li><b>sequence-nmr.puml</b> — N-Modular Redundancy (NMR)<ul>
-<li>4+ channels with majority vote</li>
-<li>Example: 4oo3 tolerates 1 fault</li>
-<li>Example: 5oo3 tolerates 2 faults</li>
-<li>Ultra-high reliability</li>
-<li>SIL 4+ suitable</li>
-</ul>
-</li>
-</ol>
-<p><b>Voting Topologies:</b></p><ol type="1">
-<li><b>sequence-centralized-voter.puml</b> — Centralized Voter<ul>
-<li>Dedicated voter CPU/node</li>
-<li>Collects results from all nodes</li>
-<li>Central majority voting</li>
-<li>Simpler application logic</li>
-<li>Voter becomes single point of failure</li>
-</ul>
-</li>
-<li><b>sequence-distributed-gossip.puml</b> — Distributed Gossip Voting<ul>
-<li>Peer-to-peer consensus</li>
-<li>No central voter</li>
-<li>Byzantine-fault tolerant</li>
-<li>3 gossip rounds to consensus</li>
-<li>Higher latency, no single point</li>
-</ul>
-</li>
-</ol>
-<p><b>Other:</b></p><ol type="1">
-<li><b>statemachine-watchdog.puml</b> — Watchdog state machine<ul>
-<li>Creation, starting, running states</li>
-<li>Timeout → Recovery transitions</li>
-<li>Recovery actions (safe-state, reboot, failover)</li>
-<li>Cleanup and destruction</li>
-</ul>
-</li>
-<li><b>activity-checkpoint-barrier.puml</b> — Checkpoint synchronization workflow<ul>
-<li>All nodes reaching checkpoint with timeout</li>
-<li>Timeout handling (fault detection)</li>
-<li>Data exchange and voting</li>
-<li>Output commit and transmission</li>
-</ul>
-</li>
-</ol>
-<h1><a class="anchor" id="autotoc_md159"></a>
-Building Diagrams Locally</h1>
-<h2><a class="anchor" id="autotoc_md160"></a>
-Generate all diagrams as PNG:</h2>
-<div class="fragment"><div class="line">plantuml -c ../plantuml.cfg *.puml</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md161"></a>
-Generate all diagrams as SVG (vector):</h2>
-<div class="fragment"><div class="line">plantuml -tsvg -c ../plantuml.cfg *.puml</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md162"></a>
-Generate single diagram:</h2>
-<div class="fragment"><div class="line">plantuml -c ../plantuml.cfg component-diagram.puml</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md163"></a>
-Verify syntax without generating:</h2>
-<div class="fragment"><div class="line">plantuml -checkonly -c ../plantuml.cfg component-diagram.puml</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md164"></a>
-Using in Doxygen</h1>
-<p>All diagrams are embedded in:</p><ul>
-<li>ADR documents (docs/architecture/ADR-*.md)</li>
-<li>Header files (include/safeapi/*/sapi_*.h)</li>
-<li>Module documentation</li>
-</ul>
-<p>See <a class="el" href="md_docs_2architecture_2DIAGRAMS__GUIDE.html">DIAGRAMS_GUIDE.md</a> for embedding examples.</p>
-<h1><a class="anchor" id="autotoc_md165"></a>
-Updating Diagrams</h1>
-<ol type="1">
-<li>Edit <code>.puml</code> file</li>
-<li>Run <code>plantuml</code> to generate image</li>
-<li>Commit both <code>.puml</code> (source) and generated image</li>
-<li>Doxygen will automatically include in documentation</li>
-</ol>
-<h1><a class="anchor" id="autotoc_md166"></a>
-PlantUML Resources</h1>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Cross-Compilation (Linux, QNX, etc.)</h2>
+<p>For detailed cross-compilation instructions, see <a class="el" href="md_docs_2CROSS__COMPILATION.html">CROSS_COMPILATION.md</a>.</p>
+<p><b>Quick start — Linux:</b> </p><div class="fragment"><div class="line">./examples/build-linux-native.sh</div>
+</div><!-- fragment --><p><b>Quick start — QNX RTOS:</b> </p><div class="fragment"><div class="line">export QNX_HOST=/opt/qnx7.0.0/host/linux/x86_64</div>
+<div class="line">export QNX_TARGET=/opt/qnx7.0.0/target/qnx7.0.0/x86_64</div>
+<div class="line">./examples/build-qnx.sh</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+Manual CMake invocation</h2>
+<div class="fragment"><div class="line">cmake -S . -B build</div>
+<div class="line">cmake --build build</div>
+<div class="line">ctest --test-dir build --output-on-failure</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md6"></a>
+Static Analysis (MISRA C:2012)</h1>
+<p>The project uses <b>cppcheck</b> with the MISRA addon to verify compliance with MISRA C:2012 Mandatory &amp; Required rules.</p>
+<p><b>Run analysis:</b> </p><div class="fragment"><div class="line"># Via convenience script</div>
+<div class="line">./scripts/run-cppcheck.sh</div>
+<div class="line"> </div>
+<div class="line"># Via CMake target (requires cppcheck installed)</div>
+<div class="line">cmake --build build --target cppcheck</div>
+<div class="line"> </div>
+<div class="line"># Direct cppcheck invocation</div>
+<div class="line">cppcheck --addon=misra --std=c99 --enable=all -I include src include</div>
+</div><!-- fragment --><p><b>Output formats:</b> </p><div class="fragment"><div class="line">./scripts/run-cppcheck.sh              # Print to stdout</div>
+<div class="line">./scripts/run-cppcheck.sh --html report.html  # Generate HTML report</div>
+<div class="line">./scripts/run-cppcheck.sh --json report.json  # Generate JSON report</div>
+</div><!-- fragment --><p><b>Compliance status:</b> See <code>docs/MISRA_COMPLIANCE_REPORT.md</code> for current conformance status and documented deviations. Suppressions are managed in <code>.cppcheck-suppressions</code>.</p>
+<h1><a class="anchor" id="autotoc_md7"></a>
+Layout</h1>
+<div class="fragment"><div class="line">CMakeLists.txt                 top-level build</div>
+<div class="line">cmake/CompilerWarnings.cmake   shared warning/hardening flags</div>
+<div class="line">docs/architecture/             architecture decision records (ADRs)</div>
+<div class="line">docs/requirements/              consolidated requirements specification (SRS)</div>
+<div class="line">docs/MISRA_COMPLIANCE_REPORT.md MISRA C:2012 conformance status</div>
+<div class="line">include/safeapi/&lt;feature&gt;/     one public header per feature (ADR-007):</div>
+<div class="line">                                status, types, buffer, cast, safestate,</div>
+<div class="line">                                string, timer, nvm, memory, task, ipc, log,</div>
+<div class="line">                                reboot, appmanager, watchdog, checksum,</div>
+<div class="line">                                vital_channel, clocksync, checkpoint</div>
+<div class="line">src/&lt;feature&gt;/                 matching implementation + CMakeLists.txt,</div>
+<div class="line">                                one static library target safeapi::&lt;feature&gt;</div>
+<div class="line">tests/&lt;feature&gt;/                matching CTest test file per feature</div>
+<div class="line">examples/                      standalone example programs (see</div>
+<div class="line">                                examples/README.md), e.g.</div>
+<div class="line">                                geo_distributed_checkpoint_sync.c (ADR-017)</div>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md8"></a>
+Design principles</h1>
 <ul>
-<li><b>PlantUML Docs:</b> <a href="https://plantuml.com/">https://plantuml.com/</a></li>
-<li><b>Component Diagram:</b> <a href="https://plantuml.com/component-diagram">https://plantuml.com/component-diagram</a></li>
-<li><b>Sequence Diagram:</b> <a href="https://plantuml.com/sequence-diagram">https://plantuml.com/sequence-diagram</a></li>
-<li><b>State Machine:</b> <a href="https://plantuml.com/state-diagram">https://plantuml.com/state-diagram</a></li>
-<li><b>Activity Diagram:</b> <a href="https://plantuml.com/activity-diagram">https://plantuml.com/activity-diagram</a></li>
-<li><b>Deployment Diagram:</b> <a href="https://plantuml.com/deployment-diagram">https://plantuml.com/deployment-diagram</a> </li>
+<li>Pure C ABI (<code>extern "C"</code>) for every public interface.</li>
+<li>No dynamic memory allocation after initialization — callers own storage.</li>
+<li>Every fallible call returns an explicit <code>sapi_status_t</code>; no exceptions.</li>
+<li>MISRA C:2012-oriented source, aimed at SIL 3/4 (EN 50128) constraints.</li>
+<li>Every conversion between integer types goes through a checked <code>sapi_cast_*</code> function — no bare C-style casts.</li>
+<li>Requirement-ID tags (<code>REQ-...</code>) on public API elements for traceability, consolidated in <code>docs/requirements/SRS.md</code>.</li>
+<li>All public headers documented in Doxygen format (<code>@file</code>/<code>@brief</code>/ <code>@param</code>/<code>@return</code>); see <code>Doxyfile</code> to generate HTML docs locally. </li>
 </ul>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->

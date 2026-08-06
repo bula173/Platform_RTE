@@ -99,9 +99,9 @@ Data Fields</h2></td></tr>
 <tr class="separator:aa5d4491f1e230c4c6b5b3f17b0e4f66a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb195ceb84f2ab57782d8361575ddf11" id="r_acb195ceb84f2ab57782d8361575ddf11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structsapi__watchdog__config__t.html">sapi_watchdog_config_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#acb195ceb84f2ab57782d8361575ddf11">config</a></td></tr>
 <tr class="separator:acb195ceb84f2ab57782d8361575ddf11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee1cf316eb87f01595fcc3060d391eb7" id="r_aee1cf316eb87f01595fcc3060d391eb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#aee1cf316eb87f01595fcc3060d391eb7">deadline_ms</a></td></tr>
+<tr class="memitem:aee1cf316eb87f01595fcc3060d391eb7" id="r_aee1cf316eb87f01595fcc3060d391eb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#aee1cf316eb87f01595fcc3060d391eb7">deadline_ms</a></td></tr>
 <tr class="separator:aee1cf316eb87f01595fcc3060d391eb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b61fea3c4a2bbe4803446d725219c28" id="r_a8b61fea3c4a2bbe4803446d725219c28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#a8b61fea3c4a2bbe4803446d725219c28">last_kick_ms</a></td></tr>
+<tr class="memitem:a8b61fea3c4a2bbe4803446d725219c28" id="r_a8b61fea3c4a2bbe4803446d725219c28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#a8b61fea3c4a2bbe4803446d725219c28">last_kick_ms</a></td></tr>
 <tr class="separator:a8b61fea3c4a2bbe4803446d725219c28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5f6cad1287667a79a5074eb118322141" id="r_a5f6cad1287667a79a5074eb118322141"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__watchdog__s.html#a5f6cad1287667a79a5074eb118322141">kicks</a></td></tr>
 <tr class="separator:a5f6cad1287667a79a5074eb118322141"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,6 +127,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>1 if this pool slot is allocated to a live watchdog. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00049">49</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -143,6 +144,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>1 if counting down (started and not stopped). </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00050">50</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -176,6 +178,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Configuration this watchdog was created with. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00052">52</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -188,10 +191,11 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> sapi_watchdog_t::deadline_ms</td>
+          <td class="memname"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> sapi_watchdog_t::deadline_ms</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Absolute time at which this watchdog next fires. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00053">53</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -204,10 +208,11 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> sapi_watchdog_t::last_kick_ms</td>
+          <td class="memname"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> sapi_watchdog_t::last_kick_ms</td>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Absolute time of the most recent kick/start. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00054">54</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -224,6 +229,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Total number of successful kicks. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00055">55</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -240,6 +246,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Total number of times this watchdog has fired. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
@@ -256,6 +263,7 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Total number of recovery actions dispatched. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00057">57</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 

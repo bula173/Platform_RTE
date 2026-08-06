@@ -73,14 +73,14 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-016: CRC-64 Data Integrity for Redundant Channels</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md81"></a> <b>Status:</b> ACCEPTED <br  />
+<div class="textblock"><p><a class="anchor" id="autotoc_md90"></a> <b>Status:</b> ACCEPTED <br  />
  <b>Date:</b> 2026-08-02 <br  />
  <b>Author:</b> safeAPIFramework Team <br  />
  <b>Category:</b> Data Integrity, Redundancy Support</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md83"></a>
+<h1><a class="anchor" id="autotoc_md92"></a>
 Context</h1>
-<h2><a class="anchor" id="autotoc_md84"></a>
+<h2><a class="anchor" id="autotoc_md93"></a>
 Problem Statement</h2>
 <p>Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect data corruption during transmission and channel-to-channel communication. Current approach (CRC-32 in examples) is adequate but not aligned with ERTMS/ETCS standards.</p>
 <p><b>Requirements:</b></p><ul>
@@ -91,7 +91,7 @@ Problem Statement</h2>
 <li>No dynamic memory (MISRA C:2012 compliance)</li>
 <li>Integrate seamlessly with redundancy voting logic</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md85"></a>
+<h2><a class="anchor" id="autotoc_md94"></a>
 Existing Approaches</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -105,7 +105,7 @@ Existing Approaches</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><b>HMAC/Signature</b>   </td><td class="markdownTableBodyNone">Cryptographic   </td><td class="markdownTableBodyNone">Too slow for real-time, not needed for random errors   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md86"></a>
+<h2><a class="anchor" id="autotoc_md95"></a>
 Why CRC-64 is Right for SAPI</h2>
 <ol type="1">
 <li><b>ERTMS Compliance:</b> Railway systems standardize on CRC-64-CCITT (polynomial 0x1D4F63B86E40E541)</li>
@@ -115,7 +115,7 @@ Why CRC-64 is Right for SAPI</h2>
 <li><b>Integration:</b> Can wrap vital messages transparently</li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md88"></a>
+<h1><a class="anchor" id="autotoc_md97"></a>
 Decision</h1>
 <p><b>ACCEPTED:</b> Implement CRC-64 as a built-in SAPI module (<code>sapi_checksum</code>) with:</p>
 <ol type="1">
@@ -143,9 +143,9 @@ Decision</h1>
 </li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md90"></a>
+<h1><a class="anchor" id="autotoc_md99"></a>
 Implementation</h1>
-<h2><a class="anchor" id="autotoc_md91"></a>
+<h2><a class="anchor" id="autotoc_md100"></a>
 Module Structure (ADR-007 compliance)</h2>
 <div class="fragment"><div class="line">include/safeapi/checksum/</div>
 <div class="line">├── sapi_checksum.h              # API definition</div>
@@ -158,9 +158,9 @@ Module Structure (ADR-007 compliance)</h2>
 <div class="line">├── test_crc64.c                 # CRC computation tests</div>
 <div class="line">├── test_vital_message.c         # Message wrapper tests</div>
 <div class="line">└── test_integration.c           # Redundancy integration tests</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md92"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md101"></a>
 Key Design Decisions</h2>
-<h3><a class="anchor" id="autotoc_md93"></a>
+<h3><a class="anchor" id="autotoc_md102"></a>
 1. Lookup Tables (Pre-computed)</h3>
 <p><b>Decision:</b> Generate CRC-64 lookup tables at compile-time (not runtime)</p>
 <p><b>Rationale:</b></p><ul>
@@ -172,7 +172,7 @@ Key Design Decisions</h2>
 <li>+2KB code size</li>
 <li>-10-100x CPU time per CRC computation</li>
 </ul>
-<h3><a class="anchor" id="autotoc_md94"></a>
+<h3><a class="anchor" id="autotoc_md103"></a>
 2. Three Polynomial Options</h3>
 <p><b>ERTMS (Default):</b> <code>0x1D4F63B86E40E541</code></p><ul>
 <li>Standard for railway signaling (EN 50126/50128)</li>
@@ -188,7 +188,7 @@ Key Design Decisions</h2>
 <li>Used in compression algorithms</li>
 </ul>
 <p><b>Selection:</b> Default to ERTMS; user selects at initialization</p>
-<h3><a class="anchor" id="autotoc_md95"></a>
+<h3><a class="anchor" id="autotoc_md104"></a>
 3. Vital Message Wrapper</h3>
 <p><b>Structure:</b> </p><div class="fragment"><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct </span>{</div>
 <div class="line">    uint32_t sequence_number;    <span class="comment">// Detect reordering</span></div>
@@ -205,7 +205,7 @@ Key Design Decisions</h2>
 <li><b>Receiver:</b> <code><a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3" title="Verify vital channel message and extract payload.">sapi_checksum_vital_message_verify()</a></code> → CRC checked</li>
 <li><b>Mismatch:</b> Return <code>SAPI_STATUS_ERROR</code> → trigger safe-state</li>
 </ol>
-<h3><a class="anchor" id="autotoc_md96"></a>
+<h3><a class="anchor" id="autotoc_md105"></a>
 4. Statistics &amp; Monitoring</h3>
 <p>Track:</p><ul>
 <li><code>total_checksums</code> — CRC computations performed</li>
@@ -216,9 +216,9 @@ Key Design Decisions</h2>
 </ul>
 <p><b>Purpose:</b> Monitor channel health, detect systematic failures</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md98"></a>
+<h1><a class="anchor" id="autotoc_md107"></a>
 Architectural Fit</h1>
-<h2><a class="anchor" id="autotoc_md99"></a>
+<h2><a class="anchor" id="autotoc_md108"></a>
 With Redundancy Framework (Future v0.4.0+)</h2>
 <div class="fragment"><div class="line">Vital Channel (Future sapi_vital_channel_t)</div>
 <div class="line">    ↓</div>
@@ -238,7 +238,7 @@ With Redundancy Framework (Future v0.4.0+)</h2>
 <li>Voting catches calculation errors (systematic errors)</li>
 <li>Safe-state on ANY error (CRC fail OR voting fail)</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md100"></a>
+<h2><a class="anchor" id="autotoc_md109"></a>
 With Existing Modules</h2>
 <p><b>Depends on:</b></p><ul>
 <li><code>safeapi/types</code> — uint64_t, sapi_status_t</li>
@@ -252,9 +252,9 @@ With Existing Modules</h2>
 <li>Service unit diagnostics (monitor stats)</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md102"></a>
+<h1><a class="anchor" id="autotoc_md111"></a>
 EN 50128 Compliance</h1>
-<h2><a class="anchor" id="autotoc_md103"></a>
+<h2><a class="anchor" id="autotoc_md112"></a>
 Mandatory Techniques Supported</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -268,7 +268,7 @@ Mandatory Techniques Supported</h2>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone"><b>Requirements Traceability</b> (7.4.1)   </td><td class="markdownTableBodyNone">REQ-ID links in code &amp; docs   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md104"></a>
+<h2><a class="anchor" id="autotoc_md113"></a>
 Random vs Systematic Error Detection</h2>
 <p><b>Random Errors</b> (handled by CRC-64):</p><ul>
 <li>Cosmic ray bit flips: ✅ Detected</li>
@@ -281,35 +281,35 @@ Random vs Systematic Error Detection</h2>
 <li>Algorithm errors: ✅ Detected by voting (channel disagreement)</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md106"></a>
+<h1><a class="anchor" id="autotoc_md115"></a>
 SIL Implications</h1>
-<h2><a class="anchor" id="autotoc_md107"></a>
+<h2><a class="anchor" id="autotoc_md116"></a>
 SIL 1-2 (Single System)</h2>
 <p>CRC-64 optional but recommended for data integrity assurance: </p><div class="fragment"><div class="line"><span class="comment">// Optional defensive check</span></div>
 <div class="line"><a class="code hl_function" href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum_crc64_verify</a>(data, size, expected_crc, &amp;result);</div>
 <div class="line"><span class="keywordflow">if</span> (result.match == 0) {</div>
 <div class="line">    log_corruption_and_retry();</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__CHECKSUM_html_ga6deb640b83f4fab5c6ebd2e819d1b4e7"><div class="ttname"><a href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum_crc64_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_crc64_verify(const uint8_t *data, size_t size, sapi_crc64_t expected_crc, sapi_checksum_result_t *result_out)</div><div class="ttdoc">Verify CRC-64 of data against stored value.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00452">sapi_checksum.c:452</a></div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md108"></a>
+<div class="ttc" id="agroup__CHECKSUM_html_ga6deb640b83f4fab5c6ebd2e819d1b4e7"><div class="ttname"><a href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum_crc64_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_crc64_verify(const uint8_t *data, size_t size, sapi_crc64_t expected_crc, sapi_checksum_result_t *result_out)</div><div class="ttdoc">Verify CRC-64 of data against stored value.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00453">sapi_checksum.c:453</a></div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md117"></a>
 SIL 3-4 (Redundant Systems)</h2>
 <p>CRC-64 <b>mandatory</b> for vital channel communication: </p><div class="fragment"><div class="line"><span class="comment">// Vital message with CRC</span></div>
 <div class="line"><a class="code hl_function" href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a>(&amp;msg, sender_id, seq, payload, len);</div>
-<div class="line"><a class="code hl_function" href="sapi__ipc_8h.html#af9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a>(vital_channel, &amp;msg, <span class="keyword">sizeof</span>(msg), timeout);</div>
+<div class="line"><a class="code hl_function" href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a>(vital_channel, &amp;msg, <span class="keyword">sizeof</span>(msg), timeout);</div>
 <div class="line"> </div>
 <div class="line"><span class="comment">// Receive and verify</span></div>
 <div class="line"><a class="code hl_function" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum_vital_message_verify</a>(&amp;msg, expected_seq, payload_out, ...);</div>
-<div class="line"><span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>) {</div>
+<div class="line"><span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>) {</div>
 <div class="line">    sapi_safestate_trigger(REASON_DATA_CORRUPTION);</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__CHECKSUM_html_ga4d3e819e10b61191323f59a86a786be3"><div class="ttname"><a href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum_vital_message_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_verify(const sapi_vital_message_t *msg, uint32_t expected_sequence, uint8_t *payload_out, size_t payload_max_size, uint8_t *payload_size_out)</div><div class="ttdoc">Verify vital channel message and extract payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00551">sapi_checksum.c:551</a></div></div>
-<div class="ttc" id="agroup__CHECKSUM_html_gae57cce5bad25c20ca5beeefec3fb769b"><div class="ttname"><a href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_create(sapi_vital_message_t *msg_out, uint32_t sender_id, uint32_t sequence, const uint8_t *payload, size_t payload_size)</div><div class="ttdoc">Create vital channel message with CRC.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00496">sapi_checksum.c:496</a></div></div>
-<div class="ttc" id="asapi__ipc_8h_html_af9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="sapi__ipc_8h.html#af9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00044">sapi_ipc.c:44</a></div></div>
-<div class="ttc" id="asapi__status_8h_html_acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00024">sapi_status.h:24</a></div></div>
+<div class="ttc" id="agroup__CHECKSUM_html_ga4d3e819e10b61191323f59a86a786be3"><div class="ttname"><a href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum_vital_message_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_verify(const sapi_vital_message_t *msg, uint32_t expected_sequence, uint8_t *payload_out, size_t payload_max_size, uint8_t *payload_size_out)</div><div class="ttdoc">Verify vital channel message and extract payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00552">sapi_checksum.c:552</a></div></div>
+<div class="ttc" id="agroup__CHECKSUM_html_gae57cce5bad25c20ca5beeefec3fb769b"><div class="ttname"><a href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_create(sapi_vital_message_t *msg_out, uint32_t sender_id, uint32_t sequence, const uint8_t *payload, size_t payload_size)</div><div class="ttdoc">Create vital channel message with CRC.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00497">sapi_checksum.c:497</a></div></div>
+<div class="ttc" id="agroup__IPC_html_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00046">sapi_ipc.c:46</a></div></div>
+<div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md110"></a>
+<h1><a class="anchor" id="autotoc_md119"></a>
 Implementation Timeline</h1>
-<h2><a class="anchor" id="autotoc_md111"></a>
+<h2><a class="anchor" id="autotoc_md120"></a>
 Phase 1: Core API (v0.3.0)</h2>
 <ul>
 <li>[x] CRC-64 computation (ERTMS polynomial)</li>
@@ -318,7 +318,7 @@ Phase 1: Core API (v0.3.0)</h2>
 <li>[ ] Full test suite</li>
 <li>[ ] Documentation &amp; examples</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md112"></a>
+<h2><a class="anchor" id="autotoc_md121"></a>
 Phase 2: Integration (v0.4.0)</h2>
 <ul>
 <li>[ ] Integrate with <code>sapi_vital_channel_t</code> (when redundancy implemented)</li>
@@ -326,7 +326,7 @@ Phase 2: Integration (v0.4.0)</h2>
 <li>[ ] Performance benchmarks</li>
 <li>[ ] Production deployment support</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md113"></a>
+<h2><a class="anchor" id="autotoc_md122"></a>
 Phase 3: Advanced (Future)</h2>
 <ul>
 <li>[ ] Additional polynomials (ISO, XZ)</li>
@@ -335,7 +335,7 @@ Phase 3: Advanced (Future)</h2>
 <li>[ ] Automated diagnostics</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md115"></a>
+<h1><a class="anchor" id="autotoc_md124"></a>
 Risk Mitigation</h1>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -350,32 +350,32 @@ Risk Mitigation</h1>
 <td class="markdownTableBodyNone"><b>Polynomial choice</b>   </td><td class="markdownTableBodyNone">Default ERTMS (railway standard); others available if needed   </td></tr>
 </table>
 <hr  />
-<h1><a class="anchor" id="autotoc_md117"></a>
+<h1><a class="anchor" id="autotoc_md126"></a>
 Alternatives Considered</h1>
-<h2><a class="anchor" id="autotoc_md118"></a>
+<h2><a class="anchor" id="autotoc_md127"></a>
 1. No Checksum (Status Quo)</h2>
 <p><b>Pros:</b> Simpler code, less overhead <br  />
  <b>Cons:</b> Can't detect corruption; fails EN 50128 error detection requirement <br  />
  <b>Decision:</b> Rejected — insufficient error detection</p>
-<h2><a class="anchor" id="autotoc_md119"></a>
+<h2><a class="anchor" id="autotoc_md128"></a>
 2. CRC-32 Only</h2>
 <p><b>Pros:</b> Smaller tables (512 bytes), commonly used <br  />
  <b>Cons:</b> Lower detection rate; not ERTMS standard <br  />
  <b>Decision:</b> Rejected — CRC-64 better for railway systems</p>
-<h2><a class="anchor" id="autotoc_md120"></a>
+<h2><a class="anchor" id="autotoc_md129"></a>
 3. HMAC-SHA256</h2>
 <p><b>Pros:</b> Cryptographically strong <br  />
  <b>Cons:</b> Too slow for real-time (msec → usec), overkill for random errors <br  />
  <b>Decision:</b> Rejected — not needed for railway safety</p>
-<h2><a class="anchor" id="autotoc_md121"></a>
+<h2><a class="anchor" id="autotoc_md130"></a>
 4. Hamming Codes</h2>
 <p><b>Pros:</b> Can correct single-bit errors <br  />
  <b>Cons:</b> Much more complex, doesn't help with multi-bit errors <br  />
  <b>Decision:</b> Rejected — CRC simpler for detect-and-safe-state model</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md123"></a>
+<h1><a class="anchor" id="autotoc_md132"></a>
 Testing Strategy</h1>
-<h2><a class="anchor" id="autotoc_md124"></a>
+<h2><a class="anchor" id="autotoc_md133"></a>
 Unit Tests</h2>
 <ul>
 <li>CRC computation against known vectors</li>
@@ -383,7 +383,7 @@ Unit Tests</h2>
 <li>Corrupted payload detection</li>
 <li>Sequence number validation</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md125"></a>
+<h2><a class="anchor" id="autotoc_md134"></a>
 Integration Tests</h2>
 <ul>
 <li>CRC with actual IPC channels</li>
@@ -391,7 +391,7 @@ Integration Tests</h2>
 <li>Failover with CRC verification</li>
 <li>Statistics collection</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md126"></a>
+<h2><a class="anchor" id="autotoc_md135"></a>
 Property Tests</h2>
 <ul>
 <li>CRC collision probability</li>
@@ -400,23 +400,23 @@ Property Tests</h2>
 <li>Memory usage</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md128"></a>
+<h1><a class="anchor" id="autotoc_md137"></a>
 Documentation</h1>
-<h2><a class="anchor" id="autotoc_md129"></a>
+<h2><a class="anchor" id="autotoc_md138"></a>
 API Documentation</h2>
 <ul>
 <li>Full Doxygen in <code><a class="el" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems.">sapi_checksum.h</a></code></li>
 <li>Example code for each function</li>
 <li>Integration examples with redundancy</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md130"></a>
+<h2><a class="anchor" id="autotoc_md139"></a>
 Architectural Documentation</h2>
 <ul>
 <li>This ADR (architecture decision)</li>
 <li>How CRC fits with voting logic</li>
 <li>Troubleshooting guide</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md131"></a>
+<h2><a class="anchor" id="autotoc_md140"></a>
 Certification Documentation</h2>
 <ul>
 <li>EN 50128 compliance argument</li>
@@ -424,7 +424,7 @@ Certification Documentation</h2>
 <li>Test reports</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md133"></a>
+<h1><a class="anchor" id="autotoc_md142"></a>
 Rollout Plan</h1>
 <ol type="1">
 <li><b>Merge:</b> Implement in v0.3.0 alongside watchdog</li>
@@ -434,7 +434,7 @@ Rollout Plan</h1>
 <li><b>Release:</b> Production support in v1.0</li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md135"></a>
+<h1><a class="anchor" id="autotoc_md144"></a>
 References</h1>
 <ul>
 <li><b>EN 50128:2011</b> Section 7.6.1 (Error Detection and Correction)</li>
@@ -443,7 +443,7 @@ References</h1>
 <li><b>Railway Safety:</b> EN 50126, EN 50129, EN 50128 trilogy</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md137"></a>
+<h1><a class="anchor" id="autotoc_md146"></a>
 Approval</h1>
 <ul>
 <li><b>Architect:</b> Approved</li>

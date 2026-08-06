@@ -126,29 +126,30 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow).  <a href="structsapi__log__backend__t.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow).  <a href="structsapi__log__backend__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:a1f07b7615e7ca6517936e596d2c9652b" id="r_a1f07b7615e7ca6517936e596d2c9652b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>sapi_log_level_t</b> { <b>SAPI_LOG_LEVEL_DEBUG</b> = 0
-, <b>SAPI_LOG_LEVEL_INFO</b> = 1
-, <b>SAPI_LOG_LEVEL_WARNING</b> = 2
-, <b>SAPI_LOG_LEVEL_ERROR</b> = 3
+<tr class="memitem:ga1f07b7615e7ca6517936e596d2c9652b" id="r_ga1f07b7615e7ca6517936e596d2c9652b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> { <a class="el" href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba3660503e98dae0027ed6c87aec42546f">SAPI_LOG_LEVEL_DEBUG</a> = 0
+, <a class="el" href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba856c8ecd50bbd12124aab6a7f852510c">SAPI_LOG_LEVEL_INFO</a> = 1
+, <a class="el" href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652bad44a67fd9c5b21396c28d70557b75baa">SAPI_LOG_LEVEL_WARNING</a> = 2
+, <a class="el" href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba53ea1a406953b16823a3813aa0734070">SAPI_LOG_LEVEL_ERROR</a> = 3
  }</td></tr>
-<tr class="separator:a1f07b7615e7ca6517936e596d2c9652b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:ga1f07b7615e7ca6517936e596d2c9652b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log message severity, passed to <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>.  <a href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">More...</a><br /></td></tr>
+<tr class="separator:ga1f07b7615e7ca6517936e596d2c9652b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acdd734b3bf37ecb5856b1498f6776c40" id="r_acdd734b3bf37ecb5856b1498f6776c40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__log_8h.html#acdd734b3bf37ecb5856b1498f6776c40">sapi_log_init</a> (void)</td></tr>
-<tr class="memdesc:acdd734b3bf37ecb5856b1498f6776c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the logging backend. Safe to call once at startup.  <br /></td></tr>
-<tr class="separator:acdd734b3bf37ecb5856b1498f6776c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae503764e3fb83a2ee19e57d3f6b057a1" id="r_ae503764e3fb83a2ee19e57d3f6b057a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a> (sapi_log_level_t level, const char *tag, const char *message)</td></tr>
-<tr class="memdesc:ae503764e3fb83a2ee19e57d3f6b057a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dropped.  <br /></td></tr>
-<tr class="separator:ae503764e3fb83a2ee19e57d3f6b057a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aedcbc8ee1aa520a1fbf3f29b2b143b6d" id="r_aedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__log_8h.html#aedcbc8ee1aa520a1fbf3f29b2b143b6d">sapi_log_register_backend</a> (const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:aedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="sapi__log_8h.html#acdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>/ <a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> (ADR-005 section 2.1/2.5). Call once at startup.  <br /></td></tr>
-<tr class="separator:aedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacdd734b3bf37ecb5856b1498f6776c40" id="r_gacdd734b3bf37ecb5856b1498f6776c40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40">sapi_log_init</a> (void)</td></tr>
+<tr class="memdesc:gacdd734b3bf37ecb5856b1498f6776c40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the logging backend. Safe to call once at startup.  <br /></td></tr>
+<tr class="separator:gacdd734b3bf37ecb5856b1498f6776c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae503764e3fb83a2ee19e57d3f6b057a1" id="r_gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *tag, const char *message)</td></tr>
+<tr class="memdesc:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dropped.  <br /></td></tr>
+<tr class="separator:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaedcbc8ee1aa520a1fbf3f29b2b143b6d" id="r_gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d">sapi_log_register_backend</a> (const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>/ <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> (ADR-005 section 2.1/2.5). Call once at startup.  <br /></td></tr>
+<tr class="separator:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Logging/diagnostics service. </p>
@@ -156,117 +157,7 @@ Functions</h2></td></tr>
 <p>REQ-OAL-LOG-001: log calls are best-effort and non-blocking; a full backend buffer silently drops the newest entries rather than blocking or erroring the caller's control flow. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="a1f07b7615e7ca6517936e596d2c9652b" name="a1f07b7615e7ca6517936e596d2c9652b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f07b7615e7ca6517936e596d2c9652b">&#9670;&#160;</a></span>sapi_log_level_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum sapi_log_level_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00025">25</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="acdd734b3bf37ecb5856b1498f6776c40" name="acdd734b3bf37ecb5856b1498f6776c40"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acdd734b3bf37ecb5856b1498f6776c40">&#9670;&#160;</a></span>sapi_log_init()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_log_init </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Initializes the logging backend. Safe to call once at startup. </p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if no backend is registered yet (a no-op logger is a valid state) or if the registered backend's init succeeds; a backend-defined error status otherwise. REQ-OAL-LOG-010 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00021">21</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
-
-</div>
-</div>
-<a id="ae503764e3fb83a2ee19e57d3f6b057a1" name="ae503764e3fb83a2ee19e57d3f6b057a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae503764e3fb83a2ee19e57d3f6b057a1">&#9670;&#160;</a></span>sapi_log_write()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void sapi_log_write </td>
-          <td>(</td>
-          <td class="paramtype">sapi_log_level_t&#160;</td>
-          <td class="paramname"><em>level</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>tag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const char *&#160;</td>
-          <td class="paramname"><em>message</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dropped. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">level</td><td>Severity level. </td></tr>
-    <tr><td class="paramname">tag</td><td>Short diagnostic source tag, backend-defined interpretation, may be NULL. </td></tr>
-    <tr><td class="paramname">message</td><td>Human-readable message text, may be NULL. REQ-OAL-LOG-011 </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00030">30</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
-
-</div>
-</div>
-<a id="aedcbc8ee1aa520a1fbf3f29b2b143b6d" name="aedcbc8ee1aa520a1fbf3f29b2b143b6d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aedcbc8ee1aa520a1fbf3f29b2b143b6d">&#9670;&#160;</a></span>sapi_log_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_log_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by <a class="el" href="sapi__log_8h.html#acdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>/ <a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> (ADR-005 section 2.1/2.5). Call once at startup. </p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise. REQ-OAL-LOG-012 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

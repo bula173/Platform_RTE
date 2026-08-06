@@ -1,15 +1,21 @@
 var searchData=
 [
-  ['s_5fbackend_0',['s_backend',['../sapi__clocksync_8c.html#a4f901b7a2265db3c6e28a4da29a2a843',1,'sapi_clocksync.c']]],
+  ['s_5fbackend_0',['s_backend',['../sapi__timer_8c.html#ad4ef23a978a776f39c1e7b857f255dc9',1,'s_backend:&#160;sapi_timer.c'],['../sapi__task_8c.html#afc3ff22783dc236f7e18fd5047315bf1',1,'s_backend:&#160;sapi_task.c'],['../sapi__reboot_8c.html#a9a799b75bde4855f3fd3237ec9feb446',1,'s_backend:&#160;sapi_reboot.c'],['../sapi__nvm_8c.html#a4b4b7c63b5e46a00714b5811a0a911c7',1,'s_backend:&#160;sapi_nvm.c'],['../sapi__netlink_8c.html#ae9eac3d9a850fe39e15fc0b4086f391d',1,'s_backend:&#160;sapi_netlink.c'],['../sapi__memory_8c.html#a924e076519a679193b0c055a63f45b5f',1,'s_backend:&#160;sapi_memory.c'],['../sapi__log_8c.html#ae97d049dded7146bd09328d904d1f4a7',1,'s_backend:&#160;sapi_log.c'],['../sapi__ipc_8c.html#abf00ed2fda458ec8dad55dff4dbd97ba',1,'s_backend:&#160;sapi_ipc.c'],['../sapi__clocksync_8c.html#a4f901b7a2265db3c6e28a4da29a2a843',1,'s_backend:&#160;sapi_clocksync.c']]],
   ['s_5fhandlers_1',['s_handlers',['../sapi__safestate_8c.html#af6f8da9f6dd2b99ed6b78ac848d19525',1,'sapi_safestate.c']]],
-  ['send_5fcount_2',['send_count',['../structsapi__vital__channel__health__t.html#a35df0a00b0a670443f1b23b3dc8c0707',1,'sapi_vital_channel_health_t']]],
-  ['send_5ferror_5fcount_3',['send_error_count',['../structsapi__vital__channel__health__t.html#aae0e1742ad8ddcb6d58e0cb45d71a497',1,'sapi_vital_channel_health_t']]],
-  ['sender_5fid_4',['sender_id',['../structsapi__vital__message__t.html#a2a694ebe618f22945da3bf64ceee848a',1,'sapi_vital_message_t']]],
-  ['sequence_5ferrors_5',['sequence_errors',['../structsapi__checksum__stats__t.html#a721ea8badd716f42af2b63ae2c5a1ed4',1,'sapi_checksum_stats_t']]],
-  ['sequence_5fnumber_6',['sequence_number',['../structsapi__vital__message__t.html#ab90d55897de6cd204154df1649f0c743',1,'sapi_vital_message_t']]],
-  ['server_5fname_7',['server_name',['../structsapi__ipc__rr__client__config__t.html#a47eb2b18c6756d1f31ec00d82b6bb73a',1,'sapi_ipc_rr_client_config_t']]],
-  ['shutdown_8',['shutdown',['../structsapi__appmanager__operations__t.html#ad23972cdce548ef9f9a0d81b8a2d6619',1,'sapi_appmanager_operations_t']]],
-  ['stack_5fsize_9',['stack_size',['../structsapi__task__config__t.html#a2cf4996f13f14ee218613d7e2596f10d',1,'sapi_task_config_t']]],
-  ['stats_10',['stats',['../structsapi__checksum__manager__t.html#a60f1b1ae68b2802768fc94832c72c14a',1,'sapi_checksum_manager_t']]],
-  ['subscriber_5fname_11',['subscriber_name',['../structsapi__ipc__pubsub__subscriber__config__t.html#a26488d6cc3b75525c631cc515f363c61',1,'sapi_ipc_pubsub_subscriber_config_t']]]
+  ['send_2',['send',['../structsapi__netlink__backend__t.html#a4e27a2c1dc4ee2a779bc911d3011e78d',1,'sapi_netlink_backend_t::send'],['../structsapi__ipc__backend__t.html#a1783f1d9db3b6756b092b6575a554b5d',1,'sapi_ipc_backend_t::send']]],
+  ['send_5fcount_3',['send_count',['../structsapi__vital__channel__health__t.html#a35df0a00b0a670443f1b23b3dc8c0707',1,'sapi_vital_channel_health_t']]],
+  ['send_5ferror_5fcount_4',['send_error_count',['../structsapi__vital__channel__health__t.html#aae0e1742ad8ddcb6d58e0cb45d71a497',1,'sapi_vital_channel_health_t']]],
+  ['sender_5fid_5',['sender_id',['../structsapi__vital__message__t.html#a2a694ebe618f22945da3bf64ceee848a',1,'sapi_vital_message_t']]],
+  ['sequence_5ferrors_6',['sequence_errors',['../structsapi__checksum__stats__t.html#a721ea8badd716f42af2b63ae2c5a1ed4',1,'sapi_checksum_stats_t']]],
+  ['sequence_5fnumber_7',['sequence_number',['../structsapi__vital__message__t.html#ab90d55897de6cd204154df1649f0c743',1,'sapi_vital_message_t']]],
+  ['server_5fname_8',['server_name',['../structsapi__ipc__rr__client__config__t.html#a47eb2b18c6756d1f31ec00d82b6bb73a',1,'sapi_ipc_rr_client_config_t']]],
+  ['shutdown_9',['shutdown',['../structsapi__appmanager__operations__t.html#ad23972cdce548ef9f9a0d81b8a2d6619',1,'sapi_appmanager_operations_t']]],
+  ['stack_5fsize_10',['stack_size',['../structsapi__task__config__t.html#a2cf4996f13f14ee218613d7e2596f10d',1,'sapi_task_config_t']]],
+  ['start_11',['start',['../structsapi__timer__backend__t.html#a718a4f9e5dbeabad67030c9dc9857b52',1,'sapi_timer_backend_t::start'],['../structsapi__task__backend__t.html#a06ba17f8206233fae6798ddc40151b0b',1,'sapi_task_backend_t::start']]],
+  ['state_12',['state',['../structsapi__appmanager__state__t.html#aec4f6e7ccc3fbf4eb1465c4dcf1c2018',1,'sapi_appmanager_state_t']]],
+  ['stats_13',['stats',['../structsapi__checksum__manager__t.html#a60f1b1ae68b2802768fc94832c72c14a',1,'sapi_checksum_manager_t::stats'],['../structsapi__mem__pool__backend__t.html#a016add5350e232c36959908acfb53385',1,'sapi_mem_pool_backend_t::stats']]],
+  ['stop_14',['stop',['../structsapi__timer__backend__t.html#a758d4a8fb50d15895812a49c29e17bd1',1,'sapi_timer_backend_t']]],
+  ['subscriber_5fname_15',['subscriber_name',['../structsapi__ipc__pubsub__subscriber__config__t.html#a26488d6cc3b75525c631cc515f363c61',1,'sapi_ipc_pubsub_subscriber_config_t']]],
+  ['suspend_16',['suspend',['../structsapi__task__backend__t.html#ae265702a30e7e7ad2da72a7400afbde9',1,'sapi_task_backend_t']]],
+  ['sync_17',['sync',['../structsapi__nvm__backend__t.html#aa3a6f19309893388fb7a79c9429885ad',1,'sapi_nvm_backend_t']]]
 ];

@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="status_architecture_overview"></a>
+Design Overview</h1>
 <ul>
 <li></li>
 <li>The Status module defines a unified error handling system across the entire</li>
@@ -90,7 +90,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="status_codes"></a>
+<h1><a class="anchor" id="status_architecture_status_codes"></a>
 Status Code Definitions</h1>
 <ul>
 <li></li>
@@ -107,7 +107,7 @@ Status Code Definitions</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="code_allocation"></a>
+<h1><a class="anchor" id="status_architecture_code_allocation"></a>
 Code Allocation Strategy</h1>
 <ul>
 <li></li>
@@ -119,8 +119,8 @@ Code Allocation Strategy</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="rationale"></a>
-Why No Dynamic Allocation?</h1>
+<h1><a class="anchor" id="status_architecture_rationale"></a>
+Design Rationale</h1>
 <ul>
 <li></li>
 <li>### Why Unified Status Codes?</li>
@@ -148,7 +148,7 @@ Why No Dynamic Allocation?</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="extension"></a>
+<h1><a class="anchor" id="status_architecture_extension"></a>
 Application-Specific Codes</h1>
 <ul>
 <li></li>
@@ -169,11 +169,11 @@ Application-Specific Codes</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="conversion"></a>
+<h1><a class="anchor" id="status_architecture_conversion"></a>
 String Conversion</h1>
 <ul>
 <li></li>
-<li>The module provides <code><a class="el" href="sapi__status_8h.html#ae33bf09c513f285687ec246a4f1806ad" title="Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...">sapi_status_to_string()</a></code> for diagnostics:</li>
+<li>The module provides <code><a class="el" href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad" title="Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...">sapi_status_to_string()</a></code> for diagnostics:</li>
 <li></li>
 <li><code>c</code></li>
 <li><code>sapi_status_t rc = some_operation();</code></li>
@@ -200,7 +200,7 @@ String Conversion</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="usage_patterns"></a>
+<h1><a class="anchor" id="status_architecture_usage_patterns"></a>
 Usage Patterns in Framework</h1>
 <ul>
 <li></li>
@@ -254,7 +254,7 @@ Usage Patterns in Framework</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="safestate"></a>
+<h1><a class="anchor" id="status_architecture_safestate"></a>
 Integration with Safe-State</h1>
 <ul>
 <li></li>
@@ -265,7 +265,7 @@ Integration with Safe-State</h1>
 <li><code>sapi_status_t rc = vital_operation();</code></li>
 <li><code>if (rc != SAPI_STATUS_OK) {</code></li>
 <li><code> // ANY failure in vital code triggers safe-state</code></li>
-<li><code> <a class="el" href="sapi__safestate_8h.html#a5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+<li><code> <a class="el" href="group__SAFESTATE.html#ga5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
  *                   SAPI_SAFESTATE_REASON_COMMUNICATION_FAILURE)</a>;</code></li>
 <li><code>} *</code></li>
 <li></li>
@@ -279,7 +279,7 @@ Integration with Safe-State</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="misra"></a>
+<h1><a class="anchor" id="status_architecture_misra"></a>
 MISRA Compliance</h1>
 <ul>
 <li></li>
@@ -293,14 +293,14 @@ MISRA Compliance</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="implementation"></a>
+<h1><a class="anchor" id="status_architecture_implementation"></a>
 Implementation Details</h1>
 <ul>
 <li></li>
 <li>### Files</li>
 <li></li>
 <li>- <code><a class="el" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac...">include/safeapi/status/sapi_status.h</a></code> — Public API</li>
-<li>- <code><a class="el" href="sapi__status_8c_source.html">src/status/sapi_status.c</a></code> — String conversion table</li>
+<li>- <code><a class="el" href="sapi__status_8c.html" title="Implementation of sapi_status_to_string().">src/status/sapi_status.c</a></code> — String conversion table</li>
 <li></li>
 <li>### String Conversion Table</li>
 <li></li>
@@ -318,8 +318,8 @@ Implementation Details</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="testing"></a>
-Unit Tests</h1>
+<h1><a class="anchor" id="status_architecture_testing"></a>
+Testing Strategy</h1>
 <ul>
 <li></li>
 <li>### Unit Tests</li>
@@ -337,7 +337,7 @@ Unit Tests</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="future"></a>
+<h1><a class="anchor" id="status_architecture_future"></a>
 Future Extensions</h1>
 <ul>
 <li></li>

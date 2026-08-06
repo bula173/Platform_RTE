@@ -40,7 +40,7 @@
 <area shape="poly" id="edge55_Node000001_Node000040" title=" " alt="" coords="2210,32,1780,50,1501,69,1218,96,1206,98,1205,92,1218,91,1500,63,1780,44,2210,26"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="375,144,317,183,314,179,372,139"/>
 <area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="452,139,507,179,504,183,449,144"/>
-<area shape="rect" id="Node000007" href="$sapi__buffer_8c_source.html" title=" " alt="" coords="5,189,175,214"/>
+<area shape="rect" id="Node000007" href="$sapi__buffer_8c.html" title="Implementation of the cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="5,189,175,214"/>
 <area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="329,139,134,191,132,186,328,134"/>
 <area shape="rect" id="Node000008" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="798,269,945,309"/>
 <area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="414,147,420,185,428,204,440,219,465,235,501,248,596,267,703,278,798,284,798,289,702,284,596,273,500,253,462,240,436,223,423,207,415,187,409,147"/>

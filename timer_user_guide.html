@@ -77,16 +77,185 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
-<p>*<br  />
- * Timer provides one-shot or periodic timeouts with millisecond resolution.<br  />
- * You create a timer with callback, start it, and the framework invokes your<br  />
- * callback when the deadline expires. Caller provides storage; no allocation.<br  />
- *<br  />
- *</p>
-<h1><a class="anchor" id="quick_start"></a>
+<h1><a class="anchor" id="timer_user_guide_overview"></a>
+What is a Timer?</h1>
+<ul>
+<li></li>
+<li>Timer provides one-shot or periodic timeouts with millisecond resolution.</li>
+<li>You create a timer with callback, start it, and the framework invokes your</li>
+<li>callback when the deadline expires. Caller provides storage; no allocation.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_quick_start"></a>
 Quick Start</h1>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="timer_user_guide_qs_create"></a>
+1. Create Timer</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_timer_storage_t storage;  // Caller-owned storage</div>
+<div class="line">*</div>
+<div class="line">* sapi_timer_config_t config = {</div>
+<div class="line">*     .mode = SAPI_TIMER_MODE_PERIODIC,</div>
+<div class="line">*     .period_ms = 100,              // Fire every 100ms</div>
+<div class="line">*     .callback = my_timer_callback,</div>
+<div class="line">*     .user_ctx = my_context</div>
+<div class="line">* };</div>
+<div class="line">*</div>
+<div class="line">* sapi_timer_handle_t timer;</div>
+<div class="line">* sapi_timer_create(&amp;storage, &amp;config, &amp;timer);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="timer_user_guide_qs_start"></a>
+2. Start Timer</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_timer_start(timer);</div>
+<div class="line">* // Timer now running, will fire every 100ms</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="timer_user_guide_qs_callback"></a>
+3. Implement Callback</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* void my_timer_callback(sapi_timer_handle_t handle, void *user_ctx) {</div>
+<div class="line">*     app_t *app = (app_t *)user_ctx;</div>
+<div class="line">*     app-&gt;timer_fired_count++;</div>
+<div class="line">*     // Do work - keep it short, runs in callback context</div>
+<div class="line">* }</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_modes"></a>
+Timer Modes</h1>
+<ul>
+<li></li>
+<li><pre class="fragment"> * ONE_SHOT - Fire once after delay, then stop
+ * PERIODIC - Fire repeatedly at interval
+ * </pre></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_examples"></a>
+Practical Examples</h1>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="timer_user_guide_example_periodic"></a>
+Example 1: Periodic Heartbeat</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* void heartbeat_callback(sapi_timer_handle_t handle, void *ctx) {</div>
+<div class="line">*     app_t *app = (app_t *)ctx;</div>
+<div class="line">*     send_heartbeat_message();</div>
+<div class="line">*     app-&gt;heartbeat_count++;</div>
+<div class="line">* }</div>
+<div class="line">*</div>
+<div class="line">* void app_init(app_t *app) {</div>
+<div class="line">*     sapi_timer_config_t config = {</div>
+<div class="line">*         .mode = SAPI_TIMER_MODE_PERIODIC,</div>
+<div class="line">*         .period_ms = 1000,          // Every second</div>
+<div class="line">*         .callback = heartbeat_callback,</div>
+<div class="line">*         .user_ctx = app</div>
+<div class="line">*     };</div>
+<div class="line">*     sapi_timer_create(&amp;app-&gt;heartbeat_storage, &amp;config, &amp;app-&gt;heartbeat_timer);</div>
+<div class="line">*     sapi_timer_start(app-&gt;heartbeat_timer);</div>
+<div class="line">* }</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="timer_user_guide_example_oneshot"></a>
+Example 2: One-Shot Timeout</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* void timeout_callback(sapi_timer_handle_t handle, void *ctx) {</div>
+<div class="line">*     log_warning(&quot;Operation timeout!&quot;);</div>
+<div class="line">*     // Timer fired once and stopped</div>
+<div class="line">* }</div>
+<div class="line">*</div>
+<div class="line">* void operation_with_timeout(void) {</div>
+<div class="line">*     sapi_timer_config_t config = {</div>
+<div class="line">*         .mode = SAPI_TIMER_MODE_ONE_SHOT,</div>
+<div class="line">*         .period_ms = 5000,          // 5 second timeout</div>
+<div class="line">*         .callback = timeout_callback,</div>
+<div class="line">*         .user_ctx = NULL</div>
+<div class="line">*     };</div>
+<div class="line">*</div>
+<div class="line">*     sapi_timer_create(&amp;timeout_storage, &amp;config, &amp;timer);</div>
+<div class="line">*     sapi_timer_start(timer);</div>
+<div class="line">*</div>
+<div class="line">*     // Do operation...</div>
+<div class="line">*     if (operation_completed) {</div>
+<div class="line">*         sapi_timer_stop(timer);  // Cancel timeout</div>
+<div class="line">*     }</div>
+<div class="line">*     // If operation takes &gt;5s, timeout fires</div>
+<div class="line">* }</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_operations"></a>
+Timer Operations</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_timer_create(storage, config, out_handle)  // Create</div>
+<div class="line">* sapi_timer_start(handle)                         // Start countdown</div>
+<div class="line">* sapi_timer_stop(handle)                          // Stop (idempotent)</div>
+<div class="line">* sapi_timer_destroy(handle)                       // Release resources</div>
+<div class="line">* sapi_timer_now_ms(out_now_ms)                    // Get current time</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. Create at startup, before use</li>
+<li>- Call <a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a> once</li>
+<li>- Can start/stop as needed</li>
+<li>- Destroy at shutdown</li>
+<li></li>
+<li>2. Keep callbacks short</li>
+<li>- Runs in callback context (may be ISR)</li>
+<li>- Minimize time in callback</li>
+<li>- Do real work in main loop</li>
+<li></li>
+<li>3. Use appropriate period for mode</li>
+<li>- PERIODIC: main loop cycle time (10-100ms typical)</li>
+<li>- ONE_SHOT: operation deadline</li>
+<li></li>
+<li>4. Stop before destroying</li>
+<li>- <a class="el" href="group__TIMER.html#ga09d26db513064c919e43cb087302e255" title="Stops a running timer; safe to call on an already-stopped timer.">sapi_timer_stop()</a> then <a class="el" href="group__TIMER.html#ga28eedd7515283ce982e02174f77a3517" title="Destroys a timer, releasing any backend resources bound to it.">sapi_timer_destroy()</a></li>
+<li>- Ensure timer not firing during cleanup</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="timer_architecture.html">Timer Module - Architecture</a> for internal design</li>
+<li>- <a class="el" href="watchdog_user_guide.html">Watchdog Module - User Guide</a> for watchdog timing</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

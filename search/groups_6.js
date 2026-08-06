@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['sizing_20only_0',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]],
-  ['synchronization_20diagnostic_20timeout_20sizing_20only_1',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]]
+  ['layer_20data_20buffer_0',['Cross-Layer Data Buffer',['../group__BUFFER.html',1,'']]],
+  ['link_1',['Point-to-Point Network Link',['../group__NETLINK.html',1,'']]],
+  ['logging_20and_20diagnostics_2',['Logging and Diagnostics',['../group__LOG.html',1,'']]]
 ];

@@ -77,7 +77,7 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_clocksync.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_clocksync.c File Reference<div class="ingroups"><a class="el" href="group__CLOCKSYNC.html">Clock Synchronization (diagnostic/timeout-sizing only)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -110,13 +110,13 @@ Include dependency graph for sapi_clocksync.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga5be8c579111936b9c6918b1c46d6c760" id="r_ga5be8c579111936b9c6918b1c46d6c760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_register_backend</a> (const <a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a> *backend)</td></tr>
+<tr class="memitem:ga5be8c579111936b9c6918b1c46d6c760" id="r_ga5be8c579111936b9c6918b1c46d6c760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_register_backend</a> (const <a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:ga5be8c579111936b9c6918b1c46d6c760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global backend).  <br /></td></tr>
 <tr class="separator:ga5be8c579111936b9c6918b1c46d6c760"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacb7e052e70c3db3b3213fb278ad14fdc" id="r_gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a> (int64_t *out_offset_ms)</td></tr>
+<tr class="memitem:gacb7e052e70c3db3b3213fb278ad14fdc" id="r_gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a> (int64_t *out_offset_ms)</td></tr>
 <tr class="memdesc:gacb7e052e70c3db3b3213fb278ad14fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports this node's estimated clock offset (diagnostic/timeout- sizing only - see the file-level note; never use this to decide whether channel results are comparable).  <br /></td></tr>
 <tr class="separator:gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae9b4c712e4f011a517d6d3af1e5b8285" id="r_gae9b4c712e4f011a517d6d3af1e5b8285"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync_get_quality</a> (<a class="el" href="group__CLOCKSYNC.html#gaaa5c09cfbaf2f186b8b3d84940f92483">sapi_clocksync_quality_t</a> *out_quality)</td></tr>
+<tr class="memitem:gae9b4c712e4f011a517d6d3af1e5b8285" id="r_gae9b4c712e4f011a517d6d3af1e5b8285"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync_get_quality</a> (<a class="el" href="group__CLOCKSYNC.html#gaaa5c09cfbaf2f186b8b3d84940f92483">sapi_clocksync_quality_t</a> *out_quality)</td></tr>
 <tr class="memdesc:gae9b4c712e4f011a517d6d3af1e5b8285"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports the backend's current confidence in the clock offset.  <br /></td></tr>
 <tr class="separator:gae9b4c712e4f011a517d6d3af1e5b8285"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -151,7 +151,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>Single global backend, following ADR-005's established convention (see sapi_timer/sapi_ipc). NULL until <a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760" title="Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global...">sapi_clocksync_register_backend()</a> is called. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
 
 </div>
 </div>

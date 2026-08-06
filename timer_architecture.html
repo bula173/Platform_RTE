@@ -77,18 +77,115 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="timer_architecture_overview"></a>
+Design Overview</h1>
 <ul>
 <li></li>
-<li>Timer provides one-shot or periodic callbacks with millisecond resolution.<br  />
- * Caller provides storage; framework manages state. Callbacks fired by system<br  />
- * tick (typically 1ms from monotonic clock).<br  />
- *<br  />
- *</li>
+<li>Timer provides one-shot or periodic callbacks with millisecond resolution.</li>
+<li>Caller provides storage; framework manages state. Callbacks fired by system</li>
+<li>tick (typically 1ms from monotonic clock).</li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="api"></a>
-Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage\n * sapi_buffer_set_length(buf, new_length);      // Mark data as valid\n * sapi_buffer_clear(buf);                       // Reset length to 0\n * @endcode\n *\n * @section invariants Invariants\n *\n * @verbatim\n * buf.data != NULL           - Pointing to valid storage\n * buf.capacity &gt; 0           - Has space\n * buf.length &lt;= buf.capacity - Never overfilled\n * @endverbatim\n *\n * @section ownership Ownership Model\n *\n * Caller owns backing storage:\n * - Must allocate before sapi_buffer_init()\n * - Must keep valid for buffer lifetime\n * - Caller manages writes to buf.data\n *\n * Buffer manages:\n * - Tracking length (valid data)\n * - Validating length &lt;= capacity\n *\n * @section performance O(1) All Operations\n *\n * | Operation | Time |\n * |--------—|---—|\n * | init() | O(1) |\n * | set_length() | O(1) |\n * | clear() | O(1) |\n *\n * No copying, no allocation.\n *\n * @section see_also See Also\n *\n * - @ref buffer_user_guide for usage patterns\n * - @ref memory_user_guide for storage allocation\n *\n */\n</h1>
+<h1><a class="anchor" id="timer_architecture_api"></a>
+Core API</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_timer_create(storage, config, out_handle)   // Create timer</div>
+<div class="line">* sapi_timer_start(handle)                          // Start countdown</div>
+<div class="line">* sapi_timer_stop(handle)                           // Stop countdown</div>
+<div class="line">* sapi_timer_destroy(handle)                        // Release</div>
+<div class="line">* sapi_timer_now_ms(out_now_ms)                     // Get current time</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_config"></a>
+Configuration</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* typedef struct {</div>
+<div class="line">*     sapi_timer_mode_t mode;        // ONE_SHOT or PERIODIC</div>
+<div class="line">*     sapi_duration_ms_t period_ms;  // Period/delay in ms</div>
+<div class="line">*     sapi_timer_callback_t callback;// Called on expiry</div>
+<div class="line">*     void *user_ctx;                // Passed to callback</div>
+<div class="line">* } sapi_timer_config_t;</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_storage"></a>
+Storage Model</h1>
+<ul>
+<li></li>
+<li>Caller provides 64-byte storage via sapi_timer_storage_t.</li>
+<li>Framework uses for internal state. Caller keeps valid for timer lifetime.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_callback"></a>
+Callback Signature</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* typedef void (*sapi_timer_callback_t)(</div>
+<div class="line">*     sapi_timer_handle_t handle,</div>
+<div class="line">*     void *user_ctx</div>
+<div class="line">* );</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li>Called when timer expires. Runs in callback context (may be ISR on some backends).</li>
+<li>Keep execution time minimal.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_timing"></a>
+Timer Tick System</h1>
+<ul>
+<li></li>
+<li>Framework needs monotonic clock with ~1ms resolution. Backend provides.</li>
+<li>Every tick, all active timers decrement countdown. On zero, callback fires.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_performance"></a>
+O(1) Per Timer</h1>
+<ul>
+<li></li>
+<li>| Operation | Time |</li>
+<li>|--------&mdash;|---&mdash;|</li>
+<li>| create() | O(1) |</li>
+<li>| start() | O(1) |</li>
+<li>| stop() | O(1) |</li>
+<li>| destroy() | O(1) |</li>
+<li>| tick() | O(n) [n = active timers] |</li>
+<li></li>
+<li>Tick is only O(n) operation; typically called once per millisecond.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_limits"></a>
+Constraints</h1>
+<ul>
+<li></li>
+<li><pre class="fragment"> * Min period      - 1ms (timer resolution)
+ * Max period      - 2^32 - 1 ms (~49 days)
+ * Storage size    - 64 bytes
+ * Callback time   - Caller's responsibility to bound
+ * </pre></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="timer_architecture_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="timer_user_guide.html">Timer Module - User Guide</a> for usage patterns</li>
+<li>- <a class="el" href="watchdog_architecture.html">Watchdog Module - Architecture</a> for watchdog timing</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

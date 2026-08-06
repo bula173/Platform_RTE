@@ -75,14 +75,33 @@ $(function() {
 <div class="contents">
 <div class="textblock"><ul>
 <li></li>
-<li>Bounded string operations via length-limited wrappers over standard libc.<br  />
- * No unbounded operations (strcpy, strcat, sprintf). All operations check<br  />
- * bounds and return status codes.<br  />
- *<br  />
- *</li>
+<li>Bounded string operations via length-limited wrappers over standard libc.</li>
+<li>No unbounded operations (strcpy, strcat, sprintf). All operations check</li>
+<li>bounds and return status codes.</li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="functions"></a>
-Core Functions\n *\n * sapi_strncpy()   - Bounded copy\n * sapi_strncat()   - Bounded append\n * sapi_strnlen()   - Bounded length\n * sapi_strncmp()   - Bounded compare\n * sapi_snprintf()  - Bounded format\n *\n * @section misra MISRA Rule 21.6\n *\n * ✓ No strcpy, strcat, sprintf\n * ✓ All bounds-checked\n * ✓ Status return codes\n *\n */\n</h1>
+<h1><a class="anchor" id="string_architecture_functions"></a>
+Core Functions</h1>
+<ul>
+<li></li>
+<li>sapi_strncpy() - Bounded copy</li>
+<li>sapi_strncat() - Bounded append</li>
+<li>sapi_strnlen() - Bounded length</li>
+<li>sapi_strncmp() - Bounded compare</li>
+<li>sapi_snprintf() - Bounded format</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="string_architecture_misra"></a>
+MISRA Rule 21.6</h1>
+<ul>
+<li></li>
+<li>✓ No strcpy, strcat, sprintf</li>
+<li>✓ All bounds-checked</li>
+<li>✓ Status return codes</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Log Module - Architecture\n *\n * Ring buffer logging. Fixed storage, circular writes. When full, oldest\n * entries overwritten. Never allocates.\n *\n * @section storage Ring Buffer\n *\n * Fixed-size buffer tracks write position. On overflow, wraps and overwrites\n * oldest entries. Preserves recent history.\n *\n * @section format Entry Format\n *\n * [timestamp:4][level:1][message_len:2][message:N]\n * Compact format for bounded storage.\n *\n * @section retrieve Retrieval\n *\n * sapi_log_read() - Read most recent entries\n * Access NVM/flash via backend for persistence.\n *\n */\n</title>
+<title>Safe API Framework: Log Module - Architecture</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,43 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Log Module - Architecture\n *\n * Ring buffer logging. Fixed storage, circular writes. When full, oldest\n * entries overwritten. Never allocates.\n *\n * @section storage Ring Buffer\n *\n * Fixed-size buffer tracks write position. On overflow, wraps and overwrites\n * oldest entries. Preserves recent history.\n *\n * @section format Entry Format\n *\n * [timestamp:4][level:1][message_len:2][message:N]\n * Compact format for bounded storage.\n *\n * @section retrieve Retrieval\n *\n * sapi_log_read() - Read most recent entries\n * Access NVM/flash via backend for persistence.\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Log Module - Architecture</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li>Ring buffer logging. Fixed storage, circular writes. When full, oldest</li>
+<li>entries overwritten. Never allocates.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_architecture_storage"></a>
+Ring Buffer</h1>
+<ul>
+<li></li>
+<li>Fixed-size buffer tracks write position. On overflow, wraps and overwrites</li>
+<li>oldest entries. Preserves recent history.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_architecture_format"></a>
+Entry Format</h1>
+<ul>
+<li></li>
+<li>[timestamp:4][level:1][message_len:2][message:N]</li>
+<li>Compact format for bounded storage.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_architecture_retrieve"></a>
+Retrieval</h1>
+<ul>
+<li></li>
+<li>sapi_log_read() - Read most recent entries</li>
+<li>Access NVM/flash via backend for persistence.</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

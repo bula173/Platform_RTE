@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="buffer_user_guide_overview"></a>
+What is a Buffer?</h1>
 <ul>
 <li></li>
 <li>A Buffer is a lightweight, bounds-tracked view over caller-owned storage.</li>
@@ -90,13 +90,13 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="quick_start"></a>
+<h1><a class="anchor" id="buffer_user_guide_quick_start"></a>
 Quick Start</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_storage"></a>
+<h2><a class="anchor" id="buffer_user_guide_qs_storage"></a>
 1. Allocate Backing Storage</h2>
 <ul>
 <li></li>
@@ -107,7 +107,7 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_init"></a>
+<h2><a class="anchor" id="buffer_user_guide_qs_init"></a>
 2. Bind Buffer View</h2>
 <ul>
 <li></li>
@@ -125,7 +125,7 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="qs_use"></a>
+<h2><a class="anchor" id="buffer_user_guide_qs_use"></a>
 3. Use Buffer</h2>
 <ul>
 <li></li>
@@ -145,7 +145,7 @@ Quick Start</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="data_structures"></a>
+<h1><a class="anchor" id="buffer_user_guide_data_structures"></a>
 Key Structures</h1>
 <ul>
 <li></li>
@@ -166,13 +166,13 @@ Key Structures</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="examples"></a>
+<h1><a class="anchor" id="buffer_user_guide_examples"></a>
 Practical Examples</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="example_message"></a>
+<h2><a class="anchor" id="buffer_user_guide_example_message"></a>
 Example 1: Fixed-Size Message Buffer</h2>
 <ul>
 <li></li>
@@ -204,24 +204,121 @@ Example 1: Fixed-Size Message Buffer</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="example_ringbuf"></a>
-Example 2: Read-Only View\n *\n * @code</h2>
+<h2><a class="anchor" id="buffer_user_guide_example_ringbuf"></a>
+Example 2: Read-Only View</h2>
 <ul>
-<li><a class="el" href="structsapi__buffer__t.html" title="Mutable, bounds-tracked view over caller-owned storage.">sapi_buffer_t</a> mutable_buf = {...};<br  />
- *<br  />
- * // Create read-only view\ * <a class="el" href="structsapi__const__buffer__t.html" title="Read-only view of a buffer&#39;s currently valid bytes. Grants no write access to the underlying storage.">sapi_const_buffer_t</a> view = {<br  />
- * .data = mutable_buf.data,<br  />
- * .length = mutable_buf.length<br  />
- * };<br  />
- *<br  />
- * // Pass to function that should not modify<br  />
- * process_read_only(&amp;view);<br  />
- * <br  />
- *<br  />
- *</li>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_buffer_t mutable_buf = {...};</div>
+<div class="line">*</div>
+<div class="line">* // Create read-only view</div>
+<div class="line">* sapi_const_buffer_t view = {</div>
+<div class="line">*     .data = mutable_buf.data,</div>
+<div class="line">*     .length = mutable_buf.length</div>
+<div class="line">* };</div>
+<div class="line">*</div>
+<div class="line">* // Pass to function that should not modify</div>
+<div class="line">* process_read_only(&amp;view);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="operations"></a>
-Buffer Operations\n *\n * @subsection op_init Initialize\n *\n * @code\n * sapi_buffer_init(&amp;buf, storage, capacity);\n * @endcode\n *\n * - Sets buf.data = storage\n * - Sets buf.capacity = capacity\n * - Sets buf.length = 0\n * - Returns INVALID_PARAM if storage==NULL or capacity==0\n *\n * @subsection op_write Write Data\n *\n * @code\n * // Caller writes to buf.data\n * memcpy(buf.data + offset, input, size);\n *\n * // Mark data as valid\n * sapi_buffer_set_length(&amp;buf, new_length);\n * @endcode\n *\n * sapi_buffer_set_length() fails if new_length &gt; capacity.\n *\n * @subsection op_read Read Data\n *\n * @code\n * // Caller reads from buf.data\n * size_t n = buf.length;  // How much valid data\n * memcpy(output, buf.data, n);\n * @endcode\n *\n * @subsection op_clear Clear\n *\n * @code\n * sapi_buffer_clear(&amp;buf);  // Sets length=0, keeps capacity/data\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Caller owns storage lifetime\n *    - Buffer just tracks state\n *    - Storage must outlive buffer\n *    - Static or stack allocation recommended\n *\n * 2. Check capacity before writing\n *    - Caller responsible for bounds checking\n *    - Buffer tracks length, not write protection\n *    - sapi_buffer_set_length() validates\n *\n * 3. Use sapi_buffer_set_length() for bounds checking\n *    - Always call after writing\n *    - Returns error if length &gt; capacity\n *    - Prevents out-of-bounds bugs\n *\n * 4. Use const_buffer_t for read-only access\n *    - Pass to functions that should not modify\n *    - Type-safe read-only contract\n *\n * 5. Clear when done\n *    - Reset length to 0 for reuse\n *    - Resets valid-data range, not storage\n *\n * @section see_also See Also\n *\n * - @ref buffer_architecture for internal design\n * - @ref memory_user_guide for allocation strategies\n *\n */\n</h1>
+<h1><a class="anchor" id="buffer_user_guide_operations"></a>
+Buffer Operations</h1>
+<ul>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="buffer_user_guide_op_init"></a>
+Initialize</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_buffer_init(&amp;buf, storage, capacity);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li>- Sets buf.data = storage</li>
+<li>- Sets buf.capacity = capacity</li>
+<li>- Sets buf.length = 0</li>
+<li>- Returns INVALID_PARAM if storage==NULL or capacity==0</li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="buffer_user_guide_op_write"></a>
+Write Data</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* // Caller writes to buf.data</div>
+<div class="line">* memcpy(buf.data + offset, input, size);</div>
+<div class="line">*</div>
+<div class="line">* // Mark data as valid</div>
+<div class="line">* sapi_buffer_set_length(&amp;buf, new_length);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li><a class="el" href="group__BUFFER.html#gab66fea27afb497fe652e745dad2d5886" title="Marks length bytes of already-written storage as valid.">sapi_buffer_set_length()</a> fails if new_length &gt; capacity.</li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="buffer_user_guide_op_read"></a>
+Read Data</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* // Caller reads from buf.data</div>
+<div class="line">* size_t n = buf.length;  // How much valid data</div>
+<div class="line">* memcpy(output, buf.data, n);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h2><a class="anchor" id="buffer_user_guide_op_clear"></a>
+Clear</h2>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_buffer_clear(&amp;buf);  // Sets length=0, keeps capacity/data</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. Caller owns storage lifetime</li>
+<li>- Buffer just tracks state</li>
+<li>- Storage must outlive buffer</li>
+<li>- Static or stack allocation recommended</li>
+<li></li>
+<li>2. Check capacity before writing</li>
+<li>- Caller responsible for bounds checking</li>
+<li>- Buffer tracks length, not write protection</li>
+<li>- <a class="el" href="group__BUFFER.html#gab66fea27afb497fe652e745dad2d5886" title="Marks length bytes of already-written storage as valid.">sapi_buffer_set_length()</a> validates</li>
+<li></li>
+<li>3. Use <a class="el" href="group__BUFFER.html#gab66fea27afb497fe652e745dad2d5886" title="Marks length bytes of already-written storage as valid.">sapi_buffer_set_length()</a> for bounds checking</li>
+<li>- Always call after writing</li>
+<li>- Returns error if length &gt; capacity</li>
+<li>- Prevents out-of-bounds bugs</li>
+<li></li>
+<li>4. Use const_buffer_t for read-only access</li>
+<li>- Pass to functions that should not modify</li>
+<li>- Type-safe read-only contract</li>
+<li></li>
+<li>5. Clear when done</li>
+<li>- Reset length to 0 for reuse</li>
+<li>- Resets valid-data range, not storage</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="buffer_architecture.html">Buffer Module - Architecture</a> for internal design</li>
+<li>- <a class="el" href="memory_user_guide.html">Memory Module - User Guide</a> for allocation strategies</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

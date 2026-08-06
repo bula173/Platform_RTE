@@ -78,7 +78,7 @@ $(function() {
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_appmanager.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_appmanager.c File Reference<div class="ingroups"><a class="el" href="group__APPMANAGER.html">Application Manager</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -111,33 +111,38 @@ Include dependency graph for sapi_appmanager.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a3024ccd4a9af5109d24e6c57565d74a1" id="r_a3024ccd4a9af5109d24e6c57565d74a1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a3024ccd4a9af5109d24e6c57565d74a1">_POSIX_C_SOURCE</a>&#160;&#160;&#160;200809L</td></tr>
+<tr class="memdesc:a3024ccd4a9af5109d24e6c57565d74a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
+       known" / implicit-declaration errors under -Werror - caught via a real GitHub Actions failure, not local testing.  <br /></td></tr>
 <tr class="separator:a3024ccd4a9af5109d24e6c57565d74a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7b7b1ad11e159a620be224048dd94ef" id="r_af7b7b1ad11e159a620be224048dd94ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#af7b7b1ad11e159a620be224048dd94ef">SAPI_APPMANAGER_HAVE_POSIX_SIGNALS</a>&#160;&#160;&#160;0</td></tr>
+<tr class="memdesc:af7b7b1ad11e159a620be224048dd94ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">1 when compiled on a POSIX-ish target (signal.h available) so <a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52" title="POSIX-only convenience: installs SIGINT and SIGTERM handlers that call sapi_appmanager_request_shutdo...">sapi_appmanager_install_default_signal_handlers()</a> can install a real SIGINT/SIGTERM handler; 0 otherwise, in which case that function returns SAPI_STATUS_NOT_SUPPORTED.  <br /></td></tr>
 <tr class="separator:af7b7b1ad11e159a620be224048dd94ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab9538e91ca0849775b4989d3b1c0f566" id="r_ab9538e91ca0849775b4989d3b1c0f566"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#ab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a> (const <a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> *config)</td></tr>
-<tr class="memdesc:ab9538e91ca0849775b4989d3b1c0f566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run application with lifecycle management.  <br /></td></tr>
-<tr class="separator:ab9538e91ca0849775b4989d3b1c0f566"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1eb6d49e529ec4b75da7744011f237c4" id="r_a1eb6d49e529ec4b75da7744011f237c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__appmanager_8h.html#aad6d0861be88c336d15ab5642dc28966">sapi_app_state_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a1eb6d49e529ec4b75da7744011f237c4">sapi_appmanager_get_state</a> (void)</td></tr>
-<tr class="memdesc:a1eb6d49e529ec4b75da7744011f237c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current application state.  <br /></td></tr>
-<tr class="separator:a1eb6d49e529ec4b75da7744011f237c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b433acbbfb58db8d3b9ff6c96f3a1e9" id="r_a5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a5b433acbbfb58db8d3b9ff6c96f3a1e9">sapi_appmanager_get_stats</a> (<a class="el" href="structsapi__appmanager__state__t.html">sapi_appmanager_state_t</a> *state)</td></tr>
-<tr class="memdesc:a5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get application statistics.  <br /></td></tr>
-<tr class="separator:a5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1468e27c9a31327305fd5a152d7f13b1" id="r_a1468e27c9a31327305fd5a152d7f13b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a1468e27c9a31327305fd5a152d7f13b1">sapi_appmanager_request_shutdown</a> (void)</td></tr>
-<tr class="memdesc:a1468e27c9a31327305fd5a152d7f13b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request application shutdown.  <br /></td></tr>
-<tr class="separator:a1468e27c9a31327305fd5a152d7f13b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7a9a181120aa3e9821a9479a8f55e52" id="r_ad7a9a181120aa3e9821a9479a8f55e52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#ad7a9a181120aa3e9821a9479a8f55e52">sapi_appmanager_install_default_signal_handlers</a> (void)</td></tr>
-<tr class="memdesc:ad7a9a181120aa3e9821a9479a8f55e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">POSIX-only convenience: installs SIGINT and SIGTERM handlers that call <a class="el" href="sapi__appmanager_8h.html#a1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>, so an operator (Ctrl+C) or process manager (SIGTERM) can stop a <a class="el" href="sapi__appmanager_8h.html#ab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> loop gracefully - shutdown() still runs, this is not a hard kill.  <br /></td></tr>
-<tr class="separator:ad7a9a181120aa3e9821a9479a8f55e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab9538e91ca0849775b4989d3b1c0f566" id="r_gab9538e91ca0849775b4989d3b1c0f566"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a> (const <a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> *config)</td></tr>
+<tr class="memdesc:gab9538e91ca0849775b4989d3b1c0f566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run application with lifecycle management.  <br /></td></tr>
+<tr class="separator:gab9538e91ca0849775b4989d3b1c0f566"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1eb6d49e529ec4b75da7744011f237c4" id="r_ga1eb6d49e529ec4b75da7744011f237c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__APPMANAGER.html#gaad6d0861be88c336d15ab5642dc28966">sapi_app_state_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#ga1eb6d49e529ec4b75da7744011f237c4">sapi_appmanager_get_state</a> (void)</td></tr>
+<tr class="memdesc:ga1eb6d49e529ec4b75da7744011f237c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current application state.  <br /></td></tr>
+<tr class="separator:ga1eb6d49e529ec4b75da7744011f237c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5b433acbbfb58db8d3b9ff6c96f3a1e9" id="r_ga5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#ga5b433acbbfb58db8d3b9ff6c96f3a1e9">sapi_appmanager_get_stats</a> (<a class="el" href="structsapi__appmanager__state__t.html">sapi_appmanager_state_t</a> *state)</td></tr>
+<tr class="memdesc:ga5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get application statistics.  <br /></td></tr>
+<tr class="separator:ga5b433acbbfb58db8d3b9ff6c96f3a1e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1468e27c9a31327305fd5a152d7f13b1" id="r_ga1468e27c9a31327305fd5a152d7f13b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1">sapi_appmanager_request_shutdown</a> (void)</td></tr>
+<tr class="memdesc:ga1468e27c9a31327305fd5a152d7f13b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request application shutdown.  <br /></td></tr>
+<tr class="separator:ga1468e27c9a31327305fd5a152d7f13b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad7a9a181120aa3e9821a9479a8f55e52" id="r_gad7a9a181120aa3e9821a9479a8f55e52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52">sapi_appmanager_install_default_signal_handlers</a> (void)</td></tr>
+<tr class="memdesc:gad7a9a181120aa3e9821a9479a8f55e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">POSIX-only convenience: installs SIGINT and SIGTERM handlers that call <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>, so an operator (Ctrl+C) or process manager (SIGTERM) can stop a <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> loop gracefully - shutdown() still runs, this is not a hard kill.  <br /></td></tr>
+<tr class="separator:gad7a9a181120aa3e9821a9479a8f55e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ac8819bf2db204bbef9723ad534f2bb0c" id="r_ac8819bf2db204bbef9723ad534f2bb0c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structsapi__appmanager__state__t.html">sapi_appmanager_state_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#ac8819bf2db204bbef9723ad534f2bb0c">g_app_state</a></td></tr>
+<tr class="memdesc:ac8819bf2db204bbef9723ad534f2bb0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Global application state (single instance; no dynamic allocation).  <br /></td></tr>
 <tr class="separator:ac8819bf2db204bbef9723ad534f2bb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad631998c17d3b2ef7de50e011fbeda48" id="r_ad631998c17d3b2ef7de50e011fbeda48"><td class="memItemLeft" align="right" valign="top">static volatile int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#ad631998c17d3b2ef7de50e011fbeda48">g_shutdown_requested</a> = 0</td></tr>
+<tr class="memdesc:ad631998c17d3b2ef7de50e011fbeda48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set by the installed signal handler (or <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>) to request that <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s loop exit cleanly.  <br /></td></tr>
 <tr class="separator:ad631998c17d3b2ef7de50e011fbeda48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -158,7 +163,10 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p>struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
+       known" / implicit-declaration errors under -Werror - caught via a real GitHub Actions failure, not local testing. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -174,174 +182,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00032">32</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p>1 when compiled on a POSIX-ish target (signal.h available) so <a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52" title="POSIX-only convenience: installs SIGINT and SIGTERM handlers that call sapi_appmanager_request_shutdo...">sapi_appmanager_install_default_signal_handlers()</a> can install a real SIGINT/SIGTERM handler; 0 otherwise, in which case that function returns SAPI_STATUS_NOT_SUPPORTED. </p>
 
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="ab9538e91ca0849775b4989d3b1c0f566" name="ab9538e91ca0849775b4989d3b1c0f566"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9538e91ca0849775b4989d3b1c0f566">&#9670;&#160;</a></span>sapi_appmanager_run()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int sapi_appmanager_run </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> *&#160;</td>
-          <td class="paramname"><em>config</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Run application with lifecycle management. </p>
-<p>This is the single entry point for all applications. It manages the complete lifecycle:</p><ol type="1">
-<li>Initialize (init)</li>
-<li>Execute loop (execute)</li>
-<li>Shutdown (shutdown)</li>
-</ol>
-<p>Error handling:</p><ul>
-<li>If init() fails, shutdown() is still called and EXIT_FAILURE is returned</li>
-<li>If execute() fails, error is logged and loop continues (unless threshold reached)</li>
-<li>If error_threshold is reached, application shuts down</li>
-<li>shutdown() is always called, even on error</li>
-</ul>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">config</td><td>Application manager configuration </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>0 (EXIT_SUCCESS) if application completed normally 1 (EXIT_FAILURE) if initialization failed or errors exceeded threshold</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a> ops = {</div>
-<div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">init</a> = my_app_init,</div>
-<div class="line">    .execute = my_app_execute,</div>
-<div class="line">    .shutdown = my_app_shutdown,</div>
-<div class="line">    .get_name = my_app_get_name,</div>
-<div class="line">    .get_version = my_app_get_version</div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><a class="code hl_struct" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> config = {</div>
-<div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__config__t.html#ae03d69327899e03ea71555cd42f563fb">ops</a> = &amp;ops,</div>
-<div class="line">    .context = &amp;my_app_context,</div>
-<div class="line">    .max_iterations = 0,      <span class="comment">// Run forever</span></div>
-<div class="line">    .error_threshold = 10      <span class="comment">// Stop after 10 errors</span></div>
-<div class="line">};</div>
-<div class="line"> </div>
-<div class="line"><span class="keywordflow">return</span> <a class="code hl_function" href="sapi__appmanager_8h.html#ab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a>(&amp;config);</div>
-<div class="ttc" id="asapi__appmanager_8h_html_ab9538e91ca0849775b4989d3b1c0f566"><div class="ttname"><a href="sapi__appmanager_8h.html#ab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a></div><div class="ttdeci">int sapi_appmanager_run(const sapi_appmanager_config_t *config)</div><div class="ttdoc">Run application with lifecycle management.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8c_source.html#l00049">sapi_appmanager.c:49</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__config__t_html"><div class="ttname"><a href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a></div><div class="ttdoc">Application manager configuration.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00130">sapi_appmanager.h:130</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__config__t_html_ae03d69327899e03ea71555cd42f563fb"><div class="ttname"><a href="structsapi__appmanager__config__t.html#ae03d69327899e03ea71555cd42f563fb">sapi_appmanager_config_t::ops</a></div><div class="ttdeci">const sapi_appmanager_operations_t * ops</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00131">sapi_appmanager.h:131</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__operations__t_html"><div class="ttname"><a href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a></div><div class="ttdoc">Application lifecycle operations.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00069">sapi_appmanager.h:69</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__operations__t_html_a1f03aa6489eaf45e7ef8c29044af48b1"><div class="ttname"><a href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">sapi_appmanager_operations_t::init</a></div><div class="ttdeci">sapi_status_t(* init)(void *context)</div><div class="ttdoc">Initialize application.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00079">sapi_appmanager.h:79</a></div></div>
-</div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00049">49</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
-
-</div>
-</div>
-<a id="a1eb6d49e529ec4b75da7744011f237c4" name="a1eb6d49e529ec4b75da7744011f237c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1eb6d49e529ec4b75da7744011f237c4">&#9670;&#160;</a></span>sapi_appmanager_get_state()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__appmanager_8h.html#aad6d0861be88c336d15ab5642dc28966">sapi_app_state_t</a> sapi_appmanager_get_state </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get current application state. </p>
-<p>Returns the current state of a running application manager. Note: This is intended for monitoring, not for control.</p>
-<dl class="section return"><dt>Returns</dt><dd>Current application state </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00167">167</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
-
-</div>
-</div>
-<a id="a5b433acbbfb58db8d3b9ff6c96f3a1e9" name="a5b433acbbfb58db8d3b9ff6c96f3a1e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b433acbbfb58db8d3b9ff6c96f3a1e9">&#9670;&#160;</a></span>sapi_appmanager_get_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_appmanager_get_stats </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structsapi__appmanager__state__t.html">sapi_appmanager_state_t</a> *&#160;</td>
-          <td class="paramname"><em>state</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Get application statistics. </p>
-<p>Returns runtime statistics (iterations, errors, etc.).</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">state</td><td>Pointer to <a class="el" href="structsapi__appmanager__state__t.html" title="Application manager runtime state.">sapi_appmanager_state_t</a> to populate </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00172">172</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
-
-</div>
-</div>
-<a id="a1468e27c9a31327305fd5a152d7f13b1" name="a1468e27c9a31327305fd5a152d7f13b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1468e27c9a31327305fd5a152d7f13b1">&#9670;&#160;</a></span>sapi_appmanager_request_shutdown()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void sapi_appmanager_request_shutdown </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Request application shutdown. </p>
-<p>Signals the application to begin shutdown. The execute loop will terminate after the current iteration.</p>
-<p>Note: This function requests shutdown but does not guarantee immediate termination. The shutdown may take one iteration to complete. </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00182">182</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
-
-</div>
-</div>
-<a id="ad7a9a181120aa3e9821a9479a8f55e52" name="ad7a9a181120aa3e9821a9479a8f55e52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7a9a181120aa3e9821a9479a8f55e52">&#9670;&#160;</a></span>sapi_appmanager_install_default_signal_handlers()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_appmanager_install_default_signal_handlers </td>
-          <td>(</td>
-          <td class="paramtype">void&#160;</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>POSIX-only convenience: installs SIGINT and SIGTERM handlers that call <a class="el" href="sapi__appmanager_8h.html#a1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>, so an operator (Ctrl+C) or process manager (SIGTERM) can stop a <a class="el" href="sapi__appmanager_8h.html#ab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> loop gracefully - shutdown() still runs, this is not a hard kill. </p>
-<p>This is the one function in this module with an OS dependency - see this header's own file-level </p><dl class="section note"><dt>Note</dt><dd>for why that is an intentional, scoped exception rather than a general pattern for this framework. Safe to call unconditionally on any target: on a non-POSIX build this compiles to a no-op that returns SAPI_STATUS_NOT_SUPPORTED, so portable integration code does not need its own #ifdef around the call site.</dd></dl>
-<p>Call this before <a class="el" href="sapi__appmanager_8h.html#ab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> (or from init()); calling it more than once re-installs the same handlers (idempotent, matches <a class="el" href="sapi__safestate_8h.html#a053708e171419eca226445770ff6ab9c" title="Registers the reaction handler for one safe-state level. This is how an integrator supplies their own...">sapi_safestate_register_handler()</a>'s "registering again replaces the
-previous" convention).</p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if both handlers were installed; SAPI_STATUS_NOT_SUPPORTED on a non-POSIX build; SAPI_STATUS_INTERNAL_ERROR if the underlying sigaction() call itself failed (see errno at the call site for detail - not surfaced here, consistent with this framework not using errno in its own public API, CLAUDE.md's "no use of errno in
-        production paths"). </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00223">223</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00043">43</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -366,15 +209,17 @@ previous" convention).</p>
 </table>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line">= {</div>
-<div class="line">    .state = <a class="code hl_enumvalue" href="sapi__appmanager_8h.html#aad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a>,</div>
+<div class="line">    .state = <a class="code hl_enumvalue" href="group__APPMANAGER.html#ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a>,</div>
 <div class="line">    .iteration_count = 0,</div>
 <div class="line">    .error_count = 0,</div>
-<div class="line">    .last_error = <a class="code hl_enumvalue" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div>
+<div class="line">    .last_error = <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div>
 <div class="line">}</div>
-<div class="ttc" id="asapi__appmanager_8h_html_aad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264"><div class="ttname"><a href="sapi__appmanager_8h.html#aad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a></div><div class="ttdeci">@ SAPI_APP_STATE_UNINITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00052">sapi_appmanager.h:52</a></div></div>
-<div class="ttc" id="asapi__status_8h_html_acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00024">sapi_status.h:24</a></div></div>
+<div class="ttc" id="agroup__APPMANAGER_html_ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264"><div class="ttname"><a href="group__APPMANAGER.html#ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a></div><div class="ttdeci">@ SAPI_APP_STATE_UNINITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00056">sapi_appmanager.h:56</a></div></div>
+<div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
 </div><!-- fragment -->
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00036">36</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p>Global application state (single instance; no dynamic allocation). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00047">47</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -398,7 +243,9 @@ previous" convention).</p>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00043">43</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p>Set by the installed signal handler (or <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>) to request that <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s loop exit cleanly. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>

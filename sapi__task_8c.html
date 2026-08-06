@@ -77,11 +77,11 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_task.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_task.c File Reference<div class="ingroups"><a class="el" href="group__TASK.html">Task/Thread Scheduling</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Task service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__task_8c.html#a13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a> (ADR-005).  
+<p>Task service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TASK.html#ga13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__task_8h_source.html">safeapi/task/sapi_task.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -109,190 +109,33 @@ Include dependency graph for sapi_task.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a13a36c3389fb8c06a7cd8a6845558dd3" id="r_a13a36c3389fb8c06a7cd8a6845558dd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#a13a36c3389fb8c06a7cd8a6845558dd3">sapi_task_register_backend</a> (const <a class="el" href="structsapi__task__backend__t.html">sapi_task_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:a13a36c3389fb8c06a7cd8a6845558dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:a13a36c3389fb8c06a7cd8a6845558dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1cfcfe1ef4315d82a28f7050a94d6709" id="r_a1cfcfe1ef4315d82a28f7050a94d6709"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#a1cfcfe1ef4315d82a28f7050a94d6709">sapi_task_create</a> (sapi_task_storage_t *storage, const <a class="el" href="structsapi__task__config__t.html">sapi_task_config_t</a> *config, sapi_task_handle_t *out_handle)</td></tr>
-<tr class="memdesc:a1cfcfe1ef4315d82a28f7050a94d6709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a task in the suspended state.  <br /></td></tr>
-<tr class="separator:a1cfcfe1ef4315d82a28f7050a94d6709"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a389dce24bc562446331c89f58844e0e7" id="r_a389dce24bc562446331c89f58844e0e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#a389dce24bc562446331c89f58844e0e7">sapi_task_start</a> (sapi_task_handle_t handle)</td></tr>
-<tr class="memdesc:a389dce24bc562446331c89f58844e0e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts a created task.  <br /></td></tr>
-<tr class="separator:a389dce24bc562446331c89f58844e0e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6e1a985b12190d6c94792e31716b9e3e" id="r_a6e1a985b12190d6c94792e31716b9e3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#a6e1a985b12190d6c94792e31716b9e3e">sapi_task_suspend</a> (sapi_task_handle_t handle)</td></tr>
-<tr class="memdesc:a6e1a985b12190d6c94792e31716b9e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspends a running task.  <br /></td></tr>
-<tr class="separator:a6e1a985b12190d6c94792e31716b9e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9420b4f76a7ad6c8c076dba4c8b20785" id="r_a9420b4f76a7ad6c8c076dba4c8b20785"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#a9420b4f76a7ad6c8c076dba4c8b20785">sapi_task_destroy</a> (sapi_task_handle_t handle)</td></tr>
-<tr class="memdesc:a9420b4f76a7ad6c8c076dba4c8b20785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminates and destroys a task.  <br /></td></tr>
-<tr class="separator:a9420b4f76a7ad6c8c076dba4c8b20785"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga13a36c3389fb8c06a7cd8a6845558dd3" id="r_ga13a36c3389fb8c06a7cd8a6845558dd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TASK.html#ga13a36c3389fb8c06a7cd8a6845558dd3">sapi_task_register_backend</a> (const <a class="el" href="structsapi__task__backend__t.html">sapi_task_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:ga13a36c3389fb8c06a7cd8a6845558dd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
+<tr class="separator:ga13a36c3389fb8c06a7cd8a6845558dd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1cfcfe1ef4315d82a28f7050a94d6709" id="r_ga1cfcfe1ef4315d82a28f7050a94d6709"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709">sapi_task_create</a> (sapi_task_storage_t *storage, const <a class="el" href="structsapi__task__config__t.html">sapi_task_config_t</a> *config, <a class="el" href="group__TASK.html#ga56905dc212511186e7a0934c5f1f569b">sapi_task_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:ga1cfcfe1ef4315d82a28f7050a94d6709"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a task in the suspended state.  <br /></td></tr>
+<tr class="separator:ga1cfcfe1ef4315d82a28f7050a94d6709"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga389dce24bc562446331c89f58844e0e7" id="r_ga389dce24bc562446331c89f58844e0e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TASK.html#ga389dce24bc562446331c89f58844e0e7">sapi_task_start</a> (<a class="el" href="group__TASK.html#ga56905dc212511186e7a0934c5f1f569b">sapi_task_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga389dce24bc562446331c89f58844e0e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts a created task.  <br /></td></tr>
+<tr class="separator:ga389dce24bc562446331c89f58844e0e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6e1a985b12190d6c94792e31716b9e3e" id="r_ga6e1a985b12190d6c94792e31716b9e3e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TASK.html#ga6e1a985b12190d6c94792e31716b9e3e">sapi_task_suspend</a> (<a class="el" href="group__TASK.html#ga56905dc212511186e7a0934c5f1f569b">sapi_task_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga6e1a985b12190d6c94792e31716b9e3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Suspends a running task.  <br /></td></tr>
+<tr class="separator:ga6e1a985b12190d6c94792e31716b9e3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9420b4f76a7ad6c8c076dba4c8b20785" id="r_ga9420b4f76a7ad6c8c076dba4c8b20785"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TASK.html#ga9420b4f76a7ad6c8c076dba4c8b20785">sapi_task_destroy</a> (<a class="el" href="group__TASK.html#ga56905dc212511186e7a0934c5f1f569b">sapi_task_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga9420b4f76a7ad6c8c076dba4c8b20785"><td class="mdescLeft">&#160;</td><td class="mdescRight">Terminates and destroys a task.  <br /></td></tr>
+<tr class="separator:ga9420b4f76a7ad6c8c076dba4c8b20785"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:afc3ff22783dc236f7e18fd5047315bf1" id="r_afc3ff22783dc236f7e18fd5047315bf1"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structsapi__task__backend__t.html">sapi_task_backend_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__task_8c.html#afc3ff22783dc236f7e18fd5047315bf1">s_backend</a> = NULL</td></tr>
+<tr class="memdesc:afc3ff22783dc236f7e18fd5047315bf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Currently registered backend, or NULL if none (ADR-005).  <br /></td></tr>
 <tr class="separator:afc3ff22783dc236f7e18fd5047315bf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Task service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__task_8c.html#a13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>Task service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TASK.html#ga13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a13a36c3389fb8c06a7cd8a6845558dd3" name="a13a36c3389fb8c06a7cd8a6845558dd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a13a36c3389fb8c06a7cd8a6845558dd3">&#9670;&#160;</a></span>sapi_task_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_task_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__task__backend__t.html">sapi_task_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2.1). Call once at startup. </p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise. REQ-OAL-TASK-014 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-
-</div>
-</div>
-<a id="a1cfcfe1ef4315d82a28f7050a94d6709" name="a1cfcfe1ef4315d82a28f7050a94d6709"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1cfcfe1ef4315d82a28f7050a94d6709">&#9670;&#160;</a></span>sapi_task_create()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_task_create </td>
-          <td>(</td>
-          <td class="paramtype">sapi_task_storage_t *&#160;</td>
-          <td class="paramname"><em>storage</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structsapi__task__config__t.html">sapi_task_config_t</a> *&#160;</td>
-          <td class="paramname"><em>config</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sapi_task_handle_t *&#160;</td>
-          <td class="paramname"><em>out_handle</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a task in the suspended state. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">storage</td><td>Caller-owned storage for the handle's state. Must not be NULL. </td></tr>
-    <tr><td class="paramname">config</td><td>Task configuration. Must not be NULL; config-&gt;entry must not be NULL. </td></tr>
-    <tr><td class="paramname">out_handle</td><td>Receives the created task's handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument; SAPI_STATUS_NOT_INITIALIZED if no backend is registered (<a class="el" href="sapi__task_8h.html#a13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a>); SAPI_STATUS_NOT_SUPPORTED if the registered backend does not implement create. REQ-OAL-TASK-010 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-
-</div>
-</div>
-<a id="a389dce24bc562446331c89f58844e0e7" name="a389dce24bc562446331c89f58844e0e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a389dce24bc562446331c89f58844e0e7">&#9670;&#160;</a></span>sapi_task_start()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_task_start </td>
-          <td>(</td>
-          <td class="paramtype">sapi_task_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Starts a created task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Task handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK, SAPI_STATUS_INVALID_PARAM, SAPI_STATUS_NOT_INITIALIZED, or SAPI_STATUS_NOT_SUPPORTED (see <a class="el" href="sapi__task_8h.html#a1cfcfe1ef4315d82a28f7050a94d6709" title="Creates a task in the suspended state.">sapi_task_create()</a>). REQ-OAL-TASK-011 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-
-</div>
-</div>
-<a id="a6e1a985b12190d6c94792e31716b9e3e" name="a6e1a985b12190d6c94792e31716b9e3e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6e1a985b12190d6c94792e31716b9e3e">&#9670;&#160;</a></span>sapi_task_suspend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_task_suspend </td>
-          <td>(</td>
-          <td class="paramtype">sapi_task_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Suspends a running task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Task handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="sapi__task_8h.html#a389dce24bc562446331c89f58844e0e7" title="Starts a created task.">sapi_task_start()</a>. REQ-OAL-TASK-012 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00061">61</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-
-</div>
-</div>
-<a id="a9420b4f76a7ad6c8c076dba4c8b20785" name="a9420b4f76a7ad6c8c076dba4c8b20785"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9420b4f76a7ad6c8c076dba4c8b20785">&#9670;&#160;</a></span>sapi_task_destroy()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_task_destroy </td>
-          <td>(</td>
-          <td class="paramtype">sapi_task_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Terminates and destroys a task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Task handle. Must not be NULL. Invalid to use after this call. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="sapi__task_8h.html#a389dce24bc562446331c89f58844e0e7" title="Starts a created task.">sapi_task_start()</a>. REQ-OAL-TASK-013 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00078">78</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Variable Documentation</h2>
 <a id="afc3ff22783dc236f7e18fd5047315bf1" name="afc3ff22783dc236f7e18fd5047315bf1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afc3ff22783dc236f7e18fd5047315bf1">&#9670;&#160;</a></span>s_backend</h2>
 
@@ -313,7 +156,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00008">8</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
+<p>Currently registered backend, or NULL if none (ADR-005). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__task_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__task_8c_source.html">sapi_task.c</a>.</p>
 
 </div>
 </div>

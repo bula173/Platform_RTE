@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['only_0',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]]
+  ['error_20codes_0',['Common Status and Error Codes',['../group__STATUS.html',1,'']]]
 ];

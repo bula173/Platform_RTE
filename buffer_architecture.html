@@ -77,16 +77,75 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="buffer_architecture_overview"></a>
+View-Based Buffer Design</h1>
 <ul>
 <li></li>
 <li>Buffer is a lightweight VIEW over caller-owned storage. No allocation,</li>
-<li>no freeing - just state tracking: data pointer, capacity, current length. *<br  />
- *</li>
+<li>no freeing - just state tracking: data pointer, capacity, current length.</li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="api"></a>
-Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage\n * sapi_buffer_set_length(buf, new_length);      // Mark data as valid\n * sapi_buffer_clear(buf);                       // Reset length to 0\n * @endcode\n *\n * @section invariants Invariants\n *\n * @verbatim\n * buf.data != NULL           - Pointing to valid storage\n * buf.capacity &gt; 0           - Has space\n * buf.length &lt;= buf.capacity - Never overfilled\n * @endverbatim\n *\n * @section ownership Ownership Model\n *\n * Caller owns backing storage:\n * - Must allocate before sapi_buffer_init()\n * - Must keep valid for buffer lifetime\n * - Caller manages writes to buf.data\n *\n * Buffer manages:\n * - Tracking length (valid data)\n * - Validating length &lt;= capacity\n *\n * @section performance O(1) All Operations\n *\n * | Operation | Time |\n * |--------—|---—|\n * | init() | O(1) |\n * | set_length() | O(1) |\n * | clear() | O(1) |\n *\n * No copying, no allocation.\n *\n * @section see_also See Also\n *\n * - @ref buffer_user_guide for usage patterns\n * - @ref memory_user_guide for storage allocation\n *\n */\n</h1>
+<h1><a class="anchor" id="buffer_architecture_api"></a>
+Core API</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_buffer_init(buf, storage, capacity);    // Bind view to storage</div>
+<div class="line">* sapi_buffer_set_length(buf, new_length);      // Mark data as valid</div>
+<div class="line">* sapi_buffer_clear(buf);                       // Reset length to 0</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_architecture_invariants"></a>
+Invariants</h1>
+<ul>
+<li></li>
+<li><pre class="fragment"> * buf.data != NULL           - Pointing to valid storage
+ * buf.capacity &gt; 0           - Has space
+ * buf.length &lt;= buf.capacity - Never overfilled
+ * </pre></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_architecture_ownership"></a>
+Ownership Model</h1>
+<ul>
+<li></li>
+<li>Caller owns backing storage:</li>
+<li>- Must allocate before <a class="el" href="group__BUFFER.html#gaaf0a69c044e94fffb222767edbec262a" title="Binds a buffer view to caller-owned storage. Initial length is 0.">sapi_buffer_init()</a></li>
+<li>- Must keep valid for buffer lifetime</li>
+<li>- Caller manages writes to buf.data</li>
+<li></li>
+<li>Buffer manages:</li>
+<li>- Tracking length (valid data)</li>
+<li>- Validating length &lt;= capacity</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_architecture_performance"></a>
+O(1) All Operations</h1>
+<ul>
+<li></li>
+<li>| Operation | Time |</li>
+<li>|--------&mdash;|---&mdash;|</li>
+<li>| init() | O(1) |</li>
+<li>| set_length() | O(1) |</li>
+<li>| clear() | O(1) |</li>
+<li></li>
+<li>No copying, no allocation.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="buffer_architecture_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="buffer_user_guide.html">Buffer Module - User Guide</a> for usage patterns</li>
+<li>- <a class="el" href="memory_user_guide.html">Memory Module - User Guide</a> for storage allocation</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

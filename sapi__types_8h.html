@@ -146,7 +146,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <area shape="poly" title=" " alt="" coords="2210,32,1780,50,1501,69,1218,96,1206,98,1205,92,1218,91,1500,63,1780,44,2210,26"/>
 <area shape="poly" title=" " alt="" coords="375,144,317,183,314,179,372,139"/>
 <area shape="poly" title=" " alt="" coords="452,139,507,179,504,183,449,144"/>
-<area shape="rect" href="sapi__buffer_8c_source.html" title=" " alt="" coords="5,189,175,214"/>
+<area shape="rect" href="sapi__buffer_8c.html" title="Implementation of the cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="5,189,175,214"/>
 <area shape="poly" title=" " alt="" coords="329,139,134,191,132,186,328,134"/>
 <area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="798,269,945,309"/>
 <area shape="poly" title=" " alt="" coords="414,147,420,185,428,204,440,219,465,235,501,248,596,267,703,278,798,284,798,289,702,284,596,273,500,253,462,240,436,223,423,207,415,187,409,147"/>
@@ -209,141 +209,29 @@ This graph shows which files directly or indirectly include this file:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
-<tr class="memitem:a4f0f3929601ed3b2d53393c9b735ecca" id="r_a4f0f3929601ed3b2d53393c9b735ecca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__types_8h.html#a4f0f3929601ed3b2d53393c9b735ecca">SAFEAPI_STORAGE_ALIGN</a>&#160;&#160;&#160;8U</td></tr>
-<tr class="memdesc:a4f0f3929601ed3b2d53393c9b735ecca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alignment (bytes) guaranteed for every opaque storage block.  <br /></td></tr>
-<tr class="separator:a4f0f3929601ed3b2d53393c9b735ecca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a928a60dc566155a3c839b85d70f38197" id="r_a928a60dc566155a3c839b85d70f38197"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__types_8h.html#a928a60dc566155a3c839b85d70f38197">SAFEAPI_ALIGNED_</a>(n)&#160;&#160;&#160;/* no portable alignment available */</td></tr>
-<tr class="separator:a928a60dc566155a3c839b85d70f38197"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f4d306f969d83948098fac099a5abbf" id="r_a7f4d306f969d83948098fac099a5abbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__types_8h.html#a7f4d306f969d83948098fac099a5abbf">SAFEAPI_DECLARE_STORAGE</a>(type_name,  byte_size)</td></tr>
-<tr class="memdesc:a7f4d306f969d83948098fac099a5abbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declares an opaque, fixed-size, aligned storage type for a service's handle. The real internal layout is private to the backend implementation; callers only reserve the bytes.  <br /></td></tr>
-<tr class="separator:a7f4d306f969d83948098fac099a5abbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4f0f3929601ed3b2d53393c9b735ecca" id="r_ga4f0f3929601ed3b2d53393c9b735ecca"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TYPES.html#ga4f0f3929601ed3b2d53393c9b735ecca">SAFEAPI_STORAGE_ALIGN</a>&#160;&#160;&#160;8U</td></tr>
+<tr class="memdesc:ga4f0f3929601ed3b2d53393c9b735ecca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alignment (bytes) guaranteed for every opaque storage block.  <br /></td></tr>
+<tr class="separator:ga4f0f3929601ed3b2d53393c9b735ecca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga928a60dc566155a3c839b85d70f38197" id="r_ga928a60dc566155a3c839b85d70f38197"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TYPES.html#ga928a60dc566155a3c839b85d70f38197">SAFEAPI_ALIGNED_</a>(n)&#160;&#160;&#160;/* no portable alignment available */</td></tr>
+<tr class="memdesc:ga928a60dc566155a3c839b85d70f38197"><td class="mdescLeft">&#160;</td><td class="mdescRight">Portable alignment specifier used ahead of a storage byte array (e.g. in SAFEAPI_DECLARE_STORAGE) so its address is suitable for the backend's internal struct layout. Expands to the best available mechanism for the compiler (C11 _Alignas, MSVC <b>declspec, or GCC/Clang __attribute</b>); expands to nothing on compilers with no portable alignment control.  <br /></td></tr>
+<tr class="separator:ga928a60dc566155a3c839b85d70f38197"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f4d306f969d83948098fac099a5abbf" id="r_ga7f4d306f969d83948098fac099a5abbf"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TYPES.html#ga7f4d306f969d83948098fac099a5abbf">SAFEAPI_DECLARE_STORAGE</a>(type_name,  byte_size)</td></tr>
+<tr class="memdesc:ga7f4d306f969d83948098fac099a5abbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Declares an opaque, fixed-size, aligned storage type for a service's handle. The real internal layout is private to the backend implementation; callers only reserve the bytes.  <br /></td></tr>
+<tr class="separator:ga7f4d306f969d83948098fac099a5abbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a6767bbc7f5130018466fe6d26bf63359" id="r_a6767bbc7f5130018466fe6d26bf63359"><td class="memItemLeft" align="right" valign="top">typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></td></tr>
-<tr class="separator:a6767bbc7f5130018466fe6d26bf63359"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ddbda091ac06ffc94a5814d14284a80" id="r_a6ddbda091ac06ffc94a5814d14284a80"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a></td></tr>
-<tr class="separator:a6ddbda091ac06ffc94a5814d14284a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6767bbc7f5130018466fe6d26bf63359" id="r_ga6767bbc7f5130018466fe6d26bf63359"><td class="memItemLeft" align="right" valign="top">typedef uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></td></tr>
+<tr class="separator:ga6767bbc7f5130018466fe6d26bf63359"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6ddbda091ac06ffc94a5814d14284a80" id="r_ga6ddbda091ac06ffc94a5814d14284a80"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a></td></tr>
+<tr class="separator:ga6ddbda091ac06ffc94a5814d14284a80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Common fixed-width types and the caller-owned-storage handle pattern used by every OAL service (see ADR-001, section 3.4). </p>
 <p>No dynamic memory allocation is used by the framework after initialization (REQ-OAL-COMMON-010). Every stateful object is created from storage supplied by the caller, typically a statically allocated struct. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a id="a4f0f3929601ed3b2d53393c9b735ecca" name="a4f0f3929601ed3b2d53393c9b735ecca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f0f3929601ed3b2d53393c9b735ecca">&#9670;&#160;</a></span>SAFEAPI_STORAGE_ALIGN</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define SAFEAPI_STORAGE_ALIGN&#160;&#160;&#160;8U</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Alignment (bytes) guaranteed for every opaque storage block. </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__types_8h_source.html#l00032">32</a> of file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-
-</div>
-</div>
-<a id="a928a60dc566155a3c839b85d70f38197" name="a928a60dc566155a3c839b85d70f38197"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a928a60dc566155a3c839b85d70f38197">&#9670;&#160;</a></span>SAFEAPI_ALIGNED_</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define SAFEAPI_ALIGNED_</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">n</td><td>)</td>
-          <td>&#160;&#160;&#160;/* no portable alignment available */</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="sapi__types_8h_source.html#l00044">44</a> of file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-
-</div>
-</div>
-<a id="a7f4d306f969d83948098fac099a5abbf" name="a7f4d306f969d83948098fac099a5abbf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f4d306f969d83948098fac099a5abbf">&#9670;&#160;</a></span>SAFEAPI_DECLARE_STORAGE</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define SAFEAPI_DECLARE_STORAGE</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">type_name, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">byte_size&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">    <span class="keyword">typedef</span> <span class="keyword">struct                                                      </span>\</div>
-<div class="line">    {                                                                    \</div>
-<div class="line">        SAFEAPI_ALIGNED_(<a class="code hl_define" href="sapi__types_8h.html#a4f0f3929601ed3b2d53393c9b735ecca">SAFEAPI_STORAGE_ALIGN</a>)                          \</div>
-<div class="line">        <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> reserved_[(byte_size)];                           \</div>
-<div class="line">    } type_name</div>
-<div class="ttc" id="asapi__types_8h_html_a4f0f3929601ed3b2d53393c9b735ecca"><div class="ttname"><a href="sapi__types_8h.html#a4f0f3929601ed3b2d53393c9b735ecca">SAFEAPI_STORAGE_ALIGN</a></div><div class="ttdeci">#define SAFEAPI_STORAGE_ALIGN</div><div class="ttdoc">Alignment (bytes) guaranteed for every opaque storage block.</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00032">sapi_types.h:32</a></div></div>
-</div><!-- fragment -->
-<p>Declares an opaque, fixed-size, aligned storage type for a service's handle. The real internal layout is private to the backend implementation; callers only reserve the bytes. </p>
-<p>Usage: <a class="el" href="sapi__types_8h.html#a7f4d306f969d83948098fac099a5abbf" title="Declares an opaque, fixed-size, aligned storage type for a service&#39;s handle. The real internal layout...">SAFEAPI_DECLARE_STORAGE(sapi_timer_storage_t, 64U)</a>; </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__types_8h_source.html#l00055">55</a> of file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Typedef Documentation</h2>
-<a id="a6767bbc7f5130018466fe6d26bf63359" name="a6767bbc7f5130018466fe6d26bf63359"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6767bbc7f5130018466fe6d26bf63359">&#9670;&#160;</a></span>sapi_duration_ms_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef uint32_t <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Milliseconds, used by all timer/deadline related APIs. </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__types_8h_source.html#l00023">23</a> of file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-
-</div>
-</div>
-<a id="a6ddbda091ac06ffc94a5814d14284a80" name="a6ddbda091ac06ffc94a5814d14284a80"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ddbda091ac06ffc94a5814d14284a80">&#9670;&#160;</a></span>sapi_timestamp_ms_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef uint64_t <a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Monotonic timestamp in milliseconds since an arbitrary epoch. </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__types_8h_source.html#l00026">26</a> of file <a class="el" href="sapi__types_8h_source.html">sapi_types.h</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

@@ -77,13 +77,13 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="safestate_architecture_overview"></a>
+Design Overview</h1>
 <ul>
 <li></li>
 <li>Safe-State is a handler registration system for critical events. Applications</li>
 <li>register handlers for each severity level (DEGRADED, SAFE, REBOOT), then call</li>
-<li><a class="el" href="sapi__safestate_8h.html#a5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE()</a> or <a class="el" href="sapi__safestate_8h.html#a31b0b989c419897e66c41319069bcb9b" title="Enters SAPI_SAFESTATE_LEVEL_REBOOT with the given reason code. Equivalent to SAPI_SAFESTATE(SAPI_SAFE...">SAPI_REBOOT()</a> macros to trigger transitions. The framework</li>
+<li><a class="el" href="group__SAFESTATE.html#ga5cc17c512143e000e2bbfa30478ac862" title="Explicitly enters the given safe-state level with a reason code, capturing the call site automaticall...">SAPI_SAFESTATE()</a> or <a class="el" href="group__SAFESTATE.html#ga31b0b989c419897e66c41319069bcb9b" title="Enters SAPI_SAFESTATE_LEVEL_REBOOT with the given reason code. Equivalent to SAPI_SAFESTATE(SAPI_SAFE...">SAPI_REBOOT()</a> macros to trigger transitions. The framework</li>
 <li>invokes the registered handler with context (file, line, message) and guarantees</li>
 <li>control never returns for SAFE/REBOOT levels.</li>
 <li></li>
@@ -91,7 +91,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="levels"></a>
+<h1><a class="anchor" id="safestate_architecture_levels"></a>
 Three Severity Levels</h1>
 <ul>
 <li></li>
@@ -113,13 +113,13 @@ Three Severity Levels</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="api"></a>
-Core API\n *\n * @code\n * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage\n * sapi_buffer_set_length(buf, new_length);      // Mark data as valid\n * sapi_buffer_clear(buf);                       // Reset length to 0\n * @endcode\n *\n * @section invariants Invariants\n *\n * @verbatim\n * buf.data != NULL           - Pointing to valid storage\n * buf.capacity &gt; 0           - Has space\n * buf.length &lt;= buf.capacity - Never overfilled\n * @endverbatim\n *\n * @section ownership Ownership Model\n *\n * Caller owns backing storage:\n * - Must allocate before sapi_buffer_init()\n * - Must keep valid for buffer lifetime\n * - Caller manages writes to buf.data\n *\n * Buffer manages:\n * - Tracking length (valid data)\n * - Validating length &lt;= capacity\n *\n * @section performance O(1) All Operations\n *\n * | Operation | Time |\n * |--------—|---—|\n * | init() | O(1) |\n * | set_length() | O(1) |\n * | clear() | O(1) |\n *\n * No copying, no allocation.\n *\n * @section see_also See Also\n *\n * - @ref buffer_user_guide for usage patterns\n * - @ref memory_user_guide for storage allocation\n *\n */\n</h1>
+<h1><a class="anchor" id="safestate_architecture_api"></a>
+Core API</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_register"></a>
+<h2><a class="anchor" id="safestate_architecture_api_register"></a>
 Registration</h2>
 <ul>
 <li></li>
@@ -133,7 +133,7 @@ Registration</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_enter"></a>
+<h2><a class="anchor" id="safestate_architecture_api_enter"></a>
 Entering a Level</h2>
 <ul>
 <li></li>
@@ -152,7 +152,7 @@ Entering a Level</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="api_macros"></a>
+<h2><a class="anchor" id="safestate_architecture_api_macros"></a>
 Convenience Macros</h2>
 <ul>
 <li></li>
@@ -166,7 +166,7 @@ Convenience Macros</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="handler_signature"></a>
+<h1><a class="anchor" id="safestate_architecture_handler_signature"></a>
 Handler Signature</h1>
 <ul>
 <li></li>
@@ -186,13 +186,13 @@ Handler Signature</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="reason_codes"></a>
-Reason Codes</h1>
+<h1><a class="anchor" id="safestate_architecture_reason_codes"></a>
+Reason Code Strategy</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="reason_framework"></a>
+<h2><a class="anchor" id="safestate_architecture_reason_framework"></a>
 Framework Reasons (0-4095)</h2>
 <ul>
 <li></li>
@@ -203,7 +203,7 @@ Framework Reasons (0-4095)</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="reason_application"></a>
+<h2><a class="anchor" id="safestate_architecture_reason_application"></a>
 Application Reasons (4096+)</h2>
 <ul>
 <li></li>
@@ -220,8 +220,8 @@ Application Reasons (4096+)</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="flow"></a>
-Reboot Flow</h1>
+<h1><a class="anchor" id="safestate_architecture_flow"></a>
+Transition Flow</h1>
 <ul>
 <li></li>
 <li><pre class="fragment"> * Application calls SAPI_SAFESTATE(level, reason)
@@ -247,7 +247,7 @@ Reboot Flow</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="storage"></a>
+<h1><a class="anchor" id="safestate_architecture_storage"></a>
 Storage and Limits</h1>
 <ul>
 <li></li>
@@ -261,11 +261,11 @@ Storage and Limits</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="assert"></a>
+<h1><a class="anchor" id="safestate_architecture_assert"></a>
 SAPI_ASSERT Implementation</h1>
 <ul>
 <li></li>
-<li><a class="el" href="sapi__safestate_8h.html#af576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> is a macro that:</li>
+<li><a class="el" href="group__SAFESTATE.html#gaf576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> is a macro that:</li>
 <li>1. Evaluates its condition</li>
 <li>2. If true: does nothing</li>
 <li>3. If false: calls sapi_safestate_enter(SAFE, ASSERT_FAILED, file, line, expr_text)</li>
@@ -280,14 +280,14 @@ SAPI_ASSERT Implementation</h1>
 <div class="line">* </div>
 </div><!-- fragment --></li>
 <li></li>
-<li>Unlike standard assert(), <a class="el" href="sapi__safestate_8h.html#af576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> is <b>always active</b>, never disabled.</li>
+<li>Unlike standard assert(), <a class="el" href="group__SAFESTATE.html#gaf576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a> is <b>always active</b>, never disabled.</li>
 <li>This is intentional for safety-critical systems where assertions must catch</li>
 <li>bugs in production.</li>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="misra"></a>
-MISRA Compliance</h1>
+<h1><a class="anchor" id="safestate_architecture_misra"></a>
+MISRA C:2012 Compliance</h1>
 <ul>
 <li></li>
 <li><pre class="fragment"> * Rule 2.1   │ ✓ │ No unreachable code
@@ -303,13 +303,13 @@ MISRA Compliance</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="integration"></a>
-Integration with Safe-State</h1>
+<h1><a class="anchor" id="safestate_architecture_integration"></a>
+Integration Points</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="integ_watchdog"></a>
+<h2><a class="anchor" id="safestate_architecture_integ_watchdog"></a>
 With Watchdog Module</h2>
 <ul>
 <li></li>
@@ -324,22 +324,22 @@ With Watchdog Module</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="integ_reboot"></a>
+<h2><a class="anchor" id="safestate_architecture_integ_reboot"></a>
 With Reboot Module</h2>
 <ul>
 <li></li>
-<li><a class="el" href="sapi__safestate_8h.html#a31b0b989c419897e66c41319069bcb9b" title="Enters SAPI_SAFESTATE_LEVEL_REBOOT with the given reason code. Equivalent to SAPI_SAFESTATE(SAPI_SAFE...">SAPI_REBOOT()</a> enters REBOOT level; handler can call <a class="el" href="sapi__reboot_8h.html#a64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a></li>
+<li><a class="el" href="group__SAFESTATE.html#ga31b0b989c419897e66c41319069bcb9b" title="Enters SAPI_SAFESTATE_LEVEL_REBOOT with the given reason code. Equivalent to SAPI_SAFESTATE(SAPI_SAFE...">SAPI_REBOOT()</a> enters REBOOT level; handler can call <a class="el" href="group__REBOOT.html#ga64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a></li>
 <li>to actually restart the system.</li>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="testing"></a>
+<h1><a class="anchor" id="safestate_architecture_testing"></a>
 Unit Tests</h1>
 <ul>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="test_handler"></a>
+<h2><a class="anchor" id="safestate_architecture_test_handler"></a>
 Test 1: Handler Registration and Invocation</h2>
 <ul>
 <li></li>
@@ -364,7 +364,7 @@ Test 1: Handler Registration and Invocation</h2>
 <li></li>
 <li></li>
 </ul>
-<h2><a class="anchor" id="test_assert"></a>
+<h2><a class="anchor" id="safestate_architecture_test_assert"></a>
 Test 2: SAPI_ASSERT Behavior</h2>
 <ul>
 <li></li>
@@ -378,7 +378,7 @@ Test 2: SAPI_ASSERT Behavior</h2>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="see_also"></a>
+<h1><a class="anchor" id="safestate_architecture_see_also"></a>
 See Also</h1>
 <ul>
 <li></li>

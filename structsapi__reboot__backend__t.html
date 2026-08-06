@@ -72,7 +72,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_reboot_backend_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_reboot_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__REBOOT.html">Controlled Reboot</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -83,13 +83,14 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a9aca0dde01fe603e487ea93fcd0ca73c" id="r_a9aca0dde01fe603e487ea93fcd0ca73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__reboot__backend__t.html#a9aca0dde01fe603e487ea93fcd0ca73c">request</a> )(uint16_t reason_code)</td></tr>
+<tr class="memitem:a9aca0dde01fe603e487ea93fcd0ca73c" id="r_a9aca0dde01fe603e487ea93fcd0ca73c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__reboot__backend__t.html#a9aca0dde01fe603e487ea93fcd0ca73c">request</a> )(uint16_t reason_code)</td></tr>
+<tr class="memdesc:a9aca0dde01fe603e487ea93fcd0ca73c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__REBOOT.html#ga64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a9aca0dde01fe603e487ea93fcd0ca73c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the reboot mechanism for a specific target (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8h_source.html#l00042">42</a> of file <a class="el" href="sapi__reboot_8h_source.html">sapi_reboot.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__reboot_8h_source.html#l00046">46</a> of file <a class="el" href="sapi__reboot_8h_source.html">sapi_reboot.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a9aca0dde01fe603e487ea93fcd0ca73c" name="a9aca0dde01fe603e487ea93fcd0ca73c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9aca0dde01fe603e487ea93fcd0ca73c">&#9670;&#160;</a></span>request</h2>
@@ -98,12 +99,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_reboot_backend_t::request) (uint16_t reason_code)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_reboot_backend_t::request) (uint16_t reason_code)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8h_source.html#l00044">44</a> of file <a class="el" href="sapi__reboot_8h_source.html">sapi_reboot.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__REBOOT.html#ga64f26841ca5894f2a20569c108c82121" title="Requests a controlled system restart.">sapi_reboot_request()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__reboot_8h_source.html#l00049">49</a> of file <a class="el" href="sapi__reboot_8h_source.html">sapi_reboot.h</a>.</p>
 
 </div>
 </div>

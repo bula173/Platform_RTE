@@ -42,13 +42,13 @@
 <area shape="poly" id="edge57_Node000001_Node000042" title=" " alt="" coords="2210,32,1785,52,1511,71,1233,96,1222,97,1222,92,1232,91,1510,65,1785,47,2210,27"/>
 <area shape="rect" id="Node000043" href="$sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="1245,93,1433,133"/>
 <area shape="poly" id="edge60_Node000001_Node000043" title=" " alt="" coords="2210,34,1872,55,1660,73,1446,96,1434,98,1433,92,1446,91,1659,67,1872,50,2210,28"/>
-<area shape="rect" id="Node000044" href="$sapi__status_8c_source.html" title=" " alt="" coords="3937,101,4112,126"/>
+<area shape="rect" id="Node000044" href="$sapi__status_8c.html" title="Implementation of sapi_status_to_string()." alt="" coords="3937,101,4112,126"/>
 <area shape="poly" id="edge63_Node000001_Node000044" title=" " alt="" coords="2402,23,2666,24,3043,32,3481,52,3706,69,3926,91,3973,98,3972,103,3926,96,3705,74,3480,57,3043,37,2666,29,2402,28"/>
 <area shape="rect" id="Node000003" href="$sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="5,181,164,221"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="128,146,101,183,97,180,124,143"/>
 <area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="514,140,347,184,346,179,512,134"/>
 <area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="636,139,691,179,688,183,633,144"/>
-<area shape="rect" id="Node000009" href="$sapi__buffer_8c_source.html" title=" " alt="" coords="389,189,559,214"/>
+<area shape="rect" id="Node000009" href="$sapi__buffer_8c.html" title="Implementation of the cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="389,189,559,214"/>
 <area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="560,144,492,191,489,186,557,139"/>
 <area shape="rect" id="Node000010" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="1169,269,1315,309"/>
 <area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="598,147,604,186,611,204,624,219,651,231,703,243,852,261,1023,274,1168,282,1168,287,1023,279,852,266,702,248,650,236,620,223,607,207,599,187,593,148"/>

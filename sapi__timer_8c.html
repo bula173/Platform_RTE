@@ -77,11 +77,11 @@ $(function() {
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#var-members">Variables</a>  </div>
-  <div class="headertitle"><div class="title">sapi_timer.c File Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_timer.c File Reference<div class="ingroups"><a class="el" href="group__TIMER.html">Timer Service</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__timer_8c.html#a45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005).  
+<p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
@@ -109,229 +109,36 @@ Include dependency graph for sapi_timer.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a45ba555c8be39f02390b33a99721a4f1" id="r_a45ba555c8be39f02390b33a99721a4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a45ba555c8be39f02390b33a99721a4f1">sapi_timer_register_backend</a> (const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:a45ba555c8be39f02390b33a99721a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_timer_* call. This is how an integrator supplies their own timer implementation (ADR-005 section 2.1) - call once at startup, before any other sapi_timer_* function.  <br /></td></tr>
-<tr class="separator:a45ba555c8be39f02390b33a99721a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7ec1f35543b16aaf3fe24c7ad7ae55dc" id="r_a7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a7ec1f35543b16aaf3fe24c7ad7ae55dc">sapi_timer_create</a> (sapi_timer_storage_t *storage, const <a class="el" href="structsapi__timer__config__t.html">sapi_timer_config_t</a> *config, <a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> *out_handle)</td></tr>
-<tr class="memdesc:a7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a timer bound to caller-owned storage. Does not start it.  <br /></td></tr>
-<tr class="separator:a7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05f31863951f9292840b9e42a3e956a3" id="r_a05f31863951f9292840b9e42a3e956a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a05f31863951f9292840b9e42a3e956a3">sapi_timer_start</a> (<a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
-<tr class="memdesc:a05f31863951f9292840b9e42a3e956a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts (or restarts) a created timer.  <br /></td></tr>
-<tr class="separator:a05f31863951f9292840b9e42a3e956a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d26db513064c919e43cb087302e255" id="r_a09d26db513064c919e43cb087302e255"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a09d26db513064c919e43cb087302e255">sapi_timer_stop</a> (<a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
-<tr class="memdesc:a09d26db513064c919e43cb087302e255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops a running timer; safe to call on an already-stopped timer.  <br /></td></tr>
-<tr class="separator:a09d26db513064c919e43cb087302e255"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28eedd7515283ce982e02174f77a3517" id="r_a28eedd7515283ce982e02174f77a3517"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a28eedd7515283ce982e02174f77a3517">sapi_timer_destroy</a> (<a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
-<tr class="memdesc:a28eedd7515283ce982e02174f77a3517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a timer, releasing any backend resources bound to it.  <br /></td></tr>
-<tr class="separator:a28eedd7515283ce982e02174f77a3517"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bf111759c24ea6e7f8f1a7ff84786ed" id="r_a5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#a5bf111759c24ea6e7f8f1a7ff84786ed">sapi_timer_now</a> (<a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> *out_now_ms)</td></tr>
-<tr class="memdesc:a5bf111759c24ea6e7f8f1a7ff84786ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current monotonic time base used by all timers.  <br /></td></tr>
-<tr class="separator:a5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga45ba555c8be39f02390b33a99721a4f1" id="r_ga45ba555c8be39f02390b33a99721a4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1">sapi_timer_register_backend</a> (const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:ga45ba555c8be39f02390b33a99721a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_timer_* call. This is how an integrator supplies their own timer implementation (ADR-005 section 2.1) - call once at startup, before any other sapi_timer_* function.  <br /></td></tr>
+<tr class="separator:ga45ba555c8be39f02390b33a99721a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7ec1f35543b16aaf3fe24c7ad7ae55dc" id="r_ga7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc">sapi_timer_create</a> (sapi_timer_storage_t *storage, const <a class="el" href="structsapi__timer__config__t.html">sapi_timer_config_t</a> *config, <a class="el" href="group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:ga7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a timer bound to caller-owned storage. Does not start it.  <br /></td></tr>
+<tr class="separator:ga7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga05f31863951f9292840b9e42a3e956a3" id="r_ga05f31863951f9292840b9e42a3e956a3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga05f31863951f9292840b9e42a3e956a3">sapi_timer_start</a> (<a class="el" href="group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga05f31863951f9292840b9e42a3e956a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts (or restarts) a created timer.  <br /></td></tr>
+<tr class="separator:ga05f31863951f9292840b9e42a3e956a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga09d26db513064c919e43cb087302e255" id="r_ga09d26db513064c919e43cb087302e255"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga09d26db513064c919e43cb087302e255">sapi_timer_stop</a> (<a class="el" href="group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga09d26db513064c919e43cb087302e255"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stops a running timer; safe to call on an already-stopped timer.  <br /></td></tr>
+<tr class="separator:ga09d26db513064c919e43cb087302e255"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28eedd7515283ce982e02174f77a3517" id="r_ga28eedd7515283ce982e02174f77a3517"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga28eedd7515283ce982e02174f77a3517">sapi_timer_destroy</a> (<a class="el" href="group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> handle)</td></tr>
+<tr class="memdesc:ga28eedd7515283ce982e02174f77a3517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a timer, releasing any backend resources bound to it.  <br /></td></tr>
+<tr class="separator:ga28eedd7515283ce982e02174f77a3517"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5bf111759c24ea6e7f8f1a7ff84786ed" id="r_ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed">sapi_timer_now</a> (<a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> *out_now_ms)</td></tr>
+<tr class="memdesc:ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current monotonic time base used by all timers.  <br /></td></tr>
+<tr class="separator:ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:ad4ef23a978a776f39c1e7b857f255dc9" id="r_ad4ef23a978a776f39c1e7b857f255dc9"><td class="memItemLeft" align="right" valign="top">static const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__timer_8c.html#ad4ef23a978a776f39c1e7b857f255dc9">s_backend</a> = NULL</td></tr>
+<tr class="memdesc:ad4ef23a978a776f39c1e7b857f255dc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Currently registered backend, or NULL if none (ADR-005).  <br /></td></tr>
 <tr class="separator:ad4ef23a978a776f39c1e7b857f255dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="sapi__timer_8c.html#a45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a45ba555c8be39f02390b33a99721a4f1" name="a45ba555c8be39f02390b33a99721a4f1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a45ba555c8be39f02390b33a99721a4f1">&#9670;&#160;</a></span>sapi_timer_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by every sapi_timer_* call. This is how an integrator supplies their own timer implementation (ADR-005 section 2.1) - call once at startup, before any other sapi_timer_* function. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">backend</td><td>Must not be NULL. Registering again replaces the previously registered backend. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.</dd></dl>
-<p>REQ-OAL-TIMER-015 </p>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<a id="a7ec1f35543b16aaf3fe24c7ad7ae55dc" name="a7ec1f35543b16aaf3fe24c7ad7ae55dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ec1f35543b16aaf3fe24c7ad7ae55dc">&#9670;&#160;</a></span>sapi_timer_create()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_create </td>
-          <td>(</td>
-          <td class="paramtype">sapi_timer_storage_t *&#160;</td>
-          <td class="paramname"><em>storage</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structsapi__timer__config__t.html">sapi_timer_config_t</a> *&#160;</td>
-          <td class="paramname"><em>config</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> *&#160;</td>
-          <td class="paramname"><em>out_handle</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates a timer bound to caller-owned storage. Does not start it. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">storage</td><td>Caller-owned storage the timer's state is placed into. Must not be NULL and must outlive the timer. </td></tr>
-    <tr><td class="paramname">config</td><td>Timer configuration. Must not be NULL; config-&gt;callback must not be NULL and config-&gt;period_ms must be &gt; 0. </td></tr>
-    <tr><td class="paramname">out_handle</td><td>Receives the created timer's handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument; SAPI_STATUS_NOT_INITIALIZED if no backend is registered (<a class="el" href="sapi__timer_8h.html#a45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a>); SAPI_STATUS_NOT_SUPPORTED if the registered backend does not implement create. REQ-OAL-TIMER-010 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<a id="a05f31863951f9292840b9e42a3e956a3" name="a05f31863951f9292840b9e42a3e956a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a05f31863951f9292840b9e42a3e956a3">&#9670;&#160;</a></span>sapi_timer_start()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_start </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a>&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Starts (or restarts) a created timer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Timer to start. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK, SAPI_STATUS_INVALID_PARAM, SAPI_STATUS_NOT_INITIALIZED, or SAPI_STATUS_NOT_SUPPORTED (see <a class="el" href="sapi__timer_8h.html#a7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a>). REQ-OAL-TIMER-011 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<a id="a09d26db513064c919e43cb087302e255" name="a09d26db513064c919e43cb087302e255"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a09d26db513064c919e43cb087302e255">&#9670;&#160;</a></span>sapi_timer_stop()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_stop </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a>&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Stops a running timer; safe to call on an already-stopped timer. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Timer to stop. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="sapi__timer_8h.html#a05f31863951f9292840b9e42a3e956a3" title="Starts (or restarts) a created timer.">sapi_timer_start()</a>. REQ-OAL-TIMER-012 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00061">61</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<a id="a28eedd7515283ce982e02174f77a3517" name="a28eedd7515283ce982e02174f77a3517"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28eedd7515283ce982e02174f77a3517">&#9670;&#160;</a></span>sapi_timer_destroy()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_destroy </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__timer_8h.html#a389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a>&#160;</td>
-          <td class="paramname"><em>handle</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Destroys a timer, releasing any backend resources bound to it. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Timer to destroy. Must not be NULL. Invalid to use after this call. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="sapi__timer_8h.html#a05f31863951f9292840b9e42a3e956a3" title="Starts (or restarts) a created timer.">sapi_timer_start()</a>. REQ-OAL-TIMER-013 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00078">78</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<a id="a5bf111759c24ea6e7f8f1a7ff84786ed" name="a5bf111759c24ea6e7f8f1a7ff84786ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5bf111759c24ea6e7f8f1a7ff84786ed">&#9670;&#160;</a></span>sapi_timer_now()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_timer_now </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="sapi__types_8h.html#a6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> *&#160;</td>
-          <td class="paramname"><em>out_now_ms</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns the current monotonic time base used by all timers. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">out_now_ms</td><td>Receives the current time in milliseconds. Must not be NULL; set to 0 if this call fails. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK, SAPI_STATUS_INVALID_PARAM, SAPI_STATUS_NOT_INITIALIZED, or SAPI_STATUS_NOT_SUPPORTED (see <a class="el" href="sapi__timer_8h.html#a7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a>). REQ-OAL-TIMER-014 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00095">95</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Variable Documentation</h2>
 <a id="ad4ef23a978a776f39c1e7b857f255dc9" name="ad4ef23a978a776f39c1e7b857f255dc9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad4ef23a978a776f39c1e7b857f255dc9">&#9670;&#160;</a></span>s_backend</h2>
 
@@ -352,7 +159,9 @@ Variables</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00008">8</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
+<p>Currently registered backend, or NULL if none (ADR-005). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
 
 </div>
 </div>

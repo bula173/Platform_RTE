@@ -120,6 +120,7 @@ This graph shows which files directly or indirectly include this file:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for <a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>.  <a href="structsapi__mem__pool__config__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the memory pool service (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  <a href="structsapi__mem__pool__backend__t.html#details">More...</a><br /></td></tr>
@@ -127,29 +128,31 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:adf03ce97cb7905977f9a80bc73059cf8" id="r_adf03ce97cb7905977f9a80bc73059cf8"><td class="memItemLeft" align="right" valign="top">typedef struct sapi_mem_pool_impl_s *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#adf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a></td></tr>
-<tr class="separator:adf03ce97cb7905977f9a80bc73059cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadf03ce97cb7905977f9a80bc73059cf8" id="r_gadf03ce97cb7905977f9a80bc73059cf8"><td class="memItemLeft" align="right" valign="top">typedef struct sapi_mem_pool_impl_s *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a></td></tr>
+<tr class="memdesc:gadf03ce97cb7905977f9a80bc73059cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opaque handle to a reserved pool, returned by <a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>.  <br /></td></tr>
+<tr class="separator:gadf03ce97cb7905977f9a80bc73059cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a21a45dbe165b43b930a2878c5e3f1411" id="r_a21a45dbe165b43b930a2878c5e3f1411"><td class="memItemLeft" align="right" valign="top"><a id="a21a45dbe165b43b930a2878c5e3f1411" name="a21a45dbe165b43b930a2878c5e3f1411"></a>
+<tr class="memitem:ga21a45dbe165b43b930a2878c5e3f1411" id="r_ga21a45dbe165b43b930a2878c5e3f1411"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>SAFEAPI_DECLARE_STORAGE</b> (sapi_mem_pool_storage_t, 64U)</td></tr>
-<tr class="separator:a21a45dbe165b43b930a2878c5e3f1411"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa81b76e31790a7e8576b88a4a5b0daf8" id="r_aa81b76e31790a7e8576b88a4a5b0daf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#aa81b76e31790a7e8576b88a4a5b0daf8">sapi_mem_pool_create</a> (sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, sapi_mem_pool_handle_t *out_handle)</td></tr>
-<tr class="memdesc:aa81b76e31790a7e8576b88a4a5b0daf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserves a fixed-size-block memory pool.  <br /></td></tr>
-<tr class="separator:aa81b76e31790a7e8576b88a4a5b0daf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a033f09446764a4568acd23948b421688" id="r_a033f09446764a4568acd23948b421688"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#a033f09446764a4568acd23948b421688">sapi_mem_pool_acquire</a> (sapi_mem_pool_handle_t handle, void **out_block)</td></tr>
-<tr class="memdesc:a033f09446764a4568acd23948b421688"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquires one fixed-size block from the pool.  <br /></td></tr>
-<tr class="separator:a033f09446764a4568acd23948b421688"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae61e08f85a309da86d0e0a9ad4ee7a29" id="r_ae61e08f85a309da86d0e0a9ad4ee7a29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#ae61e08f85a309da86d0e0a9ad4ee7a29">sapi_mem_pool_release</a> (sapi_mem_pool_handle_t handle, void *block)</td></tr>
-<tr class="memdesc:ae61e08f85a309da86d0e0a9ad4ee7a29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a previously acquired block to its pool.  <br /></td></tr>
-<tr class="separator:ae61e08f85a309da86d0e0a9ad4ee7a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af3be5304eb88f7c8c179fdc209dbc888" id="r_af3be5304eb88f7c8c179fdc209dbc888"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#af3be5304eb88f7c8c179fdc209dbc888">sapi_mem_pool_stats</a> (sapi_mem_pool_handle_t handle, size_t *out_free_blocks, size_t *out_used_blocks)</td></tr>
-<tr class="memdesc:af3be5304eb88f7c8c179fdc209dbc888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports current free/used block counts for diagnostics.  <br /></td></tr>
-<tr class="separator:af3be5304eb88f7c8c179fdc209dbc888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3d890b9d724722c2c3aa0f5ad6b308b5" id="r_a3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__memory_8h.html#a3d890b9d724722c2c3aa0f5ad6b308b5">sapi_mem_pool_register_backend</a> (const <a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:a3d890b9d724722c2c3aa0f5ad6b308b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:a3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:ga21a45dbe165b43b930a2878c5e3f1411"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned, fixed-size storage backing one sapi_mem_pool_handle_t. <br /></td></tr>
+<tr class="separator:ga21a45dbe165b43b930a2878c5e3f1411"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa81b76e31790a7e8576b88a4a5b0daf8" id="r_gaa81b76e31790a7e8576b88a4a5b0daf8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8">sapi_mem_pool_create</a> (sapi_mem_pool_storage_t *storage, const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *config, <a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:gaa81b76e31790a7e8576b88a4a5b0daf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reserves a fixed-size-block memory pool.  <br /></td></tr>
+<tr class="separator:gaa81b76e31790a7e8576b88a4a5b0daf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga033f09446764a4568acd23948b421688" id="r_ga033f09446764a4568acd23948b421688"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#ga033f09446764a4568acd23948b421688">sapi_mem_pool_acquire</a> (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void **out_block)</td></tr>
+<tr class="memdesc:ga033f09446764a4568acd23948b421688"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acquires one fixed-size block from the pool.  <br /></td></tr>
+<tr class="separator:ga033f09446764a4568acd23948b421688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae61e08f85a309da86d0e0a9ad4ee7a29" id="r_gae61e08f85a309da86d0e0a9ad4ee7a29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#gae61e08f85a309da86d0e0a9ad4ee7a29">sapi_mem_pool_release</a> (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, void *block)</td></tr>
+<tr class="memdesc:gae61e08f85a309da86d0e0a9ad4ee7a29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a previously acquired block to its pool.  <br /></td></tr>
+<tr class="separator:gae61e08f85a309da86d0e0a9ad4ee7a29"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf3be5304eb88f7c8c179fdc209dbc888" id="r_gaf3be5304eb88f7c8c179fdc209dbc888"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#gaf3be5304eb88f7c8c179fdc209dbc888">sapi_mem_pool_stats</a> (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, size_t *out_free_blocks, size_t *out_used_blocks)</td></tr>
+<tr class="memdesc:gaf3be5304eb88f7c8c179fdc209dbc888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports current free/used block counts for diagnostics.  <br /></td></tr>
+<tr class="separator:gaf3be5304eb88f7c8c179fdc209dbc888"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3d890b9d724722c2c3aa0f5ad6b308b5" id="r_ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#ga3d890b9d724722c2c3aa0f5ad6b308b5">sapi_mem_pool_register_backend</a> (const <a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a> *backend)</td></tr>
+<tr class="memdesc:ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
+<tr class="separator:ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Static memory reservation service. </p>
@@ -157,222 +160,7 @@ Functions</h2></td></tr>
 <p>REQ-OAL-MEM-001: all pools are reserved during system initialization; reservation after the init phase is backend-defined and may be refused (SAPI_STATUS_NOT_SUPPORTED). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
-</div><h2 class="groupheader">Typedef Documentation</h2>
-<a id="adf03ce97cb7905977f9a80bc73059cf8" name="adf03ce97cb7905977f9a80bc73059cf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf03ce97cb7905977f9a80bc73059cf8">&#9670;&#160;</a></span>sapi_mem_pool_handle_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef struct sapi_mem_pool_impl_s* sapi_mem_pool_handle_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8h_source.html#l00026">26</a> of file <a class="el" href="sapi__memory_8h_source.html">sapi_memory.h</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Function Documentation</h2>
-<a id="aa81b76e31790a7e8576b88a4a5b0daf8" name="aa81b76e31790a7e8576b88a4a5b0daf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa81b76e31790a7e8576b88a4a5b0daf8">&#9670;&#160;</a></span>sapi_mem_pool_create()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_mem_pool_create </td>
-          <td>(</td>
-          <td class="paramtype">sapi_mem_pool_storage_t *&#160;</td>
-          <td class="paramname"><em>storage</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a> *&#160;</td>
-          <td class="paramname"><em>config</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">sapi_mem_pool_handle_t *&#160;</td>
-          <td class="paramname"><em>out_handle</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Reserves a fixed-size-block memory pool. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">storage</td><td>Caller-owned storage for the handle's state. Must not be NULL. </td></tr>
-    <tr><td class="paramname">config</td><td>Pool configuration. Must not be NULL; config-&gt;block_size and config-&gt;block_count must both be &gt; 0. </td></tr>
-    <tr><td class="paramname">out_handle</td><td>Receives the created pool's handle. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument; SAPI_STATUS_NOT_INITIALIZED if no backend is registered (<a class="el" href="sapi__memory_8h.html#a3d890b9d724722c2c3aa0f5ad6b308b5" title="Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2....">sapi_mem_pool_register_backend()</a>); SAPI_STATUS_NOT_SUPPORTED if the registered backend does not implement create. REQ-OAL-MEM-010 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
-
-</div>
-</div>
-<a id="a033f09446764a4568acd23948b421688" name="a033f09446764a4568acd23948b421688"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a033f09446764a4568acd23948b421688">&#9670;&#160;</a></span>sapi_mem_pool_acquire()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_mem_pool_acquire </td>
-          <td>(</td>
-          <td class="paramtype">sapi_mem_pool_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void **&#160;</td>
-          <td class="paramname"><em>out_block</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Acquires one fixed-size block from the pool. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Pool handle. Must not be NULL. </td></tr>
-    <tr><td class="paramname">out_block</td><td>Receives a pointer to the acquired block. Must not be NULL; set to NULL on failure. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_RESOURCE_EXHAUSTED if no blocks remain; SAPI_STATUS_NOT_INITIALIZED/SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__memory_8h.html#aa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>. REQ-OAL-MEM-011 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
-
-</div>
-</div>
-<a id="ae61e08f85a309da86d0e0a9ad4ee7a29" name="ae61e08f85a309da86d0e0a9ad4ee7a29"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae61e08f85a309da86d0e0a9ad4ee7a29">&#9670;&#160;</a></span>sapi_mem_pool_release()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_mem_pool_release </td>
-          <td>(</td>
-          <td class="paramtype">sapi_mem_pool_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>block</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Returns a previously acquired block to its pool. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Pool handle. Must not be NULL. </td></tr>
-    <tr><td class="paramname">block</td><td>Block previously returned by <a class="el" href="sapi__memory_8h.html#a033f09446764a4568acd23948b421688" title="Acquires one fixed-size block from the pool.">sapi_mem_pool_acquire()</a>. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_NOT_INITIALIZED/ SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__memory_8h.html#aa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>. REQ-OAL-MEM-012 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00062">62</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
-
-</div>
-</div>
-<a id="af3be5304eb88f7c8c179fdc209dbc888" name="af3be5304eb88f7c8c179fdc209dbc888"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af3be5304eb88f7c8c179fdc209dbc888">&#9670;&#160;</a></span>sapi_mem_pool_stats()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_mem_pool_stats </td>
-          <td>(</td>
-          <td class="paramtype">sapi_mem_pool_handle_t&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>out_free_blocks</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t *&#160;</td>
-          <td class="paramname"><em>out_used_blocks</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Reports current free/used block counts for diagnostics. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>Pool handle. Must not be NULL. </td></tr>
-    <tr><td class="paramname">out_free_blocks</td><td>Receives the number of free blocks. Must not be NULL. </td></tr>
-    <tr><td class="paramname">out_used_blocks</td><td>Receives the number of used blocks. Must not be NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_NOT_INITIALIZED/ SAPI_STATUS_NOT_SUPPORTED as in <a class="el" href="sapi__memory_8h.html#aa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>. REQ-OAL-MEM-013 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00079">79</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
-
-</div>
-</div>
-<a id="a3d890b9d724722c2c3aa0f5ad6b308b5" name="a3d890b9d724722c2c3aa0f5ad6b308b5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3d890b9d724722c2c3aa0f5ad6b308b5">&#9670;&#160;</a></span>sapi_mem_pool_register_backend()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_mem_pool_register_backend </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a> *&#160;</td>
-          <td class="paramname"><em>backend</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2.1). Call once at startup. </p>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise. REQ-OAL-MEM-014 </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8

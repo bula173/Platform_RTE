@@ -72,7 +72,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_netlink_backend_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_netlink_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__NETLINK.html">Point-to-Point Network Link</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -83,19 +83,23 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:aebb91e307214f22625b89cde3db6fd1b" id="r_aebb91e307214f22625b89cde3db6fd1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#aebb91e307214f22625b89cde3db6fd1b">open</a> )(sapi_netlink_storage_t *storage, const <a class="el" href="structsapi__netlink__config__t.html">sapi_netlink_config_t</a> *config, sapi_netlink_handle_t *out_handle)</td></tr>
+<tr class="memitem:aebb91e307214f22625b89cde3db6fd1b" id="r_aebb91e307214f22625b89cde3db6fd1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#aebb91e307214f22625b89cde3db6fd1b">open</a> )(sapi_netlink_storage_t *storage, const <a class="el" href="structsapi__netlink__config__t.html">sapi_netlink_config_t</a> *config, <a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> *out_handle)</td></tr>
+<tr class="memdesc:aebb91e307214f22625b89cde3db6fd1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4" title="Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.">sapi_netlink_open()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:aebb91e307214f22625b89cde3db6fd1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e27a2c1dc4ee2a779bc911d3011e78d" id="r_a4e27a2c1dc4ee2a779bc911d3011e78d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#a4e27a2c1dc4ee2a779bc911d3011e78d">send</a> )(sapi_netlink_handle_t handle, const void *message, size_t message_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memitem:a4e27a2c1dc4ee2a779bc911d3011e78d" id="r_a4e27a2c1dc4ee2a779bc911d3011e78d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#a4e27a2c1dc4ee2a779bc911d3011e78d">send</a> )(<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle, const void *message, size_t message_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memdesc:a4e27a2c1dc4ee2a779bc911d3011e78d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NETLINK.html#ga1820f4806751d395bee004d78edeba31" title="Sends one fixed-size message, blocking at most timeout_ms.">sapi_netlink_send()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a4e27a2c1dc4ee2a779bc911d3011e78d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1dc5bca6bb4cb15229cebdd4340e494" id="r_ad1dc5bca6bb4cb15229cebdd4340e494"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#ad1dc5bca6bb4cb15229cebdd4340e494">receive</a> )(sapi_netlink_handle_t handle, void *out_message, size_t buffer_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memitem:ad1dc5bca6bb4cb15229cebdd4340e494" id="r_ad1dc5bca6bb4cb15229cebdd4340e494"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#ad1dc5bca6bb4cb15229cebdd4340e494">receive</a> )(<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle, void *out_message, size_t buffer_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td></tr>
+<tr class="memdesc:ad1dc5bca6bb4cb15229cebdd4340e494"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NETLINK.html#ga4c86e3cbba235b624c0a4bac55c19cbb" title="Receives one fixed-size message, blocking at most timeout_ms.">sapi_netlink_receive()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:ad1dc5bca6bb4cb15229cebdd4340e494"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f83bab6f55c2130ff20f0eed805d92e" id="r_a9f83bab6f55c2130ff20f0eed805d92e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#a9f83bab6f55c2130ff20f0eed805d92e">close</a> )(sapi_netlink_handle_t handle)</td></tr>
+<tr class="memitem:a9f83bab6f55c2130ff20f0eed805d92e" id="r_a9f83bab6f55c2130ff20f0eed805d92e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__netlink__backend__t.html#a9f83bab6f55c2130ff20f0eed805d92e">close</a> )(<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle)</td></tr>
+<tr class="memdesc:a9f83bab6f55c2130ff20f0eed805d92e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__NETLINK.html#ga0e5b33034707e37de73131a00bf098df" title="Closes a link.">sapi_netlink_close()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a9f83bab6f55c2130ff20f0eed805d92e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the network link service for a specific transport/target (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00142">142</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00151">151</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="aebb91e307214f22625b89cde3db6fd1b" name="aebb91e307214f22625b89cde3db6fd1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aebb91e307214f22625b89cde3db6fd1b">&#9670;&#160;</a></span>open</h2>
@@ -104,12 +108,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::open) (sapi_netlink_storage_t *storage, const <a class="el" href="structsapi__netlink__config__t.html">sapi_netlink_config_t</a> *config, sapi_netlink_handle_t *out_handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::open) (sapi_netlink_storage_t *storage, const <a class="el" href="structsapi__netlink__config__t.html">sapi_netlink_config_t</a> *config, <a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> *out_handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00144">144</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4" title="Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.">sapi_netlink_open()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00154">154</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
 
 </div>
 </div>
@@ -120,12 +126,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::send) (sapi_netlink_handle_t handle, const void *message, size_t message_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::send) (<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle, const void *message, size_t message_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00147">147</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NETLINK.html#ga1820f4806751d395bee004d78edeba31" title="Sends one fixed-size message, blocking at most timeout_ms.">sapi_netlink_send()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00158">158</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
 
 </div>
 </div>
@@ -136,12 +144,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::receive) (sapi_netlink_handle_t handle, void *out_message, size_t buffer_size, <a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::receive) (<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle, void *out_message, size_t buffer_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00149">149</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NETLINK.html#ga4c86e3cbba235b624c0a4bac55c19cbb" title="Receives one fixed-size message, blocking at most timeout_ms.">sapi_netlink_receive()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00161">161</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
 
 </div>
 </div>
@@ -152,12 +162,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::close) (sapi_netlink_handle_t handle)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_netlink_backend_t::close) (<a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> handle)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00151">151</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__NETLINK.html#ga0e5b33034707e37de73131a00bf098df" title="Closes a link.">sapi_netlink_close()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00164">164</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
 
 </div>
 </div>

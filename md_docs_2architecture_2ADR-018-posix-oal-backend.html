@@ -73,24 +73,24 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-018: A Real POSIX/Linux OAL Backend</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md146"></a> Status: Superseded (relocated) - Accepted Date: 2026-08-05 Applies to: the POSIX backend's design, and how it plugs into every existing OAL service's backend-registration mechanism (ADR-005).</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md155"></a> Status: Superseded (relocated) - Accepted Date: 2026-08-05 Applies to: the POSIX backend's design, and how it plugs into every existing OAL service's backend-registration mechanism (ADR-005).</p>
 <p><b>Relocation note:</b> the code this ADR describes (<code>src/posix_backend/</code>, <code>include/safeapi/posix_backend/</code>, <code>tests/posix_backend/</code>) has been moved out of this repository into the <code>safeAPIExample</code> project (<code>src/posix_backend/</code> there). This is a location change only, not a design reversal - the rationale below is unchanged and still describes that code accurately. The move itself is a direct consequence of this ADR's own reasoning (ADR-005): an OAL backend is an integrator-supplied implementation for a specific target, not part of the reusable safety framework itself. safeAPIFreamwork now ships only the OAL service interfaces and their validate-then-dispatch layers (<code>sapi_&lt;service&gt;_*()</code></p><ul>
 <li><code>sapi_&lt;service&gt;_register_backend()</code>); any concrete backend - POSIX, an RTOS, bare metal - belongs in the application/integration project that registers it, which is what <code>safeAPIExample</code> now demonstrates.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md147"></a>
+<h1><a class="anchor" id="autotoc_md156"></a>
 1. Context</h1>
 <p>Every OAL service (<code>sapi_timer</code>, <code>sapi_ipc</code>, <code>sapi_task</code>, <code>sapi_log</code>, <code>sapi_nvm</code>, <code>sapi_reboot</code>, <code>sapi_memory</code>) is a pure dispatch layer over a backend an integrator registers at startup (ADR-005) - none of them do anything on real hardware by themselves. A survey done for this ADR found that, despite the framework's maturity, <b>no real backend implementation existed anywhere in the repository</b> for any target: <code>examples/linux-posix-app/</code> looks like a working Linux app but never calls a single <code>sapi_*_register_backend()</code>; its timer path is explicitly bypassed with a comment saying so. Outside of test mocks, the only real backend registration call in the whole tree was a diagnostic clocksync stub returning a hardcoded constant. <code>examples/2oo2-geographic-redundancy/</code> and <code>examples/2oo2-cross-comparison/</code> - the two examples that look like they demonstrate 2oo2/online-standby clustering - define their own standalone types and contain zero <code>sapi_*</code> calls; the cross-comparison example's own integration doc says outright that real SAPI integration is still a "next step."</p>
 <p>This ADR is that missing piece: a real, working POSIX backend, so a Linux application can actually run on SAPI instead of just linking against its headers.</p>
-<h1><a class="anchor" id="autotoc_md148"></a>
+<h1><a class="anchor" id="autotoc_md157"></a>
 2. Decision</h1>
-<h2><a class="anchor" id="autotoc_md149"></a>
+<h2><a class="anchor" id="autotoc_md158"></a>
 2.1 One module, one file per service, one aggregator</h2>
 <p><code>src/posix_backend/sapi_posix_backend_&lt;service&gt;.c</code> for each of timer, ipc, task, log, nvm, reboot, memory, plus <code>src/posix_backend/sapi_posix_backend.c</code> exposing a single <code>sapi_status_t sapi_posix_backend_register_all(void)</code> that calls every service's <code>sapi_&lt;service&gt;_register_backend()</code> with this module's implementation - one call at startup instead of seven, matching the "single entry point" pattern <code>sapi_appmanager</code> already established elsewhere in this codebase. Individual <code>sapi_posix_backend_&lt;service&gt;()</code> accessor functions are also exposed for callers who want to register only some services with the real backend and mock/stub the rest (e.g. in tests).</p>
 <p>This is a new top-level feature directory, not nested under any existing service, because it depends on <em>all</em> of them and none of them should depend on it (ADR-007's per-feature layout is about independent buildable units; a backend implementation legitimately depends on the API it implements, so the dependency direction here is <code>posix_backend -&gt; {timer, ipc, task, log, nvm, reboot, memory}</code>, never the reverse).</p>
-<h2><a class="anchor" id="autotoc_md150"></a>
+<h2><a class="anchor" id="autotoc_md159"></a>
 2.2 Fitting inside each service's fixed opaque storage</h2>
 <p>Every service's public header reserves a small fixed-size byte buffer for backend state (<code>SAFEAPI_DECLARE_STORAGE</code>, ADR-001 section 3.4) - 64 bytes for timer/ipc/nvm/memory, 128 for task. This is the main design constraint on every backend below, and it directly ruled out the "obvious" POSIX implementation for <code>sapi_ipc</code>: a <code>pthread_mutex_t</code> + <code>pthread_cond_t</code> protecting an in-process ring buffer would already consume ~88 bytes on glibc x86_64 before storing anything else, blowing the 64-byte budget. <code>sapi_ipc</code>'s backend uses a <code>pipe()</code> instead - two file descriptors plus bookkeeping fits in under 32 bytes and sidesteps the whole synchronization-primitive-size problem by letting the kernel own the queue.</p>
-<h2><a class="anchor" id="autotoc_md151"></a>
+<h2><a class="anchor" id="autotoc_md160"></a>
 2.3 What "real" means here, and what it deliberately doesn't</h2>
 <ul>
 <li><b>Timer</b>: one POSIX thread per timer, sleeping via <code>clock_nanosleep(CLOCK_MONOTONIC, ...)</code> and invoking the callback directly from that thread (documented per REQ-OAL-TIMER-003's "backend-defined context" - this backend's context is "its own
@@ -100,12 +100,12 @@ $(function() {
 <li><b>Log</b>: non-blocking write to <code>stderr</code>, matching REQ-OAL-LOG-001 ("best-effort, non-blocking, must never affect caller control flow") - no queue, no separate thread; <code>stderr</code> writes are typically fast enough not to violate this in practice for a first cut, but a real deployment wanting a hard non-blocking guarantee should route through a lock-free ring buffer drained by a dedicated low-priority thread instead.</li>
 <li><b>Reboot</b>: <code>execv()</code> re-exec of the current binary (<code>/proc/self/exe</code>) with its original <code>argv</code>, which is the closest a normal (non-root, non-embedded) Linux process can get to "the CPU resets" without actual hardware reset capability or an external supervisor process. This is clearly documented as a stand-in, not a real safety-relevant reboot path - a real deployment on real hardware needs a real reset mechanism (watchdog-triggered hardware reset, supervisory process, etc.).</li>
 <li><b>NVM</b>: a plain file per region, with a whole-region FNV-1a-64 hash trailer recomputed on every write and verified on every read (REQ-OAL-NVM-001). Deliberately does <b>not</b> reuse <code>sapi_checksum</code>'s CRC-64 - that module's lookup tables are known-incomplete placeholders (flagged in ADR-017/the MISRA report); building this backend's integrity check on top of a hash known to be broken would just move the problem, not solve it. FNV-1a is simple enough to implement correctly inline, with no lookup table to get wrong.</li>
-<li><b>Memory</b>: a single fixed-size static byte arena (<code>SAPI_POSIX_MEM_ARENA_SIZE</code>, default 1 MiB, compile-time constant) with a per-pool intrusive free list carved out of it at <code><a class="el" href="sapi__memory_8h.html#aa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a></code> time. This is static partitioning, not <code>malloc</code>/<code>free</code> - the arena's total size is fixed at compile time and every pool's claim against it is checked against remaining arena space, returning <code>SAPI_STATUS_RESOURCE_EXHAUSTED</code> rather than growing anything.</li>
+<li><b>Memory</b>: a single fixed-size static byte arena (<code>SAPI_POSIX_MEM_ARENA_SIZE</code>, default 1 MiB, compile-time constant) with a per-pool intrusive free list carved out of it at <code><a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a></code> time. This is static partitioning, not <code>malloc</code>/<code>free</code> - the arena's total size is fixed at compile time and every pool's claim against it is checked against remaining arena space, returning <code>SAPI_STATUS_RESOURCE_EXHAUSTED</code> rather than growing anything.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md152"></a>
+<h2><a class="anchor" id="autotoc_md161"></a>
 2.4 Build integration</h2>
 <p><code>src/posix_backend/CMakeLists.txt</code> only builds on POSIX-ish platforms (<code>if(UNIX)</code> - covers Linux and other POSIX systems this backend also happens to work on, e.g. any pthread/POSIX.1-2008-conformant target) and links <code>pthread</code> plus <code>rt</code> where required by the target libc for <code>clock_nanosleep</code>/<code>mqueue</code>-adjacent symbols. Added to the top-level feature loop guarded the same way, so a non-POSIX (e.g. QNX, bare-metal) configuration simply doesn't build this directory rather than failing to configure.</p>
-<h1><a class="anchor" id="autotoc_md153"></a>
+<h1><a class="anchor" id="autotoc_md162"></a>
 3. Consequences</h1>
 <ul>
 <li>Positive: <code>examples/linux-posix-app/</code> finally has a real backend to register instead of bypassing the timer path; a genuine 2oo2 or online/standby Linux application can now be built on top of actual running SAPI services instead of a parallel non-SAPI demo.</li>
@@ -113,7 +113,7 @@ $(function() {
 <li>Negative / accepted risk: one-pthread-per-timer and one-pthread-per-task do not scale to a system with hundreds of timers/tasks - acceptable for a first working backend and typical application-level channel/task counts, flagged here so it isn't mistaken for a scalability-tested design.</li>
 <li>Deferred: <code>examples/linux-posix-app/main.c</code> needs to be rewritten against this real backend (it currently only compiles against the API, it doesn't exercise it) - tracked as follow-up in this same change.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md154"></a>
+<h1><a class="anchor" id="autotoc_md163"></a>
 4. Location</h1>
 <p><code>src/posix_backend/sapi_posix_backend_{timer,ipc,task,log,nvm,reboot,memory}.c</code></p><ul>
 <li><code>sapi_posix_backend.c</code> (aggregator) + <code>include/safeapi/posix_backend/sapi_posix_backend.h</code>, target <code>safeapi::posix_backend</code>, POSIX-only (<code>if(UNIX)</code>), links every OAL service target plus <code>pthread</code>. </li>

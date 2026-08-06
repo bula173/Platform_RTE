@@ -73,9 +73,9 @@ $(function() {
   <div class="headertitle"><div class="title">Architecture Diagrams with PlantUML &amp; Doxygen</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md167"></a> This guide explains how to create and embed structural and behavioral diagrams in the architecture documentation using PlantUML.</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md176"></a> This guide explains how to create and embed structural and behavioral diagrams in the architecture documentation using PlantUML.</p>
 <hr  />
-<h1><a class="anchor" id="autotoc_md169"></a>
+<h1><a class="anchor" id="autotoc_md178"></a>
 Overview</h1>
 <p><b>PlantUML</b> is a UML diagram generation tool that converts text descriptions into visual diagrams. Combined with <b>Doxygen</b>, it enables:</p>
 <ul>
@@ -86,9 +86,9 @@ Overview</h1>
 <li>✅ Version-tracked alongside code</li>
 </ul>
 <hr  />
-<h1><a class="anchor" id="autotoc_md171"></a>
+<h1><a class="anchor" id="autotoc_md180"></a>
 Setup</h1>
-<h2><a class="anchor" id="autotoc_md172"></a>
+<h2><a class="anchor" id="autotoc_md181"></a>
 1. Install PlantUML</h2>
 <div class="fragment"><div class="line"># macOS</div>
 <div class="line">brew install plantuml</div>
@@ -98,21 +98,21 @@ Setup</h1>
 <div class="line"> </div>
 <div class="line"># Verify</div>
 <div class="line">plantuml -version</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md173"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md182"></a>
 2. Configure Doxygen</h2>
 <p>Update <code>Doxyfile</code> to enable PlantUML:</p>
 <div class="fragment"><div class="line">PLANTUML_JAR_PATH = /usr/local/bin/plantuml</div>
 <div class="line">PLANTUML_INCLUDE_PATH = .</div>
 <div class="line">HAVE_DOT = YES</div>
 <div class="line">DOT_PATH = /usr/local/bin</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md174"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md183"></a>
 3. Generate Docs</h2>
 <div class="fragment"><div class="line">doxygen Doxyfile</div>
 <div class="line">open html/index.html</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md176"></a>
+<h1><a class="anchor" id="autotoc_md185"></a>
 Diagram Types &amp; Examples</h1>
-<h2><a class="anchor" id="autotoc_md177"></a>
+<h2><a class="anchor" id="autotoc_md186"></a>
 1. Component Diagram (Structural)</h2>
 <p>Shows module dependencies and interactions.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/component-diagram.puml</code></p>
@@ -180,7 +180,7 @@ Diagram Types &amp; Examples</h1>
 </div><!-- fragment --><p><b>Embed in Doxygen:</b></p>
 <div class="fragment"><div class="line"> </div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md179"></a>
+<h2><a class="anchor" id="autotoc_md188"></a>
 2. Sequence Diagram (Behavioral - IPC)</h2>
 <p>Shows message flow between components.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/sequence-ipc-request-reply.puml</code></p>
@@ -214,7 +214,7 @@ Diagram Types &amp; Examples</h1>
 <div class="line"> </div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md181"></a>
+<h2><a class="anchor" id="autotoc_md190"></a>
 3. Sequence Diagram (Behavioral - Redundancy)</h2>
 <p>Shows 2oo3 voting flow.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/sequence-2oo3-voting.puml</code></p>
@@ -256,7 +256,7 @@ Diagram Types &amp; Examples</h1>
 <div class="line"> </div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md183"></a>
+<h2><a class="anchor" id="autotoc_md192"></a>
 4. State Machine Diagram (Behavioral)</h2>
 <p>Shows watchdog state transitions.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/statemachine-watchdog.puml</code></p>
@@ -290,7 +290,7 @@ Diagram Types &amp; Examples</h1>
 <div class="line"> </div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md185"></a>
+<h2><a class="anchor" id="autotoc_md194"></a>
 5. Deployment Diagram (Structural)</h2>
 <p>Shows how SAPI is deployed on hardware.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/deployment-2oo3-cluster.puml</code></p>
@@ -343,7 +343,7 @@ Diagram Types &amp; Examples</h1>
 <div class="line"> </div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md187"></a>
+<h2><a class="anchor" id="autotoc_md196"></a>
 6. Activity Diagram (Behavioral - Checkpoint Flow)</h2>
 <p>Shows checkpoint synchronization workflow.</p>
 <p><b>File:</b> <code>docs/architecture/diagrams/activity-checkpoint-barrier.puml</code></p>
@@ -383,18 +383,18 @@ Diagram Types &amp; Examples</h1>
 <div class="line"> </div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md189"></a>
+<h1><a class="anchor" id="autotoc_md198"></a>
 Embedding Diagrams in Doxygen Comments</h1>
-<h2><a class="anchor" id="autotoc_md190"></a>
+<h2><a class="anchor" id="autotoc_md199"></a>
 In Header Files</h2>
 <div class="fragment"><div class="line"> </div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md191"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md200"></a>
 In Markdown Files</h2>
 <div class="fragment"><div class="line"># Module Architecture</div>
 <div class="line"> </div>
 <div class="line">## Structural View</div>
 </div><!-- fragment --><p> puml  </p><div class="fragment"><div class="line">## Behavioral View</div>
-</div><!-- fragment --><p> puml  </p><div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="autotoc_md192"></a>
+</div><!-- fragment --><p> puml  </p><div class="fragment"></div><!-- fragment --><h2><a class="anchor" id="autotoc_md201"></a>
 In ADR Documents</h2>
 <div class="fragment"><div class="line"># ADR-007: Per-Feature Modular Architecture</div>
 <div class="line"> </div>
@@ -419,7 +419,7 @@ In ADR Documents</h2>
 <div class="line">- Reduces verification scope</div>
 <div class="line">- Facilitates reuse</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md194"></a>
+<h1><a class="anchor" id="autotoc_md203"></a>
 Diagram Locations</h1>
 <p>Organize diagrams in the repo:</p>
 <div class="fragment"><div class="line">docs/architecture/</div>
@@ -435,7 +435,7 @@ Diagram Locations</h1>
 <div class="line">├── ADR-005-oal-backend-registration.md</div>
 <div class="line">└── ...</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md196"></a>
+<h1><a class="anchor" id="autotoc_md205"></a>
 Build Diagrams Locally</h1>
 <div class="fragment"><div class="line"># Generate PNG from single diagram</div>
 <div class="line">plantuml docs/architecture/diagrams/component-diagram.puml</div>
@@ -449,7 +449,7 @@ Build Diagrams Locally</h1>
 <div class="line"># Verify syntax without generating</div>
 <div class="line">plantuml -checkonly docs/architecture/diagrams/component-diagram.puml</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md198"></a>
+<h1><a class="anchor" id="autotoc_md207"></a>
 Doxygen Configuration</h1>
 <p>Add to <code>Doxyfile</code>:</p>
 <div class="fragment"><div class="line"># PlantUML settings</div>
@@ -470,7 +470,7 @@ Doxygen Configuration</h1>
 <div class="line">GENERATE_LATEX          = YES</div>
 <div class="line">LATEX_BATCHMODE         = YES</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md200"></a>
+<h1><a class="anchor" id="autotoc_md209"></a>
 CI/CD Integration</h1>
 <p>Add to GitHub Actions workflow:</p>
 <div class="fragment"><div class="line">name: Build Documentation</div>
@@ -500,32 +500,32 @@ CI/CD Integration</h1>
 <div class="line">          github_token: ${{ secrets.GITHUB_TOKEN }}</div>
 <div class="line">          publish_dir: ./html</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md202"></a>
+<h1><a class="anchor" id="autotoc_md211"></a>
 Best Practices</h1>
-<h2><a class="anchor" id="autotoc_md203"></a>
+<h2><a class="anchor" id="autotoc_md212"></a>
 1. Diagram Scope</h2>
 <p><b>Keep diagrams focused:</b></p><ul>
 <li>❌ Don't show all modules in one diagram</li>
 <li>✅ Show one architectural aspect per diagram</li>
 <li>✅ Use multiple diagrams for complex systems</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md204"></a>
+<h2><a class="anchor" id="autotoc_md213"></a>
 2. Consistency</h2>
 <p><b>Use consistent notation:</b> </p><div class="fragment"><div class="line">skinparam componentStyle uml2</div>
 <div class="line">skinparam monochrome true</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md205"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md214"></a>
 3. Traceability</h2>
 <p><b>Link diagrams to code:</b> </p><div class="fragment"><div class="line">Component → sapi_*.h header file → Implementation</div>
 <div class="line">Sequence → Test case → Documented behavior</div>
 <div class="line">State Machine → State enum → Code logic</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md206"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md215"></a>
 4. Version Control</h2>
 <p><b>Commit PlantUML source, not generated images:</b> </p><div class="fragment"><div class="line">✅ docs/architecture/diagrams/*.puml (source)</div>
 <div class="line">❌ docs/architecture/diagrams/*.png (generated)</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md208"></a>
+<h1><a class="anchor" id="autotoc_md217"></a>
 Common Diagram Patterns for Safety-Critical Systems</h1>
-<h2><a class="anchor" id="autotoc_md209"></a>
+<h2><a class="anchor" id="autotoc_md218"></a>
 Pattern 1: Fault Tolerance</h2>
 <div class="fragment"><div class="line">@startuml fault-tolerance</div>
 <div class="line">participant &quot;Primary&quot; as p</div>
@@ -541,7 +541,7 @@ Pattern 1: Fault Tolerance</h2>
 <div class="line">    v -&gt;&gt; safestate: trigger()</div>
 <div class="line">end</div>
 <div class="line">@enduml</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md210"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md219"></a>
 Pattern 2: Health Monitoring</h2>
 <div class="fragment"><div class="line">@startuml health-monitoring</div>
 <div class="line">participant &quot;Task&quot; as t</div>
@@ -555,7 +555,7 @@ Pattern 2: Health Monitoring</h2>
 <div class="line">    w -&gt;&gt; recovery: take_action()</div>
 <div class="line">end</div>
 <div class="line">@enduml</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md211"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md220"></a>
 Pattern 3: Layered Architecture</h2>
 <div class="fragment"><div class="line">@startuml layered-arch</div>
 <div class="line">package &quot;Application Layer&quot; {</div>
@@ -572,7 +572,7 @@ Pattern 3: Layered Architecture</h2>
 <div class="line">}</div>
 <div class="line">@enduml</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md213"></a>
+<h1><a class="anchor" id="autotoc_md222"></a>
 References</h1>
 <ul>
 <li><b>PlantUML:</b> <a href="https://plantuml.com/">https://plantuml.com/</a></li>

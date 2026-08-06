@@ -77,18 +77,49 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="types_architecture_overview"></a>
+C11 stdint.h Foundation</h1>
 <ul>
 <li></li>
-<li>Types module is a thin wrapper over C11's <code>&lt;stdint.h&gt;</code>. Provides fixed-width<br  />
- * integer types guaranteed by C standard: <code>uint8_t</code>, <code>int32_t</code>, etc. No<br  />
- * implementation - just type definitions and static assertions.<br  />
- *<br  />
- *</li>
+<li>Types module is a thin wrapper over C11's <code>&lt;stdint.h&gt;</code>. Provides fixed-width</li>
+<li>integer types guaranteed by C standard: <code>uint8_t</code>, <code>int32_t</code>, etc. No</li>
+<li>implementation - just type definitions and static assertions.</li>
+<li></li>
+<li></li>
 </ul>
-<h1><a class="anchor" id="sizes"></a>
-Guaranteed Sizes\n *\n * @code\n * sizeof(uint8_t)  == 1 byte\n * sizeof(uint16_t) == 2 bytes\n * sizeof(uint32_t) == 4 bytes\n * sizeof(uint64_t) == 8 bytes\n * sizeof(bool)     == 1 byte (typically)\n * @endcode\n *\n * Verified by framework at compile-time via &lt;tt&gt;_Static_assert&lt;/tt&gt;.\n *\n * @section misra MISRA Compliance\n *\n * ✓ Rule 6.1 - Fixed-width types only\n * ✓ Rule 7.2 - Proper signedness\n * ✓ Rule 8.3 - Type compatible\n *\n * @section see_also See Also\n *\n * - @ref types_user_guide for usage patterns\n *\n */\n</h1>
+<h1><a class="anchor" id="types_architecture_sizes"></a>
+Guaranteed Sizes</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sizeof(uint8_t)  == 1 byte</div>
+<div class="line">* sizeof(uint16_t) == 2 bytes</div>
+<div class="line">* sizeof(uint32_t) == 4 bytes</div>
+<div class="line">* sizeof(uint64_t) == 8 bytes</div>
+<div class="line">* sizeof(bool)     == 1 byte (typically)</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li>Verified by framework at compile-time via <code>_Static_assert</code>.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="types_architecture_misra"></a>
+MISRA Compliance</h1>
+<ul>
+<li></li>
+<li>✓ Rule 6.1 - Fixed-width types only</li>
+<li>✓ Rule 7.2 - Proper signedness</li>
+<li>✓ Rule 8.3 - Type compatible</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="types_architecture_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="types_user_guide.html">Types Module - User Guide</a> for usage patterns</li>
+<li>*/ </li>
+</ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

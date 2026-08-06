@@ -77,8 +77,8 @@ $(function() {
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="overview"></a>
-Overview</h1>
+<h1><a class="anchor" id="ipc_transport_selection_overview"></a>
+Inter-Process Communication (IPC) Transport Layer</h1>
 <ul>
 <li></li>
 <li>The safeAPIFramework uses a <b>backend vtable pattern</b> for IPC transport abstraction.</li>
@@ -92,7 +92,7 @@ Overview</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="transport_options"></a>
+<h1><a class="anchor" id="ipc_transport_selection_transport_options"></a>
 Available Transport Options</h1>
 <ul>
 <li></li>
@@ -107,7 +107,7 @@ Available Transport Options</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="backend_vtable"></a>
+<h1><a class="anchor" id="ipc_transport_selection_backend_vtable"></a>
 Backend Implementation Pattern</h1>
 <ul>
 <li></li>
@@ -116,7 +116,7 @@ Backend Implementation Pattern</h1>
 <li><code>c</code></li>
 <li><code>typedef struct sapi_ipc_backend_s {</code></li>
 <li><code> sapi_status_t (*create)(sapi_ipc_storage_t *storage,</code></li>
-<li><code> const <a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> *config,</code></li>
+<li><code> const <a class="el" href="structsapi__ipc__config__t.html" title="Configuration for sapi_ipc_create().">sapi_ipc_config_t</a> *config,</code></li>
 <li><code> sapi_ipc_handle_t *out_handle);</code></li>
 <li><code> sapi_status_t (*send)(sapi_ipc_handle_t handle, const void *message,</code></li>
 <li><code> size_t message_size, sapi_duration_ms_t timeout_ms);</code></li>
@@ -133,7 +133,7 @@ Backend Implementation Pattern</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="shared_memory"></a>
+<h1><a class="anchor" id="ipc_transport_selection_shared_memory"></a>
 Shared Memory Transport</h1>
 <ul>
 <li></li>
@@ -182,7 +182,7 @@ Shared Memory Transport</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="fifo"></a>
+<h1><a class="anchor" id="ipc_transport_selection_fifo"></a>
 FIFO (Named Pipes) Transport</h1>
 <ul>
 <li></li>
@@ -220,7 +220,7 @@ FIFO (Named Pipes) Transport</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="tcp_ip"></a>
+<h1><a class="anchor" id="ipc_transport_selection_tcp_ip"></a>
 TCP/IP Transport</h1>
 <ul>
 <li></li>
@@ -268,7 +268,7 @@ TCP/IP Transport</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="udp"></a>
+<h1><a class="anchor" id="ipc_transport_selection_udp"></a>
 UDP Transport</h1>
 <ul>
 <li></li>
@@ -307,7 +307,7 @@ UDP Transport</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="vital_channel_integration"></a>
+<h1><a class="anchor" id="ipc_transport_selection_vital_channel_integration"></a>
 Integration with Vital Channel</h1>
 <ul>
 <li></li>
@@ -321,12 +321,12 @@ Integration with Vital Channel</h1>
 <li><code>c</code></li>
 <li><code>// Configuration: Shared memory for low latency + TCP for remote fallback</code></li>
 <li><code>sapi_ipc_handle_t ch0, ch1;</code></li>
-<li><code><a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> cfg0 = {</code></li>
+<li><code><a class="el" href="structsapi__ipc__config__t.html" title="Configuration for sapi_ipc_create().">sapi_ipc_config_t</a> cfg0 = {</code></li>
 <li><code> .name = "shm_channel",</code></li>
 <li><code> .message_size = sizeof(train_cmd_t),</code></li>
 <li><code> .queue_depth = 10</code></li>
 <li><code>};</code></li>
-<li><code><a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> cfg1 = {</code></li>
+<li><code><a class="el" href="structsapi__ipc__config__t.html" title="Configuration for sapi_ipc_create().">sapi_ipc_config_t</a> cfg1 = {</code></li>
 <li><code> .name = "tcp_channel",</code></li>
 <li><code> .message_size = sizeof(train_cmd_t),</code></li>
 <li><code> .queue_depth = 5</code></li>
@@ -386,7 +386,7 @@ Integration with Vital Channel</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="online_standby_patterns"></a>
+<h1><a class="anchor" id="ipc_transport_selection_online_standby_patterns"></a>
 Online/Standby Redundancy Patterns</h1>
 <ul>
 <li></li>
@@ -516,7 +516,7 @@ Online/Standby Redundancy Patterns</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="decision_tree"></a>
+<h1><a class="anchor" id="ipc_transport_selection_decision_tree"></a>
 Transport Selection Decision Tree</h1>
 <ul>
 <li></li>
@@ -538,7 +538,7 @@ Transport Selection Decision Tree</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="recommended_configurations"></a>
+<h1><a class="anchor" id="ipc_transport_selection_recommended_configurations"></a>
 Recommended Configurations</h1>
 <ul>
 <li></li>
@@ -583,7 +583,7 @@ Recommended Configurations</h1>
 <li></li>
 <li></li>
 </ul>
-<h1><a class="anchor" id="implementation_checklist"></a>
+<h1><a class="anchor" id="ipc_transport_selection_implementation_checklist"></a>
 Implementation Checklist</h1>
 <ul>
 <li></li>

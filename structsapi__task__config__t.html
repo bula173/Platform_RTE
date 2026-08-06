@@ -72,19 +72,24 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_task_config_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_task_config_t Struct Reference<div class="ingroups"><a class="el" href="group__TASK.html">Task/Thread Scheduling</a></div></div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>Configuration for <a class="el" href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709" title="Creates a task in the suspended state.">sapi_task_create()</a>.  
+ <a href="structsapi__task__config__t.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
 <tr class="memitem:ade34ea5e339aca7b00cbdee4ac5101c7" id="r_ade34ea5e339aca7b00cbdee4ac5101c7"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#ade34ea5e339aca7b00cbdee4ac5101c7">name</a></td></tr>
 <tr class="separator:ade34ea5e339aca7b00cbdee4ac5101c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f2b31d8a9a183487ba731c7cd83e446" id="r_a0f2b31d8a9a183487ba731c7cd83e446"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__task_8h.html#a39c7e2204129ffc3f8f171f7c1babb59">sapi_task_entry_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#a0f2b31d8a9a183487ba731c7cd83e446">entry</a></td></tr>
+<tr class="memitem:a0f2b31d8a9a183487ba731c7cd83e446" id="r_a0f2b31d8a9a183487ba731c7cd83e446"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__TASK.html#ga39c7e2204129ffc3f8f171f7c1babb59">sapi_task_entry_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#a0f2b31d8a9a183487ba731c7cd83e446">entry</a></td></tr>
 <tr class="separator:a0f2b31d8a9a183487ba731c7cd83e446"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9564770ae90735b28050056093c4d4d2" id="r_a9564770ae90735b28050056093c4d4d2"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#a9564770ae90735b28050056093c4d4d2">user_ctx</a></td></tr>
 <tr class="separator:a9564770ae90735b28050056093c4d4d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd8843dc4d435e089a1a469f3d85f5b9" id="r_abd8843dc4d435e089a1a469f3d85f5b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#abd8843dc4d435e089a1a469f3d85f5b9">period_ms</a></td></tr>
+<tr class="memitem:abd8843dc4d435e089a1a469f3d85f5b9" id="r_abd8843dc4d435e089a1a469f3d85f5b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#abd8843dc4d435e089a1a469f3d85f5b9">period_ms</a></td></tr>
 <tr class="separator:abd8843dc4d435e089a1a469f3d85f5b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe7a346b07a78599030af132bc289f45" id="r_afe7a346b07a78599030af132bc289f45"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__task__config__t.html#afe7a346b07a78599030af132bc289f45">priority</a></td></tr>
 <tr class="separator:afe7a346b07a78599030af132bc289f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -92,8 +97,9 @@ Data Fields</h2></td></tr>
 <tr class="separator:a2cf4996f13f14ee218613d7e2596f10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00031">31</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<div class="textblock"><p>Configuration for <a class="el" href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709" title="Creates a task in the suspended state.">sapi_task_create()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00038">38</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ade34ea5e339aca7b00cbdee4ac5101c7" name="ade34ea5e339aca7b00cbdee4ac5101c7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ade34ea5e339aca7b00cbdee4ac5101c7">&#9670;&#160;</a></span>name</h2>
@@ -108,7 +114,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Diagnostic name, e.g. for logging. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00033">33</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00040">40</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>
@@ -119,13 +125,13 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__task_8h.html#a39c7e2204129ffc3f8f171f7c1babb59">sapi_task_entry_t</a> sapi_task_config_t::entry</td>
+          <td class="memname"><a class="el" href="group__TASK.html#ga39c7e2204129ffc3f8f171f7c1babb59">sapi_task_entry_t</a> sapi_task_config_t::entry</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Must not be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00034">34</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00041">41</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>
@@ -142,7 +148,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Passed to entry on every cycle. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00035">35</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00042">42</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>
@@ -153,13 +159,13 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__types_8h.html#a6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> sapi_task_config_t::period_ms</td>
+          <td class="memname"><a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> sapi_task_config_t::period_ms</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>0 = run once (non-cyclic) task. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00036">36</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00043">43</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>
@@ -176,7 +182,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Backend-defined priority scale; documented per backend. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00037">37</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00044">44</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>
@@ -193,7 +199,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Requested stack size in bytes. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00038">38</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00045">45</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
 
 </div>
 </div>

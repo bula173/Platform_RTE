@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: Logging Module - User Guide\n *\n * @section overview What is Logging?\n *\n * Logging provides bounded ring-buffer logging for diagnostics. All entries\n * go to fixed buffer; oldest entries overwritten when full.\n *\n * @section levels Log Levels\n *\n * DEBUG - Development diagnostics (disabled in production)\n * INFO - Informational events\n * WARNING - Potential issues, continuing\n * ERROR - Failures, recovery attempted\n * CRITICAL - Imminent shutdown\n *\n * @section quick_start Quick Start\n *\n * @code\n * sapi_log_debug(\&quot;value=d\&quot;, x);\n * sapi_log_info(\&quot;System initialized\&quot;);\n * sapi_log_warning(\&quot;Low battery\&quot;);\n * sapi_log_error(\&quot;Read failed: s\&quot;, reason);\n * sapi_log_critical(\&quot;Entering safe-state\&quot;);\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Use appropriate level\n * 2. Include context (what, why, state)\n * 3. Never log secrets (passwords, keys)\n * 4. Flush before shutdown/reboot\n *\n * @section see_also See Also\n *\n * - @ref log_architecture for design\n *\n */\n</title>
+<title>Safe API Framework: Logging Module - User Guide</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,10 +70,67 @@ $(function() {
 
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">Logging Module - User Guide\n *\n * @section overview What is Logging?\n *\n * Logging provides bounded ring-buffer logging for diagnostics. All entries\n * go to fixed buffer; oldest entries overwritten when full.\n *\n * @section levels Log Levels\n *\n * DEBUG - Development diagnostics (disabled in production)\n * INFO - Informational events\n * WARNING - Potential issues, continuing\n * ERROR - Failures, recovery attempted\n * CRITICAL - Imminent shutdown\n *\n * @section quick_start Quick Start\n *\n * @code\n * sapi_log_debug(\"value=%d\", x);\n * sapi_log_info(\"System initialized\");\n * sapi_log_warning(\"Low battery\");\n * sapi_log_error(\"Read failed: %s\", reason);\n * sapi_log_critical(\"Entering safe-state\");\n * @endcode\n *\n * @section guidelines Best Practices\n *\n * 1. Use appropriate level\n * 2. Include context (what, why, state)\n * 3. Never log secrets (passwords, keys)\n * 4. Flush before shutdown/reboot\n *\n * @section see_also See Also\n *\n * - @ref log_architecture for design\n *\n */\n</div></div>
+  <div class="headertitle"><div class="title">Logging Module - User Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"></div></div><!-- contents -->
+<div class="textblock"><ul>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_user_guide_overview"></a>
+What is Logging?</h1>
+<ul>
+<li></li>
+<li>Logging provides bounded ring-buffer logging for diagnostics. All entries</li>
+<li>go to fixed buffer; oldest entries overwritten when full.</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_user_guide_levels"></a>
+Log Levels</h1>
+<ul>
+<li></li>
+<li>DEBUG - Development diagnostics (disabled in production)</li>
+<li>INFO - Informational events</li>
+<li>WARNING - Potential issues, continuing</li>
+<li>ERROR - Failures, recovery attempted</li>
+<li>CRITICAL - Imminent shutdown</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_user_guide_quick_start"></a>
+Quick Start</h1>
+<ul>
+<li></li>
+<li><div class="fragment"><div class="line">* sapi_log_debug(&quot;value=%d&quot;, x);</div>
+<div class="line">* sapi_log_info(&quot;System initialized&quot;);</div>
+<div class="line">* sapi_log_warning(&quot;Low battery&quot;);</div>
+<div class="line">* sapi_log_error(&quot;Read failed: %s&quot;, reason);</div>
+<div class="line">* sapi_log_critical(&quot;Entering safe-state&quot;);</div>
+<div class="line">* </div>
+</div><!-- fragment --></li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_user_guide_guidelines"></a>
+Best Practices</h1>
+<ul>
+<li></li>
+<li>1. Use appropriate level</li>
+<li>2. Include context (what, why, state)</li>
+<li>3. Never log secrets (passwords, keys)</li>
+<li>4. Flush before shutdown/reboot</li>
+<li></li>
+<li></li>
+</ul>
+<h1><a class="anchor" id="log_user_guide_see_also"></a>
+See Also</h1>
+<ul>
+<li></li>
+<li>- <a class="el" href="log_architecture.html">Log Module - Architecture</a> for design</li>
+<li>*/ </li>
+</ul>
+</div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

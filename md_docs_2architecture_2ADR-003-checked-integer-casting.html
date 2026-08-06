@@ -73,31 +73,31 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-003: Checked Integer Casting</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md22"></a> Status: Draft Date: 2026-08-02 Applies to: safeAPIFreamwork, <code>include/safeapi/common/sapi_cast.h</code></p>
-<h1><a class="anchor" id="autotoc_md23"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md31"></a> Status: Draft Date: 2026-08-02 Applies to: safeAPIFreamwork, <code>include/safeapi/common/sapi_cast.h</code></p>
+<h1><a class="anchor" id="autotoc_md32"></a>
 1. Context</h1>
 <p>CLAUDE.md prohibits implicit type conversions: "No implicit type conversions
 (explicit casts are required)." An implicit or unchecked C-style narrowing cast (e.g. <code>uint16_t x = some_uint32;</code>) can silently truncate a value - exactly the class of defect MISRA C:2012's essential type model (Rules 10.1-10.8) targets, and unacceptable in SIL 3/4 code where a truncated value (a timeout, an offset, a message length) can turn into a safety-relevant misbehavior.</p>
 <p>This ADR defines how every conversion between the framework's integer types is performed: never with a bare C cast at a call site, always through a named, checked <code>sapi_cast_*</code> function.</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
+<h1><a class="anchor" id="autotoc_md33"></a>
 2. Decision</h1>
-<h2><a class="anchor" id="autotoc_md25"></a>
+<h2><a class="anchor" id="autotoc_md34"></a>
 2.1 Scope: every ordered pair, including widening</h2>
 <p>A checked function is provided for <b>every</b> ordered pair of the project's integer types, not just the conversions that can lose data. This includes lossless widening (e.g. <code>uint8_t -&gt; uint32_t</code>), so that every conversion site in the codebase looks the same and is equally easy to find, review, and grep for - "was this value ever cast without going through
 `sapi_cast`" is answerable by searching for raw casts, and that search should have no legitimate hits outside <code><a class="el" href="sapi__cast_8c.html" title="Generated from ADR-003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t...">sapi_cast.c</a></code> itself.</p>
 <p>Types covered: <code>int8_t</code>, <code>int16_t</code>, <code>int32_t</code>, <code>int64_t</code>, <code>uint8_t</code>, <code>uint16_t</code>, <code>uint32_t</code>, <code>uint64_t</code>, and <code>size_t</code> (used pervasively by the framework's own APIs for capacity/length/offset parameters - see <code><a class="el" href="structsapi__buffer__t.html" title="Mutable, bounds-tracked view over caller-owned storage.">sapi_buffer_t</a></code>, <code>sapi_nvm_read/write</code>, <code>sapi_ipc_send/receive</code>).</p>
 <p>9 types x 8 other types = <b>72 functions</b>, named <code>sapi_cast_&lt;from&gt;_to_&lt;to&gt;</code>, e.g. <code>sapi_cast_u32_to_u16</code>, <code>sapi_cast_i16_to_u8</code>, <code>sapi_cast_size_to_u32</code>. Short type tokens: <code>i8/i16/ i32/i64</code>, <code>u8/u16/u32/u64</code>, <code>size</code>.</p>
-<h2><a class="anchor" id="autotoc_md26"></a>
+<h2><a class="anchor" id="autotoc_md35"></a>
 2.2 Signature and failure semantics</h2>
-<div class="fragment"><div class="line"><a class="code hl_enumeration" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="sapi__cast_8h.html#aa1d0e01eab5d6ee1d28a79bdaff812af">sapi_cast_u32_to_u16</a>(uint32_t in, uint16_t *out);</div>
-<div class="ttc" id="asapi__cast_8h_html_aa1d0e01eab5d6ee1d28a79bdaff812af"><div class="ttname"><a href="sapi__cast_8h.html#aa1d0e01eab5d6ee1d28a79bdaff812af">sapi_cast_u32_to_u16</a></div><div class="ttdeci">sapi_status_t sapi_cast_u32_to_u16(uint32_t in, uint16_t *out)</div><div class="ttdoc">Checked cast from uint32_t to uint16_t.</div><div class="ttdef"><b>Definition</b> <a href="sapi__cast_8c_source.html#l00800">sapi_cast.c:800</a></div></div>
-<div class="ttc" id="asapi__status_8h_html_acaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00022">sapi_status.h:23</a></div></div>
+<div class="fragment"><div class="line"><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__CAST.html#gaa1d0e01eab5d6ee1d28a79bdaff812af">sapi_cast_u32_to_u16</a>(uint32_t in, uint16_t *out);</div>
+<div class="ttc" id="agroup__CAST_html_gaa1d0e01eab5d6ee1d28a79bdaff812af"><div class="ttname"><a href="group__CAST.html#gaa1d0e01eab5d6ee1d28a79bdaff812af">sapi_cast_u32_to_u16</a></div><div class="ttdeci">sapi_status_t sapi_cast_u32_to_u16(uint32_t in, uint16_t *out)</div><div class="ttdoc">Checked cast from uint32_t to uint16_t.</div><div class="ttdef"><b>Definition</b> <a href="sapi__cast_8c_source.html#l00801">sapi_cast.c:801</a></div></div>
+<div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 </div><!-- fragment --><ul>
 <li><code>out == NULL</code> -&gt; <code>SAPI_STATUS_INVALID_PARAM</code>, nothing dereferenced.</li>
 <li>Value does not fit the destination type -&gt; <code>SAPI_STATUS_VALUE_OUT_OF_RANGE</code> (new status code, appended to <code>sapi_status_t</code>; see section 2.4), and **<code>*out</code> is left untouched** - the caller's variable keeps whatever value it held before the call. This means callers must always check the returned status before using <code>*out</code>; the function makes no attempt to provide a "safe default" on failure, since a silently-substituted default (e.g. clamping or zeroing) could itself be mistaken for a valid value on a safety-relevant path.</li>
 <li>Value fits -&gt; <code>SAPI_STATUS_OK</code>, <code>*out</code> set to the converted value.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md27"></a>
+<h2><a class="anchor" id="autotoc_md36"></a>
 2.3 Range-check algorithm (why it's correct without triggering &lt;tt&gt;-Wsign-conversion&lt;/tt&gt;)</h2>
 <p>Every function reduces the problem to a single comparison against the destination type's <code>_MIN</code>/<code>_MAX</code> limit macros, performed in whichever of <code>int64_t</code>/<code>uint64_t</code> matches the <b>source's</b> signedness (both are wide enough to hold any of the 9 covered types without loss, since none exceed 64 bits):</p>
 <ul>
@@ -105,17 +105,17 @@ $(function() {
 <li>Signed source: widen <code>in</code> to <code>int64_t</code> (always lossless). If the destination is unsigned, safe iff <code>in_widened &gt;= 0</code> (checked first, so the following cast is only evaluated once non-negative is established) <code>&amp;&amp; (uint64_t)in_widened &lt;= (uint64_t)DST_MAX</code>. If the destination is signed, safe iff <code>in_widened &gt;= (int64_t)DST_MIN &amp;&amp; in_widened &lt;= (int64_t)DST_MAX</code>.</li>
 </ul>
 <p>This is one of four small templates (source {signed, unsigned} x destination {signed, unsigned}), instantiated per pair using each destination type's standard <code>&lt;stdint.h&gt;</code>/<code>&lt;stddef.h&gt;</code> limit macros (<code>INT8_MIN/MAX</code> ... <code>UINT64_MAX</code>, <code>SIZE_MAX</code>). Because the comparison is always performed after widening to a single 64-bit type matching the <em>source's</em> signedness, no branch ever compares a signed value against an unsigned value of possibly-different rank, which is what triggers spurious <code>-Wsign-compare</code>/<code>-Wsign-conversion</code> warnings/UB risk with naive casts.</p>
-<h2><a class="anchor" id="autotoc_md28"></a>
+<h2><a class="anchor" id="autotoc_md37"></a>
 2.4 New status code</h2>
-<div class="fragment"><div class="line"><a class="code hl_enumvalue" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a> = 11  <span class="comment">/* appended, does not renumber existing values */</span></div>
-<div class="ttc" id="asapi__status_8h_html_acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c"><div class="ttname"><a href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a></div><div class="ttdeci">@ SAPI_STATUS_VALUE_OUT_OF_RANGE</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00036">sapi_status.h:35</a></div></div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md29"></a>
+<div class="fragment"><div class="line"><a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a> = 11  <span class="comment">/* appended, does not renumber existing values */</span></div>
+<div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a></div><div class="ttdeci">@ SAPI_STATUS_VALUE_OUT_OF_RANGE</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00040">sapi_status.h:39</a></div></div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md38"></a>
 2.5 Why named functions instead of macros or C11 &lt;tt&gt;_Generic&lt;/tt&gt;</h2>
 <p>The project targets C99 (<code>CMAKE_C_STANDARD 99</code>, matching qualified SIL 3/4 toolchains), so <code>_Generic</code> (C11) is unavailable. Even where a toolchain does support it, function-like macros are avoided for this kind of check: macro arguments can be evaluated multiple times (a hazard if a future call site passes an expression with side effects), and 72 explicit, individually named, individually documented functions are easier for a reviewer or a static analysis / MISRA deviation review to reason about one at a time than a generic macro whose behavior depends on the calling context.</p>
-<h2><a class="anchor" id="autotoc_md30"></a>
+<h2><a class="anchor" id="autotoc_md39"></a>
 2.6 Generation, not hand-authorship</h2>
 <p>The 72 function bodies all follow one of the four templates in 2.3 mechanically - only the destination limit macros and type names change per function. To eliminate the transcription errors that come with hand-typing ~70 near-identical functions, the header and source were produced by a small generator script from that template, then compiled and boundary-value tested. The generator itself is not part of the shipped build; only its plain, ordinary-looking C output is. This is a one-time authoring aid, not a build-time code generation step - the framework's build system does not gain a dependency on it.</p>
-<h1><a class="anchor" id="autotoc_md31"></a>
+<h1><a class="anchor" id="autotoc_md40"></a>
 3. Consequences</h1>
 <ul>
 <li>Positive: every narrowing, sign-changing, and widening conversion in the codebase is explicit, named, checked, and traceable to one file; a raw C-style cast between these types anywhere else in the codebase is now a code-review red flag.</li>
@@ -123,7 +123,7 @@ $(function() {
 <li>Negative: call sites become more verbose (<code>sapi_status_t st = sapi_cast_u32_to_u16(x, &amp;y); if (st != SAPI_STATUS_OK) { ... }</code> instead of <code>uint16_t y = (uint16_t)x;</code>). Accepted as the correct trade for SIL 3/4 rigor; this is the same trade CLAUDE.md already makes by banning implicit conversions outright.</li>
 <li>Deferred: existing service headers (<code>sapi_nvm</code>, <code>sapi_ipc</code>, <code>sapi_memory</code>, <code>sapi_buffer</code>) are not retrofitted to call <code>sapi_cast_*</code> internally in this change - their current bodies don't perform any narrowing casts today. Any future code that does convert between these types (in this framework or in RBC core code built on top of it) is expected to go through <code>sapi_cast_*</code> rather than a bare cast.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md32"></a>
+<h1><a class="anchor" id="autotoc_md41"></a>
 4. Location</h1>
 <blockquote class="doxtable">
 <p>&zwj;<b>Superseded by ADR-007.</b> See below for the original path; the current physical layout is <code><a class="el" href="sapi__cast_8h.html" title="Checked integer casting between all fixed-width types and size_t (ADR-003). Every conversion in the c...">include/safeapi/cast/sapi_cast.h</a></code> + <code><a class="el" href="sapi__cast_8c.html" title="Generated from ADR-003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t...">src/cast/sapi_cast.c</a></code>, target <code>safeapi::cast</code>. </p>

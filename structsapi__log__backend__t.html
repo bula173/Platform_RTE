@@ -72,26 +72,28 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_log_backend_t Struct Reference</div></div>
+  <div class="headertitle"><div class="title">sapi_log_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__LOG.html">Logging and Diagnostics</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow).  
+<p>Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow).  
  <a href="structsapi__log__backend__t.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a66b725b77e2efc07a0f09b3e9ed052f2" id="r_a66b725b77e2efc07a0f09b3e9ed052f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html#a66b725b77e2efc07a0f09b3e9ed052f2">init</a> )(void)</td></tr>
+<tr class="memitem:a66b725b77e2efc07a0f09b3e9ed052f2" id="r_a66b725b77e2efc07a0f09b3e9ed052f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html#a66b725b77e2efc07a0f09b3e9ed052f2">init</a> )(void)</td></tr>
+<tr class="memdesc:a66b725b77e2efc07a0f09b3e9ed052f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a66b725b77e2efc07a0f09b3e9ed052f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a62ee7f650a6816035f55d5514d752481" id="r_a62ee7f650a6816035f55d5514d752481"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html#a62ee7f650a6816035f55d5514d752481">write</a> )(sapi_log_level_t level, const char *tag, const char *message)</td></tr>
+<tr class="memitem:a62ee7f650a6816035f55d5514d752481" id="r_a62ee7f650a6816035f55d5514d752481"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html#a62ee7f650a6816035f55d5514d752481">write</a> )(<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *tag, const char *message)</td></tr>
+<tr class="memdesc:a62ee7f650a6816035f55d5514d752481"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend implementation of <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>. May be NULL.  <br /></td></tr>
 <tr class="separator:a62ee7f650a6816035f55d5514d752481"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="sapi__log_8h.html#ae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow). </p>
+<div class="textblock"><p>Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00059">59</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00064">64</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a66b725b77e2efc07a0f09b3e9ed052f2" name="a66b725b77e2efc07a0f09b3e9ed052f2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a66b725b77e2efc07a0f09b3e9ed052f2">&#9670;&#160;</a></span>init</h2>
@@ -100,12 +102,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="sapi__status_8h.html#acaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_log_backend_t::init) (void)</td>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_log_backend_t::init) (void)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00061">61</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00067">67</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
 
 </div>
 </div>
@@ -116,12 +120,14 @@ Data Fields</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void(* sapi_log_backend_t::write) (sapi_log_level_t level, const char *tag, const char *message)</td>
+          <td class="memname">void(* sapi_log_backend_t::write) (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *tag, const char *message)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00062">62</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
+<p>Backend implementation of <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>. May be NULL. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00069">69</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
 
 </div>
 </div>
