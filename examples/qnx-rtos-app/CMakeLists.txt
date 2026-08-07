@@ -18,11 +18,12 @@ find_package(safeAPIFramework REQUIRED)
 # QNX server executable
 add_executable(railway-server main.c)
 
-# Link safeAPIFramework modules
+# Link safeAPIFramework modules (ADR-023: status/safestate live in
+# safeapi::core, log lives in safeapi::oal - 22 per-feature targets were
+# consolidated into 4 grouped libraries).
 target_link_libraries(railway-server PRIVATE
-    safeapi::status
-    safeapi::log
-    safeapi::safestate
+    safeapi::core
+    safeapi::oal
 )
 
 # QNX-specific libraries

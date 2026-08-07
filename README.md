@@ -278,8 +278,12 @@ include/safeapi/<feature>/     one public header per feature (ADR-007):
                                 string, timer, nvm, memory, task, ipc, log,
                                 reboot, appmanager, watchdog, checksum,
                                 vital_channel, clocksync, checkpoint, dual
-src/<feature>/                 matching implementation + CMakeLists.txt,
-                                one static library target safeapi::<feature>
+src/<feature>/                 matching implementation (ADR-007 directory
+                                layout is unchanged); compiled into one of
+                                4 grouped library targets - safeapi::core,
+                                safeapi::oal, safeapi::channels,
+                                safeapi::appmanager (ADR-023) - rather than
+                                one target per feature
 tests/<feature>/                matching CTest test file per feature
 examples/                      standalone example programs (see
                                 examples/README.md), e.g.

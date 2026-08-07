@@ -62,11 +62,10 @@ find_package(safeAPIFramework 0.1.0 REQUIRED)
 # Create your executable
 add_executable(myapp main.c other.c)
 
-# Link against safeAPIFramework components you need
+# Link against the safeAPIFramework libraries you need
 target_link_libraries(myapp
-    safeapi::timer
-    safeapi::nvm
-    safeapi::status
+    safeapi::core
+    safeapi::oal
 )
 
 # Include headers
@@ -75,24 +74,31 @@ target_include_directories(myapp PRIVATE ${safeAPIFramework_INCLUDE_DIR})
 
 ### Linking Specific Modules
 
-safeAPIFramework exports these components:
-- `safeapi::status` — Common error codes
-- `safeapi::types` — Fixed-width type definitions
-- `safeapi::buffer` — Endianness-safe buffer operations
-- `safeapi::cast` — Checked integer casting
-- `safeapi::safestate` — Safe-state transitions
-- `safeapi::string` — Bounded string operations
-- `safeapi::timer` — Timer services
-- `safeapi::nvm` — Non-volatile memory
-- `safeapi::memory` — Memory management
-- `safeapi::task` — Task scheduling
-- `safeapi::ipc` — Inter-process communication
-- `safeapi::log` — Logging
-- `safeapi::reboot` — Controlled reboot
+safeAPIFramework exports 4 libraries (ADR-023 - previously one per
+feature; consolidated because no consumer ever linked a single feature
+in isolation):
+
+- `safeapi::core` — zero-OS-dependency primitives: status codes, fixed-width
+  types, endianness-safe buffers, checked integer casting, safe-state
+  transitions, bounded string operations
+- `safeapi::oal` — OS Abstraction Layer services: timer, non-volatile
+  memory, static memory reservation, task scheduling, inter-process
+  communication, network links, logging, controlled reboot, watchdog
+  (depends on `safeapi::core`)
+- `safeapi::channels` — safety-comms/channel layer: CRC-64 checksums,
+  voting channels, clock sync, checkpoint rendezvous, dual-transfer
+  redundant links, the unified `sapi_safechannel` factory (depends on
+  `safeapi::core` and `safeapi::oal`)
+- `safeapi::appmanager` — application lifecycle hooks and built-in
+  checkpoint integration (depends on all three above)
+
+Each library's `target_link_libraries()` is `PUBLIC`, so linking one
+name pulls in everything it depends on transitively - e.g. linking just
+`safeapi::channels` is enough to also get `core` and `oal` symbols.
 
 Example: use only what you need
 ```cmake
-target_link_libraries(myapp safeapi::timer safeapi::log safeapi::status)
+target_link_libraries(myapp safeapi::oal)
 ```
 
 ---
@@ -223,9 +229,8 @@ add_executable(myapp
 
 # Link safeAPIFramework components
 target_link_libraries(myapp
-    safeapi::timer
-    safeapi::log
-    safeapi::status
+    safeapi::core
+    safeapi::oal
 )
 
 # Include safeAPIFramework headers

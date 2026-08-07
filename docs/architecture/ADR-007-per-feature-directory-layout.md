@@ -47,6 +47,13 @@ matters (e.g. auditing "does anything in `common` accidentally depend on
 
 ### 2.2 One CMake target per feature
 
+**Superseded by ADR-023** (2026-08-07): the 21 per-feature targets this
+section describes were later collapsed into 4 grouped static libraries
+(`safeapi_core`/`oal`/`channels`/`appmanager`) because the fine-grained
+linking this section promised was never actually exercised by any real
+consumer. The directory-per-feature layout described in section 2.1
+above is unaffected and remains current.
+
 Each `src/<feature>/CMakeLists.txt` builds a small static library
 `safeapi_<feature>`, aliased `safeapi::<feature>`. Most features have zero
 inter-feature dependencies and link nothing but the shared include path;

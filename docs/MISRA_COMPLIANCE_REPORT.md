@@ -1,8 +1,51 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-07 (updated for the new `sapi_safechannel` module, a bug
-fix in `sapi_dual_channel_send()` it surfaced, and SITE's migration to
-it - ADR-022 - see "update 10" note below)
+Date: 2026-08-07 (updated for the CMake library consolidation, ADR-023 -
+see "update 11" note below)
+
+**2026-08-07, update 11 (build-system reorganization only, no code
+change - ADR-023 consolidates 22 CMake library targets into 4):** no
+automated re-run performed (same caveat as prior updates - still no
+`cppcheck` in this sandbox session, and no `cmake` binary either for this
+specific change, see below); reasoned manually since this change touches
+zero `.c`/`.h` files:
+
+- The 21 per-feature static libraries (`safeapi_status` through
+  `safeapi_safechannel`) are now compiled into 3 grouped libraries -
+  `safeapi_core`, `safeapi_oal`, `safeapi_channels` - plus
+  `safeapi_appmanager` unchanged as a 4th. Every `.c`/`.h` file stays at
+  its exact ADR-007 path; only which `.a` its object code lands in
+  changed. No new casts, no new control flow, no new dynamic behavior -
+  every existing MISRA finding tied to a specific source file is
+  unaffected by which library that file compiles into.
+- 20 per-feature `src/<feature>/CMakeLists.txt` files were deleted; their
+  `add_library()` calls now live directly in the top-level
+  `CMakeLists.txt`. `src/appmanager/CMakeLists.txt` and the deliberately
+  unbuilt `src/channel/CMakeLists.txt` (ADR-008, unaffected) are
+  untouched as files, appmanager's link line updated to the 3 new names.
+- Every consumer of the old per-feature target names was updated:
+  `tests/CMakeLists.txt` (19 tests), the top-level `install(TARGETS ...)`
+  list, safeAPIExample's `src/posix_backend/CMakeLists.txt` and top-level
+  `CMakeLists.txt`, and the `examples/qnx-rtos-app`/`examples/linux-posix-app`
+  integration templates plus `examples/build-qnx.sh`'s doc string.
+  Verified via a repository-wide grep for every old `safeapi::<feature>`
+  name in both repos after the change - the only remaining hits are in
+  `src/channel/CMakeLists.txt`, which was already excluded from the build
+  before this change and stays that way.
+- Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
+  all 19 framework unit tests (all pass) plus a full safeAPIExample
+  rebuild and live two-process SITE WEST/EAST smoke run, compiling
+  exactly the source-file groupings the new `CMakeLists.txt` targets
+  specify. **Caveat specific to this update**: because the change is to
+  the CMake build files themselves, this source-level verification
+  cannot by itself prove the new `add_library()`/`target_link_libraries()`
+  CMake syntax is free of configuration-time errors - no `cmake` binary
+  (and no network access to install one) was available in this sandbox
+  session. An actual `cmake --build` on a real toolchain remains the
+  outstanding verification step for this specific change.
+- ADR-023 status: framework, safeAPIExample, and example templates all
+  updated; see ADR-023 for the full rationale and dependency-cluster
+  reasoning.
 
 **2026-08-07, update 10 (new module `sapi_safechannel` (ADR-022), a
 real bug fix in `sapi_dual_channel_send()` (ADR-020) it surfaced, and

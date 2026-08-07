@@ -42,29 +42,91 @@ option(SAFEAPI_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(CompilerWarnings)
 
-# Each feature (ADR-007) is its own subdirectory with its own small static
-# library target (safeapi::<feature>), built and linkable independently.
-# Order matters only where a feature links another (string -> buffer, cast;
-# checkpoint -> checksum/watchdog/vital_channel, ADR-017). checksum was
-# never previously wired in here despite having its own CMakeLists.txt -
-# added now because sapi_checkpoint (ADR-017) depends on it.
+# ADR-023: the 21 per-feature CMake targets ADR-007 originally created
+# (one static library per src/<feature>/ directory) are consolidated into
+# 3 grouped libraries here, plus appmanager as a 4th (its own
+# src/appmanager/CMakeLists.txt, added separately below since it depends
+# on all three). This is a pure build-target regrouping - no file moved,
+# no #include path changed, no public API changed; every feature's
+# source still lives at exactly src/<feature>/sapi_<feature>.c per
+# ADR-007 section 2.1, which is unaffected. See ADR-023 for the full
+# rationale (why 22 targets collapsed to 4, why these specific groupings,
+# and what was deliberately left out).
 #
 # NOTE: "channel" (ADR-008, a standalone 2-channel comparator written
 # before sapi_vital_channel's fuller implementation was known about) is
-# intentionally NOT included here. It currently references a safestate
-# reason code that was reverted along with other clobbered files during
-# reconciliation (see ADR-017 section 1's "Deferred" note) and will not
-# build as-is; whether to fix and re-adopt it or retire it in favor of
-# vital_channel + checkpoint is an open decision, not made by this file.
-foreach(feature status types buffer cast safestate string
-                timer nvm memory task ipc netlink log reboot watchdog checksum
-                vital_channel clocksync checkpoint dual safechannel)
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
-        add_subdirectory(src/${feature})
-    endif()
-endforeach()
+# intentionally NOT included in any of the 3 libraries below, exactly as
+# it was excluded from the old per-feature foreach() this replaces. It
+# currently references a safestate reason code that was reverted along
+# with other clobbered files during reconciliation (see ADR-017 section
+# 1's "Deferred" note) and will not build as-is; whether to fix and
+# re-adopt it or retire it in favor of vital_channel + checkpoint is an
+# open decision, not made by this file.
 
-# App manager depends on status, log, and (ADR-019) checkpoint, so add it last
+# --- safeapi_core: zero-OS-dependency primitives (ADR-002 section 4) ---
+# types (sapi_types.h) is header-only - no .c file - and needs no
+# separate target: its header is already reachable through this
+# library's own PUBLIC include directory below, same as every other
+# feature's header.
+add_library(safeapi_core STATIC
+    src/status/sapi_status.c
+    src/buffer/sapi_buffer.c
+    src/cast/sapi_cast.c
+    src/safestate/sapi_safestate.c
+    src/string/sapi_string.c
+)
+target_include_directories(safeapi_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+safeapi_set_warnings(safeapi_core)
+add_library(safeapi::core ALIAS safeapi_core)
+
+# --- safeapi_oal: OS Abstraction Layer, ADR-001/ADR-005 backend-dispatch
+# services. log needs string (line formatting) + timer (its TIMESTAMP
+# field, ADR-019-era sapi_log_write_event()); watchdog needs
+# status/safestate (core) + log/timer (same library). Deliberately does
+# NOT include src/ipc/sapi_ipc_pubsub.c or sapi_ipc_request_reply.c -
+# those pre-existing stub files (including a nonexistent safeapi/log.h
+# path) were never wired into the old safeapi_ipc target either; this
+# ADR preserves that, doesn't fix it. ---
+add_library(safeapi_oal STATIC
+    src/timer/sapi_timer.c
+    src/nvm/sapi_nvm.c
+    src/memory/sapi_memory.c
+    src/task/sapi_task.c
+    src/ipc/sapi_ipc.c
+    src/netlink/sapi_netlink.c
+    src/log/sapi_log.c
+    src/reboot/sapi_reboot.c
+    src/watchdog/sapi_watchdog.c
+)
+target_include_directories(safeapi_oal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(safeapi_oal PUBLIC safeapi_core)
+safeapi_set_warnings(safeapi_oal)
+add_library(safeapi::oal ALIAS safeapi_oal)
+
+# --- safeapi_channels: safety-comms / channel layer (ADR-008 vital_channel
+# lineage, ADR-017 checkpoint/clocksync, ADR-020 dual, ADR-022
+# safechannel). Reaches into both core (status/types/safestate/buffer)
+# and oal (log/timer/netlink), so links both. ---
+add_library(safeapi_channels STATIC
+    src/checksum/sapi_checksum.c
+    src/vital_channel/sapi_vital_channel.c
+    src/clocksync/sapi_clocksync.c
+    src/checkpoint/sapi_checkpoint.c
+    src/dual/sapi_dual_types.c
+    src/dual/sapi_dual_msgchannel.c
+    src/dual/sapi_dual_channel.c
+    src/dual/sapi_dual_negotiator.c
+    src/safechannel/sapi_safechannel.c
+)
+target_include_directories(safeapi_channels PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(safeapi_channels PUBLIC safeapi_core safeapi_oal)
+safeapi_set_warnings(safeapi_channels)
+add_library(safeapi::channels ALIAS safeapi_channels)
+
+# App manager depends on status (core), log (oal), and (ADR-019)
+# checkpoint (channels), so add it last - its own src/appmanager/CMakeLists.txt
+# is unchanged in shape, only its target_link_libraries() line was
+# updated to the 3 new names (ADR-023).
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/appmanager/CMakeLists.txt")
     add_subdirectory(src/appmanager)
 endif()
@@ -167,14 +229,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         COMPONENT development
     )
 
-    # Install library targets (types is header-only)
+    # Install library targets (ADR-023: 4 consolidated libraries instead
+    # of 20 per-feature ones; types is header-only and was never its own
+    # installed archive even before this change).
     install(TARGETS
-        safeapi_status safeapi_buffer safeapi_cast
-        safeapi_safestate safeapi_string safeapi_timer safeapi_nvm
-        safeapi_memory safeapi_task safeapi_ipc safeapi_log safeapi_reboot
-        safeapi_watchdog safeapi_appmanager
-        safeapi_checksum safeapi_vital_channel safeapi_clocksync safeapi_checkpoint safeapi_netlink
-        safeapi_dual safeapi_safechannel
+        safeapi_core safeapi_oal safeapi_channels safeapi_appmanager
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
         LIBRARY DESTINATION ${LIB_INSTALL_DIR}
         RUNTIME DESTINATION bin

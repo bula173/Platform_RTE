@@ -9,25 +9,30 @@ function(safeapi_add_test name source lib)
     add_test(NAME ${name} COMMAND ${name})
 endfunction()
 
-safeapi_add_test(test_sapi_status         status/test_sapi_status.c            safeapi::status)
-safeapi_add_test(test_sapi_buffer         buffer/test_sapi_buffer.c            safeapi::buffer)
-safeapi_add_test(test_sapi_cast           cast/test_sapi_cast.c                safeapi::cast)
-safeapi_add_test(test_sapi_safestate      safestate/test_sapi_safestate.c      safeapi::safestate)
-safeapi_add_test(test_sapi_string         string/test_sapi_string.c            safeapi::string)
-safeapi_add_test(test_sapi_timer          timer/test_sapi_timer.c              safeapi::timer)
-safeapi_add_test(test_sapi_nvm            nvm/test_sapi_nvm.c                  safeapi::nvm)
-safeapi_add_test(test_sapi_reboot         reboot/test_sapi_reboot.c            safeapi::reboot)
-safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.c safeapi::vital_channel)
-safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::clocksync)
-safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::checkpoint)
-safeapi_add_test(test_sapi_netlink        netlink/test_sapi_netlink.c          safeapi::netlink)
-safeapi_add_test(test_sapi_watchdog       watchdog/test_sapi_watchdog.c        safeapi::watchdog)
+# ADR-023: each test links whichever of the 4 consolidated libraries
+# (core/oal/channels/appmanager) covers the module under test - PUBLIC
+# linking inside those libraries means one name still pulls in
+# everything transitively required, exactly as the old fine-grained set
+# of individual safeapi::<feature> targets did.
+safeapi_add_test(test_sapi_status         status/test_sapi_status.c            safeapi::core)
+safeapi_add_test(test_sapi_buffer         buffer/test_sapi_buffer.c            safeapi::core)
+safeapi_add_test(test_sapi_cast           cast/test_sapi_cast.c                safeapi::core)
+safeapi_add_test(test_sapi_safestate      safestate/test_sapi_safestate.c      safeapi::core)
+safeapi_add_test(test_sapi_string         string/test_sapi_string.c            safeapi::core)
+safeapi_add_test(test_sapi_timer          timer/test_sapi_timer.c              safeapi::oal)
+safeapi_add_test(test_sapi_nvm            nvm/test_sapi_nvm.c                  safeapi::oal)
+safeapi_add_test(test_sapi_reboot         reboot/test_sapi_reboot.c            safeapi::oal)
+safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.c safeapi::channels)
+safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::channels)
+safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::channels)
+safeapi_add_test(test_sapi_netlink        netlink/test_sapi_netlink.c          safeapi::oal)
+safeapi_add_test(test_sapi_watchdog       watchdog/test_sapi_watchdog.c        safeapi::oal)
 safeapi_add_test(test_sapi_appmanager     appmanager/test_sapi_appmanager.c    safeapi::appmanager)
-safeapi_add_test(test_sapi_log            log/test_sapi_log.c                  safeapi::log)
-safeapi_add_test(test_sapi_dual_msgchannel dual/test_sapi_dual_msgchannel.c     safeapi::dual)
-safeapi_add_test(test_sapi_dual_channel    dual/test_sapi_dual_channel.c        safeapi::dual)
-safeapi_add_test(test_sapi_dual_negotiator dual/test_sapi_dual_negotiator.c     safeapi::dual)
-safeapi_add_test(test_sapi_safechannel     safechannel/test_sapi_safechannel.c  safeapi::safechannel)
+safeapi_add_test(test_sapi_log            log/test_sapi_log.c                  safeapi::oal)
+safeapi_add_test(test_sapi_dual_msgchannel dual/test_sapi_dual_msgchannel.c     safeapi::channels)
+safeapi_add_test(test_sapi_dual_channel    dual/test_sapi_dual_channel.c        safeapi::channels)
+safeapi_add_test(test_sapi_dual_negotiator dual/test_sapi_dual_negotiator.c     safeapi::channels)
+safeapi_add_test(test_sapi_safechannel     safechannel/test_sapi_safechannel.c  safeapi::channels)
 
 # posix_backend (and its tests) moved to the safeAPIExample project - an
 # OAL backend is an integrator-supplied implementation (ADR-005), not
