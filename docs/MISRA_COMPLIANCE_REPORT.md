@@ -1,7 +1,57 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-06 (updated for the consumer/backend header split
-completing across all 9 modules, ADR-021 - see "update 9" note below)
+Date: 2026-08-07 (updated for the new `sapi_safechannel` module, a bug
+fix in `sapi_dual_channel_send()` it surfaced, and SITE's migration to
+it - ADR-022 - see "update 10" note below)
+
+**2026-08-07, update 10 (new module `sapi_safechannel` (ADR-022), a
+real bug fix in `sapi_dual_channel_send()` (ADR-020) it surfaced, and
+SITE's migration off direct `sapi_netlink` use):** no automated re-run
+performed (same caveat as prior updates - still no `cppcheck` in this
+sandbox session); reasoned manually plus full test-suite + live-run
+verification:
+
+- `sapi_safechannel` (`include/safeapi/safechannel/sapi_safechannel.h`,
+  `src/safechannel/sapi_safechannel.c`): new module, same conventions as
+  every other feature - no dynamic allocation (fixed
+  `SAPI_SAFECHANNEL_MAX_LINKS`-sized arrays), explicit casts at every
+  narrowing point (e.g. `sapi_safechannel_send()`'s `payload_size >
+  UINT8_MAX` guard before the `(uint8_t)` cast for the DUAL_REDUNDANT
+  path), single point of exit is not used throughout (early-return-on-
+  invalid-param is this codebase's established idiom, consistent with
+  every other OAL service), no recursion, `const`-correct where the
+  wrapped `sapi_dual_channel`/`sapi_vital_channel` APIs allow it (one
+  explicit, commented `const`-cast in `sapi_safechannel_get_status()`
+  because `sapi_vital_channel_get_aggregated_health()` itself takes a
+  non-const handle for a read-only query - a pre-existing constraint of
+  the wrapped API, not introduced here).
+- Real bug found and fixed in `sapi_dual_channel_send()`
+  (`src/dual/sapi_dual_channel.c`, unchanged since ADR-020): its
+  ACK-wait loop's "no measurable elapsed time" check aborted the wait
+  after exactly one poll instead of allowing further polls within the
+  same millisecond tick - see ADR-020's "Post-acceptance fix" section
+  for the full explanation and the bounded-retry-count fix
+  (`SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`, a fixed cap of 32 - no dynamic
+  behavior, no new casts). This module had only ever been exercised
+  through a mock netlink backend (`test_sapi_dual_channel.c`) before
+  this pass wired it to a real transport for the first time.
+- `safeAPIExample/src/application/SITE/site.c`: removed its own direct
+  `sapi_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
+  manual CONNECT-retry loop it hand-rolled around them; now opens one
+  `sapi_safechannel_t` (`SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT`,
+  `link_count = 1`) and calls `sapi_safechannel_send()`/`_receive()`/
+  `_close()` instead. No change to `encode_beacon()`/`decode_beacon()`
+  or the negotiation/promotion/demotion/re-negotiation decision logic -
+  only the transport calls moved.
+- Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
+  all 17 framework unit tests (all pass, including
+  `test_sapi_dual_channel`, `test_sapi_dual_msgchannel`,
+  `test_sapi_dual_negotiator`, and the new `test_sapi_safechannel`) plus
+  a live two-process SITE WEST/EAST run over the real POSIX TCP netlink
+  backend: negotiation completes and steady-state heartbeats continue
+  exchanging role/single-mode status every cycle - see ADR-022 section 4.
+- ADR-022 status: framework module and SITE's migration done;
+  `monitor_c` and `channel_ab` migrations remain pending.
 
 **2026-08-06, update 9 (header restructuring only, no behavior change -
 ADR-021 consumer/OS-backend header split completed for the remaining 8

@@ -267,3 +267,24 @@ reason `sapi_dual_channel_t`'s connection-status callback exists.
 - `safeAPIExample` is unchanged by this ADR; its own dual-transfer logic
   and this new module will temporarily overlap in *purpose* (not in
   code) until the follow-up retrofit lands.
+
+## Post-acceptance fix (ADR-022, SITE's live `sapi_safechannel` migration)
+
+`sapi_dual_channel_send()`'s ACK-wait loop (`src/dual/sapi_dual_channel.c`)
+had only ever been exercised through `test_sapi_dual_channel.c`'s mock
+netlink backend before ADR-022 wired it to a real POSIX TCP link for the
+first time (SITE's WEST/EAST heartbeat). Its "recompute remaining budget
+from wall-clock elapsed time" step treated `now_ms == start_ms` (no
+measurable progress on `sapi_timer_now()`'s own millisecond tick) as "no
+timer backend available, give up after one attempt". A real localhost
+round trip - connect, send DATA, receive the peer's own DATA, auto-ACK
+it, receive the peer's ACK - routinely completes inside a single
+millisecond, so this guard misfired as a false abort after exactly one
+poll, and WEST/EAST's very first negotiation exchange timed out every
+run. Fixed by keeping `remaining` unchanged on a same-millisecond
+iteration (instead of aborting) while capping the number of such
+no-progress iterations at a fixed `SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`
+(32), so a genuinely unresponsive link or absent timer backend still
+cannot spin unboundedly. Verified via `test_sapi_dual_channel.c` (no
+regression) and a live two-process SITE WEST/EAST run completing
+negotiation and steady-state heartbeats over the real TCP backend.

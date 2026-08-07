@@ -323,6 +323,7 @@ require.
 | REQ-DUAL-CHANNEL-004 | DATA traffic (`sapi_dual_channel_send()`/`_receive()`) and STATE-beacon traffic (`_send_state_frame()`/`_receive_state_frame()`) share the same redundant links and the same up/down bookkeeping, but a STATE frame is fire-and-forget (no ACK wait) and shall never be counted toward or against DATA's own ACK accounting. |
 | REQ-DUAL-CHANNEL-005 | `sapi_dual_channel_receive()` and `_receive_state_frame()` shall poll every configured link on every call, even after an earlier link in the same sweep already staged a frame — stopping early would let one link (e.g. one with consistently shorter latency) starve every other redundant link of its own auto-ACK indefinitely. |
 | REQ-DUAL-CHANNEL-006 | An inbound frame shorter than this layer's own 4-byte `sapi_dual_frame_header_t`, or shorter than the full fixed frame its `kind` implies, shall be reported as `SAPI_STATUS_DATA_CORRUPTION` rather than silently ignored or misinterpreted. |
+| REQ-DUAL-CHANNEL-007 | `sapi_dual_channel_send()`'s per-link ACK-wait loop shall keep polling for further frames within `config->ack_timeout_ms` even when `sapi_timer_now()` shows no measurable progress between polls (a real round trip may legitimately complete within a single timer tick) — bounded by a fixed cap (`SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`) on consecutive no-progress polls, so a link with a genuinely non-advancing or absent timer backend still cannot spin unboundedly. Added post-acceptance after a live run over a real transport (ADR-022's SITE migration) surfaced that the prior behavior gave up after exactly one poll — see ADR-020's "Post-acceptance fix" section. |
 
 ### 3e.4 Dual state negotiator — `sapi_dual_negotiator.h` (ADR-020 §3)
 
@@ -333,6 +334,18 @@ require.
 | REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (same rule `safeAPIExample`'s `site.c` `decide_online()` uses today). |
 | REQ-DUAL-NEGOTIATOR-004 | The HOT/COLD determination for whichever side is currently STANDBY shall always be derived from the ONLINE side's own channel-degradation bit — never from the STANDBY side's own self-reported degradation, and never from the ONLINE side's opinion of its own label. This applies symmetrically regardless of which side (own or peer) is the one currently ONLINE. |
 | REQ-DUAL-NEGOTIATOR-005 | Loss of peer contact for longer than `config->peer_lost_timeout_ms` shall set `peer_state` to `SAPI_DUAL_STATE_UNKNOWN`; `own_state` shall degrade to `SAPI_DUAL_STATE_UNKNOWN` too unless it was already `SAPI_DUAL_STATE_ONLINE`, in which case it shall remain `SAPI_DUAL_STATE_ONLINE` (an active instance keeps acting without needing continuous peer confirmation). |
+
+## 3f. Unified channel factory — `sapi_safechannel.h` (ADR-022)
+
+Hides `sapi_netlink`/`sapi_ipc` from application code: an application
+opens one `sapi_safechannel_t` by type and host/port endpoints and never
+holds a `sapi_netlink_handle_t` itself.
+
+| ID | Requirement |
+|---|---|
+| REQ-SAFECHANNEL-001 | `sapi_safechannel_open()` shall open every configured endpoint itself via the registered `sapi_netlink` backend; the caller shall never need to call `sapi_netlink_open()` or hold a `sapi_netlink_handle_t`. |
+| REQ-SAFECHANNEL-002 | No dynamic allocation; all storage (`sapi_safechannel_t`, including its opened links and wrapped `sapi_dual_channel_t`/`sapi_vital_channel_t`) is caller-owned and fixed-size, sized to `SAPI_SAFECHANNEL_MAX_LINKS`. |
+| REQ-SAFECHANNEL-003 | `sapi_safechannel_send()`/`_receive()` shall behave identically to the caller regardless of `config.type` — a uniform facade over `sapi_dual_channel_t`/`sapi_vital_channel_t`. |
 
 ## 4. Traceability
 

@@ -9,6 +9,13 @@
 
 #include "safeapi/timer/sapi_timer.h"
 
+/** @brief Cap on consecutive sapi_dual_channel_send() ACK-wait polls that
+ *         may complete without sapi_timer_now() showing any measurable
+ *         progress, before that link's wait loop gives up on this round -
+ *         see that loop's own comment for why more than one such
+ *         iteration is legitimate but an unbounded number is not. */
+#define SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT 32U
+
 /** @brief Result of one dual_channel_poll_link_once() attempt. */
 typedef struct
 {
@@ -253,10 +260,21 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
         {
             sapi_duration_ms_t   remaining = channel->ack_timeout_ms;
             sapi_timestamp_ms_t  start_ms = 0U;
+            /* Bounds how many consecutive polls may complete without
+             * sapi_timer_now() showing any measurable progress since
+             * start_ms, before this loop gives up on this link for this
+             * round - see the "else" branch below for why this can
+             * legitimately happen more than once and must not itself be
+             * unbounded. SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT is a fixed,
+             * generous cap (a real exchange needs at most a handful of
+             * iterations - one per DATA/STATE/foreign-ACK frame handled
+             * as a side effect before this link's own matching ACK
+             * arrives), not a tuned timing value. */
+            uint32_t stall_polls = 0U;
 
             (void)sapi_timer_now(&start_ms);
 
-            while (remaining > 0U)
+            while ((remaining > 0U) && (stall_polls < SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT))
             {
                 dual_poll_result_t result;
                 sapi_status_t       poll_status;
@@ -274,16 +292,9 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
                  * time, not a fixed per-iteration decrement - a DATA/STATE
                  * frame handled as a side effect above may have consumed
                  * an arbitrary fraction of this link's own timeout
-                 * already. Degrades to a single attempt (no retry loop)
-                 * if no sapi_timer backend is registered - REQ-OAL-LOG-001-
-                 * style "never spin forever on an unmeasurable interval",
-                 * same posture used throughout this framework's other
-                 * best-effort timing. */
+                 * already. */
                 (void)sapi_timer_now(&now_ms);
-                if (now_ms <= start_ms)
-                {
-                    break;
-                }
+                if (now_ms > start_ms)
                 {
                     sapi_timestamp_ms_t elapsed = now_ms - start_ms;
 
@@ -295,6 +306,33 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
                     {
                         remaining = channel->ack_timeout_ms - (sapi_duration_ms_t)elapsed;
                     }
+                    stall_polls = 0U;
+                }
+                else
+                {
+                    /* REQ-DUAL-CHANNEL-007: now_ms == start_ms - no
+                     * measurable time has passed on sapi_timer_now()'s own
+                     * tick resolution since this round started. This used
+                     * to be treated as "no timer
+                     * backend available, give up after one attempt"
+                     * (REQ-OAL-LOG-001-style "never spin on an
+                     * unmeasurable interval"), but a real localhost round
+                     * trip (connect, send DATA, receive the peer's own
+                     * DATA, auto-ACK it, receive the peer's own ACK)
+                     * routinely completes inside a single millisecond
+                     * tick, which made that same guard misfire as a false
+                     * "no timer" abort after exactly one poll - discovered
+                     * live via SITE's migration to sapi_safechannel
+                     * (ADR-022), where both sites send their negotiation
+                     * beacon at nearly the same instant over a real
+                     * loopback TCP link. `remaining` is left unchanged so
+                     * a fast exchange like that one gets the extra polls
+                     * it needs; stall_polls bounds how many such
+                     * no-progress iterations are allowed before this loop
+                     * gives up anyway, so a link with a genuinely
+                     * non-advancing or absent timer still cannot spin
+                     * forever. */
+                    stall_polls++;
                 }
             }
         }
