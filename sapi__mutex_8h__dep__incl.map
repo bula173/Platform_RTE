@@ -1,0 +1,8 @@
+<map id="include/safeapi/mutex/sapi_mutex.h" name="include/safeapi/mutex/sapi_mutex.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Mutual exclusion service." alt="" coords="106,5,273,45"/>
+<area shape="rect" id="Node000002" href="$sapi__mutex__backend_8h.html" title="OS&#45;backend adaptation surface for the Mutex service (ADR&#45;033, ADR&#45;021)." alt="" coords="5,93,227,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="166,58,134,95,130,91,162,54"/>
+<area shape="rect" id="Node000003" href="$sapi__mutex_8c.html" title="Mutex service: validates parameters, then dispatches to the backend registered via sapi_mutex_registe..." alt="" coords="100,181,279,207"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="220,55,232,72,241,92,246,113,241,134,225,162,205,183,201,179,221,159,236,132,240,113,236,94,227,75,215,58"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,142,180,179,176,183,141,145"/>
+</map>

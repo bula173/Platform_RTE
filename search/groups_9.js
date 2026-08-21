@@ -5,5 +5,7 @@ var searchData=
   ['mechanism_2',['Watchdog Mechanism',['../group__WATCHDOG.html',1,'']]],
   ['memory_3',['Non-Volatile Memory',['../group__NVM.html',1,'']]],
   ['memory_20reservation_4',['Static Memory Reservation',['../group__MEMORY.html',1,'']]],
-  ['memory_20reservation_20backend_20adaptation_5',['Static Memory Reservation - Backend Adaptation',['../group__MEMORY__BACKEND.html',1,'']]]
+  ['memory_20reservation_20backend_20adaptation_5',['Static Memory Reservation - Backend Adaptation',['../group__MEMORY__BACKEND.html',1,'']]],
+  ['mutex_20service_6',['Mutex Service',['../group__MUTEX.html',1,'']]],
+  ['mutex_20service_20backend_20adaptation_7',['Mutex Service - Backend Adaptation',['../group__MUTEX__BACKEND.html',1,'']]]
 ];
