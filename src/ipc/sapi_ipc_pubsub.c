@@ -5,6 +5,7 @@
  */
 
 #include "safeapi/ipc/sapi_ipc_pubsub.h"
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi/log.h"
 
 /* Implementation stubs - actual implementation would use base IPC layer */
@@ -12,12 +13,22 @@
 sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out,
                                             const sapi_ipc_pubsub_topic_config_t *config)
 {
+    sapi_status_t lifecycle_status;
+
     if (topic_out == NULL || config == NULL) {
         return SAPI_STATUS_INVALID_PARAM;
     }
 
     if (config->message_size == 0 || config->max_subscribers == 0) {
         return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    /* REQ-LIFECYCLE-001 (ADR-026): a pub-sub topic is a setup-only resource -
+     * refuse once the application's setup phase has been locked. */
+    lifecycle_status = sapi_lifecycle_check_setup_allowed();
+    if (lifecycle_status != SAPI_STATUS_OK)
+    {
+        return lifecycle_status;
     }
 
     SAPI_LOG_INFO("Creating pub-sub topic: %s (msg_sz=%zu, max_sub=%zu)",

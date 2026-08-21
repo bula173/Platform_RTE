@@ -52,6 +52,17 @@ static void mock_log_write(sapi_log_level_t level, const char *tag, const char *
 
 static const sapi_log_backend_t g_mock_log_backend = { NULL, mock_log_write };
 
+static int g_mock_init_calls = 0;
+
+static sapi_status_t mock_log_init(void)
+{
+    g_mock_init_calls++;
+    return SAPI_STATUS_OK;
+}
+
+static const sapi_log_backend_t g_mock_log_backend_with_init = { mock_log_init, mock_log_write };
+static const sapi_log_backend_t g_mock_log_backend_no_write = { mock_log_init, NULL };
+
 /* --- mock timer backend: only `now` populated, fixed value --- */
 static sapi_status_t mock_timer_now(sapi_timestamp_ms_t *out_now_ms)
 {
@@ -77,6 +88,43 @@ int main(void)
     reset_capture();
     sapi_log_write_event(SAPI_LOG_LEVEL_INFO, "WEST", 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
     assert(g_write_calls == 0);
+
+    /* sapi_log_write() with no backend registered: silent no-op, same
+     * REQ-OAL-LOG-001 contract as sapi_log_write_event() above. */
+    reset_capture();
+    sapi_log_write(SAPI_LOG_LEVEL_INFO, "TAG", "message");
+    assert(g_write_calls == 0);
+
+    /* sapi_log_init() with no backend registered: not an error, just OK. */
+    assert(sapi_log_init() == SAPI_STATUS_OK);
+
+    /* Registering NULL is rejected. */
+    assert(sapi_log_register_backend(NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_log_register_backend(&g_mock_log_backend) == SAPI_STATUS_OK);
+
+    /* Backend registered but its init slot is NULL: still not an error. */
+    assert(sapi_log_init() == SAPI_STATUS_OK);
+
+    /* Backend registered but its write slot is NULL: silent no-op. */
+    assert(sapi_log_register_backend(&g_mock_log_backend_no_write) == SAPI_STATUS_OK);
+    reset_capture();
+    sapi_log_write(SAPI_LOG_LEVEL_INFO, "TAG", "message");
+    assert(g_write_calls == 0);
+
+    /* A backend with a non-NULL init slot has it actually dispatched. */
+    assert(sapi_log_register_backend(&g_mock_log_backend_with_init) == SAPI_STATUS_OK);
+    assert(sapi_log_init() == SAPI_STATUS_OK);
+    assert(g_mock_init_calls == 1);
+
+    /* sapi_log_write() dispatches to a registered backend's write slot,
+     * independently of sapi_log_write_event()'s own formatting path. */
+    reset_capture();
+    sapi_log_write(SAPI_LOG_LEVEL_WARNING, "TAG", "message");
+    assert(g_write_calls == 1);
+    assert(g_last_level == SAPI_LOG_LEVEL_WARNING);
+    assert(strcmp(g_last_tag, "TAG") == 0);
+    assert(strcmp(g_last_message, "message") == 0);
 
     assert(sapi_log_register_backend(&g_mock_log_backend) == SAPI_STATUS_OK);
 

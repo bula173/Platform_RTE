@@ -22,6 +22,20 @@
  * REQ-APPMANAGER-001: Applications shall use the Application Manager for
  * controlled initialization, execution, and shutdown lifecycle.
  *
+ * ADR-026: the moment init() returns SAPI_STATUS_OK, sapi_appmanager_run()
+ * locks the application's setup phase (sapi_lifecycle_lock() - see
+ * sapi_lifecycle.h) - every setup-only constructor this framework ships
+ * (sapi_timer_create(), sapi_channel_init(), sapi_voter_init()/
+ * _register_channel(), sapi_cross_comparator_init()/_register_channel(),
+ * sapi_watchdog_create()) then rejects with SAPI_STATUS_INVALID_STATE for
+ * the remainder of this run: a timer/channel/voter/cross-comparator/
+ * watchdog an application's own init() did not already create is not one
+ * its execute()/pre_execute()/post_execute() may create either.
+ * sapi_netlink_open()/sapi_dual_channel_init()/sapi_dual_negotiator_init()
+ * are deliberately NOT gated by this lock - see sapi_lifecycle.h's own
+ * doc for why a link an application already owns being re-established
+ * after a drop is not the same thing this lock exists to prevent.
+ *
  * @note Unlike the seven OAL services (sapi_timer, sapi_nvm, sapi_memory,
  * sapi_task, sapi_ipc, sapi_log, sapi_reboot), this module is not
  * backend-dispatched (ADR-005) - it is a direct, OS-agnostic
@@ -46,7 +60,7 @@
 #include <stdint.h>
 #include "safeapi/status/sapi_status.h"
 #include "safeapi/types/sapi_types.h"
-#include "safeapi/vital_channel/sapi_vital_channel.h"
+#include "safeapi/voter/sapi_voter.h"
 #include "safeapi/watchdog/sapi_watchdog.h"
 
 #ifdef __cplusplus
@@ -208,10 +222,11 @@ typedef struct {
  *         expected outcome of a real timeout.
  */
 typedef struct {
-    sapi_vital_channel_t *vital_channel;   /**< Checkpoint target; must be sapi_vital_channel_init()-ed before
-                                             *   sapi_appmanager_run()'s loop reaches it (may still be NULL when
+    sapi_voter_t *voter;                   /**< Checkpoint target: a voter with its channels already registered
+                                             *   (ADR-025 - previously a single sapi_channel_t; that type is
+                                             *   now one link, registered N-per-voter). May still be NULL when
                                              *   sapi_appmanager_run() is first called, e.g. if an integrator's
-                                             *   own init() is what populates it). May also be set back to NULL
+                                             *   own init() is what populates it. May also be set back to NULL
                                              *   at runtime (e.g. from a background reconnect task) to pause
                                              *   checkpointing without that being treated as an error - see
                                              *   sapi_appmanager_run()'s own doc. */
@@ -259,6 +274,14 @@ typedef struct {
  *   3. Shutdown (shutdown)
  *
  * Error handling:
+ * - REQ-APPMANAGER-009 (ADR-026): if a PREVIOUS call to this function is
+ *   still mid-lifecycle (its own INITIALIZING/RUNNING/SHUTTING_DOWN) when
+ *   this one is entered, it is refused immediately with EXIT_FAILURE and
+ *   none of that previous call's state is touched - this is the single
+ *   entry point and cannot be concurrently re-entered. A NEW call made
+ *   only after a previous one has fully returned (state SHUTDOWN/ERROR)
+ *   is unaffected - this framework's own test suite relies on exactly
+ *   that sequential-call pattern.
  * - If init() fails, shutdown() is still called and EXIT_FAILURE is returned
  * - If the checkpoint, pre_execute(), execute(), or post_execute() stage of
  *   a cycle returns non-OK, that is logged and counted against error_count
@@ -305,7 +328,7 @@ typedef struct {
  * };
  *
  * static const sapi_appmanager_checkpoint_config_t checkpoint_cfg = {
- *     .vital_channel = &my_vital_channel,   // already sapi_vital_channel_init()-ed
+ *     .voter = &my_voter,   // already has its channels sapi_voter_register_channel()-ed
  *     .max_delay_ms = 200,
  *     .expected_node_count = 1,
  *     .watchdog = NULL
@@ -384,6 +407,40 @@ void sapi_appmanager_request_shutdown(void);
  *         production paths").
  */
 sapi_status_t sapi_appmanager_install_default_signal_handlers(void);
+
+/**
+ * @brief Forcibly resets the application manager's own bookkeeping
+ *        (lifecycle state, iteration/error counters, shutdown-request
+ *        flag, and the ADR-026 setup-phase lock) back to its initial,
+ *        pre-run condition.
+ *
+ * Normal use of sapi_appmanager_run() never requires this: every one of
+ * its own entry/exit paths already resets this same state on its own
+ * (see REQ-APPMANAGER-009). This function exists for the one case that
+ * bypasses those paths entirely: an application-level fault handler that
+ * itself performs a non-local jump (e.g. `longjmp()`) out of a
+ * `SAPI_SAFESTATE_LEVEL_SAFE`/`_REBOOT` reaction instead of the
+ * framework's own documented never-returns contract
+ * (REQ-COMMON-SAFESTATE-002). After such a jump, sapi_appmanager_run()
+ * never reaches its own SHUTDOWN phase, and this module's internal state
+ * would otherwise stay permanently stuck mid-lifecycle - causing every
+ * subsequent sapi_appmanager_run() call to be rejected by the
+ * single-entry-point guard. Call this once, immediately after regaining
+ * control via such a non-local jump, before calling
+ * sapi_appmanager_run() again.
+ *
+ * @safety Calling this while a sapi_appmanager_run() call is genuinely
+ *         still executing (not abandoned via a non-local jump)
+ *         corrupts that call's own state. This function exists
+ *         specifically for the abandoned-via-non-local-jump case, not
+ *         general use - MISRA C:2012 Rule 21.4 already prohibits
+ *         `<setjmp.h>` in production code, so this situation should
+ *         never arise there; it exists because this framework's own
+ *         test suite has no other way to exercise a
+ *         `SAPI_SAFESTATE_LEVEL_SAFE` reaction (which never returns)
+ *         without one.
+ */
+void sapi_appmanager_reset_state(void);
 
 #ifdef __cplusplus
 }

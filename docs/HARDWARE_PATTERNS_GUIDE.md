@@ -582,7 +582,7 @@ while (running) {
 // SIL 3: 2oo2 Dual-Channel
 sapi_ipc_handle_t channels[2] = {channel_a, channel_b};
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "sil3_dual_channel",
     .strategy = SAPI_VOTING_2OO2,
     .channels = channels,
@@ -591,7 +591,7 @@ sapi_vital_channel_config_t vital_config = {
     .on_disagreement = fault_handler
 };
 
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &vital_config);
 ```
 
@@ -915,7 +915,7 @@ Result:                ✓ DOES meet SIL 4
 // SIL 4: 2oo3 Triple-Channel
 sapi_ipc_handle_t channels[3] = {channel_a, channel_b, channel_c};
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "sil4_triple_channel",
     .strategy = SAPI_VOTING_2OO3,
     .channels = channels,
@@ -924,7 +924,7 @@ sapi_vital_channel_config_t vital_config = {
     .on_disagreement = fault_handler
 };
 
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &vital_config);
 
 // Checkpoint synchronization (critical for 2oo3)
@@ -973,7 +973,7 @@ sapi_channel_checkpoint(vital_ch, &ckpt);
 ```c
 // SIL 4: Cluster with 2oo2 sites
 // Each site has 2oo2 voting internally
-sapi_vital_channel_config_t site_a_config = {
+sapi_channel_config_t site_a_config = {
     .name = "site_a_2oo2",
     .strategy = SAPI_VOTING_2OO2,
     .channels = {channel_a1, channel_a2},
@@ -981,7 +981,7 @@ sapi_vital_channel_config_t site_a_config = {
     .timeout_ms = 100
 };
 
-sapi_vital_channel_config_t site_b_config = {
+sapi_channel_config_t site_b_config = {
     .name = "site_b_2oo2",
     .strategy = SAPI_VOTING_2OO2,
     .channels = {channel_b1, channel_b2},
@@ -1434,7 +1434,7 @@ Characteristics:
 
 ```c
 // Vital channel (SIL 4)
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &config);
 
 // Vote results (2oo3)

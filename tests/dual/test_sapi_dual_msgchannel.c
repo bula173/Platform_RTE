@@ -22,6 +22,7 @@ typedef struct
 {
     mock_mailbox_t *inbox;  /* where this handle's receive() reads from */
     mock_mailbox_t *outbox; /* where this handle's send() writes to */
+    int              broken; /* if set, mock_send() fails as if the link were down */
 } mock_link_t;
 
 static sapi_status_t mock_send(sapi_netlink_handle_t handle, const void *message, size_t message_size,
@@ -30,6 +31,10 @@ static sapi_status_t mock_send(sapi_netlink_handle_t handle, const void *message
     mock_link_t *link = (mock_link_t *)handle;
 
     (void)timeout_ms;
+    if (link->broken)
+    {
+        return SAPI_STATUS_TIMEOUT;
+    }
     if (message_size > sizeof(link->outbox->buf))
     {
         return SAPI_STATUS_INVALID_PARAM;
@@ -65,8 +70,8 @@ int main(void)
 {
     mock_mailbox_t mailbox_a_to_b = { { 0 }, 0U, 0 };
     mock_mailbox_t mailbox_b_to_a = { { 0 }, 0U, 0 };
-    mock_link_t    link_a         = { &mailbox_b_to_a, &mailbox_a_to_b };
-    mock_link_t    link_b         = { &mailbox_a_to_b, &mailbox_b_to_a };
+    mock_link_t    link_a         = { &mailbox_b_to_a, &mailbox_a_to_b, 0 };
+    mock_link_t    link_b         = { &mailbox_a_to_b, &mailbox_b_to_a, 0 };
 
     sapi_dual_msgchannel_t channel_a;
     sapi_dual_msgchannel_t channel_b;
@@ -173,6 +178,50 @@ int main(void)
     assert(sapi_dual_msgchannel_receive(&channel_b, out_payload, sizeof(out_payload), 10U, &out_payload_size,
                                          &out_sequence)
            == SAPI_STATUS_OK);
+
+    /* send(): payload NULL with a non-zero payload_size is rejected
+     * without ever reaching sapi_checksum_vital_message_create() or
+     * sapi_netlink_send(). */
+    assert(sapi_dual_msgchannel_send(&channel_a, NULL, 1U, 10U, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    /* send(): sapi_checksum_vital_message_create() itself rejects a
+     * payload larger than sizeof(sapi_vital_message_t::payload) (248
+     * bytes) - this layer does not pre-check payload_size itself, that
+     * validation is sapi_dual_channel_t's job (SAPI_DUAL_CHANNEL_MAX_PAYLOAD),
+     * this layer just propagates whatever the checksum layer reports. */
+    {
+        uint8_t oversize_payload[255];
+
+        (void)memset(oversize_payload, 0, sizeof(oversize_payload));
+        assert(sapi_dual_msgchannel_send(&channel_a, oversize_payload, (uint8_t)sizeof(oversize_payload), 10U, NULL)
+               == SAPI_STATUS_INVALID_PARAM);
+    }
+
+    /* send(): sapi_netlink_send() itself failing (link down) is
+     * propagated as-is, and next_sequence is left unadvanced (a retry
+     * would reuse the same sequence_number). */
+    {
+        uint32_t seq_before_failed_send = channel_a.next_sequence;
+
+        link_a.broken = 1;
+        assert(sapi_dual_msgchannel_send(&channel_a, (const uint8_t *)"q", 1U, 10U, NULL) == SAPI_STATUS_TIMEOUT);
+        assert(channel_a.next_sequence == seq_before_failed_send);
+        link_a.broken = 0;
+    }
+
+    /* receive(): NULL/zero-size argument rejection. */
+    assert(sapi_dual_msgchannel_receive(NULL, out_payload, sizeof(out_payload), 10U, &out_payload_size,
+                                         &out_sequence)
+           == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_dual_msgchannel_receive(&channel_b, NULL, sizeof(out_payload), 10U, &out_payload_size, &out_sequence)
+           == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_dual_msgchannel_receive(&channel_b, out_payload, sizeof(out_payload), 10U, NULL, &out_sequence)
+           == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_dual_msgchannel_receive(&channel_b, out_payload, 0U, 10U, &out_payload_size, &out_sequence)
+           == SAPI_STATUS_INVALID_PARAM);
+
+    /* reset_sequence(): NULL argument rejection. */
+    assert(sapi_dual_msgchannel_reset_sequence(NULL) == SAPI_STATUS_INVALID_PARAM);
 
     return 0;
 }

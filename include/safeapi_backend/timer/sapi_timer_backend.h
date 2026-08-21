@@ -55,6 +55,8 @@ typedef struct sapi_timer_backend_s
  * @param backend  Must not be NULL. Registering again replaces the
  *                 previously registered backend.
  * @return SAPI_STATUS_INVALID_PARAM if backend is NULL; SAPI_STATUS_OK otherwise.
+ * @return SAPI_STATUS_INVALID_STATE if the application's setup phase is
+ *         already locked (ADR-026).
  *
  * REQ-OAL-TIMER-015
  */

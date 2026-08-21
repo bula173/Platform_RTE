@@ -1641,6 +1641,12 @@ static void test_size_t_pairs(void)
         assert(outsz == 123U);
         assert(sapi_cast_i32_to_size(42, &outsz) == SAPI_STATUS_OK);
         assert(outsz == 42U);
+        assert(sapi_cast_i8_to_size((int8_t)42, &outsz) == SAPI_STATUS_OK);
+        assert(outsz == 42U);
+        assert(sapi_cast_i16_to_size((int16_t)42, &outsz) == SAPI_STATUS_OK);
+        assert(outsz == 42U);
+        assert(sapi_cast_i64_to_size((int64_t)42, &outsz) == SAPI_STATUS_OK);
+        assert(outsz == 42U);
     }
 }
 
@@ -1652,10 +1658,93 @@ static void test_null_and_ok_smoke(void)
     assert(out == 100U);
 }
 
+static void test_every_function_rejects_null_out(void)
+{
+    /* Every one of the 72 sapi_cast_<from>_to_<to> functions shares the
+     * identical out == NULL -> SAPI_STATUS_INVALID_PARAM guard as its first
+     * check (ADR-003 section 2.1, REQ-COMMON-CAST-002) - one call per
+     * function is the minimal way to hit that guard for all 72, rather than
+     * relying on it being incidentally exercised by the value-based tests
+     * above. */
+    assert(sapi_cast_i8_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i8_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i16_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i32_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_i64_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u8_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u16_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u32_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_u64_to_size(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_i8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_i16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_i32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_i64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_u8(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_u16(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_u32(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cast_size_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
+}
+
 int main(void)
 {
     test_fixed_width_pairs();
     test_size_t_pairs();
     test_null_and_ok_smoke();
+    test_every_function_rejects_null_out();
     return 0;
 }

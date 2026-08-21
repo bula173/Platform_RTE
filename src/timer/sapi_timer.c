@@ -4,6 +4,7 @@
  * @brief Timer service: validates parameters, then dispatches to the
  *        backend registered via sapi_timer_register_backend() (ADR-005).
  */
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi/timer/sapi_timer.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
 
@@ -12,9 +13,18 @@ static const sapi_timer_backend_t *s_backend = NULL;
 
 sapi_status_t sapi_timer_register_backend(const sapi_timer_backend_t *backend)
 {
+    sapi_status_t lifecycle_status;
+
     if (backend == NULL)
     {
         return SAPI_STATUS_INVALID_PARAM;
+    }
+    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+     * action - refuse once the application's setup phase has been locked. */
+    lifecycle_status = sapi_lifecycle_check_setup_allowed();
+    if (lifecycle_status != SAPI_STATUS_OK)
+    {
+        return lifecycle_status;
     }
     s_backend = backend;
     return SAPI_STATUS_OK;
@@ -33,6 +43,17 @@ sapi_status_t sapi_timer_create(sapi_timer_storage_t *storage,
         return SAPI_STATUS_INVALID_PARAM;
     }
     *out_handle = NULL;
+    /* REQ-LIFECYCLE-001 (ADR-026): a timer is a setup-only resource - refuse once the
+     * application's setup phase has been locked (sapi_appmanager_run(),
+     * after ops->init() succeeds). */
+    {
+        sapi_status_t lifecycle_status = sapi_lifecycle_check_setup_allowed();
+
+        if (lifecycle_status != SAPI_STATUS_OK)
+        {
+            return lifecycle_status;
+        }
+    }
     if (s_backend == NULL)
     {
         return SAPI_STATUS_NOT_INITIALIZED;

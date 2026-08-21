@@ -4,6 +4,7 @@
  * @ingroup SAFESTATE
  */
 #include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 
 /** One handler slot per sapi_safestate_level_t value; no dynamic allocation. */
 static sapi_safestate_handler_t s_handlers[3] = { NULL, NULL, NULL };
@@ -44,10 +45,18 @@ sapi_status_t sapi_safestate_register_handler(sapi_safestate_level_t level,
                                                sapi_safestate_handler_t handler)
 {
     size_t index;
+    sapi_status_t lifecycle_status;
 
     if ((handler == NULL) || (!sapi_safestate_level_to_index(level, &index)))
     {
         return SAPI_STATUS_INVALID_PARAM;
+    }
+    /* REQ-LIFECYCLE-001 (ADR-026): a safe-state handler is a setup-only
+     * resource - refuse once the application's setup phase has been locked. */
+    lifecycle_status = sapi_lifecycle_check_setup_allowed();
+    if (lifecycle_status != SAPI_STATUS_OK)
+    {
+        return lifecycle_status;
     }
     s_handlers[index] = handler;
     return SAPI_STATUS_OK;
@@ -81,7 +90,13 @@ void sapi_safestate_enter(sapi_safestate_level_t level,
      * DEGRADED. */
     if ((!valid_level) || (level == SAPI_SAFESTATE_LEVEL_SAFE) || (level == SAPI_SAFESTATE_LEVEL_REBOOT))
     {
-        for (;;)
+        for (;;) /* GCOVR_EXCL_LINE - see tests/safestate/test_sapi_safestate.c's
+                   * test_unrecognized_level_halts_forever() for why: this line
+                   * IS proven to execute at runtime (via a SIGALRM escape),
+                   * but gcov's flow-graph line-count reconstruction always
+                   * reports 0 for a `for(;;){}` with no outgoing edge,
+                   * regardless of how many times it actually ran - a tool
+                   * limitation, not a real gap. */
         {
             /* Defensive halt: intentionally never returns. */
         }

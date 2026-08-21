@@ -14,26 +14,83 @@ endfunction()
 # linking inside those libraries means one name still pulls in
 # everything transitively required, exactly as the old fine-grained set
 # of individual safeapi::<feature> targets did.
+#
+# ADR-024: each optional module's test is now gated behind the same
+# SAFEAPI_ENABLE_* option that gates the module's own source file, so
+# `cmake -DSAFEAPI_ENABLE_WATCHDOG=OFF` doesn't leave a dangling test that
+# tries to link a library the build no longer produces.
+
+# CORE - always built, no toggle.
 safeapi_add_test(test_sapi_status         status/test_sapi_status.c            safeapi::core)
 safeapi_add_test(test_sapi_buffer         buffer/test_sapi_buffer.c            safeapi::core)
 safeapi_add_test(test_sapi_cast           cast/test_sapi_cast.c                safeapi::core)
 safeapi_add_test(test_sapi_safestate      safestate/test_sapi_safestate.c      safeapi::core)
 safeapi_add_test(test_sapi_string         string/test_sapi_string.c            safeapi::core)
-safeapi_add_test(test_sapi_timer          timer/test_sapi_timer.c              safeapi::oal)
-safeapi_add_test(test_sapi_nvm            nvm/test_sapi_nvm.c                  safeapi::oal)
-safeapi_add_test(test_sapi_reboot         reboot/test_sapi_reboot.c            safeapi::oal)
-safeapi_add_test(test_sapi_vital_channel  vital_channel/test_sapi_vital_channel.c safeapi::channels)
-safeapi_add_test(test_sapi_clocksync      clocksync/test_sapi_clocksync.c      safeapi::channels)
-safeapi_add_test(test_sapi_checkpoint     checkpoint/test_sapi_checkpoint.c    safeapi::channels)
-safeapi_add_test(test_sapi_netlink        netlink/test_sapi_netlink.c          safeapi::oal)
-safeapi_add_test(test_sapi_watchdog       watchdog/test_sapi_watchdog.c        safeapi::oal)
-safeapi_add_test(test_sapi_appmanager     appmanager/test_sapi_appmanager.c    safeapi::appmanager)
-safeapi_add_test(test_sapi_log            log/test_sapi_log.c                  safeapi::oal)
-safeapi_add_test(test_sapi_dual_msgchannel dual/test_sapi_dual_msgchannel.c     safeapi::channels)
-safeapi_add_test(test_sapi_dual_channel    dual/test_sapi_dual_channel.c        safeapi::channels)
-safeapi_add_test(test_sapi_dual_negotiator dual/test_sapi_dual_negotiator.c     safeapi::channels)
-safeapi_add_test(test_sapi_safechannel     safechannel/test_sapi_safechannel.c  safeapi::channels)
+safeapi_add_test(test_sapi_lifecycle      lifecycle/test_sapi_lifecycle.c      safeapi::core)
 
-# posix_backend (and its tests) moved to the safeAPIExample project - an
+# OAL
+if(SAFEAPI_ENABLE_TIMER)
+    safeapi_add_test(test_sapi_timer      timer/test_sapi_timer.c              safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_NVM)
+    safeapi_add_test(test_sapi_nvm        nvm/test_sapi_nvm.c                  safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_MEMORY)
+    safeapi_add_test(test_sapi_memory     memory/test_sapi_memory.c            safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_TASK)
+    safeapi_add_test(test_sapi_task       task/test_sapi_task.c                safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_IPC)
+    safeapi_add_test(test_sapi_ipc        ipc/test_sapi_ipc.c                  safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_REBOOT)
+    safeapi_add_test(test_sapi_reboot     reboot/test_sapi_reboot.c            safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_NETLINK)
+    safeapi_add_test(test_sapi_netlink    netlink/test_sapi_netlink.c          safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_LOG)
+    safeapi_add_test(test_sapi_log        log/test_sapi_log.c                  safeapi::oal)
+endif()
+if(SAFEAPI_ENABLE_WATCHDOG)
+    safeapi_add_test(test_sapi_watchdog   watchdog/test_sapi_watchdog.c        safeapi::oal)
+endif()
+
+# Channels
+if(SAFEAPI_ENABLE_CHECKSUM)
+    safeapi_add_test(test_sapi_checksum   checksum/test_sapi_checksum.c        safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_CHANNEL_LINK)
+    safeapi_add_test(test_sapi_channel channel_link/test_sapi_channel.c safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_VOTER)
+    safeapi_add_test(test_sapi_voter       voter/test_sapi_voter.c              safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_CROSS_COMPARATOR)
+    safeapi_add_test(test_sapi_cross_comparator cross_comparator/test_sapi_cross_comparator.c safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_CLOCKSYNC)
+    safeapi_add_test(test_sapi_clocksync  clocksync/test_sapi_clocksync.c      safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_CHECKPOINT)
+    safeapi_add_test(test_sapi_checkpoint checkpoint/test_sapi_checkpoint.c    safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_DUAL)
+    safeapi_add_test(test_sapi_dual_types      dual/test_sapi_dual_types.c      safeapi::channels)
+    safeapi_add_test(test_sapi_dual_msgchannel dual/test_sapi_dual_msgchannel.c safeapi::channels)
+    safeapi_add_test(test_sapi_dual_channel    dual/test_sapi_dual_channel.c    safeapi::channels)
+    safeapi_add_test(test_sapi_dual_negotiator dual/test_sapi_dual_negotiator.c safeapi::channels)
+endif()
+if(SAFEAPI_ENABLE_SAFECHANNEL)
+    safeapi_add_test(test_sapi_safechannel     safechannel/test_sapi_safechannel.c safeapi::channels)
+endif()
+
+# App layer
+if(SAFEAPI_ENABLE_APPMANAGER)
+    safeapi_add_test(test_sapi_appmanager appmanager/test_sapi_appmanager.c    safeapi::appmanager)
+endif()
+
+# posix_backend (and its tests) moved to the safeAPIRBC2oo2 project - an
 # OAL backend is an integrator-supplied implementation (ADR-005), not
-# part of this framework. See safeAPIExample's tests/posix_backend/.
+# part of this framework. See safeAPIRBC2oo2's tests/posix_backend/.

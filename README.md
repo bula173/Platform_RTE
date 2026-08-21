@@ -15,16 +15,30 @@ registering a different backend, without touching application code.
 Actively growing framework with SIL 4 safety focus.
 
 **IMPLEMENTED (Production Ready):** 14 core modules
-- Timer, IPC (pubsub + request-reply), Memory, NVM, Task/Thread, Logging, Reboot
+- Timer, IPC (base queue API only — see note below), Memory, NVM, Task/Thread, Logging, Reboot
 - AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String
 - Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions
+- Note: `sapi_ipc`'s pub/sub and request-reply variants
+  (`src/ipc/sapi_ipc_pubsub.c`, `sapi_ipc_request_reply.c`) are TODO-only
+  stubs, excluded from the build (see their own file headers and
+  `CMakeLists.txt`'s `SAFEAPI_ENABLE_IPC` comment) — only the base queue
+  API (`sapi_ipc_create`/`_send`/`_receive`/`_destroy`) is implemented.
 
-**IN PROGRESS:** Watchdog (System/Task/Channel/Checkpoint)
-- API design complete (`include/safeapi/watchdog/sapi_watchdog.h`)
-- Implementation pending (v0.3.0 target)
-- Marks fault detection and recovery actions for SIL 4
+**IMPLEMENTED:** Watchdog (`include/safeapi/watchdog/sapi_watchdog.h`,
+`src/watchdog/sapi_watchdog.c`)
+- Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM)
+  dispatched on timeout, real timer integration, full test coverage
+- Depended on directly by `sapi_checkpoint` and `sapi_appmanager`'s
+  optional checkpoint stage (ADR-024's dependency graph)
 
-**IMPLEMENTED:** Distributed channel synchronization (ADR-017)
+**IMPLEMENTED:** Redundancy Framework — vital channels, voting, checkpoints,
+data integrity (ADR-008/ADR-017; supersedes the "design phase" framing
+`docs/REDUNDANCY_ARCHITECTURE.md` originally described this as — that
+document is now a design *record*, not a proposal still to be built)
+- `sapi_channel` — 2oo2/2oo3/NMR quorum voting across redundant
+  channels, disagreement/health tracking
+- `sapi_checksum` — CRC-64 data integrity and the `sapi_vital_message_t`
+  envelope (sequence + sender + CRC) both of the modules below build on
 - `sapi_checkpoint` — bounded checkpoint-ID rendezvous across vital
   channels, correct even without wall-clock agreement between nodes;
   fills in `sapi_channel_checkpoint()` as already specified (but not
@@ -32,17 +46,8 @@ Actively growing framework with SIL 4 safety focus.
 - `sapi_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
   query (never the basis of vital-comparison correctness — see its header)
 - Example: `examples/geo_distributed_checkpoint_sync.c`
-- Note: `sapi_vital_channel` and `sapi_checksum` (CRC-64) are also present
-  in `include/`/`src/` and used by the two modules above, but are not yet
-  reflected in this status summary's own categorization - see
-  `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1 for
-  what's actually wired together today.
-
-**DESIGN PHASE:** Redundancy Framework (Vital Channels, Voting, Checkpoints)
-- Documented in `docs/REDUNDANCY_ARCHITECTURE.md` as design proposal
-- Planned for v0.4.0+
-- Requires implementation of voting logic and checkpoint synchronization for full SIL 4 support
-- See ROADMAP.md for detailed timeline
+- See `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1
+  and ADR-024's dependency table for exactly what's wired to what.
 
 **IMPLEMENTED:** AppManager cycle hooks + built-in checkpoint (ADR-019)
 - `pre_execute`/`post_execute` — optional per-cycle hooks bracketing the
@@ -55,13 +60,13 @@ Actively growing framework with SIL 4 safety focus.
   (NULL by default) wires a bounded `sapi_channel_checkpoint()` (ADR-017)
   rendezvous into the loop automatically, ahead of `pre_execute()`, so a
   dual/multi-channel application no longer hand-rolls that call itself.
-- Addendum (§5): relaxed `sapi_vital_channel_init()`'s `channel_count`
+- Addendum (§5): relaxed `sapi_channel_init()`'s `channel_count`
   floor from `>= 2` to `>= 1` (`SAPI_VOTING_NMR`, `quorum_size == 1` only —
   2oo2/2oo3 floors unchanged) to support a single-physical-link topology;
   see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md`
   for the full retrofit writeup (including the multiplexed-frame wire
   protocol needed to carry checkpoint traffic on an existing link), first
-  live-verified in `safeAPIExample`'s A/B channel.
+  live-verified in `safeAPIRBC2oo2`'s A/B channel.
 
 **IMPLEMENTED:** Structured message-trail logging (`sapi_log_write_event()`)
 - New addition to `sapi_log` alongside the existing free-text
@@ -73,7 +78,7 @@ Actively growing framework with SIL 4 safety focus.
   for caller-supplied extra `Key=Value` fields beyond those seven.
   Fixed-arity, no `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same backend
   as `sapi_log_write()` receives it, so no backend changes are required.
-  First real consumer: `safeAPIExample`'s A/B/C/SITE cyclic executives
+  First real consumer: `safeAPIRBC2oo2`'s A/B/C/SITE cyclic executives
   now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
   DISAGREE, and SITE heartbeat this way.
 
@@ -81,7 +86,7 @@ Actively growing framework with SIL 4 safety focus.
 - `sapi_dual_state_t` — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY
   vocabulary for "which of two redundant instances is active, and how
   well-backed is the standby one", generalizing the ad hoc versions of
-  this `safeAPIExample`'s `site.c`/`channel_ab.c` each grew independently.
+  this `safeAPIRBC2oo2`'s `site.c`/`channel_ab.c` each grew independently.
 - `sapi_dual_msgchannel_t` ("Channel") — one EN 50159-defended message
   channel over a single `sapi_netlink_handle_t`, reusing the framework's
   existing `sapi_vital_message_t` envelope (sequence/sender/CRC-64) plus a
@@ -99,12 +104,16 @@ Actively growing framework with SIL 4 safety focus.
   self-report) determines the STANDBY side's HOTSTANDBY/COLDSTANDBY label.
   One-directional dependency: the negotiator depends on a DualChannel, a
   DualChannel has no knowledge of the negotiator.
-- Framework-only in this pass — `safeAPIExample`'s `site.c`/`channel_ab.c`
+- Framework-only in this pass — `safeAPIRBC2oo2`'s `site.c`/`channel_ab.c`
   keep their existing hand-rolled logic for now; retrofitting them to
   `sapi_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
 - See `docs/architecture/ADR-020-dual-transfer-state-negotiation.md`.
 
 **Key Documentation:**
+- [Test Coverage Report](coverage/index.html) — gcovr line/function/branch
+  coverage (generated by CI on every push to `master`/`develop`; only
+  live on the published GitHub Pages site, not in a plain repo checkout
+  — run `./scripts/coverage.sh` locally for the same report)
 - `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
   016-019; 009-015 do not exist) + PlantUML diagrams
 - `docs/requirements/SRS.md` — Consolidated requirements specification

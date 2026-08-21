@@ -1,7 +1,9 @@
 /**
  * @file geo_distributed_checkpoint_sync.c
- * @brief Example: two vital channels on separate "machines", synchronized
- *        via sapi_checkpoint (ADR-017) instead of wall-clock agreement.
+ * @brief Example: two sapi_channel_t links (one per "machine"), registered
+ *        into a sapi_voter_t and synchronized via sapi_checkpoint
+ *        (ADR-017, rewired onto sapi_voter_t by ADR-025) instead of
+ *        wall-clock agreement.
  *
  * Demonstrates the answer to "how do channels on different hardware, in
  * different locations, get compared as if they were the same silicon":
@@ -17,7 +19,7 @@
  * no external dependencies - swap mock_backend_send/recv for a real
  * transport (e.g. built on sapi_ipc, TCP, or a serial link) to deploy
  * this for real, per ADR-017 section 2.2 ("no new backend of its own -
- * reuses whatever transport is already registered on the vital channel").
+ * reuses whatever transport is already registered on each channel").
  *
  * Scenario:
  *   Cycle 1: both sites confirm checkpoint 1 in time -> vote succeeds.
@@ -28,9 +30,7 @@
  *   gcc -std=c99 -Wall -Wextra -o geo_checkpoint_sync \
  *       geo_distributed_checkpoint_sync.c \
  *       -I../include -L../build \
- *       -lsafeapi_checkpoint -lsafeapi_checksum -lsafeapi_vital_channel \
- *       -lsafeapi_watchdog -lsafeapi_clocksync -lsafeapi_safestate \
- *       -lsafeapi_buffer -lsafeapi_timer -lsafeapi_log -lsafeapi_status
+ *       -lsafeapi_channels -lsafeapi_oal -lsafeapi_core
  */
 
 #include <setjmp.h>
@@ -42,6 +42,7 @@
 #include "safeapi/clocksync/sapi_clocksync.h"
 #include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 #include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/voter/sapi_voter.h"
 
 /* ============================================================================
  * Simulated transport: one in-memory mailbox per site (WEST=0, EAST=1)
@@ -135,11 +136,13 @@ static void demo_safestate_handler(sapi_safestate_level_t level, sapi_safestate_
 
 int main(void)
 {
-    sapi_vital_channel_t vital;
-    sapi_vital_channel_config_t vc_config;
+    sapi_channel_t sites[SITE_COUNT];
+    sapi_voter_t voter;
+    sapi_voter_config_t voter_config;
     sapi_clocksync_backend_t clock_backend;
     int64_t offset_ms = 0;
     sapi_clocksync_quality_t quality = SAPI_CLOCKSYNC_UNSYNCHRONIZED;
+    uint32_t i;
 
     (void)sapi_checksum_crc64_init(SAPI_CRC64_ERTMS);
     (void)sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_SAFE, demo_safestate_handler);
@@ -152,13 +155,22 @@ int main(void)
     printf("Diagnostic clock offset WEST-vs-EAST: %lldms (quality=%d) - NOT used for the vote below\n",
            (long long)offset_ms, (int)quality);
 
-    memset(&vc_config, 0, sizeof(vc_config));
-    vc_config.voting_strategy = SAPI_VOTING_2OO2;
-    vc_config.channel_count = SITE_COUNT;
-    vc_config.channel_timeout_ms = 100U;
-    vc_config.backend_send = mock_send;
-    vc_config.backend_recv = mock_recv;
-    (void)sapi_vital_channel_init(&vital, &vc_config, g_channel_handles, SITE_COUNT);
+    memset(&voter_config, 0, sizeof(voter_config));
+    voter_config.voting_strategy = SAPI_VOTING_2OO2;
+    voter_config.channel_timeout_ms = 100U;
+    (void)sapi_voter_init(&voter, &voter_config);
+
+    for (i = 0U; i < SITE_COUNT; i++)
+    {
+        sapi_channel_config_t chan_config;
+
+        memset(&chan_config, 0, sizeof(chan_config));
+        chan_config.channel_handle = g_channel_handles[i];
+        chan_config.send = mock_send;
+        chan_config.recv = mock_recv;
+        (void)sapi_channel_init(&sites[i], &chan_config);
+        (void)sapi_voter_register_channel(&voter, &sites[i]);
+    }
 
     /* ---- Cycle 1: both sites confirm in time ---- */
     {
@@ -174,7 +186,7 @@ int main(void)
         ckpt.watchdog = NULL;
 
         printf("\nCycle 1: WEST and EAST both reach checkpoint 1...\n");
-        status = sapi_channel_checkpoint(&vital, &ckpt);
+        status = sapi_channel_checkpoint(&voter, &ckpt);
         printf("  sapi_channel_checkpoint() -> %s\n", sapi_status_to_string(status));
     }
 
@@ -194,7 +206,7 @@ int main(void)
         ckpt.watchdog = NULL;
 
         printf("\nCycle 2: EAST's link is down - its confirmation never arrives...\n");
-        status = sapi_channel_checkpoint(&vital, &ckpt);
+        status = sapi_channel_checkpoint(&voter, &ckpt);
         /* Not reached on a real timeout: sapi_channel_checkpoint() enters
          * safe-state directly (REQ-CHECKPOINT-003) before returning. */
         printf("  sapi_channel_checkpoint() -> %s (unexpected - should have diverted)\n",
@@ -205,6 +217,10 @@ int main(void)
         printf("  Cycle 2 correctly forced safe-state instead of voting on an unconfirmed cycle.\n");
     }
 
-    (void)sapi_vital_channel_destroy(&vital);
+    (void)sapi_voter_destroy(&voter);
+    for (i = 0U; i < SITE_COUNT; i++)
+    {
+        (void)sapi_channel_destroy(&sites[i]);
+    }
     return 0;
 }

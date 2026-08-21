@@ -167,7 +167,7 @@ Input B = Y  ├──→ FAULT (disagreement)
 // Dual-channel 2oo2 configuration
 sapi_ipc_handle_t channels[2] = {channel_a, channel_b};
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "dual_redundant_signal",
     .strategy = SAPI_VOTING_2OO2,      // Dual-channel voting
     .channels = channels,
@@ -176,7 +176,7 @@ sapi_vital_channel_config_t vital_config = {
     .on_disagreement = fault_handler
 };
 
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &vital_config);
 ```
 
@@ -301,7 +301,7 @@ Outputs: A=X, B=Y, C=Z  → FAULT      (no consensus)
 // Triple-channel 2oo3 configuration
 sapi_ipc_handle_t channels[3] = {channel_a, channel_b, channel_c};
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "triple_redundant_signal",
     .strategy = SAPI_VOTING_2OO3,      // Triple-channel voting
     .channels = channels,
@@ -310,7 +310,7 @@ sapi_vital_channel_config_t vital_config = {
     .on_disagreement = fault_handler
 };
 
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &vital_config);
 ```
 
@@ -433,7 +433,7 @@ sapi_ipc_handle_t channels[5] = {
     channel_a, channel_b, channel_c, channel_d, channel_e
 };
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "nmr_5channel",
     .strategy = SAPI_VOTING_NMR,       // N-Modular voting
     .channels = channels,
@@ -442,7 +442,7 @@ sapi_vital_channel_config_t vital_config = {
     .on_disagreement = fault_handler
 };
 
-sapi_vital_channel_t vital_ch;
+sapi_channel_t vital_ch;
 sapi_vital_channel_create(&vital_ch, &vital_config);
 ```
 

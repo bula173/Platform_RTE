@@ -4,6 +4,7 @@
  * @ingroup CLOCKSYNC
  */
 #include "safeapi/clocksync/sapi_clocksync.h"
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 
 /** Single global backend, following ADR-005's established convention
@@ -21,7 +22,13 @@ sapi_status_t sapi_clocksync_register_backend(const sapi_clocksync_backend_t *ba
     }
     else
     {
-        s_backend = backend;
+        /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+         * action - refuse once the application's setup phase has been locked. */
+        status = sapi_lifecycle_check_setup_allowed();
+        if (status == SAPI_STATUS_OK)
+        {
+            s_backend = backend;
+        }
     }
 
     return status;

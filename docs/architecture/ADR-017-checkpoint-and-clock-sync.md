@@ -3,12 +3,12 @@
 Status: Draft
 Date: 2026-08-05
 Applies to: `sapi_checkpoint` (new), `sapi_clocksync` (new), and how both
-plug into the existing `sapi_vital_channel` / `sapi_checksum` / `sapi_ipc`
+plug into the existing `sapi_channel` / `sapi_checksum` / `sapi_ipc`
 / `sapi_watchdog` modules.
 
 ## 1. Context
 
-The vital channels that vote on a result (`sapi_vital_channel`) can run on
+The vital channels that vote on a result (`sapi_channel`) can run on
 separate physical machines, potentially in separate geographic locations
 (the repo already has a `2oo2-geographic-redundancy` example for
 active/standby site failover). This ADR addresses a different problem:
@@ -39,14 +39,14 @@ designed-but-not-built:
   logic.
 - ADR-001's layered diagram names an empty "L1 Safety Communication Layer
   (future ADR)" slot between the OAL (`sapi_ipc`/`sapi_timer`) and the
-  application layer (`sapi_vital_channel` lives here); this ADR is that
+  application layer (`sapi_channel` lives here); this ADR is that
   future ADR.
 - ADR-008 (`sapi_channel`, a local two-channel comparator written before
-  `sapi_vital_channel`'s fuller 2oo2/2oo3/NMR implementation was known
+  `sapi_channel`'s fuller 2oo2/2oo3/NMR implementation was known
   about) explicitly deferred "EN 50159-style message integrity if
   channels run on separate physical nodes... expected to build on
   `sapi_ipc` in a future ADR." This is that ADR. `sapi_checkpoint` and
-  `sapi_clocksync` are designed to plug into `sapi_vital_channel` (the
+  `sapi_clocksync` are designed to plug into `sapi_channel` (the
   more complete, actively-developed implementation), not `sapi_channel`.
 
 ## 2. Decision
@@ -66,7 +66,7 @@ dropped for exactly this reason.
 ### 2.2 `sapi_checkpoint`: bounded rendezvous, no new transport backend
 
 `sapi_checkpoint` adds **no new backend of its own**. It operates on an
-already-initialized `sapi_vital_channel_t *` and reuses that instance's
+already-initialized `sapi_channel_t *` and reuses that instance's
 already-registered `backend_send`/`backend_recv` callbacks (which is how
 "pluggable" is achieved — whatever transport the integrator registered
 for voting, e.g. `sapi_ipc` over POSIX/RTOS/a real network link, is what
@@ -75,7 +75,7 @@ consistent with ADR-005's established pattern instead of adding a
 parallel plug-in point.
 
 ```c
-sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t *handle,
+sapi_status_t sapi_channel_checkpoint(sapi_channel_t *handle,
                                        const sapi_checkpoint_config_t *config);
 ```
 
@@ -97,7 +97,7 @@ never count toward quorum). If at least `expected_node_count` valid
 replies arrive in time: kick the optional watchdog and return
 `SAPI_STATUS_OK`. Otherwise: call
 `sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, ...)` directly (the same
-pattern `sapi_vital_channel_receive()` already uses on a voting
+pattern `sapi_channel_receive()` already uses on a voting
 disagreement — see its own doc comment) and return
 `SAPI_STATUS_TIMEOUT`. `SAPI_WATCHDOG_CHECKPOINT` now has real behavior
 behind it: an integrator can additionally configure a watchdog of that
@@ -146,7 +146,7 @@ checkpoint ID within the timeout does.
 - Deferred: `sapi_checkpoint`'s relationship to `sapi_channel` (ADR-008)
   is not resolved by this ADR — `sapi_channel` remains a working, simpler
   same-build two-channel comparator; whether it should be deprecated in
-  favor of `sapi_vital_channel` + `sapi_checkpoint` is a separate decision
+  favor of `sapi_channel` + `sapi_checkpoint` is a separate decision
   for the team, not made here.
 
 ## 4. Location

@@ -2,7 +2,7 @@
 
 Status: Accepted
 Date: 2026-08-07
-Applies to: safeAPIFreamwork (`sapi_safechannel`, new), safeAPIExample
+Applies to: safeAPIFreamwork (`sapi_safechannel`, new), safeAPIRBC2oo2
 (SITE/AB/C link usage).
 
 ## 1. Context
@@ -25,7 +25,7 @@ Investigating the current state surfaced two different problems, not one:
   abstraction, `sapi_dual_channel` (ADR-020), still requires the *caller*
   to open the netlink link(s) itself and hand over already-open
   `sapi_netlink_handle_t` values in its config. That gap is exactly why
-  safeAPIExample's `channel_ab_types.h`, `monitor_c_types.h`, and
+  safeAPIRBC2oo2's `channel_ab_types.h`, `monitor_c_types.h`, and
   `site.c` all include `safeapi/netlink/sapi_netlink.h` directly and call
   `sapi_netlink_open()`/`_send()`/`_receive()`/`_close()` themselves - the
   "channel" layer that was supposed to make this unnecessary doesn't
@@ -61,7 +61,7 @@ retire) remains the open, separate decision it already was.
 typedef enum sapi_safechannel_type_e
 {
     SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT = 0, /* wraps sapi_dual_channel_t */
-    SAPI_SAFECHANNEL_TYPE_VITAL_VOTED    = 1  /* wraps sapi_vital_channel_t */
+    SAPI_SAFECHANNEL_TYPE_VITAL_VOTED    = 1  /* wraps sapi_channel_t */
 } sapi_safechannel_type_t;
 
 typedef struct sapi_safechannel_endpoint_s
@@ -77,22 +77,22 @@ typedef struct sapi_safechannel_endpoint_s
 expected_peer_id, connect/ack timeouts, optional status callback) and
 `sapi_safechannel_vital_config_t` (endpoints[], link_count, voting
 strategy, quorum, timeouts, optional disagreement callback) - mirroring
-`sapi_dual_channel_config_t`/`sapi_vital_channel_config_t` field-for-field
+`sapi_dual_channel_config_t`/`sapi_channel_config_t` field-for-field
 except that **endpoints replace pre-opened handles**.
 `sapi_safechannel_open()` opens every configured endpoint via
 `sapi_netlink_open()` itself (retrying up to each config's
 connect_timeout_ms, same pattern every current hand-rolled caller already
 implements), then initializes the wrapped `sapi_dual_channel_t` or
-`sapi_vital_channel_t` on top of the resulting handles. Storage is a
+`sapi_channel_t` on top of the resulting handles. Storage is a
 fixed, caller-owned struct (no dynamic allocation): an array of
 `sapi_netlink_storage_t`/`sapi_netlink_handle_t` sized to
 `SAPI_SAFECHANNEL_MAX_LINKS`, plus a union of the two wrapped types.
 
 For `VITAL_VOTED`, `sapi_safechannel.c` supplies the
-`backend_send`/`backend_recv` callbacks `sapi_vital_channel_config_t`
+`backend_send`/`backend_recv` callbacks `sapi_channel_config_t`
 requires itself, implemented as thin casts to
 `sapi_netlink_send()`/`_receive()` on the corresponding opened link. This
-preserves `sapi_vital_channel.h`'s existing transport-agnostic design
+preserves `sapi_channel.h`'s existing transport-agnostic design
 (it still never mentions netlink) while giving the app a netlink-backed
 instance without writing that bridge itself.
 
@@ -126,7 +126,7 @@ through `sapi_safechannel`; direct `sapi_netlink`/`sapi_ipc` use is a
 backend-or-channel-layer-only concern, the same posture ADR-021 already
 established for the backend vtables themselves.
 
-### 2.4 Migration scope in safeAPIExample
+### 2.4 Migration scope in safeAPIRBC2oo2
 
 All three of SITE's heartbeat link, `monitor_c`'s two listen links, and
 `channel_ab`'s peer/C-forward links move to `sapi_safechannel`
@@ -161,7 +161,7 @@ code.
     prefixing a raw netlink frame to prefixing the payload passed to
     `sapi_safechannel_send()`/returned by `_receive()` - unchanged
     encoding, different carrier.
-  - `channel_ab_checkpoint.c`'s `sapi_vital_channel_t` backend adapter
+  - `channel_ab_checkpoint.c`'s `sapi_channel_t` backend adapter
     (`channel_ab_checkpoint_backend_send/recv`) now calls
     `sapi_safechannel_send()`/`_receive()` on the same instance the
     background thread reads from, instead of `sapi_netlink_send()`/
@@ -195,7 +195,7 @@ on this specific path.
 
 ## 3. Consequences
 
-- Positive: no application code anywhere in safeAPIExample includes
+- Positive: no application code anywhere in safeAPIRBC2oo2 includes
   `sapi_netlink.h`/`sapi_ipc.h` or calls their functions directly after
   this change; "open a channel, pick a type" is now literally the API.
 - Positive: SITE's and `monitor_c`'s links gain EN 50159 defended-messaging

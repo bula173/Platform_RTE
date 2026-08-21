@@ -12,6 +12,45 @@
  * @defgroup CHECKSUM Checksum & CRC Utilities
  * @brief Data integrity verification for redundant communication
  * @{
+ *
+ * REQ-CHECKSUM-001: sapi_checksum_crc64_init() shall be callable exactly
+ *                   once; a subsequent call before any re-init mechanism
+ *                   exists shall return SAPI_STATUS_ALREADY_INITIALIZED
+ *                   and leave the already-selected table/polynomial
+ *                   unchanged.
+ * REQ-CHECKSUM-002: sapi_checksum_crc64() shall return 0 - never
+ *                   dereferencing data - if the module is not yet
+ *                   initialized, if its lookup table is unset, or if
+ *                   data is NULL while size is nonzero.
+ * REQ-CHECKSUM-003: sapi_checksum_crc64() shall be deterministic and O(n)
+ *                   in size, using a precomputed 256-entry lookup table
+ *                   (no bit-by-bit computation on the hot path).
+ * REQ-CHECKSUM-004: sapi_checksum_crc64_verify() shall report
+ *                   SAPI_STATUS_DATA_CORRUPTION (not merely a boolean) on
+ *                   mismatch and increment stats.verification_failures;
+ *                   on match it shall return SAPI_STATUS_OK and increment
+ *                   stats.verification_passes.
+ * REQ-CHECKSUM-005: sapi_checksum_vital_message_create() shall reject a
+ *                   payload larger than sizeof(sapi_vital_message_t::payload)
+ *                   with SAPI_STATUS_INVALID_PARAM, incrementing
+ *                   stats.payload_oversize, without writing msg_out.
+ * REQ-CHECKSUM-006: sapi_checksum_vital_message_verify() shall verify the
+ *                   message's CRC-64 before trusting any other field, and
+ *                   report SAPI_STATUS_DATA_CORRUPTION - without writing
+ *                   to payload_out/payload_size_out - on either a CRC
+ *                   mismatch or a sequence_number that does not equal the
+ *                   caller-supplied expected_sequence (incrementing
+ *                   stats.sequence_errors in the latter case).
+ * REQ-CHECKSUM-007: sapi_checksum_vital_message_verify() shall reject a
+ *                   decoded payload_size exceeding the caller's
+ *                   payload_max_size with SAPI_STATUS_INVALID_PARAM,
+ *                   incrementing stats.payload_oversize, without copying
+ *                   into payload_out.
+ * REQ-CHECKSUM-008: sapi_checksum_get_stats()/_reset_stats() are
+ *                   diagnostics-only (never on a safety-decision path);
+ *                   _get_stats() returns SAPI_STATUS_INVALID_PARAM for a
+ *                   NULL stats_out, otherwise both always return
+ *                   SAPI_STATUS_OK.
  */
 
 #ifndef SAPI_CHECKSUM_H
@@ -81,7 +120,8 @@ typedef struct {
  *
  * @param polynomial CRC polynomial to use (ERTMS, ISO, or XZ)
  * @return SAPI_STATUS_OK on success
- *         SAPI_STATUS_ERROR if already initialized or invalid polynomial
+ *         SAPI_STATUS_ALREADY_INITIALIZED if already initialized
+ *         SAPI_STATUS_INVALID_PARAM if polynomial is not a recognized value
  *
  * @safety Safety-critical function, may not be called multiple times
  *
@@ -137,7 +177,8 @@ sapi_crc64_t sapi_checksum_crc64(const uint8_t *data, size_t size);
  * @param expected_crc Expected CRC-64 value (from message)
  * @param result_out Receives verification result
  * @return SAPI_STATUS_OK if verification passed
- *         SAPI_STATUS_ERROR if CRC mismatch (data corrupted)
+ *         SAPI_STATUS_DATA_CORRUPTION if CRC mismatch (data corrupted)
+ *         SAPI_STATUS_INVALID_PARAM if result_out is NULL
  *
  * @safety Deterministic computation, safe for safety-critical paths
  *
@@ -212,7 +253,8 @@ typedef struct {
  * @param payload Data to send
  * @param payload_size Size of payload (max 248 bytes)
  * @return SAPI_STATUS_OK on success
- *         SAPI_STATUS_ERROR if payload too large
+ *         SAPI_STATUS_INVALID_PARAM if msg_out is NULL, payload is too
+ *         large, or payload is NULL while payload_size is nonzero
  *
  * @safety No dynamic allocation, deterministic execution
  *
@@ -253,8 +295,10 @@ sapi_status_t sapi_checksum_vital_message_create(
  * @param payload_max_size Max size of payload buffer
  * @param payload_size_out Receives actual payload size
  * @return SAPI_STATUS_OK if all checks pass
- *         SAPI_STATUS_ERROR if CRC fails or sequence broken
- *         SAPI_STATUS_INVALID if payload too large
+ *         SAPI_STATUS_INVALID_PARAM if msg/payload_out/payload_size_out
+ *         is NULL, or the decoded payload is larger than payload_max_size
+ *         SAPI_STATUS_DATA_CORRUPTION if the CRC-64 fails or the sequence
+ *         number does not match expected_sequence
  *
  * @safety Deterministic, detects data corruption and reordering
  *
@@ -314,7 +358,8 @@ typedef struct {
  * and diagnosing communication issues.
  *
  * @param stats_out Receives statistics
- * @return SAPI_STATUS_OK always
+ * @return SAPI_STATUS_OK on success
+ *         SAPI_STATUS_INVALID_PARAM if stats_out is NULL
  */
 sapi_status_t sapi_checksum_get_stats(sapi_checksum_stats_t *stats_out);
 

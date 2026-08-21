@@ -197,7 +197,7 @@ if (status == SAPI_STATUS_OK) {
 When you have 3 redundant channels (future v0.4.0 vital channels):
 
 ```c
-// Pseudo-code for when sapi_vital_channel_t is implemented
+// Pseudo-code for when sapi_channel_t is implemented
 
 typedef struct {
     train_command_t cmd_a;
@@ -496,7 +496,7 @@ if (result.match == 0) {
 
 ## Next Steps
 
-1. **Integrate with Voting (v0.4.0):** When `sapi_vital_channel_t` is implemented, CRC-64 will be transparent
+1. **Integrate with Voting (v0.4.0):** When `sapi_channel_t` is implemented, CRC-64 will be transparent
 2. **Performance Tuning:** Profile in your specific embedded target
 3. **Certification:** Incorporate into your EN 50128 safety case
 4. **Deployment:** Use vital_message_t wrapper in all redundant systems

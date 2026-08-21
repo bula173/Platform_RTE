@@ -244,7 +244,7 @@
  * sapi_ipc_create(&storage1, &cfg1, &ch1);  // Uses registered backend
  *
  * // Wrap in vital channel for 2oo2 voting
- * sapi_vital_channel_config_t vital_cfg = {
+ * sapi_channel_config_t vital_cfg = {
  *     .voting_strategy = SAPI_VOTING_2OO2,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,
@@ -253,10 +253,10 @@
  * };
  *
  * void *channels[2] = { &ch0, &ch1 };
- * sapi_vital_channel_init(&vital_channel, &vital_cfg, channels, 2);
+ * sapi_channel_init(&vital_channel, &vital_cfg, channels, 2);
  *
  * // Now use vital_channel for voting communication
- * sapi_vital_channel_send(&vital_channel, &cmd, sizeof(cmd));
+ * sapi_channel_send(&vital_channel, &cmd, sizeof(cmd));
  * ```
  *
  * ### Custom Callbacks for Multi-Transport Support
@@ -492,8 +492,8 @@
  * - [ ] Implement backend callbacks (backend_send/backend_recv)
  * - [ ] Create transport-specific channels (2 or 3)
  * - [ ] Configure vital_channel with callbacks and channels
- * - [ ] Use sapi_vital_channel_send/receive for voting communication
- * - [ ] Monitor health via sapi_vital_channel_get_health()
+ * - [ ] Use sapi_channel_send/receive for voting communication
+ * - [ ] Monitor health via sapi_channel_get_health()
  * - [ ] Implement watchdog for health-based channel isolation
  * - [ ] Test disagreement scenarios (simulate channel failures)
  * - [ ] Verify safe-state triggers on voting failure

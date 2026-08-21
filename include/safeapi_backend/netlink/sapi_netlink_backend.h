@@ -7,7 +7,7 @@
  * calling sapi_netlink_register_backend() - NOT part of the consumer API
  * (safeapi/netlink/sapi_netlink.h). A real application should never
  * include this file; only the startup code that wires a concrete
- * backend does (e.g. safeAPIExample's POSIX/TCP backend).
+ * backend does (e.g. safeAPIRBC2oo2's POSIX/TCP backend).
  *
  * @defgroup NETLINK_BACKEND Point-to-Point Network Link - Backend Adaptation
  * @brief Backend vtable and registration for the netlink service (ADR-005)

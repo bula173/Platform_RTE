@@ -393,10 +393,12 @@ sapi_status_t sapi_string_from_u32(sapi_string_t *dest, uint32_t value)
         return SAPI_STATUS_INVALID_PARAM;
     }
     st = sapi_cast_u32_to_u64(value, &widened);
-    if (st != SAPI_STATUS_OK)
+    if (st != SAPI_STATUS_OK) /* GCOVR_EXCL_START - sapi_cast_u32_to_u64() can
+                                * only fail for a NULL out pointer, and
+                                * &widened is always a valid local address. */
     {
         return st;
-    }
+    } /* GCOVR_EXCL_STOP */
     return sapi_string_from_u64(dest, widened);
 }
 
@@ -410,10 +412,12 @@ sapi_status_t sapi_string_from_i32(sapi_string_t *dest, int32_t value)
         return SAPI_STATUS_INVALID_PARAM;
     }
     st = sapi_cast_i32_to_i64(value, &widened);
-    if (st != SAPI_STATUS_OK)
+    if (st != SAPI_STATUS_OK) /* GCOVR_EXCL_START - sapi_cast_i32_to_i64() can
+                                * only fail for a NULL out pointer, and
+                                * &widened is always a valid local address. */
     {
         return st;
-    }
+    } /* GCOVR_EXCL_STOP */
     return sapi_string_from_i64(dest, widened);
 }
 

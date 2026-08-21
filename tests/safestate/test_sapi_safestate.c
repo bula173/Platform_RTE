@@ -15,7 +15,9 @@
  */
 #include <assert.h>
 #include <setjmp.h>
+#include <signal.h>
 #include <string.h>
+#include <unistd.h>
 #include "safeapi/safestate/sapi_safestate.h"
 
 static jmp_buf g_jmp;
@@ -146,6 +148,63 @@ static void test_assert_macro(void)
     }
 }
 
+/* The genuinely-infinite `for (;;)` defensive halt (REQ-COMMON-SAFESTATE-002)
+ * cannot be exercised in-process without hanging this test binary forever -
+ * unlike the SAFE/REBOOT cases above, there is no handler to divert control
+ * away via setjmp/longjmp on this path (it is reached specifically when no
+ * handler fires: an unrecognized level value). This arms a real SIGALRM and
+ * diverts out of the loop with sigsetjmp/siglongjmp - the same technique as
+ * the SAFE/REBOOT diversion above, just triggered by a timer instead of a
+ * handler callback - which proves at runtime that the halt is entered and
+ * never returns control on its own.
+ *
+ * Known tool limitation (do not "fix" by adding more assertions): gcov's
+ * line/branch counts for a block are reconstructed from a flow graph under
+ * a conservation-of-flow assumption (sum of incoming arc counts == sum of
+ * outgoing arc counts). A true `for (;;) {}` with no side exit has zero
+ * outgoing arcs, so that reconstruction always assigns it a minimal count
+ * of 0 no matter how many times it actually ran - confirmed reproducible
+ * in isolation with both Apple clang's --coverage and a stock GCC 15
+ * (gcov -b) on a trivial `for (;;) {}` reached via an identical
+ * signal+sigsetjmp escape. No test-side change can make gcov report this
+ * line as executed; the sigsetjmp-based assertions above are the strongest
+ * available proof that it was. */
+static sigjmp_buf g_sigjmp;
+
+static void halt_escape_handler(int sig)
+{
+    (void)sig;
+    siglongjmp(g_sigjmp, 1);
+}
+
+static void test_unrecognized_level_halts_forever(void)
+{
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = halt_escape_handler;
+    assert(sigaction(SIGALRM, &sa, NULL) == 0);
+
+    if (sigsetjmp(g_sigjmp, 1) == 0)
+    {
+        alarm(1U);
+
+        /* Unrecognized level: valid_level is false, handler stays NULL, so
+         * execution falls straight into the infinite defensive halt, where
+         * it spins until the alarm above fires and diverts control out. */
+        sapi_safestate_enter((sapi_safestate_level_t)99, 0U, __FILE__, __LINE__, NULL);
+
+        /* Unreachable: the halt above never returns to this call site. */
+        assert(0);
+    }
+    else
+    {
+        /* Diverted here by the alarm handler: the halt was entered and is
+         * proven to genuinely never return control on its own. */
+        alarm(0U);
+    }
+}
+
 int main(void)
 {
     test_register_handler_validation();
@@ -153,5 +212,6 @@ int main(void)
     test_safe_does_not_return();
     test_reboot_does_not_return();
     test_assert_macro();
+    test_unrecognized_level_halts_forever();
     return 0;
 }

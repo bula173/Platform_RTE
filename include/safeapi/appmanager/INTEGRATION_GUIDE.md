@@ -118,7 +118,7 @@
  *
  *     // ===== STEP 6: SEND VITAL =====
  *     // Via vital_channel (automatic 2oo2 voting)
- *     sapi_vital_channel_send(&app->vital_channel, &output);
+ *     sapi_channel_send(&app->vital_channel, &output);
  *
  *     // ===== STEP 7: SEND NON-VITAL =====
  *     // Fire-and-forget diagnostics (non-blocking)
@@ -186,7 +186,7 @@
  * typedef struct {
  *     // Channels
  *     channel_registry_t *channel_registry;
- *     sapi_vital_channel_t vital_channel;
+ *     sapi_channel_t vital_channel;
  *     sapi_ipc_handle_t diag_channel;
  *
  *     // Services

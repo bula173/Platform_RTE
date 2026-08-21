@@ -81,6 +81,26 @@ static void test_partial_backend_reports_not_supported(void)
     assert(quality == SAPI_CLOCKSYNC_DEGRADED);
 }
 
+static void test_partial_backend_quality_not_supported(void)
+{
+    /* Mirror of test_partial_backend_reports_not_supported() but with the
+     * NULL/non-NULL callbacks swapped, to cover get_quality()'s own
+     * "backend registered but get_quality is NULL" branch (as opposed to
+     * get_offset_ms()'s equivalent branch, already covered above). */
+    sapi_clocksync_backend_t backend;
+    int64_t offset;
+    sapi_clocksync_quality_t quality;
+
+    backend.get_offset_ms = mock_get_offset_ms;
+    backend.get_quality = NULL;
+    assert(sapi_clocksync_register_backend(&backend) == SAPI_STATUS_OK);
+
+    g_mock_offset_ms = 5;
+    assert(sapi_clocksync_get_offset_ms(&offset) == SAPI_STATUS_OK);
+    assert(offset == 5);
+    assert(sapi_clocksync_get_quality(&quality) == SAPI_STATUS_NOT_SUPPORTED);
+}
+
 int main(void)
 {
     test_register_backend_validation();
@@ -88,5 +108,6 @@ int main(void)
     test_null_out_params();
     test_full_backend_reports_values();
     test_partial_backend_reports_not_supported();
+    test_partial_backend_quality_not_supported();
     return 0;
 }

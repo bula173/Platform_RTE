@@ -13,12 +13,13 @@
  *
  * Replaces a previous stub where kick()/start()/get_status() were all
  * no-ops and no timeout was ever detected (see git history) - discovered
- * while wiring a real per-role watchdog into safeAPIExample.
+ * while wiring a real per-role watchdog into safeAPIRBC2oo2.
  *
  * @ingroup WATCHDOG
  */
 #include "safeapi/watchdog/sapi_watchdog.h"
 
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi/log/sapi_log.h"
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/timer/sapi_timer.h"
@@ -164,6 +165,16 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out, const sapi_watch
     if (g_manager_initialized == 0U)
     {
         return SAPI_STATUS_NOT_INITIALIZED;
+    }
+    {
+        /* REQ-LIFECYCLE-001 (ADR-026): a watchdog is a setup-only resource - refuse once the
+         * application's setup phase has been locked. */
+        sapi_status_t lifecycle_status = sapi_lifecycle_check_setup_allowed();
+
+        if (lifecycle_status != SAPI_STATUS_OK)
+        {
+            return lifecycle_status;
+        }
     }
 
     for (i = 0U; i < (size_t)SAPI_WATCHDOG_MAX_COUNT; i++)
@@ -319,7 +330,7 @@ void sapi_watchdog_timeout_handler(uint32_t watchdog_id)
              * identical to CUSTOM's own mechanism. This used to be a dead
              * stub ("no generic failover primitive in this framework;
              * caller must poll sapi_watchdog_get_status()") - replaced
-             * once a real integrator (safeAPIExample's dual-channel A/B
+             * once a real integrator (safeAPIRBC2oo2's dual-channel A/B
              * link) needed exactly this reaction and found nothing to
              * call. */
             if (slot->config.custom_action != NULL)
@@ -334,9 +345,20 @@ void sapi_watchdog_timeout_handler(uint32_t watchdog_id)
                 slot->config.custom_action(slot->config.context);
             }
             break;
-        default:
-            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - unrecognized action");
-            break;
+        default: /* GCOVR_EXCL_LINE - see rationale below */
+            /* Defense-in-depth, not a reachable API path:
+             * sapi_watchdog_create() rejects any config.action that fails
+             * is_valid_action() before a slot is ever populated, so a live
+             * slot's action is always one of the 5 named cases above.
+             * There is no public way to mutate an already-created slot's
+             * action, so this default cannot be reached by any caller -
+             * kept for switch-statement completeness against a future
+             * sapi_watchdog_action_t value, not because it is exercised
+             * today. See docs/COVERAGE_REPORT.md for the accepted-
+             * exception rationale (this is one of the project's two
+             * documented gaps against the 100% branch coverage target). */
+            sapi_log_write(SAPI_LOG_LEVEL_ERROR, slot->config.name, "watchdog timeout - unrecognized action"); /* GCOVR_EXCL_LINE */
+            break; /* GCOVR_EXCL_LINE */
     }
 }
 

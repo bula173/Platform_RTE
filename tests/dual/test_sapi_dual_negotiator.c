@@ -189,6 +189,201 @@ static void test_invalid_params(void)
     /* Defensive NULL accessors. */
     assert(sapi_dual_negotiator_get_own_state(NULL) == SAPI_DUAL_STATE_IDLE);
     assert(sapi_dual_negotiator_get_peer_state(NULL) == SAPI_DUAL_STATE_IDLE);
+
+    /* execute() itself rejects a NULL negotiator too. */
+    assert(sapi_dual_negotiator_execute(NULL, 5U) == SAPI_STATUS_INVALID_PARAM);
+}
+
+static int                g_state_change_calls = 0;
+static sapi_dual_state_t  g_cb_new_own;
+static sapi_dual_state_t  g_cb_old_own;
+static sapi_dual_state_t  g_cb_new_peer;
+static sapi_dual_state_t  g_cb_old_peer;
+
+static void state_change_callback(sapi_dual_state_t new_own_state, sapi_dual_state_t old_own_state,
+                                   sapi_dual_state_t new_peer_state, sapi_dual_state_t old_peer_state,
+                                   void *user_ctx)
+{
+    (void)user_ctx;
+    g_state_change_calls++;
+    g_cb_new_own  = new_own_state;
+    g_cb_old_own  = old_own_state;
+    g_cb_new_peer = new_peer_state;
+    g_cb_old_peer = old_peer_state;
+}
+
+static void test_state_change_callback_fires_on_change(void)
+{
+    fixture_t                     fx;
+    sapi_dual_channel_t            channel_a;
+    sapi_dual_channel_t            channel_b;
+    sapi_dual_negotiator_t         negotiator_a;
+    sapi_dual_negotiator_t         negotiator_b;
+    sapi_dual_negotiator_config_t  cfg_a;
+
+    fixture_init(&fx);
+    g_mock_clock_ms = 0U;
+    init_dual_channel(&channel_a, &fx.a_link, 1U, 2U);
+    init_dual_channel(&channel_b, &fx.b_link, 2U, 1U);
+    force_channel_to_full(&channel_a);
+
+    (void)memset(&cfg_a, 0, sizeof(cfg_a));
+    cfg_a.channel               = &channel_a;
+    cfg_a.own_id                = 1U;
+    cfg_a.peer_id               = 2U;
+    cfg_a.peer_lost_timeout_ms  = 1000U;
+    cfg_a.state_change_callback = state_change_callback;
+    assert(sapi_dual_negotiator_init(&negotiator_a, &cfg_a) == SAPI_STATUS_OK);
+    init_negotiator(&negotiator_b, &channel_b, 2U, 1U, 1000U);
+
+    g_state_change_calls = 0;
+
+    assert(sapi_dual_negotiator_execute(&negotiator_a, 5U) == SAPI_STATUS_OK);
+    assert(sapi_dual_negotiator_execute(&negotiator_b, 5U) == SAPI_STATUS_OK);
+    /* Round 2: negotiator_a receives B's round-1 beacon and decides
+     * ONLINE - both own_state and peer_state change, callback fires. */
+    assert(sapi_dual_negotiator_execute(&negotiator_a, 5U) == SAPI_STATUS_OK);
+
+    assert(g_state_change_calls >= 1);
+    assert(g_cb_old_own == SAPI_DUAL_STATE_IDLE);
+    assert(g_cb_new_own == SAPI_DUAL_STATE_ONLINE);
+    assert(g_cb_old_peer == SAPI_DUAL_STATE_IDLE);
+    assert(g_cb_new_peer == SAPI_DUAL_STATE_HOTSTANDBY);
+}
+
+/** Exercises negotiator_decide_online()'s own_id/peer_id fallback branch
+ *  (sapi_dual_negotiator.h REQ-DUAL-NEGOTIATOR-003): reached only on an
+ *  exact startup-timestamp tie, which the mock timer (incrementing every
+ *  call) never produces on its own - forced here by directly overwriting
+ *  negotiator_b's own_startup_timestamp_ms to match negotiator_a's after
+ *  both are already init()ed (same whitebox rationale as
+ *  force_channel_to_full()/force_channel_to_down() above). */
+static void test_tie_break_falls_back_to_id_on_exact_timestamp_tie(void)
+{
+    fixture_t              fx;
+    sapi_dual_channel_t    channel_a;
+    sapi_dual_channel_t    channel_b;
+    sapi_dual_negotiator_t negotiator_a;
+    sapi_dual_negotiator_t negotiator_b;
+    uint32_t                i;
+
+    fixture_init(&fx);
+    g_mock_clock_ms = 0U;
+    init_dual_channel(&channel_a, &fx.a_link, 1U, 2U);
+    init_dual_channel(&channel_b, &fx.b_link, 2U, 1U);
+    force_channel_to_full(&channel_a);
+    force_channel_to_full(&channel_b);
+
+    /* own_id 9 (A) vs own_id 3 (B, as B's own peer_id=9's counterpart) -
+     * B's own_id (3) is smaller, so B must win the tie-break once
+     * timestamps are forced equal. */
+    init_negotiator(&negotiator_a, &channel_a, 9U, 3U, 1000U);
+    init_negotiator(&negotiator_b, &channel_b, 3U, 9U, 1000U);
+    negotiator_b.own_startup_timestamp_ms = negotiator_a.own_startup_timestamp_ms;
+
+    for (i = 0U; i < 2U; i++)
+    {
+        assert(sapi_dual_negotiator_execute(&negotiator_a, 5U) == SAPI_STATUS_OK);
+        assert(sapi_dual_negotiator_execute(&negotiator_b, 5U) == SAPI_STATUS_OK);
+    }
+
+    /* B's own_id (3) < A's own_id (9) -> B wins -> B is ONLINE, A is
+     * STANDBY, despite A having executed (and so sent) first. */
+    assert(sapi_dual_negotiator_get_own_state(&negotiator_b) == SAPI_DUAL_STATE_ONLINE);
+    assert(sapi_dual_negotiator_get_own_state(&negotiator_a) != SAPI_DUAL_STATE_ONLINE);
+}
+
+/** Companion to test_lost_peer_contact_degrades_to_unknown(): that test
+ *  covers the ONLINE-stays-ONLINE exception; this one covers the general
+ *  case (own_state HOTSTANDBY/COLDSTANDBY/IDLE) actually degrading to
+ *  SAPI_DUAL_STATE_UNKNOWN on lost peer contact. */
+static void test_lost_peer_contact_degrades_non_online_own_state_too(void)
+{
+    fixture_t              fx;
+    sapi_dual_channel_t    channel_a;
+    sapi_dual_channel_t    channel_b;
+    sapi_dual_negotiator_t negotiator_a;
+    sapi_dual_negotiator_t negotiator_b;
+    uint32_t                i;
+
+    fixture_init(&fx);
+    g_mock_clock_ms = 0U;
+    init_dual_channel(&channel_a, &fx.a_link, 1U, 2U);
+    init_dual_channel(&channel_b, &fx.b_link, 2U, 1U);
+    force_channel_to_full(&channel_a);
+    init_negotiator(&negotiator_a, &channel_a, 1U, 2U, 20U);
+    init_negotiator(&negotiator_b, &channel_b, 2U, 1U, 20U);
+
+    for (i = 0U; i < 2U; i++)
+    {
+        assert(sapi_dual_negotiator_execute(&negotiator_a, 5U) == SAPI_STATUS_OK);
+        assert(sapi_dual_negotiator_execute(&negotiator_b, 5U) == SAPI_STATUS_OK);
+    }
+    assert(sapi_dual_negotiator_get_own_state(&negotiator_a) == SAPI_DUAL_STATE_ONLINE);
+    assert(sapi_dual_negotiator_get_own_state(&negotiator_b) == SAPI_DUAL_STATE_HOTSTANDBY);
+
+    /* A stops executing entirely - only B keeps calling execute(), never
+     * seeing a fresh beacon from A, letting B's own last_peer_seen_ms
+     * fall behind config.peer_lost_timeout_ms. B's own_state
+     * (HOTSTANDBY, not ONLINE) must degrade to UNKNOWN too, unlike A's
+     * own case in test_lost_peer_contact_degrades_to_unknown(). */
+    for (i = 0U; i < 10U; i++)
+    {
+        assert(sapi_dual_negotiator_execute(&negotiator_b, 0U) == SAPI_STATUS_OK);
+    }
+
+    assert(sapi_dual_negotiator_get_peer_state(&negotiator_b) == SAPI_DUAL_STATE_UNKNOWN);
+    assert(sapi_dual_negotiator_get_own_state(&negotiator_b) == SAPI_DUAL_STATE_UNKNOWN);
+}
+
+/** Exercises sapi_dual_negotiator_execute()'s own "drain any additional
+ *  already-buffered frames" while() loop needing more than one
+ *  iteration: a frame already staged as channel_a->pending_state (so the
+ *  first sapi_dual_channel_receive_state_frame() call inside execute()
+ *  returns it immediately without touching the links) plus a second,
+ *  still-unread frame sitting in the link's own mailbox (so the while()
+ *  loop's own follow-up call finds and processes it too). Reaches into
+ *  sapi_dual_channel_t's own pending_state/pending_state_valid fields
+ *  directly - same whitebox rationale as force_channel_to_full() above:
+ *  this specific interleaving (one frame already staged, a second still
+ *  on the wire) cannot be produced through the public API alone with
+ *  this test file's single-slot-per-link mock backend, since a normal
+ *  sweep always collapses every currently-mailboxed frame down to just
+ *  the last one processed. */
+static void test_execute_drains_multiple_buffered_state_frames(void)
+{
+    fixture_t              fx;
+    sapi_dual_channel_t    channel_a;
+    sapi_dual_channel_t    channel_b;
+    sapi_dual_negotiator_t negotiator_a;
+
+    fixture_init(&fx);
+    g_mock_clock_ms = 0U;
+    init_dual_channel(&channel_a, &fx.a_link, 1U, 2U);
+    init_dual_channel(&channel_b, &fx.b_link, 2U, 1U);
+    force_channel_to_full(&channel_a);
+    init_negotiator(&negotiator_a, &channel_a, 1U, 2U, 1000U);
+
+    /* Frame 1: pre-staged directly as already-pending, standing in for a
+     * frame this same channel already picked up as a side effect of an
+     * earlier DATA-path poll this round, before execute() was called. */
+    (void)memset(&channel_a.pending_state, 0, sizeof(channel_a.pending_state));
+    channel_a.pending_state.state            = (uint8_t)SAPI_DUAL_STATE_ONLINE;
+    channel_a.pending_state.channel_degraded = 0U;
+    channel_a.pending_state.timestamp_ms     = 111U;
+    channel_a.pending_state_valid            = true;
+
+    /* Frame 2: a real, still-unread frame sent from B straight onto the
+     * wire (channel_b need not itself be negotiator-driven for this). */
+    assert(sapi_dual_channel_send_state_frame(&channel_b, SAPI_DUAL_STATE_HOTSTANDBY, true, 222U) == SAPI_STATUS_OK);
+
+    assert(sapi_dual_negotiator_execute(&negotiator_a, 5U) == SAPI_STATUS_OK);
+
+    /* The second (real, wire) frame is the one negotiator_a ends up
+     * having last processed - its own peer_channel_degraded reflects
+     * frame 2, not frame 1. */
+    assert(negotiator_a.peer_channel_degraded == true);
+    assert(negotiator_a.peer_startup_timestamp_ms == 222U);
 }
 
 static void test_startup_negotiation_decides_online_and_standby(void)
@@ -336,5 +531,9 @@ int main(void)
     test_startup_negotiation_decides_online_and_standby();
     test_peer_degraded_yields_coldstandby();
     test_lost_peer_contact_degrades_to_unknown();
+    test_state_change_callback_fires_on_change();
+    test_tie_break_falls_back_to_id_on_exact_timestamp_tie();
+    test_lost_peer_contact_degrades_non_online_own_state_too();
+    test_execute_drains_multiple_buffered_state_frames();
     return 0;
 }

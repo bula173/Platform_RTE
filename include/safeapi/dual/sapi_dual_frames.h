@@ -96,7 +96,7 @@ typedef struct sapi_dual_state_frame_s
      *  sapi_dual_negotiator_init() time) and repeated unchanged on every
      *  beacon this instance ever sends - NOT a live "now" refreshed each
      *  send. Used for the same older-timestamp-wins startup tie-break
-     *  safeAPIExample's site.c uses today (decide_online()): both sides
+     *  safeAPIRBC2oo2's site.c uses today (decide_online()): both sides
      *  must keep sending the *same* value across repeated beacons for
      *  that comparison to stay stable and reproducible rather than
      *  racing by whatever margin two live clocks happened to differ by

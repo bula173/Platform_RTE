@@ -16,7 +16,7 @@ file. Using `sapi_timer.h` as the representative example, a single
 
 - **Consumer API** - `sapi_timer_create/start/stop/destroy/now()`, the
   opaque handle/storage/config types - what a real application (e.g.
-  safeAPIExample's `channel_ab.c`) includes and calls.
+  safeAPIRBC2oo2's `channel_ab.c`) includes and calls.
 - **Backend adaptation API** - `sapi_timer_backend_t` (the vtable) and
   `sapi_timer_register_backend()` - what a platform/RTOS integrator
   implements once, per target, and nobody else ever calls.
@@ -61,7 +61,7 @@ structural costs, not ones that recur per feature added later.
   `static const sapi_<feature>_backend_t *s_backend` slot and validates/
   dispatches through it, per ADR-005 section 2.2). This is the one place
   in the framework itself that legitimately needs both.
-- A concrete backend implementation (e.g. safeAPIExample's
+- A concrete backend implementation (e.g. safeAPIRBC2oo2's
   `sapi_posix_backend_timer.c`) includes only the backend header (via its
   own umbrella `sapi_posix_backend.h`) - it never needs the bulk of the
   consumer header's doc comments describing how an application should
@@ -76,7 +76,7 @@ structural costs, not ones that recur per feature added later.
 Given the scale of this change (9 modules, every downstream include),
 `sapi_timer` was split first as a pilot and verified (framework unit
 tests for timer/watchdog/log/dual-negotiator rebuilt and passed; the full
-safeAPIExample 8-process demo rebuilt from source and re-run with
+safeAPIRBC2oo2 8-process demo rebuilt from source and re-run with
 identical behavior to before the split). The same mechanical split -
 move the vtable struct and `_register_backend()` declaration out, add the
 new backend header, update every file that referenced the vtable type -
@@ -89,7 +89,7 @@ mechanical). Verified the same way as the pilot: every affected framework
 unit test (16 total: status, buffer, cast, safestate, string, timer, nvm,
 reboot, vital_channel, clocksync, checkpoint, netlink, watchdog,
 appmanager, log, and the three `dual/` tests) rebuilt via manual `gcc`
-and passed, and a full safeAPIExample rebuild + live 8-process WEST/EAST
+and passed, and a full safeAPIRBC2oo2 rebuild + live 8-process WEST/EAST
 demo run showed 0 errors and identical AGREE/checkpoint/negotiation
 behavior to before the split.
 
@@ -120,6 +120,6 @@ All 9 backend-bearing modules are split as of this update:
 `include/safeapi/<feature>/sapi_<feature>.h` (consumer) and
 `include/safeapi_backend/<feature>/sapi_<feature>_backend.h` (backend)
 exist side by side for `timer`, `nvm`, `memory`, `task`, `ipc`, `log`,
-`reboot`, `netlink`, and `clocksync`. safeAPIExample's POSIX backend
+`reboot`, `netlink`, and `clocksync`. safeAPIRBC2oo2's POSIX backend
 (`include/safeapi/posix_backend/sapi_posix_backend.h`) includes both
 headers for every service it implements.

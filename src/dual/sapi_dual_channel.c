@@ -219,6 +219,17 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
     uint8_t frame_size;
     uint32_t i;
     uint32_t ack_count = 0U;
+    /* REQ-DUAL-CHANNEL-008: a link whose own send/receive reports
+     * something other than SAPI_STATUS_OK/SAPI_STATUS_TIMEOUT (e.g.
+     * SAPI_STATUS_HARDWARE_FAULT from a closed/reset connection) is
+     * genuinely broken, not just quiet - see this function's own header
+     * for why collapsing that into the same generic TIMEOUT every other
+     * "no ACK yet" case returns hid real transport failures from every
+     * caller. Kept as the FIRST such status seen across all links this
+     * call, not the last - an arbitrary but stable choice among possibly
+     * several simultaneous failures. */
+    bool          saw_hard_fault = false;
+    sapi_status_t hard_fault_status = SAPI_STATUS_OK;
 
     if (channel == NULL)
     {
@@ -256,6 +267,11 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
 
         send_status = sapi_dual_msgchannel_send(&channel->links[i], frame, frame_size, channel->ack_timeout_ms,
                                                  &sent_sequence);
+        if ((send_status == SAPI_STATUS_HARDWARE_FAULT) && (!saw_hard_fault))
+        {
+            saw_hard_fault    = true;
+            hard_fault_status = send_status;
+        }
         if (send_status == SAPI_STATUS_OK)
         {
             sapi_duration_ms_t   remaining = channel->ack_timeout_ms;
@@ -285,6 +301,21 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
                     && (result.ack_sequence == sent_sequence))
                 {
                     link_now_up = true;
+                    break;
+                }
+                if (poll_status == SAPI_STATUS_HARDWARE_FAULT)
+                {
+                    /* Genuinely broken (not just "no ACK frame arrived
+                     * yet this poll"), e.g. HARDWARE_FAULT from the peer
+                     * having closed/reset the connection - see this
+                     * function's own header. No point continuing to poll
+                     * a dead link for the rest of its own ack_timeout_ms
+                     * budget. */
+                    if (!saw_hard_fault)
+                    {
+                        saw_hard_fault    = true;
+                        hard_fault_status = poll_status;
+                    }
                     break;
                 }
 
@@ -351,7 +382,11 @@ sapi_status_t sapi_dual_channel_send(sapi_dual_channel_t *channel, const uint8_t
 
     dual_channel_update_status(channel);
 
-    return (ack_count > 0U) ? SAPI_STATUS_OK : SAPI_STATUS_TIMEOUT;
+    if (ack_count > 0U)
+    {
+        return SAPI_STATUS_OK;
+    }
+    return saw_hard_fault ? hard_fault_status : SAPI_STATUS_TIMEOUT;
 }
 
 sapi_status_t sapi_dual_channel_receive(sapi_dual_channel_t *channel, uint8_t *out_payload, uint8_t max_size,
@@ -362,30 +397,48 @@ sapi_status_t sapi_dual_channel_receive(sapi_dual_channel_t *channel, uint8_t *o
         return SAPI_STATUS_INVALID_PARAM;
     }
 
-    if (!channel->pending_data_valid)
     {
-        uint32_t           i;
-        sapi_duration_ms_t per_link_timeout = (channel->link_count > 0U) ? (timeout_ms / channel->link_count) : 0U;
+        bool          saw_hard_fault = false;
+        sapi_status_t hard_fault_status = SAPI_STATUS_OK;
 
-        /* Sweeps every configured link every call, even after an
-         * earlier link in this same sweep already staged a DATA frame -
-         * stopping early here would let a link with a shorter path (or
-         * one that always has traffic) starve every other redundant
-         * link of its own auto-ACK indefinitely (ADR-020 section 2: a
-         * redundant link should degrade to DOWN only from genuinely not
-         * responding, never from this module never getting around to
-         * polling it). */
-        for (i = 0U; i < channel->link_count; i++)
+        if (!channel->pending_data_valid)
         {
-            dual_poll_result_t result;
+            uint32_t           i;
+            sapi_duration_ms_t per_link_timeout = (channel->link_count > 0U) ? (timeout_ms / channel->link_count) : 0U;
 
-            (void)dual_channel_poll_link_once(channel, i, per_link_timeout, &result);
+            /* Sweeps every configured link every call, even after an
+             * earlier link in this same sweep already staged a DATA frame -
+             * stopping early here would let a link with a shorter path (or
+             * one that always has traffic) starve every other redundant
+             * link of its own auto-ACK indefinitely (ADR-020 section 2: a
+             * redundant link should degrade to DOWN only from genuinely not
+             * responding, never from this module never getting around to
+             * polling it). Still swept to completion even after a hard
+             * fault on an earlier link, for the same reason. */
+            for (i = 0U; i < channel->link_count; i++)
+            {
+                dual_poll_result_t result;
+                sapi_status_t       poll_status;
+
+                poll_status = dual_channel_poll_link_once(channel, i, per_link_timeout, &result);
+                /* REQ-DUAL-CHANNEL-008: see sapi_dual_channel_send()'s own
+                 * doc on this same distinction - a link reporting
+                 * something other than OK/TIMEOUT (e.g. HARDWARE_FAULT
+                 * from a closed/reset connection) is broken, not just
+                 * quiet, and that must not be silently collapsed into the
+                 * same generic TIMEOUT "nothing staged yet" returns below. */
+                if ((poll_status == SAPI_STATUS_HARDWARE_FAULT) && (!saw_hard_fault))
+                {
+                    saw_hard_fault    = true;
+                    hard_fault_status = poll_status;
+                }
+            }
         }
-    }
 
-    if (!channel->pending_data_valid)
-    {
-        return SAPI_STATUS_TIMEOUT;
+        if (!channel->pending_data_valid)
+        {
+            return saw_hard_fault ? hard_fault_status : SAPI_STATUS_TIMEOUT;
+        }
     }
     if (channel->pending_data_size > max_size)
     {

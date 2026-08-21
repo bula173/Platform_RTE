@@ -1,8 +1,18 @@
 # Hardware Redundancy & Voting Framework
 
-⚠️ **STATUS: DESIGN PHASE** — This document describes proposed SAPI APIs for redundancy and voting that have not yet been implemented. Code examples are illustrative of the design intent and do not correspond to existing APIs. This specification will become implemented in safeAPIFramework v0.4.0 or later.
-
-See [ROADMAP.md](ROADMAP.md) for implementation timeline and priority.
+✅ **STATUS: IMPLEMENTED** — the "design phase" banner this document
+originally carried is stale: `sapi_channel` (2oo2/2oo3/NMR voting),
+`sapi_checksum` (CRC-64 integrity), and `sapi_checkpoint`
+(cross-channel rendezvous) are all implemented, tested, and part of the
+default build (see the README's "Redundancy Framework" status entry and
+`docs/architecture/ADR-017-checkpoint-and-clock-sync.md`/ADR-024's
+dependency table). This document is kept as a **design record** for the
+rationale behind that implementation, not a still-to-be-built proposal -
+treat real header/source under `include/safeapi/vital_channel/`,
+`include/safeapi/checksum/`, `include/safeapi/checkpoint/` as
+authoritative over any code example below that has since diverged from
+it; this document was not line-by-line reconciled against the final
+implementation as part of correcting this banner.
 
 ---
 
@@ -179,7 +189,7 @@ Output or FAULT
 /**
  * @brief Vital channel handle (abstracts redundancy)
  */
-typedef struct sapi_vital_channel_s *sapi_vital_channel_t;
+typedef struct sapi_vital_channel_s *sapi_channel_t;
 
 /**
  * @brief Voting strategy for vital channels
@@ -207,7 +217,7 @@ typedef struct {
     
     // Health monitoring
     sapi_duration_ms_t timeout_ms;
-} sapi_vital_channel_config_t;
+} sapi_channel_config_t;
 
 /**
  * @brief Create a vital (redundant) channel
@@ -219,7 +229,7 @@ typedef struct {
  * Example (2oo2):
  * @code
  * sapi_ipc_handle_t channels[2] = {channel_a, channel_b};
- * sapi_vital_channel_config_t config = {
+ * sapi_channel_config_t config = {
  *     .name = "vital_signal_channel",
  *     .strategy = SAPI_VOTING_2OO2,
  *     .channels = channels,
@@ -230,8 +240,8 @@ typedef struct {
  * sapi_vital_channel_create(&vital_ch, &config);
  * @endcode
  */
-sapi_status_t sapi_vital_channel_create(sapi_vital_channel_t *handle_out,
-                                         const sapi_vital_channel_config_t *config);
+sapi_status_t sapi_vital_channel_create(sapi_channel_t *handle_out,
+                                         const sapi_channel_config_t *config);
 
 /**
  * @brief Send on vital channel (broadcasts to all redundant channels)
@@ -247,7 +257,7 @@ sapi_status_t sapi_vital_channel_create(sapi_vital_channel_t *handle_out,
  *         SAPI_STATUS_ERROR if any channel failed
  *         SAPI_STATUS_TIMEOUT if any channel timed out
  */
-sapi_status_t sapi_vital_send(sapi_vital_channel_t channel,
+sapi_status_t sapi_vital_send(sapi_channel_t channel,
                                const void *message,
                                size_t size,
                                sapi_duration_ms_t timeout_ms);
@@ -268,7 +278,7 @@ sapi_status_t sapi_vital_send(sapi_vital_channel_t channel,
  *         SAPI_STATUS_ERROR if voting failed (disagreement)
  *         SAPI_STATUS_TIMEOUT if channels didn't respond
  */
-sapi_status_t sapi_vital_receive(sapi_vital_channel_t channel,
+sapi_status_t sapi_vital_receive(sapi_channel_t channel,
                                   void *message_out,
                                   size_t size,
                                   sapi_duration_ms_t timeout_ms);
@@ -280,13 +290,13 @@ sapi_status_t sapi_vital_receive(sapi_vital_channel_t channel,
  * @param health_out Receives health information
  * @return SAPI_STATUS_OK on success
  */
-sapi_status_t sapi_vital_get_health(sapi_vital_channel_t channel,
+sapi_status_t sapi_vital_get_health(sapi_channel_t channel,
                                      sapi_channel_health_t *health_out);
 
 /**
  * @brief Destroy vital channel
  */
-sapi_status_t sapi_vital_channel_destroy(sapi_vital_channel_t channel);
+sapi_status_t sapi_channel_destroy(sapi_channel_t channel);
 
 /* ============================================================================
  * Non-Vital Channel (Single, Best-Effort)
@@ -400,7 +410,7 @@ sapi_ipc_create(&storage_b, &config_b, &channel_b);
 
 // Create vital channel that wraps both with 2oo2 voting
 sapi_ipc_handle_t channels[2] = {channel_a, channel_b};
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "dual_redundant_signal",
     .strategy = SAPI_VOTING_2OO2,
     .channels = channels,
@@ -409,7 +419,7 @@ sapi_vital_channel_config_t vital_config = {
     .timeout_ms = 100
 };
 
-sapi_vital_channel_t vital_signal;
+sapi_channel_t vital_signal;
 sapi_vital_channel_create(&vital_signal, &vital_config);
 
 // Application sends on vital channel (broadcasts to both CPUs)
@@ -462,7 +472,7 @@ They communicate via 2oo3 voting:
 // Create three underlying IPC channels
 sapi_ipc_handle_t channels[3] = {channel_a, channel_b, channel_c};
 
-sapi_vital_channel_config_t vital_config = {
+sapi_channel_config_t vital_config = {
     .name = "triple_redundant_signal",
     .strategy = SAPI_VOTING_2OO3,  // Majority vote
     .channels = channels,
@@ -471,7 +481,7 @@ sapi_vital_channel_config_t vital_config = {
     .timeout_ms = 100
 };
 
-sapi_vital_channel_t vital_signal;
+sapi_channel_t vital_signal;
 sapi_vital_channel_create(&vital_signal, &vital_config);
 
 // Send: broadcasts to all 3 CPUs
@@ -813,7 +823,7 @@ typedef struct {
  *         SAPI_STATUS_TIMEOUT if some nodes didn't reach checkpoint
  *         SAPI_STATUS_ERROR if channel fault detected
  */
-sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t channel,
+sapi_status_t sapi_channel_checkpoint(sapi_channel_t channel,
                                        const sapi_checkpoint_config_t *config);
 
 /**
@@ -827,7 +837,7 @@ sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t channel,
  * @param status_out Bitmap: bit N = 1 if node N reached checkpoint
  * @return SAPI_STATUS_OK on success
  */
-sapi_status_t sapi_channel_checkpoint_status(sapi_vital_channel_t channel,
+sapi_status_t sapi_channel_checkpoint_status(sapi_channel_t channel,
                                               uint32_t checkpoint_id,
                                               uint32_t *status_out);
 
@@ -842,7 +852,7 @@ sapi_status_t sapi_channel_checkpoint_status(sapi_vital_channel_t channel,
  * @param size Output data size
  * @return SAPI_STATUS_OK on success
  */
-sapi_status_t sapi_channel_stage_output(sapi_vital_channel_t channel,
+sapi_status_t sapi_channel_stage_output(sapi_channel_t channel,
                                          const void *output_data,
                                          size_t size);
 
@@ -858,7 +868,7 @@ sapi_status_t sapi_channel_stage_output(sapi_vital_channel_t channel,
  *         SAPI_STATUS_ERROR if nodes disagree
  *         SAPI_STATUS_TIMEOUT if nodes don't respond
  */
-sapi_status_t sapi_channel_sync_output(sapi_vital_channel_t channel,
+sapi_status_t sapi_channel_sync_output(sapi_channel_t channel,
                                         sapi_duration_ms_t timeout_ms);
 
 /**
@@ -871,7 +881,7 @@ sapi_status_t sapi_channel_sync_output(sapi_vital_channel_t channel,
  * @return SAPI_STATUS_OK if commit succeeded
  *         SAPI_STATUS_ERROR if commit failed (safety fault)
  */
-sapi_status_t sapi_channel_commit_output(sapi_vital_channel_t channel);
+sapi_status_t sapi_channel_commit_output(sapi_channel_t channel);
 
 /**
  * @brief Send output (only after checkpoint + sync + commit)
@@ -887,7 +897,7 @@ sapi_status_t sapi_channel_commit_output(sapi_vital_channel_t channel);
  * @param size Output size
  * @return SAPI_STATUS_OK if send succeeded
  */
-sapi_status_t sapi_channel_send_output(sapi_vital_channel_t channel,
+sapi_status_t sapi_channel_send_output(sapi_channel_t channel,
                                         const void *output_data,
                                         size_t size);
 
@@ -901,7 +911,7 @@ sapi_status_t sapi_channel_send_output(sapi_vital_channel_t channel,
  * @param channel Vital channel
  * @return SAPI_STATUS_OK on success
  */
-sapi_status_t sapi_channel_abort_output(sapi_vital_channel_t channel);
+sapi_status_t sapi_channel_abort_output(sapi_channel_t channel);
 ```
 
 ### Application Flow Example (Online Mode - 2oo3)

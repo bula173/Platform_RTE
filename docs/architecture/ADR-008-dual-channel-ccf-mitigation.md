@@ -128,8 +128,8 @@ case will still need to state.
   channels run on separate physical nodes) is out of scope here; expected
   to build on `sapi_ipc` in a future ADR once the transport is designed.
   **Update:** ADR-017 (`sapi_checkpoint`, `sapi_clocksync`) is that future
-  ADR - built on `sapi_vital_channel` rather than `sapi_channel`, since by
-  the time ADR-017 was written `sapi_vital_channel` had become the more
+  ADR - built on `sapi_channel` rather than `sapi_channel`, since by
+  the time ADR-017 was written `sapi_channel` had become the more
   complete, actively-developed voting implementation (2oo2/2oo3/NMR vs.
   this ADR's fixed 2-channel comparator). `sapi_channel`'s own fate
   (retire vs. keep as a lighter-weight alternative) is still an open

@@ -967,7 +967,12 @@ Your operational procedures inherit SAPI patterns.
 - Ensures: Code safety, no undefined behavior, deterministic
 
 **SAPI Architecture**
-- [ADR-001](docs/architecture/) through [ADR-010](docs/architecture/)
+- [ADR-001](docs/architecture/) through [ADR-008](docs/architecture/), then
+  [ADR-016](docs/architecture/) through [ADR-024](docs/architecture/)
+  (ADR-009 through ADR-015 were never written - see ROADMAP.md; this
+  previously read "ADR-001 through ADR-010", which both overstated a
+  contiguous ADR-009/ADR-010 that don't exist and understated everything
+  from ADR-016 onward)
 - [REDUNDANCY_ARCHITECTURE.md](docs/REDUNDANCY_ARCHITECTURE.md)
 - [WATCHDOG_DESIGN.md](docs/WATCHDOG_DESIGN.md)
 - [SRS.md](docs/requirements/SRS.md)

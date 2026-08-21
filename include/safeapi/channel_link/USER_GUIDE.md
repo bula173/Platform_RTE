@@ -22,7 +22,7 @@
  *
  * // 2. Create vital channel that wraps both with 2oo2 voting
  * sapi_buffer_t channels[2] = {channel_a_buf, channel_b_buf};
- * sapi_vital_channel_config_t config = {
+ * sapi_channel_config_t config = {
  *     .name = "dual_redundant_signal",
  *     .strategy = SAPI_VOTING_2OO2,
  *     .channels = channels,
@@ -31,7 +31,7 @@
  *     .timeout_ms = 100
  * };
  * 
- * sapi_vital_channel_t vital_ch;
+ * sapi_channel_t vital_ch;
  * sapi_vital_channel_create(&vital_ch, &config);
  *
  * // 3. Send command to both CPUs

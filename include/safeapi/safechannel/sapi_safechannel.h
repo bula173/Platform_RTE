@@ -7,7 +7,8 @@
  * endpoint(s) as host/port/role, and get back one handle with uniform
  * open/send/receive/close/status operations - regardless of whether it
  * is backed by a redundant-link @ref sapi_dual_channel_t or a
- * voting @ref sapi_vital_channel_t underneath.
+ * voting @ref sapi_voter_t (over N @ref sapi_channel_t links,
+ * ADR-025) underneath.
  *
  * This header never requires the caller to include
  * `safeapi/netlink/sapi_netlink.h` or `safeapi/ipc/sapi_ipc.h`, or to
@@ -27,7 +28,7 @@
  * REQ-SAFECHANNEL-003: sapi_safechannel_send()/_receive() behave
  *                      identically to the caller regardless of
  *                      config.type (uniform facade over
- *                      sapi_dual_channel_t / sapi_vital_channel_t).
+ *                      sapi_dual_channel_t / sapi_channel_t).
  *
  * @defgroup SAFECHANNEL Unified Channel Factory
  * @brief App-facing channel open/send/receive/close, transport hidden (ADR-022)
@@ -44,7 +45,8 @@
 #include "safeapi/netlink/sapi_netlink.h"
 #include "safeapi/status/sapi_status.h"
 #include "safeapi/types/sapi_types.h"
-#include "safeapi/vital_channel/sapi_vital_channel.h"
+#include "safeapi/channel_link/sapi_channel.h"
+#include "safeapi/voter/sapi_voter.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -60,8 +62,8 @@ typedef enum sapi_safechannel_type_e
     /** Wraps sapi_dual_channel_t: 1..N redundant links, always-send +
      *  bounded-ACK-wait delivery, EN 50159-framed (ADR-020). */
     SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT = 0,
-    /** Wraps sapi_vital_channel_t: N channels with 2oo2/2oo3/NMR voting
-     *  arbitration (vital_channel module). */
+    /** Wraps a sapi_voter_t over N sapi_channel_t links: 2oo2/2oo3/NMR
+     *  voting arbitration (ADR-025). */
     SAPI_SAFECHANNEL_TYPE_VITAL_VOTED = 1
 } sapi_safechannel_type_t;
 
@@ -113,7 +115,7 @@ typedef struct sapi_safechannel_dual_config_s
 typedef struct sapi_safechannel_vital_config_s
 {
     /** Endpoints to open, one per redundant voted channel. */
-    sapi_safechannel_endpoint_t endpoints[SAPI_VITAL_CHANNEL_MAX_CHANNELS];
+    sapi_safechannel_endpoint_t endpoints[SAPI_SAFECHANNEL_MAX_LINKS];
     /** Number of entries populated in endpoints[]. */
     uint32_t link_count;
     /** Fixed size in bytes of every message exchanged - every endpoint
@@ -126,12 +128,12 @@ typedef struct sapi_safechannel_vital_config_s
     /** Max time sapi_safechannel_open() may block per endpoint establishing it. */
     sapi_duration_ms_t connect_timeout_ms;
     /** Timeout for each channel operation (milliseconds), forwarded to
-     *  sapi_vital_channel_config_t::channel_timeout_ms. */
+     *  sapi_voter_config_t::channel_timeout_ms. */
     sapi_duration_ms_t channel_timeout_ms;
     /** Enable automatic disagreement logging (forwarded as-is). */
     bool log_disagreements;
-    /** Optional; NULL = no callback. */
-    void (*on_disagreement)(void *context, const sapi_voting_result_t *result);
+    /** Optional; NULL = no callback. Forwarded to sapi_voter_config_t::on_disagreement. */
+    void (*on_disagreement)(void *context, sapi_voting_result_t result);
     /** Opaque context passed back to on_disagreement. Ignored if NULL. */
     void *context;
 } sapi_safechannel_vital_config_t;
@@ -153,7 +155,7 @@ typedef struct sapi_safechannel_config_s
  *        field is private - reach it only through the functions below.
  *        No dynamic allocation (REQ-SAFECHANNEL-002): sized to hold up to
  *        SAPI_SAFECHANNEL_MAX_LINKS opened netlink links plus whichever
- *        of sapi_dual_channel_t/sapi_vital_channel_t is in use.
+ *        of sapi_dual_channel_t/sapi_channel_t is in use.
  */
 typedef struct sapi_safechannel_s
 {
@@ -172,8 +174,10 @@ typedef struct sapi_safechannel_s
         sapi_dual_channel_t dual;
         struct
         {
-            sapi_vital_channel_t   channel;
-            void                   *channel_ptrs[SAPI_VITAL_CHANNEL_MAX_CHANNELS];
+            /** ADR-025: N individual channels registered into a voter,
+             *  replacing the old single N-channel-bundle sapi_channel_t. */
+            sapi_channel_t channels[SAPI_SAFECHANNEL_MAX_LINKS];
+            sapi_voter_t         voter;
         } vital;
     } impl;
 } sapi_safechannel_t;
@@ -181,7 +185,7 @@ typedef struct sapi_safechannel_s
 /**
  * @brief Opens a channel: opens every configured endpoint via the
  *        registered sapi_netlink backend, then initializes the wrapped
- *        sapi_dual_channel_t or sapi_vital_channel_t on top of the
+ *        sapi_dual_channel_t or sapi_channel_t on top of the
  *        resulting links (ADR-022 section 2.2). Retries each endpoint's
  *        sapi_netlink_open() internally up to config's own
  *        connect_timeout_ms, matching the retry pattern every current
@@ -204,7 +208,8 @@ sapi_status_t sapi_safechannel_open(sapi_safechannel_t *channel, const sapi_safe
 /**
  * @brief Sends payload on the underlying channel - broadcast-with-ACK-
  *        wait for DUAL_REDUNDANT (sapi_dual_channel_send()), atomic
- *        all-or-nothing broadcast for VITAL_VOTED (sapi_vital_channel_send()).
+ *        all-or-nothing broadcast to every registered channel for
+ *        VITAL_VOTED (sapi_voter_send()).
  * @param channel       Opened channel. Must not be NULL.
  * @param payload       Payload to send. May be NULL only if payload_size is 0.
  * @param payload_size  Payload size in bytes; must be <=
@@ -212,8 +217,8 @@ sapi_status_t sapi_safechannel_open(sapi_safechannel_t *channel, const sapi_safe
  *                      the configured message_size (VITAL_VOTED).
  * @return SAPI_STATUS_OK; SAPI_STATUS_TIMEOUT; SAPI_STATUS_INVALID_PARAM;
  *         SAPI_STATUS_HARDWARE_FAULT (VITAL_VOTED disagreement/fault) -
- *         see sapi_dual_channel_send()/sapi_vital_channel_send() for
- *         the exact per-type semantics.
+ *         see sapi_dual_channel_send()/sapi_voter_send() for the exact
+ *         per-type semantics.
  */
 sapi_status_t sapi_safechannel_send(sapi_safechannel_t *channel, const uint8_t *payload, size_t payload_size);
 

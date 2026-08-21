@@ -78,14 +78,14 @@
  *
  * **Step 3: Wrap in Vital Channel** (See @ref vital_channel_architecture)
  * ```c
- * sapi_vital_channel_config_t vital_cfg = {
+ * sapi_channel_config_t vital_cfg = {
  *     .voting_strategy = SAPI_VOTING_2OO2,
  *     .backend_send = your_dispatcher_send,
  *     .backend_recv = your_dispatcher_recv,
  * };
  *
  * void *channels[2] = { &tcp_channel, &udp_channel };
- * sapi_vital_channel_init(&vital, &vital_cfg, channels, 2);
+ * sapi_channel_init(&vital, &vital_cfg, channels, 2);
  * ```
  *
  * **Step 4: Use in App Manager** (See @ref system_architecture)

@@ -6,6 +6,7 @@
 #include "safeapi/checkpoint/sapi_checkpoint.h"
 
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "safeapi/buffer/sapi_buffer.h"
 #include "safeapi/checksum/sapi_checksum.h"
@@ -135,26 +136,21 @@ static sapi_duration_ms_t remaining_budget_ms(sapi_timestamp_ms_t start_ms,
     return remaining;
 }
 
-sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t *handle, const sapi_checkpoint_config_t *config)
+sapi_status_t sapi_channel_checkpoint(sapi_voter_t *voter, const sapi_checkpoint_config_t *config)
 {
     sapi_status_t status = SAPI_STATUS_OK;
     sapi_vital_message_t arrival_msg;
+    uint32_t channel_count;
 
-    if ((handle == NULL) || (config == NULL))
+    channel_count = sapi_voter_get_channel_count(voter);
+
+    if ((voter == NULL) || (config == NULL))
     {
         status = SAPI_STATUS_INVALID_PARAM;
     }
-    else if ((config->expected_node_count == 0U) || (config->expected_node_count > handle->channel_count))
+    else if ((config->expected_node_count == 0U) || (config->expected_node_count > channel_count))
     {
         status = SAPI_STATUS_INVALID_PARAM;
-    }
-    else if ((handle->config.backend_send == NULL) || (handle->config.backend_recv == NULL))
-    {
-        /* Defensive: sapi_vital_channel_init() already requires both
-         * callbacks to be non-NULL, but handle is caller-supplied state -
-         * don't trust it blindly just because it was probably initialized
-         * correctly (SIL4 defensive-programming baseline). */
-        status = SAPI_STATUS_NOT_INITIALIZED;
     }
     else
     {
@@ -166,14 +162,17 @@ sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t *handle, const sapi_c
         sapi_timestamp_ms_t start_ms = 0U;
         uint32_t confirmed_count = 0U;
         uint32_t i;
+        sapi_status_t last_send_status = SAPI_STATUS_OK;
+        sapi_status_t last_recv_status = SAPI_STATUS_OK;
 
         (void)sapi_timer_now(&start_ms);
 
-        for (i = 0U; i < handle->channel_count; i++)
+        for (i = 0U; i < channel_count; i++)
         {
-            sapi_status_t send_status =
-                handle->config.backend_send(handle->channels[i], &arrival_msg, sizeof(arrival_msg));
+            sapi_channel_t *channel = sapi_voter_get_channel(voter, i);
+            sapi_status_t send_status = sapi_channel_send(channel, &arrival_msg, sizeof(arrival_msg));
 
+            last_send_status = send_status;
             if (send_status == SAPI_STATUS_OK)
             {
                 sapi_vital_message_t reply;
@@ -181,10 +180,11 @@ sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t *handle, const sapi_c
                 sapi_status_t recv_status;
 
                 (void)sapi_timer_now(&now_ms);
-                recv_status = handle->config.backend_recv(
-                    handle->channels[i], &reply, sizeof(reply),
+                recv_status = sapi_channel_receive(
+                    channel, &reply, sizeof(reply),
                     remaining_budget_ms(start_ms, now_ms, config->max_delay_ms));
 
+                last_recv_status = recv_status;
                 if ((recv_status == SAPI_STATUS_OK) && reply_confirms_checkpoint(&reply, config->checkpoint_id))
                 {
                     confirmed_count++;
@@ -202,12 +202,31 @@ sapi_status_t sapi_channel_checkpoint(sapi_vital_channel_t *handle, const sapi_c
         }
         else
         {
-            /* Matches the pattern sapi_vital_channel_receive() already
-             * uses on a voting disagreement: safe-state is triggered
-             * directly by the sync/vote logic itself, not left to the
-             * caller to notice and react to (REQ-CHECKPOINT-003). */
+            /* Diagnostic-only, fixed-size buffer (no dynamic allocation,
+             * CLAUDE.md): before this REQ-COMMON-SAFESTATE-002 permanent
+             * halt, capture the LAST channel's own send/receive outcome so
+             * a registered SAFE-level handler (see sapi_safestate.h) can
+             * actually log WHY this rendezvous failed - confirmed_count
+             * alone does not distinguish "peer never sent" (send_status
+             * failure) from "peer sent but didn't reply in time"
+             * (recv_status == SAPI_STATUS_TIMEOUT) from "replied with the
+             * wrong checkpoint_id" (recv_status == SAPI_STATUS_OK but not
+             * confirmed) - this was previously impossible to tell apart
+             * from outside this function, since no handler was ever
+             * registered for this level anywhere in this codebase and the
+             * halt itself is otherwise completely silent. */
+            char diag_message[96];
+
+            (void)snprintf(diag_message, sizeof(diag_message),
+                            "checkpoint confirmed=%u expected=%u channels=%u last_send=%d last_recv=%d",
+                            (unsigned int)confirmed_count, (unsigned int)config->expected_node_count,
+                            (unsigned int)channel_count, (int)last_send_status, (int)last_recv_status);
+            /* Matches the pattern sapi_voter_receive() already uses on a
+             * voting disagreement: safe-state is triggered directly by
+             * the sync/vote logic itself, not left to the caller to
+             * notice and react to (REQ-CHECKPOINT-003). */
             sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT, __FILE__,
-                                  (int32_t)__LINE__, NULL);
+                                  (int32_t)__LINE__, diag_message);
             status = SAPI_STATUS_TIMEOUT;
         }
     }

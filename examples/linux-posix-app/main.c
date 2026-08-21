@@ -14,22 +14,29 @@
  * - Main task processes incoming messages
  * - Timer callback generates heartbeats
  * - All operations logged with safe state management
+ *
+ * No timer/log backend is registered in this minimal example (a real
+ * integration wires one per ADR-005 - see safeAPIRBC2oo2's
+ * src/posix_backend/ for a full POSIX backend), so sapi_log_write() is a
+ * documented no-op here (REQ-OAL-LOG-001: a missing backend never blocks
+ * or fails the caller) and the timer callback is invoked directly rather
+ * than through a real sapi_timer_create()/_start() - see the main loop
+ * below.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <signal.h>
 
-#include "safeapi/status.h"
-#include "safeapi/types.h"
-#include "safeapi/buffer.h"
-#include "safeapi/string.h"
-#include "safeapi/log.h"
-#include "safeapi/timer.h"
-#include "safeapi/safestate.h"
+#include "safeapi/status/sapi_status.h"
+#include "safeapi/types/sapi_types.h"
+#include "safeapi/buffer/sapi_buffer.h"
+#include "safeapi/string/sapi_string.h"
+#include "safeapi/log/sapi_log.h"
+#include "safeapi/timer/sapi_timer.h"
+#include "safeapi/safestate/sapi_safestate.h"
 
 /* ============================================================================
  * Application Configuration
@@ -37,8 +44,8 @@
 
 #define APP_NAME "railway-message-processor"
 #define APP_VERSION "1.0.0"
-#define MESSAGE_BUFFER_SIZE 256
-#define MAX_MESSAGES 10
+#define MESSAGE_BUFFER_SIZE 256U
+#define LOG_LINE_MAX 128U
 
 /* Application state machine */
 typedef enum {
@@ -69,20 +76,36 @@ static app_context_t g_app = {
  * ========================================================================== */
 
 /**
+ * @brief Logs one already-formatted line at the given level.
+ *
+ * sapi_log_write() takes a fixed message string, deliberately no varargs
+ * (MISRA C:2012 Rule 17.1 - see its own header) - callers below build the
+ * line with snprintf() into a fixed-size buffer first, at the call site,
+ * rather than through a variadic wrapper here, to keep that same
+ * no-varargs discipline visible in this example rather than reintroducing
+ * it one layer down.
+ */
+static void log_line(sapi_log_level_t level, const char *line)
+{
+    sapi_log_write(level, APP_NAME, line);
+}
+
+/**
  * @brief Initialize the application context
  */
 static sapi_status_t app_init(void)
 {
-    SAPI_LOG_INFO("Initializing %s v%s", APP_NAME, APP_VERSION);
-
-    sapi_status_t status = sapi_log_initialize();
+    char line[LOG_LINE_MAX];
+    sapi_status_t status = sapi_log_init();
     if (status != SAPI_STATUS_OK) {
-        fprintf(stderr, "Failed to initialize logging: %d\n", status);
+        (void)fprintf(stderr, "Failed to initialize logging: %d\n", (int)status);
         return status;
     }
 
+    (void)snprintf(line, sizeof(line), "Initializing %s v%s", APP_NAME, APP_VERSION);
+    log_line(SAPI_LOG_LEVEL_INFO, line);
     g_app.state = STATE_RUNNING;
-    SAPI_LOG_INFO("Application initialized successfully");
+    log_line(SAPI_LOG_LEVEL_INFO, "Application initialized successfully");
     return SAPI_STATUS_OK;
 }
 
@@ -93,38 +116,45 @@ static sapi_status_t app_init(void)
  */
 static sapi_status_t process_message(const uint8_t *msg, size_t len)
 {
+    char line[LOG_LINE_MAX];
+    uint8_t msg_type;
+
     SAPI_ASSERT(msg != NULL);
-    SAPI_ASSERT(len > 0);
+    SAPI_ASSERT(len > 0U);
     SAPI_ASSERT(len <= MESSAGE_BUFFER_SIZE);
 
-    SAPI_LOG_DEBUG("Processing message [%zu bytes]", len);
+    (void)snprintf(line, sizeof(line), "Processing message [%zu bytes]", len);
+    log_line(SAPI_LOG_LEVEL_DEBUG, line);
 
     /* Example: Parse first byte as message type */
-    uint8_t msg_type = msg[0];
+    msg_type = msg[0];
 
     switch (msg_type) {
         case 0x01: /* HEARTBEAT */
-            SAPI_LOG_INFO("Received HEARTBEAT from train");
+            log_line(SAPI_LOG_LEVEL_INFO, "Received HEARTBEAT from train");
             break;
 
         case 0x02: /* POSITION_UPDATE */
-            if (len >= 5) {
+            if (len >= 5U) {
                 uint32_t position;
-                memcpy(&position, &msg[1], sizeof(position));
-                SAPI_LOG_INFO("Train position update: %u", position);
+                (void)memcpy(&position, &msg[1], sizeof(position));
+                (void)snprintf(line, sizeof(line), "Train position update: %u", position);
+                log_line(SAPI_LOG_LEVEL_INFO, line);
             } else {
-                SAPI_LOG_WARN("Invalid POSITION_UPDATE message (len=%zu)", len);
-                return SAPI_STATUS_ERROR;
+                (void)snprintf(line, sizeof(line), "Invalid POSITION_UPDATE message (len=%zu)", len);
+                log_line(SAPI_LOG_LEVEL_WARNING, line);
+                return SAPI_STATUS_INVALID_PARAM;
             }
             break;
 
         case 0x03: /* COMMAND_ACK */
-            SAPI_LOG_INFO("Received command acknowledgment");
+            log_line(SAPI_LOG_LEVEL_INFO, "Received command acknowledgment");
             break;
 
         default:
-            SAPI_LOG_WARN("Unknown message type: 0x%02x", msg_type);
-            return SAPI_STATUS_ERROR;
+            (void)snprintf(line, sizeof(line), "Unknown message type: 0x%02x", msg_type);
+            log_line(SAPI_LOG_LEVEL_WARNING, line);
+            return SAPI_STATUS_INVALID_PARAM;
     }
 
     g_app.message_count++;
@@ -133,22 +163,26 @@ static sapi_status_t process_message(const uint8_t *msg, size_t len)
 
 /**
  * @brief Timer callback - generates periodic heartbeats
- * @param timer_id Timer identifier
+ * @param handle       Timer that expired (unused - invoked directly in this
+ *                     minimal example, not through a real timer backend)
  * @param user_context Application context
  */
-static void heartbeat_callback(sapi_timer_id_t timer_id, void *user_context)
+static void heartbeat_callback(sapi_timer_handle_t handle, void *user_context)
 {
-    (void)timer_id;
+    (void)handle;
     (void)user_context;
 
     g_app.heartbeat_count++;
 
     /* Log heartbeat every 5th beat (reduce log spam) */
-    if ((g_app.heartbeat_count % 5) == 0) {
-        SAPI_LOG_INFO("Heartbeat #%u - Messages processed: %u, Errors: %u",
-                      g_app.heartbeat_count,
-                      g_app.message_count,
-                      g_app.error_count);
+    if ((g_app.heartbeat_count % 5U) == 0U) {
+        char line[LOG_LINE_MAX];
+        (void)snprintf(line, sizeof(line),
+                        "Heartbeat #%u - Messages processed: %u, Errors: %u",
+                        g_app.heartbeat_count,
+                        g_app.message_count,
+                        g_app.error_count);
+        log_line(SAPI_LOG_LEVEL_INFO, line);
     }
 }
 
@@ -158,21 +192,21 @@ static void heartbeat_callback(sapi_timer_id_t timer_id, void *user_context)
 static sapi_status_t simulate_train_message(void)
 {
     /* Simulate different message types in sequence */
-    static uint8_t sequence[] = {0x01, 0x02, 0x01, 0x03};
+    static const uint8_t sequence[] = {0x01, 0x02, 0x01, 0x03};
     static size_t seq_idx = 0;
 
     uint8_t message[MESSAGE_BUFFER_SIZE];
-    size_t msg_len = 0;
+    size_t msg_len;
 
-    message[0] = sequence[seq_idx % 4];
+    message[0] = sequence[seq_idx % 4U];
 
     /* Add position data for POSITION_UPDATE messages */
-    if (message[0] == 0x02) {
-        uint32_t position = 1000 + (g_app.message_count * 50);
-        memcpy(&message[1], &position, sizeof(position));
-        msg_len = 5;
+    if (message[0] == 0x02U) {
+        uint32_t position = 1000U + (g_app.message_count * 50U);
+        (void)memcpy(&message[1], &position, sizeof(position));
+        msg_len = 5U;
     } else {
-        msg_len = 1;
+        msg_len = 1U;
     }
 
     seq_idx++;
@@ -184,8 +218,7 @@ static sapi_status_t simulate_train_message(void)
  */
 static void signal_handler(int sig)
 {
-    if (sig == SIGINT || sig == SIGTERM) {
-        SAPI_LOG_INFO("Received signal %d, shutting down...", sig);
+    if ((sig == SIGINT) || (sig == SIGTERM)) {
         g_app.running = 0;
     }
 }
@@ -195,21 +228,24 @@ static void signal_handler(int sig)
  */
 static sapi_status_t transition_to_state(app_state_t new_state)
 {
-    const char *state_names[] = {
+    static const char *const state_names[] = {
         "INIT", "RUNNING", "ERROR", "SHUTDOWN"
     };
 
-    if (new_state >= 4) {
-        return SAPI_STATUS_ERROR;
+    if ((uint32_t)new_state >= 4U) {
+        return SAPI_STATUS_INVALID_PARAM;
     }
 
     if (g_app.state == new_state) {
         return SAPI_STATUS_OK; /* Already in this state */
     }
 
-    SAPI_LOG_INFO("State transition: %s -> %s",
-                  state_names[g_app.state],
-                  state_names[new_state]);
+    {
+        char line[LOG_LINE_MAX];
+        (void)snprintf(line, sizeof(line), "State transition: %s -> %s",
+                        state_names[g_app.state], state_names[new_state]);
+        log_line(SAPI_LOG_LEVEL_INFO, line);
+    }
 
     g_app.state = new_state;
     return SAPI_STATUS_OK;
@@ -221,62 +257,67 @@ static sapi_status_t transition_to_state(app_state_t new_state)
 
 int main(int argc, char *argv[])
 {
+    sapi_status_t status;
+    uint32_t loop_count;
+
     (void)argc;
     (void)argv;
 
-    sapi_status_t status;
-
     /* Set up signal handlers */
-    signal(SIGINT, signal_handler);
-    signal(SIGTERM, signal_handler);
+    (void)signal(SIGINT, signal_handler);
+    (void)signal(SIGTERM, signal_handler);
 
     /* Initialize application */
     status = app_init();
     if (status != SAPI_STATUS_OK) {
-        fprintf(stderr, "Initialization failed\n");
+        (void)fprintf(stderr, "Initialization failed\n");
         return EXIT_FAILURE;
     }
 
-    /* Simulate timer callback directly (no real timer in this simple example) */
-    /* In a real app, use sapi_timer_start() with proper backend registration */
-    SAPI_LOG_INFO("Starting message processing loop (Ctrl+C to exit)");
+    /* No real timer backend is registered in this minimal example - the
+     * heartbeat callback is invoked directly from the loop below every
+     * 10th iteration instead of through sapi_timer_create()/_start(). A
+     * real integration would register a backend (ADR-005) and use the
+     * real timer API. */
+    log_line(SAPI_LOG_LEVEL_INFO, "Starting message processing loop (Ctrl+C to exit)");
 
-    uint32_t loop_count = 0;
-    while (g_app.running && loop_count < 50) {
+    loop_count = 0U;
+    while ((g_app.running != 0) && (loop_count < 50U)) {
         loop_count++;
 
         /* Simulate receiving a message */
         status = simulate_train_message();
         if (status != SAPI_STATUS_OK) {
+            char line[LOG_LINE_MAX];
             g_app.error_count++;
-            SAPI_LOG_ERROR("Message processing failed: %d", status);
+            (void)snprintf(line, sizeof(line), "Message processing failed: %d", (int)status);
+            log_line(SAPI_LOG_LEVEL_ERROR, line);
         }
 
         /* Simulate timer callback every 10 iterations */
-        if ((loop_count % 10) == 0) {
-            heartbeat_callback(0, NULL);
+        if ((loop_count % 10U) == 0U) {
+            heartbeat_callback(NULL, NULL);
         }
 
         /* Small delay to prevent busy-waiting */
-        usleep(100000); /* 100ms */
+        (void)usleep(100000); /* 100ms */
     }
 
     /* Shutdown */
-    SAPI_LOG_INFO("Shutting down...");
-    transition_to_state(STATE_SHUTDOWN);
+    log_line(SAPI_LOG_LEVEL_INFO, "Shutting down...");
+    (void)transition_to_state(STATE_SHUTDOWN);
 
     /* Print summary */
-    printf("\n");
-    printf("═══════════════════════════════════════════════════════════════\n");
-    printf("%s Summary\n", APP_NAME);
-    printf("═══════════════════════════════════════════════════════════════\n");
-    printf("Messages processed:  %u\n", g_app.message_count);
-    printf("Heartbeats sent:     %u\n", g_app.heartbeat_count);
-    printf("Errors encountered:  %u\n", g_app.error_count);
-    printf("Final state:         SHUTDOWN\n");
-    printf("═══════════════════════════════════════════════════════════════\n");
-    printf("\n");
+    (void)printf("\n");
+    (void)printf("===================================================================\n");
+    (void)printf("%s Summary\n", APP_NAME);
+    (void)printf("===================================================================\n");
+    (void)printf("Messages processed:  %u\n", g_app.message_count);
+    (void)printf("Heartbeats sent:     %u\n", g_app.heartbeat_count);
+    (void)printf("Errors encountered:  %u\n", g_app.error_count);
+    (void)printf("Final state:         SHUTDOWN\n");
+    (void)printf("===================================================================\n");
+    (void)printf("\n");
 
-    sapi_log_shutdown();
     return EXIT_SUCCESS;
 }

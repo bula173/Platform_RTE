@@ -17,7 +17,7 @@
  * Framework ships the interface and validate-then-dispatch layer only;
  * a concrete backend (e.g. POSIX TCP sockets) is integrator-supplied
  * (ADR-005) and lives with the application that registers it - see
- * safeAPIExample's src/posix_backend/sapi_posix_backend_netlink.c for
+ * safeAPIRBC2oo2's src/posix_backend/sapi_posix_backend_netlink.c for
  * the reference POSIX/TCP implementation this header was designed
  * alongside.
  *
@@ -26,6 +26,13 @@
  *                      config->connect_timeout_ms.
  * REQ-OAL-NETLINK-003: send/receive shall accept an explicit timeout and
  *                      shall never block indefinitely by default.
+ * REQ-OAL-NETLINK-014: this service provides no message ordering,
+ *                      deduplication, or delivery guarantee of its own -
+ *                      a backend may be built on an unreliable transport
+ *                      (e.g. UDP). Any such guarantee is the caller's
+ *                      responsibility (see safeAPIFreamwork's
+ *                      sapi_dual_msgchannel/sapi_dual_channel for a
+ *                      reusable sequence+CRC+ACK layer, and ADR-027).
  *
  * @defgroup NETLINK Point-to-Point Network Link
  * @brief Connection-oriented link between independent processes (ADR-001)
@@ -107,7 +114,10 @@ sapi_status_t sapi_netlink_open(sapi_netlink_storage_t *storage,
  * @param timeout_ms    Maximum time to wait for the send to complete.
  * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_TIMEOUT
  *         if the send does not complete in time; SAPI_STATUS_HARDWARE_FAULT
- *         if the peer has disconnected; SAPI_STATUS_NOT_INITIALIZED/
+ *         if the backend can positively confirm the peer is gone (e.g. a
+ *         TCP disconnect, or an unreliable-transport backend's own
+ *         best-effort signal - not guaranteed on every backend, see
+ *         REQ-OAL-NETLINK-014); SAPI_STATUS_NOT_INITIALIZED/
  *         SAPI_STATUS_NOT_SUPPORTED as in sapi_netlink_open().
  * REQ-OAL-NETLINK-011
  */
@@ -123,8 +133,12 @@ sapi_status_t sapi_netlink_send(sapi_netlink_handle_t handle,
  * @param buffer_size  Usable size of out_message in bytes; must be > 0.
  * @param timeout_ms   Maximum time to wait for a message to arrive.
  * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM; SAPI_STATUS_TIMEOUT
- *         if no message arrives in time; SAPI_STATUS_HARDWARE_FAULT if
- *         the peer has disconnected; SAPI_STATUS_NOT_INITIALIZED/
+ *         if no message arrives in time; SAPI_STATUS_HARDWARE_FAULT per
+ *         sapi_netlink_send()'s own note above; SAPI_STATUS_DATA_CORRUPTION
+ *         if a backend can detect the received message violated this
+ *         link's wire contract (e.g. wrong length) but not necessarily its
+ *         content (content integrity, if needed, is the caller's job - see
+ *         REQ-OAL-NETLINK-014); SAPI_STATUS_NOT_INITIALIZED/
  *         SAPI_STATUS_NOT_SUPPORTED as in sapi_netlink_open().
  * REQ-OAL-NETLINK-012
  */

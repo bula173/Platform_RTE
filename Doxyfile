@@ -1,7 +1,7 @@
 PROJECT_NAME           = "Safe API Framework"
 PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference)"
 OUTPUT_DIRECTORY       = docs/api
-INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.md
+INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.md docs/requirements
 FILE_PATTERNS          = *.h *.c *.md
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE = README.md

@@ -10,7 +10,7 @@
 /**
  * @brief Older-timestamp-wins tie-break, own_id/peer_id as the
  *        deterministic fallback on an exact tie - same rule
- *        safeAPIExample's site.c decide_online() uses today.
+ *        safeAPIRBC2oo2's site.c decide_online() uses today.
  */
 static bool negotiator_decide_online(uint32_t own_id, uint64_t own_ts, uint32_t peer_id, uint64_t peer_ts)
 {

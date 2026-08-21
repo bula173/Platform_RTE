@@ -166,7 +166,7 @@ sapi_status_t sapi_dual_msgchannel_receive(sapi_dual_msgchannel_t *channel,
  * @brief Resets both sequence counters to 0. Intended to be called by
  *        the caller (typically sapi_dual_channel_t) exactly once,
  *        immediately after config->link has been freshly (re)established
- *        with the peer - mirrors safeAPIExample's own precedent
+ *        with the peer - mirrors safeAPIRBC2oo2's own precedent
  *        (channel_ab.c's cycle_resync_requested handling after a peer
  *        link reconnects) for why a fresh link needs a fresh, mutually
  *        agreed starting sequence rather than fighting over whatever

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Two example-app files (`safeAPIExample/src/application/SITE/site.c` and
+Two example-app files (`safeAPIRBC2oo2/src/application/SITE/site.c` and
 `.../AB/channel_ab.c`) each independently grew ad hoc versions of the same
 problem: "am I the active one or the standby, and how healthy is my own
 redundancy right now?"
@@ -227,7 +227,7 @@ reason `sapi_dual_channel_t`'s connection-status callback exists.
 
 ### 4. Non-goals for this ADR
 
-- **No retrofit of `safeAPIExample` in this pass.** `site.c` and
+- **No retrofit of `safeAPIRBC2oo2` in this pass.** `site.c` and
   `channel_ab.c` keep their existing hand-rolled logic; migrating them
   to `sapi_dual` is a deliberate follow-up once this API has shipped and
   been exercised by its own tests, not bundled into the same change that
@@ -239,7 +239,7 @@ reason `sapi_dual_channel_t`'s connection-status callback exists.
   over an already-open `sapi_netlink_handle_t`; opening/closing the
   underlying link(s) remains the caller's job via `sapi_netlink_open()`/
   `_close()`, exactly as `sapi_channel_checkpoint()` reuses
-  `sapi_vital_channel_t`'s already-registered backend rather than owning
+  `sapi_channel_t`'s already-registered backend rather than owning
   a transport itself.
 - **No automatic safety reaction.** As with every other OAL/negotiation
   primitive in this framework (`sapi_watchdog`, `sapi_checkpoint`), this
@@ -264,7 +264,7 @@ reason `sapi_dual_channel_t`'s connection-status callback exists.
   `sapi_dual_state_frame_t`) travel inside `sapi_vital_message_t.payload`
   - both well under the 248-byte payload budget, no change to
   `sapi_checksum.h` required.
-- `safeAPIExample` is unchanged by this ADR; its own dual-transfer logic
+- `safeAPIRBC2oo2` is unchanged by this ADR; its own dual-transfer logic
   and this new module will temporarily overlap in *purpose* (not in
   code) until the follow-up retrofit lands.
 

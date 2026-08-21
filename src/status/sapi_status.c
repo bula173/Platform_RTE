@@ -28,6 +28,7 @@ const char *sapi_status_to_string(sapi_status_t status)
         case SAPI_STATUS_DATA_CORRUPTION:     return "DATA_CORRUPTION";
         case SAPI_STATUS_INTERNAL_ERROR:      return "INTERNAL_ERROR";
         case SAPI_STATUS_VALUE_OUT_OF_RANGE:  return "VALUE_OUT_OF_RANGE";
+        case SAPI_STATUS_INVALID_STATE:       return "INVALID_STATE";
         default:                              return "UNKNOWN_STATUS";
     }
 }

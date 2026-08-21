@@ -5,6 +5,7 @@
  */
 
 #include "safeapi/ipc/sapi_ipc_request_reply.h"
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi/log.h"
 
 /* Implementation stubs - actual implementation would use base IPC layer */
@@ -12,8 +13,18 @@
 sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out,
                                          const sapi_ipc_rr_server_config_t *config)
 {
+    sapi_status_t lifecycle_status;
+
     if (handle_out == NULL || config == NULL) {
         return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    /* REQ-LIFECYCLE-001 (ADR-026): an RR server is a setup-only resource -
+     * refuse once the application's setup phase has been locked. */
+    lifecycle_status = sapi_lifecycle_check_setup_allowed();
+    if (lifecycle_status != SAPI_STATUS_OK)
+    {
+        return lifecycle_status;
     }
 
     SAPI_LOG_INFO("Creating RR server: %s (req_sz=%zu, reply_sz=%zu, depth=%zu)",
@@ -64,8 +75,18 @@ sapi_status_t sapi_ipc_rr_server_destroy(sapi_ipc_rr_server_t server)
 sapi_status_t sapi_ipc_rr_client_create(sapi_ipc_rr_client_t *handle_out,
                                          const sapi_ipc_rr_client_config_t *config)
 {
+    sapi_status_t lifecycle_status;
+
     if (handle_out == NULL || config == NULL) {
         return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    /* REQ-LIFECYCLE-001 (ADR-026): an RR client is a setup-only resource -
+     * refuse once the application's setup phase has been locked. */
+    lifecycle_status = sapi_lifecycle_check_setup_allowed();
+    if (lifecycle_status != SAPI_STATUS_OK)
+    {
+        return lifecycle_status;
     }
 
     SAPI_LOG_INFO("Creating RR client for server: %s", config->server_name);

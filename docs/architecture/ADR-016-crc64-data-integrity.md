@@ -153,7 +153,7 @@ Track:
 ### With Redundancy Framework (Future v0.4.0+)
 
 ```
-Vital Channel (Future sapi_vital_channel_t)
+Vital Channel (Future sapi_channel_t)
     ↓
 Payload data
     ↓
@@ -183,7 +183,7 @@ Output or Safe-State
 
 **Used by:**
 - Application IPC code (wrap payloads)
-- Future `sapi_vital_channel_t` (transparent CRC)
+- Future `sapi_channel_t` (transparent CRC)
 - Service unit diagnostics (monitor stats)
 
 ---
@@ -253,7 +253,7 @@ if (status != SAPI_STATUS_OK) {
 - [ ] Documentation & examples
 
 ### Phase 2: Integration (v0.4.0)
-- [ ] Integrate with `sapi_vital_channel_t` (when redundancy implemented)
+- [ ] Integrate with `sapi_channel_t` (when redundancy implemented)
 - [ ] Transparent CRC for vital channels
 - [ ] Performance benchmarks
 - [ ] Production deployment support

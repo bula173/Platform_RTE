@@ -3,21 +3,21 @@
 Status: Accepted
 Date: 2026-08-06
 Applies to: `sapi_appmanager` (extended, backward-compatible), reusing
-`sapi_checkpoint`/`sapi_vital_channel` (ADR-017) without changes to either.
+`sapi_checkpoint`/`sapi_channel` (ADR-017) without changes to either.
 
 ## 1. Context
 
 Every application that uses `sapi_appmanager_run()` today writes its own
 `execute()` callback as one undivided block, and if it is part of an A/B
 dual-channel pair it must hand-roll its own cross-channel cycle-sync check
-inside that block (see `safeAPIExample/src/application/AB/channel_ab.c`,
+inside that block (see `safeAPIRBC2oo2/src/application/AB/channel_ab.c`,
 which currently has phases for reading, waiting for the peer's dual
 transfer, comparing, and forwarding, all inlined into one `execute()`).
 Two related requests came out of that experience:
 
 1. A dual-channel application wants to know, every cycle, "is my peer at
    the same point I am" — not after the fact by comparing results (that
-   is what `sapi_vital_channel`'s voting already does), but as a guard
+   is what `sapi_channel`'s voting already does), but as a guard
    *before* that cycle's decision logic runs. `sapi_checkpoint`
    (ADR-017) already does exactly this — `sapi_channel_checkpoint()` is a
    bounded rendezvous that safe-states on timeout (REQ-CHECKPOINT-003) —
@@ -56,7 +56,7 @@ typedef struct {
 
 `execute()`'s contract does not change — it remains the mandatory "main"
 stage; existing applications that only set `.execute` (every application
-in `safeAPIExample` today) keep compiling and behaving identically, since
+in `safeAPIRBC2oo2` today) keep compiling and behaving identically, since
 a C struct's unset members are zero-initialized in a designated
 initializer and `sapi_appmanager_run()` treats a NULL `pre_execute`/
 `post_execute` as "skip this stage", not an error.
@@ -89,16 +89,23 @@ typedef struct {
 } sapi_appmanager_config_t;
 
 typedef struct {
-    sapi_vital_channel_t *vital_channel;   /* checkpoint target */
+    sapi_channel_t *vital_channel;   /* checkpoint target */
     sapi_duration_ms_t    max_delay_ms;    /* forwarded to sapi_checkpoint_config_t */
     uint32_t              expected_node_count;
     sapi_watchdog_t       watchdog;        /* optional, may be NULL */
 } sapi_appmanager_checkpoint_config_t;
 ```
 
+(ADR-025 superseded the checkpoint target's type: `vital_channel`
+became `voter`, of type `sapi_voter_t *` - a voter with its channels
+already registered, rather than a raw multi-channel handle. The
+decision described in this section - checkpoint runs first, every
+cycle, opt-in via `config->checkpoint == NULL` - is otherwise
+unchanged; only the target type's shape moved.)
+
 `config->checkpoint == NULL` (the default) disables the feature entirely
 — zero behavior change and zero added latency for every application that
-is not part of a synchronized multi-channel group (in `safeAPIExample`
+is not part of a synchronized multi-channel group (in `safeAPIRBC2oo2`
 today, that is SITE and C; only A/B would set this). This has to be
 opt-in rather than unconditional for two reasons: `sapi_channel_checkpoint()`
 is a *blocking* call bounded by `max_delay_ms`, so turning it on
@@ -146,7 +153,7 @@ default handler is expected to see it, since that deployment halts at
 the `sapi_safestate_enter()` call before `sapi_channel_checkpoint()` ever
 returns.
 
-### 2.3 No change to `sapi_checkpoint` or `sapi_vital_channel`
+### 2.3 No change to `sapi_checkpoint` or `sapi_channel`
 
 This ADR adds no new fields or behavior to either module (ADR-017). This
 is deliberately a composition, not a modification: `sapi_appmanager`
@@ -192,7 +199,7 @@ still call `sapi_channel_checkpoint()` directly from its own
 gains a link dependency on `safeapi::checkpoint` for the optional
 checkpoint path only).
 
-## 5. Addendum: retrofitting `safeAPIExample/src/application/AB/channel_ab.c`
+## 5. Addendum: retrofitting `safeAPIRBC2oo2/src/application/AB/channel_ab.c`
 
 Section 2's design was validated by actually wiring it into A/B's real
 topology, not just by unit test. Two gaps surfaced that were not visible
@@ -200,9 +207,9 @@ from the framework side alone, both resolved with the user's direction,
 and both are framework-level changes this addendum records for
 traceability.
 
-### 5.1 `sapi_vital_channel_init()`'s `channel_count >= 2` floor
+### 5.1 `sapi_channel_init()`'s `channel_count >= 2` floor
 
-`sapi_channel_checkpoint()` requires a `sapi_vital_channel_t`, and that
+`sapi_channel_checkpoint()` requires a `sapi_channel_t`, and that
 constructor originally rejected `channel_count < 2` — it modeled "this
 node has 2+ redundant transport paths to its peer(s)". A/B's actual
 topology is exactly one physical TCP link to exactly one peer, which does
@@ -211,15 +218,15 @@ the same live socket (a double-send/double-read correctness bug, not a
 shortcut) or adding a genuinely separate second transport path (out of
 scope for this retrofit).
 
-Decision (user-directed): relax `sapi_vital_channel_init()`'s floor to
+Decision (user-directed): relax `sapi_channel_init()`'s floor to
 `channel_count >= 1`, reachable only via `SAPI_VOTING_NMR` with
 `quorum_size == 1` — 2oo2 and 2oo3 keep their existing floors of exactly 2
 and exactly 3 respectively, so this does not weaken any existing voting
 strategy's own guarantee, it only makes a degenerate 1-channel NMR
 instance constructible for callers (like this checkpoint transport) that
-are not doing cross-channel voting at all, just using `sapi_vital_channel`
+are not doing cross-channel voting at all, just using `sapi_channel`
 as `sapi_checkpoint`'s required abstraction over "a channel with a
-backend". See `include/safeapi/vital_channel/sapi_vital_channel.h`'s own
+backend". See `include/safeapi/channel_link/sapi_channel.h`'s own
 `@pre channel_count` doc for the exact conditions.
 
 ### 5.2 One physical link, two message protocols, and a missing reply

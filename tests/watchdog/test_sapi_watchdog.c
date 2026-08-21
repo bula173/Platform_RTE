@@ -14,6 +14,7 @@
 #include <assert.h>
 #include <setjmp.h>
 #include "safeapi/watchdog/sapi_watchdog.h"
+#include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/timer/sapi_timer.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
@@ -268,6 +269,157 @@ static void test_custom_action_dispatches_on_fire(void)
     assert(sapi_watchdog_destroy(wd) == SAPI_STATUS_OK);
 }
 
+static void test_invalid_handle_rejected_by_every_op(void)
+{
+    /* NULL, and a pointer that never came from sapi_watchdog_create(), are
+     * both rejected by is_valid_handle() in start/stop/kick/destroy,
+     * independently of one another - see test_lifecycle_and_kick() for
+     * get_status()'s own invalid-handle check (already exercised there
+     * after destroy()). */
+    int not_a_watchdog;
+    sapi_watchdog_t bogus = (sapi_watchdog_t)&not_a_watchdog;
+
+    assert(sapi_watchdog_start(NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_watchdog_start(bogus) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_watchdog_stop(NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_watchdog_stop(bogus) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_watchdog_kick(NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_watchdog_kick(bogus) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_watchdog_destroy(NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_watchdog_destroy(bogus) == SAPI_STATUS_INVALID_PARAM);
+}
+
+static void test_timeout_handler_guards_directly(void)
+{
+    /* sapi_watchdog_timeout_handler() is exposed in the public header (it
+     * is what sapi_watchdog_timer_tick() dispatches to once a deadline
+     * has already been confirmed reached) - calling it directly exercises
+     * its own defensive guards, which sapi_watchdog_timer_tick() never
+     * triggers itself since it only calls the handler after re-checking
+     * exactly the same conditions. */
+    sapi_watchdog_t wd = NULL;
+    sapi_watchdog_config_t config = {0};
+    sapi_watchdog_status_t status = {0};
+
+    /* Out-of-range watchdog_id: must not touch the pool at all. */
+    sapi_watchdog_timeout_handler(0xFFFFFFFFU);
+
+    /* in_use == 0: an id that has never been allocated (pool was reset by
+     * a prior manager_shutdown()/re-initialize in this same test binary,
+     * so slot 0 is guaranteed free at this point). */
+    sapi_watchdog_timeout_handler(0U);
+
+    config.type = SAPI_WATCHDOG_TASK;
+    config.name = "handler_guard_wd";
+    config.timeout_ms = 100U;
+    config.action = SAPI_WATCHDOG_ACTION_LOG;
+    g_mock_now_ms = 50000U;
+    assert(sapi_watchdog_create(&wd, &config) == SAPI_STATUS_OK);
+
+    /* active == 0: created but never started. */
+    sapi_watchdog_timeout_handler(0U);
+    assert(sapi_watchdog_get_status(wd, &status) == SAPI_STATUS_OK);
+    assert(status.fires == 0U);
+
+    assert(sapi_watchdog_start(wd) == SAPI_STATUS_OK);
+    g_mock_now_ms += 200U; /* past the 100ms deadline */
+    sapi_watchdog_timer_tick();
+    assert(sapi_watchdog_get_status(wd, &status) == SAPI_STATUS_OK);
+    assert(status.fires == 1U);
+
+    /* fired != 0: already fired above: a direct second call must also be
+     * a no-op (the "fired" latch), matching the tick-driven case already
+     * covered in test_fires_when_not_kicked_log_action(). */
+    sapi_watchdog_timeout_handler(0U);
+    assert(sapi_watchdog_get_status(wd, &status) == SAPI_STATUS_OK);
+    assert(status.fires == 1U);
+
+    assert(sapi_watchdog_destroy(wd) == SAPI_STATUS_OK);
+}
+
+static void test_reboot_action_dispatches_on_fire(void)
+{
+    sapi_watchdog_t wd = NULL;
+    sapi_watchdog_config_t config = {0};
+
+    assert(sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_REBOOT, diverting_handler) == SAPI_STATUS_OK);
+
+    config.type = SAPI_WATCHDOG_SYSTEM;
+    config.name = "reboot_wd";
+    config.timeout_ms = 50U;
+    config.action = SAPI_WATCHDOG_ACTION_REBOOT;
+
+    g_mock_now_ms = 60000U;
+    assert(sapi_watchdog_create(&wd, &config) == SAPI_STATUS_OK);
+    assert(sapi_watchdog_start(wd) == SAPI_STATUS_OK);
+
+    g_mock_now_ms += 100U; /* past the 50ms deadline */
+    g_diverting_calls = 0;
+    if (setjmp(g_jmp) == 0)
+    {
+        sapi_watchdog_timer_tick();
+        assert(0); /* must not reach here: REBOOT diverts away */
+    }
+    else
+    {
+        assert(g_diverting_calls == 1);
+        assert(g_captured_level == SAPI_SAFESTATE_LEVEL_REBOOT);
+        assert(g_captured_reason == SAPI_SAFESTATE_REASON_UNSPECIFIED);
+    }
+
+    assert(sapi_watchdog_destroy(wd) == SAPI_STATUS_OK);
+}
+
+static void test_failover_action_dispatches_on_fire(void)
+{
+    sapi_watchdog_t wd = NULL;
+    sapi_watchdog_config_t config = {0};
+    int ctx_value = 7;
+
+    config.type = SAPI_WATCHDOG_CHANNEL;
+    config.name = "failover_wd";
+    config.timeout_ms = 50U;
+    config.action = SAPI_WATCHDOG_ACTION_FAILOVER;
+    config.custom_action = custom_action;
+    config.context = &ctx_value;
+
+    g_mock_now_ms = 70000U;
+    g_custom_calls = 0;
+    g_custom_ctx_seen = NULL;
+    assert(sapi_watchdog_create(&wd, &config) == SAPI_STATUS_OK);
+    assert(sapi_watchdog_start(wd) == SAPI_STATUS_OK);
+
+    g_mock_now_ms += 60U;
+    sapi_watchdog_timer_tick();
+
+    assert(g_custom_calls == 1);
+    assert(g_custom_ctx_seen == &ctx_value);
+
+    assert(sapi_watchdog_destroy(wd) == SAPI_STATUS_OK);
+}
+
+/* REQ-LIFECYCLE-001 (ADR-026): once the application's setup phase is
+ * locked, sapi_watchdog_create() refuses even with fully-valid arguments
+ * and the manager already initialized. */
+static void test_setup_phase_lock_rejects_create(void)
+{
+    sapi_watchdog_t wd = NULL;
+    sapi_watchdog_config_t config = {0};
+    config.type = SAPI_WATCHDOG_TASK;
+    config.name = "locked_wd";
+    config.timeout_ms = 100U;
+    config.action = SAPI_WATCHDOG_ACTION_LOG;
+
+    sapi_lifecycle_lock();
+    assert(sapi_watchdog_create(&wd, &config) == SAPI_STATUS_INVALID_STATE);
+    sapi_lifecycle_unlock();
+    assert(sapi_watchdog_create(&wd, &config) == SAPI_STATUS_OK);
+    assert(sapi_watchdog_destroy(wd) == SAPI_STATUS_OK);
+}
+
 static void test_pool_exhaustion(void)
 {
     /* Pool size (SAPI_WATCHDOG_MAX_COUNT) is an internal implementation
@@ -318,8 +470,19 @@ int main(void)
     test_kicking_prevents_fire();
     test_safestate_action_dispatches_on_fire();
     test_custom_action_dispatches_on_fire();
+    test_invalid_handle_rejected_by_every_op();
+    test_timeout_handler_guards_directly();
+    test_reboot_action_dispatches_on_fire();
+    test_failover_action_dispatches_on_fire();
+    test_setup_phase_lock_rejects_create();
     test_pool_exhaustion();
 
     assert(sapi_watchdog_manager_shutdown() == SAPI_STATUS_OK);
+
+    /* sapi_watchdog_timer_tick() with no manager initialized: a silent
+     * no-op, not a crash - mirrors test_create_requires_manager_initialized()
+     * but for the tick path instead of create(). */
+    sapi_watchdog_timer_tick();
+
     return 0;
 }

@@ -1,7 +1,231 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-07 (updated for the CMake library consolidation, ADR-023 -
-see "update 11" note below)
+Date: 2026-08-18 (see "update 16" note below)
+
+**2026-08-18, update 16 (ADR-029: RBC Train/IL/CTC scenario - real
+multi-train protocol, session-table cross-compare/failover-transfer
+widening; see `docs/requirements/SRS.md` section 3h and
+`docs/architecture/ADR-029-rbc-train-il-ctc-scenario.md`):** automated
+checker run performed (`cppcheck` was available this session,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1108** (`build/cppcheck-report.txt`) -
+  UNCHANGED from update 15's own count. This ADR's entire change set
+  lives in `safeAPIRBC2oo2` (new files `rbc_wire.c`/`.h`/
+  `rbc_wire_types.h`; extensive changes to `src/application/C/*` and
+  `src/application/AB/*`; no `safeAPIFreamwork` source file touched at
+  all) - per ADR-018's own established scope, `safeAPIFreamwork`'s
+  `cppcheck` target only scans this repo's own `include/`/`src/`, so a
+  purely-`safeAPIRBC2oo2`-side change is expected to leave this repo's
+  own finding count exactly unchanged, and it did.
+- Manual review only for the `safeAPIRBC2oo2`-side files, same posture
+  as update 15's own RBC-adjacent (ADR-028) entry: all new/changed code
+  follows this codebase's already-established conventions - no dynamic
+  allocation (the train-session table and every new queue are fixed-size
+  arrays sized by `SAFEAPI_EXAMPLE_MAX_TRAINS`/`RBC_ENVELOPE_QUEUE_CAPACITY`,
+  never grown), fixed-width types throughout the new `rbc_envelope_t`/
+  `train_session_t` structs, explicit bounds-checking on every
+  wire-supplied `train_id` before it indexes an array
+  (`channel_ab_train_id_to_index()`/`train_id_to_index()`, REQ-RBC-005),
+  single point of exit in each new function, full Doxygen blocks on
+  every new public function/type with REQ-ID citations
+  (`rbc_wire.h`/`rbc_wire_types.h`). No deviation notes needed.
+- One new MISRA-relevant pattern worth flagging explicitly (not a
+  violation, a design note): `channel_ab_crosscompare.c`'s cross-compare
+  payload is now built via manual field-by-field comparison
+  (`xcompare_recv_local()`/`_peer()` and the new per-train sync-skip
+  gate) rather than a single primitive-type `memcpy()`, specifically
+  *because* `train_session_t` mixes `bool`/`uint8_t`/`uint32_t` members
+  and a raw struct `memcmp()` would risk comparing compiler-inserted
+  padding bytes alongside the real fields - resolved by encoding to a
+  packed wire form first (`channel_ab_wire_encode_sessions()`) rather
+  than comparing the struct directly. Documented in REQ-RBC-007 and this
+  file's own reasoning is preserved there rather than repeated per-call-
+  site.
+- **Addendum, same date**: full 11-container Docker testing (beyond the
+  6-process local run this update's own entry above was written against)
+  found two further live bugs, both root-caused with `gdb` and fixed by
+  constant retunes only - no new code paths, no new MISRA-relevant
+  pattern. See ADR-029 section 2.6 for the full story:
+  `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` (600ms -> 15000ms,
+  `common_config.h`) and `RBC_ENVELOPE_QUEUE_CAPACITY` (8 -> 16,
+  `rbc_wire_types.h`). Both remain fixed-width (`uint32_t`/`#define`
+  unsigned-suffixed literals), no dynamic allocation introduced, no
+  control-flow change - manual review only, no re-run of `cppcheck`
+  needed (a `safeAPIRBC2oo2`-side numeric constant change, same
+  out-of-scope reasoning as this update's main entry above).
+
+**2026-08-18, update 15 (ADR-028: cyclic-executive checkpoint-starvation
+fix - REQ-APPMANAGER-011 - and its `safeAPIRBC2oo2` channel-down-reboot/
+HOT-COLD-standby consumer; see `docs/requirements/SRS.md` and
+`docs/architecture/ADR-028-channel-down-reboot-and-executive-starvation-fix.md`):**
+automated checker run performed (`cppcheck` was available this session,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1108** (`build/cppcheck-report.txt`), up from
+  1107 at update 14's era - a one-finding increase from tightening
+  `sapi_appmanager.c`'s checkpoint-stage gating condition
+  (`config->checkpoint->voter != NULL`, REQ-APPMANAGER-011); no new
+  files, no new rule category. `sapi_appmanager.c` itself carries 84
+  MISRA findings post-change, same already-triaged-or-accepted buckets
+  as update 13/14 (15.5 single-exit, 12.1/10.4 mixed-type loop
+  conditions) - this change added a boolean-AND term to an existing
+  `if`, not a new loop or a new pattern.
+  `tests/appmanager/test_sapi_appmanager.c`'s two rewritten test cases
+  (`test_checkpoint_paused_skips_stage_not_starves_cycle`,
+  `test_checkpoint_null_vital_channel_is_not_a_startup_error`) are test
+  code, out of this report's production-code scope (same posture as
+  every other `tests/` file - see section 1a's scope note).
+- The rest of this round's changes - `channel_ab.c`/`channel_ab_io.c`/
+  `channel_ab_negotiate.c`/`channel_ab_types.h` (peer/C-link
+  channel-down-reboot, HOT/COLD standby log surfacing, negotiation
+  watchdog timing fix), `monitor_c.c`/`monitor_c_io.c`/
+  `monitor_c_types.h` (C-side channel-down-reboot), and
+  `common_config.h` (new timing constants/reason codes) - all live in
+  `safeAPIRBC2oo2`, which per ADR-018's own scope has no formal MISRA
+  report or automated checker wired up (`safeAPIFreamwork`'s
+  `cppcheck` target only scans this repo's own `include/`/`src/`).
+  Manual review only for those files: all follow the same conventions
+  already established elsewhere in `safeAPIRBC2oo2` - no dynamic
+  allocation, fixed-width types (`sapi_timestamp_ms_t` for every new
+  down-since field), explicit `NULL`-pointer checks before every new
+  dereference, single point of exit in each new function
+  (`channel_ab_check_channel_down_reboot()`,
+  `monitor_c_check_channel_down_reboot()`,
+  `channel_ab_io_mark_link_down()`, `monitor_c_io_mark_link_down()`).
+  No deviation notes needed - nothing in this batch required
+  bypassing a convention the rest of the codebase already follows.
+- No re-triage of section 1a/section 5's still-open un-triaged rule list
+  performed this pass either - same deferred item as updates 13/14.
+
+**2026-08-18, update 14 (ADR-026: application setup-phase lock and
+single-entry-point enforcement, new `sapi_lifecycle` module; plus the
+`sapi_dual_channel.c` hard-fault-propagation fix - REQ-DUAL-CHANNEL-008 -
+and its test coverage; see `docs/requirements/SRS.md`):** automated
+checker run performed (`cppcheck` was available this session,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1107** (`build/cppcheck-report.txt`), up from
+  1083 at update 13's era.
+- The new module contributes almost nothing to that increase:
+  `src/lifecycle/sapi_lifecycle.c` has exactly **one** MISRA finding
+  (rule 8.6 - an external identifier without a single external
+  definition site cppcheck can resolve; not yet triaged real-vs-deviation,
+  same "not yet triaged" status as every other rule in section 1a/5's
+  list below), and `include/safeapi/lifecycle/sapi_lifecycle.h` has
+  **zero** - only an informational (non-MISRA) `missingIncludeSystem`
+  note from `<assert.h>` not being resolvable in this sandbox, which
+  cppcheck's own message text explains is expected and harmless
+  ("Standard library headers do not need to be provided to get proper
+  results").
+- The remaining ~23-finding increase is spread across this session's
+  other in-flight, not-yet-individually-MISRA-reviewed changes bundled
+  into this same update: `sapi_appmanager.c`'s setup-phase lock/
+  reentrancy-guard additions (ADR-026 §2.1/2.3) and its new
+  `sapi_appmanager_reset_state()`; the seven newly-gated constructors
+  (`sapi_timer_create()`, `sapi_channel_init()`, `sapi_voter_init()`,
+  `sapi_voter_register_channel()`, `sapi_cross_comparator_init()`,
+  `sapi_cross_comparator_register_channel()`, `sapi_watchdog_create()`);
+  `sapi_dual_channel.c`'s hard-fault-propagation fix; and the new/
+  extended test files for all of the above
+  (`tests/lifecycle/test_sapi_lifecycle.c` new;
+  `tests/appmanager/test_sapi_appmanager.c`,
+  `tests/dual/test_sapi_dual_channel.c` extended). Per-file attribution
+  of that portion was not performed this pass - same posture update 13
+  already took ("a spot check... without confirming that check used the
+  exact same methodology... left as-is rather than guess"); none of
+  these files introduce a new rule *category* not already present
+  elsewhere in this codebase (same validate-then-dispatch/early-return
+  style throughout).
+- No re-triage of section 1a/section 5's still-open un-triaged rule list
+  performed this pass either - same deferred item as update 13.
+
+**2026-08-17, update 13 (ADR-025: `sapi_vital_channel` split into
+`sapi_channel`/`sapi_voter`/`sapi_cross_comparator`, retirement of the
+dead ADR-008 `channel/` module, and a `sapi_appmanager.c` busy-loop fix
+- REQ-APPMANAGER-008, see `docs/requirements/SRS.md`):** automated
+checker run performed (`cppcheck` was available this session,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1083** (`build/cppcheck-report.txt`), up from
+  1052 at update 12's era. The increase is from three new production
+  modules (`src/voter/`, `src/cross_comparator/`, and the renamed/
+  redesigned `src/channel_link/`) plus their new test files, and the
+  small `sapi_appmanager_pace_failed_checkpoint()` addition to
+  `sapi_appmanager.c` (REQ-APPMANAGER-008) - not a regression in any
+  pre-existing file. The old, already-dead-and-excluded-from-every-build
+  ADR-008 `src/channel/` module was removed outright as part of this
+  same change (see ADR-025 §2.7), which would otherwise have partially
+  offset the new-module increase, but that module was never scanned by
+  `compile_commands.json` in the first place (excluded from the build),
+  so its removal changed nothing in this count either way.
+- No new rule *categories* introduced: the new modules follow the same
+  established patterns (validate-then-dispatch, early-return-on-invalid-
+  param) as every other OAL/channels-layer module in this codebase, so
+  their findings land in the same already-documented, already-triaged-or-
+  accepted rule buckets as the rest of the tree (15.5 single-exit,
+  17.7 ignored return values on defensive `(void)`-uncast calls, etc. -
+  see section 3/5 below), not a new kind of finding this report hasn't
+  already characterized.
+- Rules 12.1 and 10.4 (both already tracked in section 1a's "not yet
+  triaged" list below) gained a handful of hits each from
+  `sapi_appmanager_pace_failed_checkpoint()`'s own bounded-poll loop -
+  same already-accepted mixed-`&&`/arithmetic-type style already used
+  throughout this file's pre-existing loop conditions (e.g. the main
+  `while` loop's own `!g_shutdown_requested && (...)` a few lines away,
+  unchanged by this update), not a new style introduced by this function.
+- No re-triage of section 1a/section 5's still-open un-triaged rule list
+  (8.7, 17.7, 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4)
+  was performed as part of this update either - same still-open item
+  update 12 already deferred. The per-rule counts in that list's own
+  table row below are from update 12's run and were NOT re-verified this
+  pass; only the report-wide total above was re-measured. A spot check
+  during this update found materially different per-rule counts under a
+  quick manual `grep`, but without confirming that check used the exact
+  same methodology (dedup, file scope) as whatever originally produced
+  the table's numbers, publishing a mismatched replacement risked making
+  this compliance document *less* trustworthy, not more - left as-is
+  rather than guess.
+
+**2026-08-15, update 12 (ADR-024 configurable feature build, a real
+`-Wcast-qual` fix, the checksum module's `REQ-ID` cleanup, and a large
+test-coverage push - see the project's own task history for the full
+change list; MISRA-relevant subset only, below):** automated checker run
+performed (`cppcheck` was available this session -
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1052** (`build/cppcheck-report.txt`), up from
+  865 at the last real run (update 10's era). The increase is from
+  `--project=compile_commands.json` now also scanning many new/expanded
+  `tests/<module>/test_sapi_<module>.c` files this session's coverage
+  work added (test code isn't held to the same production-path MISRA
+  bar, but cppcheck scans it identically since it appears in
+  `compile_commands.json`) - not a regression in `src/`. Top rules
+  unchanged in kind from prior runs (15.5 single-exit still dominates at
+  481 hits, matching the long-standing documented deviation in section 3).
+- Rule 21.6 (`<stdio.h>`): now confirmed to appear in exactly
+  `src/appmanager/sapi_appmanager.c` (still open, as section 5 already
+  said) and `tests/log/test_sapi_log.c` (test-only, not a production
+  finding) - no other file. Fixes the report's own prior
+  self-contradiction where section 5 additionally still named
+  `sapi_watchdog.c` here despite update 3 already saying it was fixed;
+  corrected in place (see that note).
+- The real `-Wcast-qual` fix this update made
+  (`sapi_voter_get_aggregated_health()`'s first parameter widened
+  to `const sapi_channel_t *`, `src/channel_link/sapi_channel.c`/
+  `include/safeapi/channel_link/sapi_channel.h`) removes a compiler
+  warning, not a cppcheck/MISRA finding - it doesn't change any count
+  above, but is worth noting here since it was found via the same
+  strict-warnings build this report's own tooling depends on.
+- No re-triage of section 1a/section 5's still-open un-triaged rule list
+  (8.7, 17.7, 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4) was
+  performed as part of this update - out of scope for this pass, still an
+  open item.
 
 **2026-08-07, update 11 (build-system reorganization only, no code
 change - ADR-023 consolidates 22 CMake library targets into 4):** no
@@ -25,7 +249,7 @@ zero `.c`/`.h` files:
   untouched as files, appmanager's link line updated to the 3 new names.
 - Every consumer of the old per-feature target names was updated:
   `tests/CMakeLists.txt` (19 tests), the top-level `install(TARGETS ...)`
-  list, safeAPIExample's `src/posix_backend/CMakeLists.txt` and top-level
+  list, safeAPIRBC2oo2's `src/posix_backend/CMakeLists.txt` and top-level
   `CMakeLists.txt`, and the `examples/qnx-rtos-app`/`examples/linux-posix-app`
   integration templates plus `examples/build-qnx.sh`'s doc string.
   Verified via a repository-wide grep for every old `safeapi::<feature>`
@@ -33,7 +257,7 @@ zero `.c`/`.h` files:
   `src/channel/CMakeLists.txt`, which was already excluded from the build
   before this change and stays that way.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
-  all 19 framework unit tests (all pass) plus a full safeAPIExample
+  all 19 framework unit tests (all pass) plus a full safeAPIRBC2oo2
   rebuild and live two-process SITE WEST/EAST smoke run, compiling
   exactly the source-file groupings the new `CMakeLists.txt` targets
   specify. **Caveat specific to this update**: because the change is to
@@ -43,7 +267,7 @@ zero `.c`/`.h` files:
   (and no network access to install one) was available in this sandbox
   session. An actual `cmake --build` on a real toolchain remains the
   outstanding verification step for this specific change.
-- ADR-023 status: framework, safeAPIExample, and example templates all
+- ADR-023 status: framework, safeAPIRBC2oo2, and example templates all
   updated; see ADR-023 for the full rationale and dependency-cluster
   reasoning.
 
@@ -63,9 +287,9 @@ verification:
   path), single point of exit is not used throughout (early-return-on-
   invalid-param is this codebase's established idiom, consistent with
   every other OAL service), no recursion, `const`-correct where the
-  wrapped `sapi_dual_channel`/`sapi_vital_channel` APIs allow it (one
+  wrapped `sapi_dual_channel`/`sapi_channel` APIs allow it (one
   explicit, commented `const`-cast in `sapi_safechannel_get_status()`
-  because `sapi_vital_channel_get_aggregated_health()` itself takes a
+  because `sapi_voter_get_aggregated_health()` itself takes a
   non-const handle for a read-only query - a pre-existing constraint of
   the wrapped API, not introduced here).
 - Real bug found and fixed in `sapi_dual_channel_send()`
@@ -78,7 +302,7 @@ verification:
   behavior, no new casts). This module had only ever been exercised
   through a mock netlink backend (`test_sapi_dual_channel.c`) before
   this pass wired it to a real transport for the first time.
-- `safeAPIExample/src/application/SITE/site.c`: removed its own direct
+- `safeAPIRBC2oo2/src/application/SITE/site.c`: removed its own direct
   `sapi_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
   manual CONNECT-retry loop it hand-rolled around them; now opens one
   `sapi_safechannel_t` (`SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT`,
@@ -122,7 +346,7 @@ nature to update 8's `sapi_timer` pilot:
   `test_sapi_clocksync`, `test_sapi_log`, `test_sapi_dual_msgchannel`,
   `test_sapi_dual_channel`, `test_sapi_dual_negotiator`), the
   `examples/geo_distributed_checkpoint_sync.c` sample, and
-  safeAPIExample's umbrella `sapi_posix_backend.h` (now includes all 9
+  safeAPIRBC2oo2's umbrella `sapi_posix_backend.h` (now includes all 9
   backend headers alongside their 9 consumer headers). No site needed a
   logic change; `task`, `ipc`, and `memory` have no dedicated framework
   unit tests, so only their `.c` implementation and the POSIX backend
@@ -130,7 +354,7 @@ nature to update 8's `sapi_timer` pilot:
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all 16 framework unit tests (all pass, including the 8 directly
   touched by this change) plus a full rebuild and live 8-process run of
-  safeAPIExample (0 errors, clean shutdown, identical AGREE/checkpoint
+  safeAPIRBC2oo2 (0 errors, clean shutdown, identical AGREE/checkpoint
   behavior to before) - see ADR-021 section 2.3.
 - ADR-021 status: all 9 backend-bearing OAL modules now have the
   consumer/backend header split in place.
@@ -152,12 +376,12 @@ is a pure declaration move, not new logic:
 - Every call site that referenced the vtable type
   (`tests/timer/test_sapi_timer.c`, `tests/watchdog/test_sapi_watchdog.c`,
   `tests/dual/test_sapi_dual_negotiator.c`, `tests/log/test_sapi_log.c`,
-  safeAPIExample's `sapi_posix_backend.h`/`sapi_posix_backend_timer.c`)
+  safeAPIRBC2oo2's `sapi_posix_backend.h`/`sapi_posix_backend_timer.c`)
   gained the new `#include` and were rebuilt; no site needed a logic
   change.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all four affected framework unit tests (all pass) plus a full rebuild
-  and live 8-process run of safeAPIExample (0 errors, clean shutdown) -
+  and live 8-process run of safeAPIRBC2oo2 (0 errors, clean shutdown) -
   see ADR-021 section 2.3.
 - **Not yet done:** the same split for the other eight backend-bearing
   modules (`nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
@@ -282,14 +506,14 @@ already-open findings instead of introducing new ones:
   modules remain inside this report's pre-existing "Known gap" paragraph
   (section header above) - this update does not close that gap, it adds
   to what's inside it.
-- `sapi_vital_channel.c`: `sapi_vital_channel_init()`'s `channel_count`
+- `sapi_channel.c`: `sapi_channel_init()`'s `channel_count`
   floor relaxed from `>= 2` to `>= 1` (only reachable via
   `SAPI_VOTING_NMR` with `quorum_size == 1` - `SAPI_VOTING_2OO2`/
   `SAPI_VOTING_2OO3` floors unchanged). A parameter-validation bound
   change, not a new construct - no new type, no new header, no new
   control-flow shape; the existing `switch` on `voting_strategy` still has
   its `default` clause (Rule 16.1/16.4, section 2).
-- **`safeAPIExample/src/application/AB/channel_ab.c` (separate repo,
+- **`safeAPIRBC2oo2/src/application/AB/channel_ab.c` (separate repo,
   already out of this report's stated scope, called out here only for
   completeness since it's the first real consumer of both changes
   above):** adds a `pthread_mutex_t` (`ctx->peer_send_mutex`) guarding
@@ -340,7 +564,7 @@ scans for expired watchdogs and dispatches the configured recovery action
 this, the Rule 21.6 finding recorded below for `sapi_watchdog.c`
 (`<stdio.h>`/`fprintf` use) is now fixed - the new implementation has no
 `<stdio.h>` dependency at all, using only `sapi_log_write()` with static
-string literals (the same convention already used by `sapi_vital_channel.c`).
+string literals (the same convention already used by `sapi_channel.c`).
 `sapi_appmanager.c`'s own Rule 21.6 finding is unrelated and still open.
 Verified via a new real test suite (`tests/watchdog/test_sapi_watchdog.c`,
 13/13 framework tests passing) using a mock `sapi_timer` backend with a
@@ -369,7 +593,7 @@ printing success (`CMAKE_EXPORT_COMPILE_COMMANDS` was never set, so
 once set, it was set as a plain `set()` instead of a `CACHE` variable,
 which only affects the setting directory and its descendants - meaning it
 never took effect for a downstream project's own targets when this
-framework is consumed via `add_subdirectory()`, e.g. by `safeAPIExample`).
+framework is consumed via `add_subdirectory()`, e.g. by `safeAPIRBC2oo2`).
 Section 1a records what the first real run actually found. The three
 CRC-64 lookup tables flagged as incomplete placeholders in section 2 below
 have also been fixed (full, correctly generated 256-entry tables) - see
@@ -381,7 +605,7 @@ section 4).
 
 **Known gap, not closed by this update:** this report has not been
 re-verified against every module in the current tree - `sapi_watchdog`,
-`sapi_vital_channel`, `sapi_appmanager`, and most of `sapi_checksum`'s
+`sapi_channel`, `sapi_appmanager`, and most of `sapi_checksum`'s
 pre-existing logic were added by work outside the review that originally
 produced this document and have not had a MISRA pass done against them,
 beyond what was necessary to make `sapi_checksum.c` compile at all (see
@@ -425,7 +649,7 @@ Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
 | 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
 | 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `sapi_appmanager.c` and `sapi_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `sapi_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `sapi_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
 | 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
-| `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIExample`); not necessarily a real problem, but not yet individually verified either. |
+| `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIRBC2oo2`); not necessarily a real problem, but not yet individually verified either. |
 
 **This is the first ground truth this project has had from a real tool.**
 It broadly confirms section 3's documented 15.5 deviation at scale, and
@@ -438,7 +662,7 @@ individually, some likely tool noise without `--rule-texts`), a proper
 triage pass is a dedicated follow-up, not something folded into this
 update.
 
-`safeAPIExample` (a separate project, out of this report's own stated
+`safeAPIRBC2oo2` (a separate project, out of this report's own stated
 scope) was also checked incidentally by the same run (496 findings) -
 its own compliance posture is that project's own responsibility to
 document; its README already discloses "No SIL-level V&V, no MISRA/
@@ -465,6 +689,69 @@ retrofitted, and are verified here by direct search of the shipped source:
 | Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `sapi_checkpoint.c`/`sapi_clocksync.c`: zero hits. `sapi_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `sapi_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `sapi_checksum.c`). |
 | Explicit status codes, no invented enum values | `sapi_checksum.c` fix | The pre-fix file referenced `SAPI_STATUS_ERROR`/`SAPI_STATUS_INVALID`, neither a member of `sapi_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `SAPI_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `SAPI_STATUS_INVALID_PARAM` for bad arguments, `SAPI_STATUS_ALREADY_INITIALIZED` for double-init. |
 
+**Update (2026-08-20): new module, `include/safeapi/notify/sapi_notify.h`
+(ADR-030).** Header-only, no `src/` file to run the normal cppcheck pass
+against - reviewed manually instead. Rule 11.1 (function-pointer/other-type
+conversion) is the rule this module exists specifically to avoid violating:
+`SAFEAPI_DECLARE_CALLBACK_LIST` declares only a `{callback_fn_type fn; void
+*context;}` storage shape with the callback field kept at its own real,
+concrete function-pointer type throughout - no `void *`-typed function
+pointer, no cast between function-pointer types anywhere in the header (see
+the header's own doc for why a fully generic, signature-agnostic dispatcher
+was rejected for exactly this reason). Rule 17.7 (no ignored return values)
+is satisfied by construction in the header's own worked dispatch example: a
+veto-gate loop folds every registered validator's return value into a single
+`result` variable (nothing discarded), and NULL-guards every slot before
+calling it (`sapi_watchdog_create()`'s own established custom-callback
+precedent, cited directly in the header doc). No dynamic memory, no
+recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes
+only `<stdint.h>`. Standalone compile check (`gcc -std=c99 -Wall -Wextra
+-Wpedantic`) of a worked instantiation: clean, zero warnings.
+
+**Update (2026-08-20): new module, `include/safeapi/memory/sapi_mem_util.h`
+(ADR-031).** Header-only, no `src/` file to run the normal cppcheck pass
+against - reviewed manually instead. `sapi_mem_set()`/`sapi_mem_copy()`/
+`sapi_mem_compare()` are thin `static inline` wrappers over `memset()`/
+`memcpy()`/`memcmp()` - the ONE sanctioned call site for each, so
+downstream code (this session: `safeAPIRBC2oo2`, all ~90 direct
+`memset`/`memcpy`/`memcmp` call sites) routes through this header instead
+of including `<string.h>` itself. No dynamic memory, no recursion, no
+`<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes only
+`<stddef.h>`/`<string.h>` (the latter is this module's own reason to
+exist, not something it hides from a reviewer). Every parameter is
+documented with its caller-ownership/NULL contract; `sapi_mem_compare()`'s
+own doc explicitly tells callers to rely only on the zero/nonzero
+distinction, never the sign, avoiding a fragile-comparison MISRA posture
+issue at every call site rather than in just one place. Standalone
+compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`): clean, zero
+warnings.
+
+**Update (2026-08-20): setup-phase lock coverage extended (ADR-032).**
+Fourteen functions across ten files (`sapi_timer_register_backend`,
+`sapi_ipc_register_backend`, `sapi_task_register_backend`,
+`sapi_netlink_register_backend`, `sapi_nvm_register_backend`,
+`sapi_log_register_backend`, `sapi_clocksync_register_backend`,
+`sapi_reboot_register_backend`, `sapi_mem_pool_register_backend`,
+`sapi_mem_pool_create`, `sapi_safestate_register_handler`,
+`sapi_ipc_pubsub_topic_create`, `sapi_ipc_rr_server_create`,
+`sapi_ipc_rr_client_create`) now call
+`sapi_lifecycle_check_setup_allowed()` as one of their first checks,
+closing a gap an integrator-requested audit found: these are the same
+class of one-time "wire this up" setup call ADR-026 already gated for
+timers/channels/voters/cross-comparators/watchdogs, just never covered
+when that ADR was written. `sapi_nvm_open()`/`sapi_log_init()` were
+evaluated and deliberately left ungated - see ADR-032's own "Deferred"
+note. `cmake --build build` + `ctest --test-dir build`: full rebuild and
+suite pass. `safeAPIRBC2oo2` (downstream): full rebuild, `ctest`, and
+`smoke.sh` re-verified against its established baseline. No new
+`malloc()`/`free()`/`realloc()` call site was added anywhere - a
+candidate malloc-backed default memory-pool backend was considered and
+rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_backend/sapi_posix_backend_memory.c`
+was confirmed to already implement a complete, malloc-free (static
+arena, bump allocator, intrusive free list) backend - the zero-`malloc`
+count for this repo's own `include/`/`src/` (section 1a's grep sweep)
+remains unchanged.
+
 **Update (2026-08-05, same day as the section 1a tooling fix): fixed.**
 `sapi_checksum.c`'s three CRC-64 lookup tables (`g_crc64_ertms_table`
 etc.) were incomplete placeholders - only ~24 of 256 entries populated
@@ -474,7 +761,7 @@ and explicitly called out here as not real integrity protection. All
 three are now full, correctly generated 256-entry tables (standard
 reflected/right-shifting CRC table-generation algorithm against each
 polynomial already declared in `sapi_checksum.h`) - see `sapi_checksum.c`'s
-own file-level note for detail, and `safeAPIExample`'s A<->B peer-link
+own file-level note for detail, and `safeAPIRBC2oo2`'s A<->B peer-link
 CRC-64 integrity check (`channel_ab.c`) for the first real consumer of
 this fix.
 
@@ -535,7 +822,7 @@ Being transparent about these rather than silently non-compliant:
   masked locally because macOS's libc does not gate these declarations the
   same way. Fixed by adding `#define _POSIX_C_SOURCE 200809L` before any
   header include in `sapi_appmanager.c` (same pattern already used in
-  `safeAPIExample`'s own POSIX application files). No change to the
+  `safeAPIRBC2oo2`'s own POSIX application files). No change to the
   deviation itself - `<signal.h>` is still genuinely included and still
   guarded by the same `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS` compile-time
   gate; this only fixes a portability bug in code that was already
@@ -574,8 +861,11 @@ missing:
   decision: real violation needing a fix, or a documented deviation to
   add to section 3, or (less likely, but possible without `--rule-texts`)
   a tool false-positive.
-- **`sapi_appmanager.c`/`sapi_watchdog.c`'s confirmed `<stdio.h>` use**
-  (Rule 21.6) - a real, now-confirmed finding, not yet fixed.
+- **`sapi_appmanager.c`'s confirmed `<stdio.h>` use** (Rule 21.6) - a
+  real, now-confirmed finding, not yet fixed. (`sapi_watchdog.c`'s own
+  contribution to this finding was fixed as of update 3 above - this
+  section previously named both files together, which contradicted that
+  update; corrected to name only the file that's actually still open.)
 - A commercial checker (LDRA, Parasoft C/C++test, PC-lint Plus, Polyspace)
   for certification-grade evidence, which EN 50128 SIL 3/4 verification
   will ultimately require rather than cppcheck's free addon or this

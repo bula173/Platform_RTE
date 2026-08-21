@@ -36,7 +36,11 @@ typedef enum sapi_status_e
     SAPI_STATUS_HARDWARE_FAULT        = 8,  /**< Backend reported a hardware-level fault. */
     SAPI_STATUS_DATA_CORRUPTION       = 9,  /**< Integrity check (e.g. NVM CRC) failed. */
     SAPI_STATUS_INTERNAL_ERROR        = 10, /**< Defensive catch-all: should never happen. */
-    SAPI_STATUS_VALUE_OUT_OF_RANGE    = 11  /**< Checked cast: value does not fit the destination type. */
+    SAPI_STATUS_VALUE_OUT_OF_RANGE    = 11, /**< Checked cast: value does not fit the destination type. */
+    SAPI_STATUS_INVALID_STATE         = 12  /**< Operation not permitted in the application's current
+                                              *   lifecycle phase (e.g. a setup-only constructor called
+                                              *   after sapi_appmanager_run() has locked setup - see
+                                              *   sapi_lifecycle.h). */
 } sapi_status_t;
 
 /**

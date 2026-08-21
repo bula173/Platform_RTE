@@ -28,7 +28,7 @@
  * rewritten against sapi_log_write's non-varargs signature, since
  * logging is explicitly non-safety-path and out of scope for this pass.
  *
- * NOTE (fixed while wiring safeAPIExample's A/B cross-compare CRC64
+ * NOTE (fixed while wiring safeAPIRBC2oo2's A/B cross-compare CRC64
  * integrity check): g_crc64_ertms_table, g_crc64_iso_table and
  * g_crc64_xz_table previously had only ~24, 2, and 2 of their required
  * 256 entries populated respectively (the rest implicitly zero-
@@ -52,8 +52,6 @@
 
 #include <string.h>
 #include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/log/sapi_log.h"
-#include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/timer/sapi_timer.h"
 
 /* ============================================================================
@@ -408,8 +406,6 @@ sapi_status_t sapi_checksum_crc64_init(sapi_crc64_polynomial_t polynomial)
 
 sapi_crc64_t sapi_checksum_crc64(const uint8_t *data, size_t size)
 {
-    /* REQ-ID: SR_SW_042 (Data Integrity) */
-
     uint64_t crc = 0xFFFFFFFFFFFFFFFFULL;  /* Initial value (all ones) */
     size_t i;
     uint8_t index;
@@ -427,9 +423,20 @@ sapi_crc64_t sapi_checksum_crc64(const uint8_t *data, size_t size)
         return crc;
     }
 
-    /* Verify table is loaded */
-    if (g_checksum_manager.table == NULL) {
-        return 0ULL;
+    /* Defense-in-depth against corrupted static state (e.g. a single-event
+     * upset flipping g_checksum_manager.table without also flipping
+     * .initialized) rather than a reachable API path: every branch in
+     * sapi_checksum_crc64_init() above sets .table and .initialized
+     * together, so .initialized == 1U already implies .table != NULL for
+     * any state this module's own code can produce - not coverable by a
+     * legitimate caller, and there is no public way to corrupt
+     * module-static state to hit it either. Kept rather than deleted:
+     * this guards a genuine hardware fault class relevant to SIL
+     * contexts, not merely a defensive habit. See docs/COVERAGE_REPORT.md
+     * for the accepted-exception rationale (this is the project's one
+     * documented gap against the 100% branch coverage target). */
+    if (g_checksum_manager.table == NULL) { /* GCOVR_EXCL_BR_LINE */
+        return 0ULL; /* GCOVR_EXCL_LINE - see rationale above */
     }
 
     /* Compute CRC using lookup table (O(1) per byte) */
@@ -455,8 +462,6 @@ sapi_status_t sapi_checksum_crc64_verify(const uint8_t *data,
                                          sapi_crc64_t expected_crc,
                                          sapi_checksum_result_t *result_out)
 {
-    /* REQ-ID: SR_SW_042 (Data Integrity) */
-
     sapi_crc64_t computed_crc;
     sapi_status_t status;
 
@@ -501,7 +506,6 @@ sapi_status_t sapi_checksum_vital_message_create(
     const uint8_t *payload,
     size_t payload_size)
 {
-    /* REQ-ID: SR_SW_042 (Data Integrity for Redundancy) */
     sapi_timestamp_ms_t now_ms = 0U;
 
     /* Validate inputs */
@@ -556,8 +560,6 @@ sapi_status_t sapi_checksum_vital_message_verify(
     size_t payload_max_size,
     uint8_t *payload_size_out)
 {
-    /* REQ-ID: SR_SW_042 (Data Integrity) */
-
     sapi_checksum_result_t check_result;
     sapi_status_t status;
 

@@ -4,7 +4,7 @@ Status: Accepted
 Date: 2026-08-07
 Applies to: safeAPIFreamwork's top-level `CMakeLists.txt`,
 `tests/CMakeLists.txt`, every `src/<feature>/CMakeLists.txt`; downstream
-safeAPIExample's `CMakeLists.txt` and `src/posix_backend/CMakeLists.txt`;
+safeAPIRBC2oo2's `CMakeLists.txt` and `src/posix_backend/CMakeLists.txt`;
 the `examples/*-app` integration templates.
 
 ## 1. Context
@@ -17,7 +17,7 @@ grown to 21 feature targets plus `appmanager` (22 total; the dead,
 excluded-from-build ADR-008 `sapi_channel` module is not counted). Most
 of these targets are tiny - `status` is 33 lines of `.c`, `reboot` 34,
 `types` is header-only - and none of them are ever linked "à la carte"
-in practice: every real consumer (safeAPIExample's `posix_backend` and
+in practice: every real consumer (safeAPIRBC2oo2's `posix_backend` and
 its own top-level `CMakeLists.txt`, every framework unit test) already
 links a large, overlapping subset of them, not one or two in isolation.
 The promised fine-grained linking benefit isn't actually being used
@@ -89,7 +89,7 @@ instead of twenty-two.
   feature" corollary. Directory-level navigation ("find everything about
   the timer service") is unaffected.
 - **No `#include` path changes anywhere** - not in framework tests, not
-  in safeAPIExample, not in the example templates. A header include
+  in safeAPIRBC2oo2, not in the example templates. A header include
   never depended on which library the corresponding `.c` was compiled
   into.
 - **No public API, status code, or behavior change** in any module.
@@ -121,10 +121,10 @@ four new ones instead:
   exactly as linking the old fine-grained set did.
 - `install(TARGETS ...)` in the top-level `CMakeLists.txt`: four names
   instead of twenty.
-- safeAPIExample's `src/posix_backend/CMakeLists.txt` (was: `status`,
+- safeAPIRBC2oo2's `src/posix_backend/CMakeLists.txt` (was: `status`,
   `types`, `timer`, `ipc`, `netlink`, `task`, `log`, `nvm`, `reboot`,
   `memory`) now links `safeapi::core` and `safeapi::oal`.
-- safeAPIExample's top-level `CMakeLists.txt` (was 12 individual names)
+- safeAPIRBC2oo2's top-level `CMakeLists.txt` (was 12 individual names)
   now links `safeapi::posix_backend`, `safeapi::core`, `safeapi::oal`,
   `safeapi::channels` (for `checksum`), `safeapi::appmanager`.
 - `examples/qnx-rtos-app/CMakeLists.txt` and
@@ -137,7 +137,7 @@ four new ones instead:
 - Positive: 22 `CMakeLists.txt` files and a 22-entry `foreach()`/
   `install(TARGETS ...)` collapse to 4 `add_library()` blocks and a
   4-entry install list; every consumer's own link list shrinks by the
-  same ratio (safeAPIExample's top-level file: 12 names -> 5).
+  same ratio (safeAPIRBC2oo2's top-level file: 12 names -> 5).
 - Positive: the dependency direction is now a single, obvious linear
   chain (core -> oal -> channels -> appmanager) instead of an
   ad hoc per-feature graph a reader had to reconstruct from 22 separate
@@ -174,7 +174,7 @@ exactly except for the grouping; (b) a repository-wide grep for every old
 `safeapi::<feature>` target name after the change, confirming no leftover
 reference to a name that no longer exists; (c) manual
 `gcc -std=c99 -Wall -Wextra -Wpedantic` builds of all 17 framework unit
-tests and a full safeAPIExample rebuild, compiling the exact same `.c`
+tests and a full safeAPIRBC2oo2 rebuild, compiling the exact same `.c`
 files a real `cmake --build` would select for the new targets (this
 verification method builds from source-file lists directly and was
 already insensitive to which library a file was grouped into, so it does
@@ -188,8 +188,10 @@ CMake-only change in this project).
 - `CMakeLists.txt` (top-level, safeAPIFreamwork)
 - `tests/CMakeLists.txt`
 - `src/appmanager/CMakeLists.txt` (link line only)
-- `src/channel/CMakeLists.txt` (untouched, listed here only to make clear
-  it was considered and deliberately left alone)
-- safeAPIExample: `CMakeLists.txt`, `src/posix_backend/CMakeLists.txt`
+- `src/channel/CMakeLists.txt` (untouched at the time of this ADR, listed
+  here only to make clear it was considered and deliberately left alone;
+  that module was later removed outright by ADR-025, which superseded it
+  with `sapi_cross_comparator`)
+- safeAPIRBC2oo2: `CMakeLists.txt`, `src/posix_backend/CMakeLists.txt`
 - `examples/qnx-rtos-app/CMakeLists.txt`,
   `examples/linux-posix-app/CMakeLists.txt`, `examples/build-qnx.sh`

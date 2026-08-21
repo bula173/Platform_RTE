@@ -1,0 +1,94 @@
+# ADR-031: `sapi_mem_util` - one sanctioned call site per libc memory primitive
+
+Status: Accepted
+Date: 2026-08-20
+Applies to: new `include/safeapi/memory/sapi_mem_util.h` (header-only, no
+`src/`, no `SAFEAPI_ENABLE_*` option, no `tests/` executable of its own -
+see §2.2/§4).
+
+## 1. Context
+
+`safeAPIRBC2oo2` (downstream, separate repo) calls libc `memset()`/
+`memcpy()`/`memcmp()` directly across ~25 of its own application files
+(~90 call sites) - fixed-size struct zeroing, buffer copies for the wire
+codecs, byte-for-byte session comparisons. This framework itself does the
+same in its own `src/`/`posix_backend` files. Direct `<string.h>` calls
+are not a MISRA rule violation on their own, but this project's own
+posture (this repo's `CLAUDE.md`: "no dynamic memory... prefer a checked
+conversion helper over a bare C-style cast") already favors a single,
+reviewed, intention-revealing wrapper over scattered direct libc calls
+for other primitives (`sapi_buffer_t`'s own bounds-checked read/write
+helpers instead of raw pointer arithmetic being the closest existing
+precedent) - a downstream integrator asked for the same treatment here:
+route every fixed-size fill/copy/compare through one small framework
+header instead of `<string.h>` directly, so an audit for "does this
+codebase call libc memory functions directly" has exactly one file to
+check.
+
+No such wrapper exists in this framework today - `sapi_memory.h` is a
+fixed-block POOL ALLOCATOR (`sapi_mem_pool_create()`/`_acquire()`/
+`_release()`), a completely different concern (managing a bounded set of
+reusable blocks, not filling/copying/comparing bytes within one already-
+owned buffer) - confirmed by a repository-wide search finding no
+`sapi_mem_set`/`_copy`/`_compare`-shaped function anywhere.
+
+## 2. Decision
+
+### 2.1 Three trivial wrappers, no "safe string library" scope creep
+
+`sapi_mem_set(dest, value, count)` / `sapi_mem_copy(dest, src, count)` /
+`sapi_mem_compare(a, b, count)` wrap `memset()`/`memcpy()`/`memcmp()`
+exactly, with no bounds-checking of their own (callers already own both
+buffers and their sizes - the same "caller-owned storage, no hidden
+state" convention this framework's own `sapi_buffer_t` and every
+downstream `channel_ab_*` module already follow) and no variable-length
+text handling (`strcpy`/`strcat`/`strlen`-style functions are
+deliberately out of scope - this framework and every application built
+on it work in fixed-size buffers throughout, CLAUDE.md's "no malloc/free"
+rule, so there is no genuine need for a variable-length string
+primitive; adding one now would be speculative scope this ADR's own
+triggering request never asked for).
+
+### 2.2 Header-only, no `SAFEAPI_ENABLE_*` option
+
+Same rationale as ADR-030 §2.3 (`sapi_notify.h`): these are `static
+inline` wrappers with no OS dependency and no runtime state of their own
+- they belong alongside `sapi_buffer`/`sapi_types`/`sapi_notify` as an
+always-available foundational header, not an optional subsystem with its
+own `.c`/dependency-graph entry per ADR-024.
+
+## 3. Consequences
+
+- Positive: every fixed-size fill/copy/compare in this framework and its
+  downstream consumers can now route through one reviewed header instead
+  of `<string.h>` directly - a single place to add, say, a debug-build
+  canary-fill-on-free or a bounds assertion later, without touching every
+  call site.
+- Positive: matches this project's own established "wrap the primitive,
+  don't reinvent it" posture (`sapi_buffer_t` over raw pointer math,
+  `sapi_checksum_crc64()` over a hand-rolled CRC) rather than introducing
+  a new pattern.
+- Negative: purely a naming/indirection layer - `sapi_mem_set()` behaves
+  identically to `memset()`, so it adds no new safety property by itself;
+  its value is entirely the "one call site to audit/extend later"
+  argument in §3's first point, not a behavior change today.
+- Neutral: does not touch `sapi_memory.h`'s own pool allocator, a
+  genuinely different concern (§1) - both can coexist without confusion
+  since their names are deliberately distinct (`sapi_mem_pool_*` vs.
+  `sapi_mem_set`/`_copy`/`_compare`).
+
+## 4. Verification
+
+- Standalone compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`,
+  header include path only): clean, zero warnings.
+- `safeAPIRBC2oo2` (downstream consumer, separate repo): full clean
+  rebuild plus `ctest` and `.claude/skills/run-safeAPIRBC2oo2/smoke.sh`
+  matching its established baseline after every direct `<string.h>` call
+  in that repo was replaced with these wrappers (pure mechanical
+  substitution, no behavior change) - same "verify the downstream repo's
+  own build" lesson ADR-025 §3 and ADR-030 §4 both already applied.
+
+## 5. Location
+
+- `include/safeapi/memory/sapi_mem_util.h` (new, header-only).
+- No `src/`, no `tests/`, no `SAFEAPI_ENABLE_*` CMake option - see §2.2.

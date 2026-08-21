@@ -15,14 +15,18 @@
  *    itself ships no OS-specific code.
  * -# **Common utilities** - layer-agnostic building blocks with no OS
  *    dependency: @ref BUFFER, @ref STRING, @ref CAST, @ref TYPES,
- *    @ref STATUS, @ref SAFESTATE, @ref CHANNEL.
+ *    @ref STATUS, @ref SAFESTATE.
  * -# **Redundancy / vital communication** - built on top of the first two
- *    layers: vital_channel (voting across 2oo2/2oo3/NMR), @ref CHECKPOINT
- *    (bounded checkpoint-ID rendezvous for cross-node agreement),
- *    @ref CLOCKSYNC (diagnostic-only wall-clock offset, never a
- *    correctness dependency), @ref CHECKSUM (CRC-64 data integrity), and
- *    @ref WATCHDOG (hang detection and recovery, including
- *    SAPI_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss reactions).
+ *    layers: @ref channel_link (one point-to-point redundant link),
+ *    @ref voter (N-way 2oo2/2oo3/NMR voting across registered
+ *    @ref channel_link instances), @ref cross_comparator (2-way
+ *    consistency check between two independent peer channels, ADR-025),
+ *    @ref CHECKPOINT (bounded checkpoint-ID rendezvous for cross-node
+ *    agreement), @ref CLOCKSYNC (diagnostic-only wall-clock offset,
+ *    never a correctness dependency), @ref CHECKSUM (CRC-64 data
+ *    integrity), and @ref WATCHDOG (hang detection and recovery,
+ *    including SAPI_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss
+ *    reactions).
  *
  * @ref APPMANAGER sits above all three layers, giving an application a
  * single init/execute/shutdown lifecycle entry point.
@@ -31,8 +35,11 @@
  *
  * For SIL 3/4 dual-channel deployments, ADR-008 covers build-diversity
  * mitigation (two independently-configured toolchains compiling channel A
- * and channel B) and the sapi_channel comparator that answers "which
- * channel is this binary?" and "do the two channels' results agree?".
+ * and channel B); @ref cross_comparator (ADR-025) is the framework
+ * primitive that answers "do channel A's and channel B's results agree?"
+ * for exactly that kind of independent peer pair - it supersedes the
+ * ADR-008-era standalone comparator module, which was never built and has
+ * since been removed outright.
  *
  * @section system_architecture_docs Where to Go Next
  *
@@ -42,10 +49,10 @@
  *   ARCHITECTURE.md and USER_GUIDE.md pair).
  * - IPC transport choice: @ref ipc_transport_selection,
  *   @ref channel_configuration
- * - Vital channel topologies: @ref vital_channel_topologies
+ * - Channel topologies: @ref vital_channel_topologies
  * - Architecture Decision Records (design rationale, one per major
  *   decision): `docs/architecture/ADR-*.md`
- * - Requirements traceability: `docs/requirements/SRS.md`
+ * - Requirements traceability: @ref safeapi_srs
  * - MISRA C:2012 conformance status: `docs/MISRA_COMPLIANCE_REPORT.md`
  * - Cross-compilation (Linux, QNX, etc.): `docs/CROSS_COMPILATION.md`
  */

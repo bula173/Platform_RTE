@@ -7,7 +7,7 @@ existing OAL service's backend-registration mechanism (ADR-005).
 
 **Relocation note:** the code this ADR describes (`src/posix_backend/`,
 `include/safeapi/posix_backend/`, `tests/posix_backend/`) has been moved
-out of this repository into the `safeAPIExample` project
+out of this repository into the `safeAPIRBC2oo2` project
 (`src/posix_backend/` there). This is a location change only, not a
 design reversal - the rationale below is unchanged and still describes
 that code accurately. The move itself is a direct consequence of this
@@ -17,7 +17,7 @@ framework itself. safeAPIFreamwork now ships only the OAL service
 interfaces and their validate-then-dispatch layers (`sapi_<service>_*()`
 + `sapi_<service>_register_backend()`); any concrete backend - POSIX,
 an RTOS, bare metal - belongs in the application/integration project
-that registers it, which is what `safeAPIExample` now demonstrates.
+that registers it, which is what `safeAPIRBC2oo2` now demonstrates.
 
 ## 1. Context
 

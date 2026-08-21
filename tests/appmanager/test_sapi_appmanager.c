@@ -26,7 +26,10 @@
 #include "safeapi/appmanager/sapi_appmanager.h"
 #include "safeapi/checksum/sapi_checksum.h"
 #include "safeapi/safestate/sapi_safestate.h"
-#include "safeapi/vital_channel/sapi_vital_channel.h"
+#include "safeapi/channel_link/sapi_channel.h"
+#include "safeapi/voter/sapi_voter.h"
+#include "safeapi/timer/sapi_timer.h"
+#include "safeapi_backend/timer/sapi_timer_backend.h"
 
 /* ---- shared call-order/count tracking for the fake application under test ---- */
 static int g_init_calls;
@@ -87,6 +90,13 @@ static sapi_status_t fake_shutdown(void *context)
     (void)context;
     g_shutdown_calls++;
     return SAPI_STATUS_OK;
+}
+
+static sapi_status_t fake_shutdown_fails(void *context)
+{
+    (void)context;
+    g_shutdown_calls++;
+    return SAPI_STATUS_INTERNAL_ERROR;
 }
 
 static const char *fake_get_name(void)
@@ -170,6 +180,32 @@ static void test_bounded_run_calls_in_order_with_correct_counts(void)
     assert(g_execute_calls == 4); /* stopped exactly at max_iterations */
     assert(g_shutdown_calls == 1);
     assert(g_last_seen_state_in_execute == (int)SAPI_APP_STATE_RUNNING);
+    assert(sapi_appmanager_get_state() == SAPI_APP_STATE_SHUTDOWN);
+}
+
+/* A non-OK shutdown() status is logged (stderr) but never fails the run
+ * overall - sapi_appmanager_run()'s own comment says "Continue anyway;
+ * shutdown must complete". */
+static void test_shutdown_failure_is_logged_but_not_fatal(void)
+{
+    static const sapi_appmanager_operations_t ops = {
+        .init = fake_init_ok,
+        .execute = fake_execute_ok,
+        .shutdown = fake_shutdown_fails,
+        .get_name = fake_get_name,
+        .get_version = fake_get_version
+    };
+    sapi_appmanager_config_t config;
+
+    reset_counters();
+    config.ops = &ops;
+    config.context = NULL;
+    config.max_iterations = 2U;
+    config.error_threshold = 0U;
+    config.checkpoint = NULL;
+
+    assert(sapi_appmanager_run(&config) == EXIT_SUCCESS);
+    assert(g_shutdown_calls == 1);
     assert(sapi_appmanager_get_state() == SAPI_APP_STATE_SHUTDOWN);
 }
 
@@ -550,18 +586,31 @@ static void cp_clear_replies(void)
     }
 }
 
-static void cp_init_vital_channel(sapi_vital_channel_t *storage)
+/* Builds a voter with TEST_CP_CHANNEL_COUNT channels registered, backed
+ * by the mock mailbox above - the fixture the checkpoint-integration
+ * tests below use. `channels` must outlive `voter` (voter only stores
+ * pointers to the registered channel storage). */
+static void cp_init_voter(sapi_channel_t channels[TEST_CP_CHANNEL_COUNT], sapi_voter_t *voter)
 {
-    sapi_vital_channel_config_t config;
+    sapi_voter_config_t voter_cfg;
+    size_t i;
 
-    memset(&config, 0, sizeof(config));
-    config.voting_strategy = SAPI_VOTING_2OO2;
-    config.channel_count = TEST_CP_CHANNEL_COUNT;
-    config.channel_timeout_ms = 50U;
-    config.backend_send = cp_mock_backend_send;
-    config.backend_recv = cp_mock_backend_recv;
+    memset(&voter_cfg, 0, sizeof(voter_cfg));
+    voter_cfg.voting_strategy = SAPI_VOTING_2OO2;
+    voter_cfg.channel_timeout_ms = 50U;
+    assert(sapi_voter_init(voter, &voter_cfg) == SAPI_STATUS_OK);
 
-    assert(sapi_vital_channel_init(storage, &config, g_cp_channel_handles, TEST_CP_CHANNEL_COUNT) == SAPI_STATUS_OK);
+    for (i = 0U; i < TEST_CP_CHANNEL_COUNT; i++)
+    {
+        sapi_channel_config_t chan_cfg;
+
+        memset(&chan_cfg, 0, sizeof(chan_cfg));
+        chan_cfg.channel_handle = g_cp_channel_handles[i];
+        chan_cfg.send = cp_mock_backend_send;
+        chan_cfg.recv = cp_mock_backend_recv;
+        assert(sapi_channel_init(&channels[i], &chan_cfg) == SAPI_STATUS_OK);
+        assert(sapi_voter_register_channel(voter, &channels[i]) == SAPI_STATUS_OK);
+    }
 }
 
 /* Per-iteration reply seeding: the appmanager uses iteration_count (1, 2,
@@ -581,7 +630,8 @@ static sapi_status_t cp_hook_pre_reseeds_next_checkpoint(void *context)
 
 static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
 {
-    sapi_vital_channel_t vc;
+    sapi_channel_t vc[TEST_CP_CHANNEL_COUNT];
+    sapi_voter_t voter;
     sapi_appmanager_checkpoint_config_t cp_cfg;
     sapi_appmanager_config_t config;
 
@@ -594,12 +644,12 @@ static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
         .get_version = fake_get_version
     };
 
-    cp_init_vital_channel(&vc);
+    cp_init_voter(vc, &voter);
     cp_clear_replies();
     cp_seed_valid_reply(0, 1U); /* checkpoint_id for iteration 1 = iteration_count = 1 */
     cp_seed_valid_reply(1, 1U);
 
-    cp_cfg.vital_channel = &vc;
+    cp_cfg.voter = &voter;
     cp_cfg.max_delay_ms = 100U;
     cp_cfg.expected_node_count = TEST_CP_CHANNEL_COUNT;
     cp_cfg.watchdog = NULL;
@@ -625,17 +675,25 @@ static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
 }
 
 /* Regression test for a real integration bug found while wiring this
- * feature into safeAPIExample's channel_ab.c: sapi_appmanager_run() must
- * NOT reject a config whose checkpoint->vital_channel is NULL at the
- * moment it is first called - a realistic integrator populates that
- * target inside their OWN init() (e.g. a checkpoint transport that isn't
- * opened/vital_channel_init()-ed until application startup), which runs
- * AFTER this validation would otherwise have already rejected it. Also
- * covers toggling vital_channel back to NULL mid-run (e.g. to pause
- * checkpointing while an underlying transport is known down) - each such
- * cycle must be handled exactly like any other recoverable stage failure
- * (SAPI_STATUS_INVALID_PARAM from sapi_channel_checkpoint()), never a
- * crash or a spurious SAFE-state entry. */
+ * feature into safeAPIRBC2oo2's channel_ab.c: sapi_appmanager_run() must
+ * NOT reject a config whose checkpoint->voter is NULL at the moment it
+ * is first called - a realistic integrator populates that target inside
+ * their OWN init() (e.g. a checkpoint transport that isn't opened/
+ * sapi_voter_init()-ed until application startup), which runs AFTER
+ * this validation would otherwise have already rejected it. Also covers
+ * toggling voter back to NULL mid-run (e.g. to pause checkpointing while
+ * an underlying transport is known down).
+ *
+ * Originally asserted that each such cycle was handled "like any other
+ * recoverable stage failure" (counted as an error, execute() skipped) -
+ * that assertion was itself wrong, and encoded the exact starvation bug
+ * test_checkpoint_paused_skips_stage_not_starves_cycle() above now
+ * covers: treating a deliberately-paused checkpoint as a FAILURE (rather
+ * than simply not-applicable-this-cycle, the same as checkpoint == NULL)
+ * meant execute() - and every other per-cycle safety check, including
+ * sapi_watchdog_timer_tick() - never ran for as long as voter stayed
+ * NULL. Updated to assert the corrected behavior: no error recorded,
+ * execute() runs every cycle regardless of voter's own NULL-ness. */
 static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
 {
     sapi_appmanager_checkpoint_config_t cp_cfg;
@@ -649,7 +707,7 @@ static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
         .get_version = fake_get_version
     };
 
-    cp_cfg.vital_channel = NULL; /* not yet populated - simulates "init() would set this, but hasn't run yet" */
+    cp_cfg.voter = NULL; /* not yet populated - simulates "init() would set this, but hasn't run yet" */
     cp_cfg.max_delay_ms = 20U;
     cp_cfg.expected_node_count = 1U;
     cp_cfg.watchdog = NULL;
@@ -665,19 +723,19 @@ static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
     /* Must NOT return EXIT_FAILURE just because vital_channel is NULL at
      * call time - that used to be rejected up front, incorrectly. */
     assert(sapi_appmanager_run(&config) == EXIT_SUCCESS);
-    /* Every cycle's checkpoint stage failed (INVALID_PARAM, NULL handle),
-     * so execute() never ran - but the run still completed normally. */
-    assert(g_execute_calls == 0);
+    /* Checkpoint being paused (voter == NULL) is not-applicable-this-
+     * cycle, not a failure - execute() runs every cycle regardless. */
+    assert(g_execute_calls == 3);
 
     sapi_appmanager_state_t stats;
     assert(sapi_appmanager_get_stats(&stats) == SAPI_STATUS_OK);
-    assert(stats.error_count == 3U);
-    assert(stats.last_error == SAPI_STATUS_INVALID_PARAM);
+    assert(stats.error_count == 0U);
 }
 
 static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
 {
-    sapi_vital_channel_t vc;
+    sapi_channel_t vc[TEST_CP_CHANNEL_COUNT];
+    sapi_voter_t voter;
     sapi_appmanager_checkpoint_config_t cp_cfg;
     sapi_appmanager_config_t config;
 
@@ -690,10 +748,10 @@ static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
         .get_version = fake_get_version
     };
 
-    cp_init_vital_channel(&vc);
+    cp_init_voter(vc, &voter);
     cp_clear_replies(); /* neither channel replies - checkpoint always fails */
 
-    cp_cfg.vital_channel = &vc;
+    cp_cfg.voter = &voter;
     cp_cfg.max_delay_ms = 20U;
     cp_cfg.expected_node_count = TEST_CP_CHANNEL_COUNT;
     cp_cfg.watchdog = NULL;
@@ -725,7 +783,105 @@ static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
          * (ADR-019 2.2) - a failed checkpoint must pre-empt both. */
         assert(g_pre_calls == 0);
         assert(g_execute_calls == 0);
+        /* This longjmp() is what makes this level's own never-returns
+         * contract (REQ-COMMON-SAFESTATE-002) testable at all - but it
+         * means sapi_appmanager_run() above never reached its own
+         * SHUTDOWN phase, so its internal lifecycle state (and the
+         * ADR-026 setup-phase lock) is left stuck at RUNNING/locked.
+         * See sapi_appmanager_reset_state()'s own doc - this is exactly
+         * the case it exists for. */
+        sapi_appmanager_reset_state();
     }
+}
+
+/* --- mock timer for test_checkpoint_paused_skips_stage_not_starves_cycle()
+ *     below only: registered as this file's very last action so no
+ *     earlier test's behavior (several of which currently rely on no
+ *     timer backend being registered - see e.g. this file's own
+ *     checkpoint tests above, which all pass today with checkpoint's own
+ *     internal timing degrading gracefully with no backend at all) is
+ *     affected. Advances by a fixed step every call - deterministic, and
+ *     lets sapi_appmanager_pace_failed_checkpoint()'s own poll-until-
+ *     floor loop be exercised directly by counting how many calls it
+ *     took to reach the configured max_delay_ms floor. --- */
+static uint32_t g_mock_timer_calls;
+
+static sapi_status_t mock_timer_now_for_pacing_test(sapi_timestamp_ms_t *out_now_ms)
+{
+    *out_now_ms = (sapi_timestamp_ms_t)(g_mock_timer_calls * 5U); /* 5ms per call */
+    g_mock_timer_calls++;
+    return SAPI_STATUS_OK;
+}
+
+static const sapi_timer_backend_t g_mock_timer_backend_for_pacing_test = { NULL, NULL, NULL, NULL,
+                                                                            mock_timer_now_for_pacing_test };
+
+/** Regression test for a starvation bug found live: a checkpoint stage
+ *  with voter == NULL (a normal, documented way to pause checkpointing
+ *  while its own underlying transport is known down - not a rare
+ *  condition) used to be fed through sapi_channel_checkpoint(), get back
+ *  SAPI_STATUS_INVALID_PARAM, and have that treated as a FAILED stage -
+ *  paced via sapi_appmanager_pace_failed_checkpoint() and then continue,
+ *  skipping pre_execute()/execute()/post_execute() entirely for as long
+ *  as voter stayed NULL. Found live: this silently starved every one of
+ *  a consumer's own per-cycle safety checks too - including
+ *  sapi_watchdog_timer_tick(), so a watchdog-driven REBOOT-on-link-loss
+ *  reaction could never fire during exactly the sustained-outage
+ *  scenario it exists for, because the cyclic executive never reached
+ *  the code that ticks it.
+ *
+ *  Fixed by treating checkpoint->voter == NULL the same as
+ *  checkpoint == NULL: skip the stage outright (no
+ *  sapi_channel_checkpoint() call, no pacing, no timer poll at all) and
+ *  let every later stage run normally, every cycle - this is what this
+ *  test now verifies, in two parts: (1) pre_execute() actually runs once
+ *  per iteration despite voter staying NULL the whole time (the real
+ *  regression check - this is the starvation this fix closes), and (2)
+ *  the mock timer sees ZERO calls (not just "fewer than an unpaced
+ *  spin would produce" - the stage is skipped outright, so nothing
+ *  calls sapi_timer_now() for it at all, unlike the old paced-retry
+ *  behavior this replaces). */
+static void test_checkpoint_paused_skips_stage_not_starves_cycle(void)
+{
+    sapi_appmanager_checkpoint_config_t cp_cfg;
+    sapi_appmanager_config_t config;
+
+    static const sapi_appmanager_operations_t ops = {
+        .init = fake_init_ok,
+        .pre_execute = hook_pre_ok,
+        .execute = hook_execute_ok,
+        .shutdown = fake_shutdown,
+        .get_name = fake_get_name,
+        .get_version = fake_get_version
+    };
+
+    assert(sapi_timer_register_backend(&g_mock_timer_backend_for_pacing_test) == SAPI_STATUS_OK);
+    g_mock_timer_calls = 0U;
+
+    cp_cfg.voter = NULL; /* paused - must be skipped outright, not fed to sapi_channel_checkpoint() */
+    cp_cfg.max_delay_ms = 20U;
+    cp_cfg.expected_node_count = 1U;
+    cp_cfg.watchdog = NULL;
+
+    reset_counters();
+    reset_hook_tracking();
+    config.ops = &ops;
+    config.context = NULL;
+    config.max_iterations = 3U;
+    config.error_threshold = 0U;
+    config.checkpoint = &cp_cfg;
+
+    assert(sapi_appmanager_run(&config) == EXIT_SUCCESS);
+
+    /* The real regression check: pre_execute() (and, by the same fix,
+     * execute()) ran once per iteration - proving the cyclic executive
+     * was NOT starved by the paused checkpoint stage. */
+    assert(g_pre_calls == 3);
+    assert(g_execute_calls == 3);
+    /* Skipped outright, not paced: zero timer calls for the checkpoint
+     * stage itself (contrast the old behavior this replaces, which polled
+     * the timer repeatedly per iteration to floor the retry interval). */
+    assert(g_mock_timer_calls == 0U);
 }
 
 int main(void)
@@ -744,6 +900,7 @@ int main(void)
     test_config_validation();
     test_init_failure_still_calls_shutdown();
     test_bounded_run_calls_in_order_with_correct_counts();
+    test_shutdown_failure_is_logged_but_not_fatal();
     test_error_threshold_stops_run_early();
     test_request_shutdown_stops_infinite_run();
     test_install_default_signal_handlers();
@@ -755,5 +912,6 @@ int main(void)
     test_checkpoint_success_runs_before_pre_execute_each_cycle();
     test_checkpoint_null_vital_channel_is_not_a_startup_error();
     test_checkpoint_timeout_enters_safestate_before_pre_execute();
+    test_checkpoint_paused_skips_stage_not_starves_cycle();
     return 0;
 }

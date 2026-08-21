@@ -1,3 +1,5 @@
+\page safeapi_srs Software Requirements Specification (SRS)
+
 # Safe API Framework — Software Requirements Specification (SRS)
 
 Date: 2026-08-02
@@ -203,6 +205,28 @@ caveat in section 4); the behavior they describe is what each per-service
 | REQ-OAL-REBOOT-010 | `sapi_reboot_request()` shall request a controlled system restart via the registered backend. |
 | REQ-OAL-REBOOT-011 | `sapi_reboot_register_backend()` per REQ-OAL-BACKEND-001. |
 
+### 2.8 Point-to-point network link — `sapi_netlink.h` (ADR-001 §4, ADR-005, ADR-021, ADR-027)
+
+Framework ships the interface and validate-then-dispatch layer only; a
+concrete backend (e.g. POSIX UDP sockets) is integrator-supplied and
+lives with the application that registers it — see `safeAPIRBC2oo2`'s
+`src/posix_backend/sapi_posix_backend_netlink.c`. This table was backfilled
+alongside ADR-027 (TCP → UDP migration) — the requirement IDs were
+already cited in `sapi_netlink.h`'s own header comments beforehand, but
+had no matching table entry here; the wording below reflects the
+now-transport-agnostic contract, not the earlier TCP-specific one.
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-NETLINK-001 | No dynamic allocation; caller supplies storage (`sapi_netlink_storage_t`). |
+| REQ-OAL-NETLINK-002 | `sapi_netlink_open()` shall never block longer than `config->connect_timeout_ms`. |
+| REQ-OAL-NETLINK-003 | Send/receive shall accept an explicit timeout and shall never block indefinitely by default. |
+| REQ-OAL-NETLINK-010 | `sapi_netlink_open()` shall establish a point-to-point link per `config->role` (LISTEN binds and waits for its one peer; CONNECT dials), returning `SAPI_STATUS_TIMEOUT` if not established within `connect_timeout_ms`. |
+| REQ-OAL-NETLINK-011 | `sapi_netlink_send()` shall send one fixed-size message, blocking at most `timeout_ms`; `SAPI_STATUS_HARDWARE_FAULT` is returned only when the backend can positively confirm the peer is gone — a guarantee no backend can make on every failure mode (e.g. a lost/silently-dropped peer on an unreliable transport), so callers must not treat its absence as proof of liveness. |
+| REQ-OAL-NETLINK-012 | `sapi_netlink_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`; `SAPI_STATUS_DATA_CORRUPTION` is returned if the backend can detect the received message violated this link's wire contract (e.g. wrong length) but not necessarily its content. |
+| REQ-OAL-NETLINK-013 | `sapi_netlink_close()` shall close a link; the handle is invalid to use afterward. |
+| REQ-OAL-NETLINK-014 | This service provides no message ordering, deduplication, or delivery guarantee of its own — a backend may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (`sapi_dual_msgchannel`/`sapi_dual_channel`, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one). |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and
@@ -221,11 +245,10 @@ than an individual `REQ-*` tag on every function:
 ## 3a. Distributed channel synchronization (ADR-017)
 
 Not yet backfilled into this document for every module added since the
-sections above were written (`sapi_watchdog`, `sapi_checksum`,
-`sapi_vital_channel`, `sapi_appmanager` currently have no REQ-tagged
-entries here despite existing in `include/`/`src/` — a pre-existing gap,
-not introduced by this section). This section covers the two modules
-added by ADR-017.
+sections above were written (`sapi_checksum` currently has no
+REQ-tagged entries here despite existing in `include/`/`src/` — a
+pre-existing gap, not introduced by this section). This section covers
+the two modules added by ADR-017.
 
 ### 3a.1 Checkpoint rendezvous — `sapi_checkpoint.h` (ADR-017 §2.2)
 
@@ -246,7 +269,7 @@ added by ADR-017.
 
 Not a full backfill of this module (see 3a's own note on the pre-existing
 gap) - just the `SAPI_WATCHDOG_ACTION_FAILOVER` action, added when a real
-integrator (safeAPIExample's dual-channel A/B link and SITE<->SITE
+integrator (safeAPIRBC2oo2's dual-channel A/B link and SITE<->SITE
 heartbeat) needed a "my redundant peer stopped responding" reaction and
 found the action a documented dead stub.
 
@@ -268,22 +291,62 @@ retroactive pass over every pre-existing behavior of the module.
 | REQ-APPMANAGER-002 | Applications shall implement all mandatory operations in `sapi_appmanager_operations_t` (`init`, `execute`, `shutdown`, `get_name`, `get_version`); `pre_execute` and `post_execute` are optional and may be left `NULL`. |
 | REQ-APPMANAGER-006 | `sapi_appmanager_run()` shall treat a `NULL` `pre_execute` or `post_execute` as "skip this stage", not an error, and shall not call it. |
 | REQ-APPMANAGER-007 | `sapi_appmanager_run()` shall handle a checkpoint-stage result identically to `pre_execute`/`execute`/`post_execute`: on non-`SAPI_STATUS_OK`, log it, increment `error_count`, and check `error_threshold` — no separate reaction path for a checkpoint failure/timeout. |
+| REQ-APPMANAGER-008 | A GENUINE checkpoint-stage failure (the rendezvous itself did not confirm in time, `config->checkpoint->voter` non-`NULL`) shall not be retried faster than `config->checkpoint->max_delay_ms` (measured from immediately before the failing `sapi_channel_checkpoint()` call), when a timer backend is registered. Originally written to also cover `voter == NULL` (see REQ-APPMANAGER-011, which supersedes that part of this requirement's own history) — found via a `safeAPIRBC2oo2` failover test: the checkpoint stage runs *before* `pre_execute()` every cycle (REQ-APPMANAGER-007's own ordering) so a desynced peer is caught before either channel acts on that cycle's data — but `pre_execute()` is the only place any consumer's own cycle pacing lives (`sapi_appmanager_run()` owns no timer itself, ADR-001 §4), so a checkpoint stage that failed immediately used to spin the whole loop as fast as the CPU allowed, one failed attempt and one log line at a time (observed: ~90000 iterations/second, 1.8M log lines in ~20s). Fixed by flooring the retry interval at the checkpoint's own configured `max_delay_ms` via a bounded `sapi_timer_now()` poll — see `sapi_appmanager_pace_failed_checkpoint()` in `sapi_appmanager.c`. No-op (degrades to the old, unpaced behavior) if no timer backend is registered or `max_delay_ms` is 0 — neither can be paced without fabricating a wait nobody configured. |
+| REQ-APPMANAGER-009 | `sapi_appmanager_run()` is the single entry point for an application's lifecycle (REQ-APPMANAGER-001) and shall refuse re-entry: a call arriving while a previous call is still mid-lifecycle (`SAPI_APP_STATE_INITIALIZING`/`_RUNNING`/`_SHUTTING_DOWN`) shall return `EXIT_FAILURE` immediately, without altering any state belonging to the call already in progress. A new call made only after a previous one has fully returned (state `SAPI_APP_STATE_SHUTDOWN`/`_ERROR`) is unaffected — this framework's own test suite relies on exactly that sequential-call pattern (ADR-026). |
+| REQ-APPMANAGER-010 | The moment `ops->init()` returns `SAPI_STATUS_OK`, `sapi_appmanager_run()` shall lock the application's setup phase (`sapi_lifecycle_lock()`) for the remainder of that run, and shall unlock it (`sapi_lifecycle_unlock()`) both at the start of every call and the moment that call's own execution phase ends — see ADR-026 and REQ-LIFECYCLE-001. |
+| REQ-APPMANAGER-011 | `sapi_appmanager_run()` shall treat `config->checkpoint->voter == NULL` identically to `config->checkpoint == NULL`: skip the checkpoint stage entirely for that cycle (no `sapi_channel_checkpoint()` call, no pacing, no error counted) and proceed to `pre_execute()`/`execute()`/`post_execute()` normally — never as a failed stage (superseding REQ-APPMANAGER-008's original scope for this specific case). Found live (ADR-027 Phase 3, `safeAPIRBC2oo2`): before this fix, a caller-paused checkpoint (`voter` toggled to `NULL` while its own underlying link is known down — a normal, documented pattern, not rare) was fed to `sapi_channel_checkpoint()`, got back `SAPI_STATUS_INVALID_PARAM`, and had that treated as a failed stage — paced (REQ-APPMANAGER-008) and `continue`d, which skips *every later stage* for as long as `voter` stays `NULL`. This silently starved every one of a consumer's own per-cycle safety checks too, including `sapi_watchdog_timer_tick()` (this framework's own single-threaded, timestamp-comparison watchdog design — REQ-WATCHDOG-*, no watchdog has an independent timer/thread of its own) — so a watchdog-driven fault reaction (e.g. `safeAPIRBC2oo2`'s own REBOOT-on-negotiation-link-loss) could never fire during exactly the sustained-outage scenario it exists for, because the cyclic executive never reached the code that ticks it. Confirmed fixed live: the same fault scenario that previously spun at ~100% CPU with the watchdog silently never firing now reboots correctly within its own configured timeout. |
 
-## 3d. `sapi_vital_channel` `channel_count` floor relaxation (ADR-019 addendum)
+## 3c-bis. Application setup-phase lock — `sapi_lifecycle.h` (ADR-026)
 
-`sapi_vital_channel` remains one of the modules 3a flagged as not yet
-backfilled with `REQ-*` IDs; this note records a behavior change made to
-it without introducing a new tag, consistent with that pre-existing gap
-rather than adding an isolated one-off ID to an otherwise untagged module.
+| ID | Requirement |
+|---|---|
+| REQ-LIFECYCLE-001 | Every setup-only constructor this framework ships (`sapi_timer_create()`, `sapi_channel_init()`, `sapi_voter_init()`/`_register_channel()`, `sapi_cross_comparator_init()`/`_register_channel()`, `sapi_watchdog_create()`) shall reject its call with `SAPI_STATUS_INVALID_STATE` once `sapi_lifecycle_lock()` has been called and `sapi_lifecycle_unlock()` has not been called since — i.e. once the application's setup phase is locked (see REQ-APPMANAGER-010). `sapi_netlink_open()`, `sapi_dual_channel_init()`, and `sapi_dual_negotiator_init()` are deliberately **not** gated by this lock: all three are legitimately re-invoked after the setup phase locks by an application's own reconnect-after-link-loss logic (e.g. `safeAPIRBC2oo2`'s `channel_ab_io.c`/`channel_ab_negotiate_reconnect()`), re-establishing a link the application already owns rather than adding a new one its own design never accounted for. |
+| REQ-LIFECYCLE-002 | The setup-phase lock shall be a single, process-wide flag (no dynamic allocation, no OS dependency, no per-`sapi_appmanager_config_t` instance) — this framework has no concept of more than one concurrently-running application per process, matching `sapi_appmanager`'s own existing `g_app_state` single-instance assumption. |
 
-`sapi_vital_channel_init()` originally required `channel_count >= 2`
-(modeling "2+ redundant transport paths to a peer"). ADR-019 §5.1 relaxed
-this to `channel_count >= 1`, reachable only via `SAPI_VOTING_NMR` with
-`quorum_size == 1`; `SAPI_VOTING_2OO2` and `SAPI_VOTING_2OO3` keep their
-existing floors of exactly 2 and exactly 3 channels respectively, so no
-existing voting strategy's guarantee is weakened by this change. See
-`include/safeapi/vital_channel/sapi_vital_channel.h`'s `@pre channel_count`
-doc on `sapi_vital_channel_init()` for the exact, current conditions.
+## 3d. Single-link channel, N-way voting, and 2-way cross-comparison — ADR-025
+
+ADR-025 split what this section previously described (a single
+`sapi_channel` type combining a redundant transport link with N-way
+voting logic, `channel_count`/`voting_strategy` included in its own
+init config) into three modules with a clean responsibility boundary:
+`sapi_channel` is now a single point-to-point link only, `sapi_voter`
+does N-way 2oo2/2oo3/NMR voting over channels registered into it, and
+`sapi_cross_comparator` does 2-way peer comparison. `channel_count`
+and `voting_strategy` moved off `sapi_channel_init()`'s config entirely
+and onto `sapi_voter_init()`'s — the floor this section used to
+describe (previously relaxed by ADR-019 §5.1 to allow a single-channel
+NMR voter with `quorum_size == 1`) now lives there instead, unchanged
+in substance: `SAPI_VOTING_2OO2` requires exactly 2 registered
+channels, `SAPI_VOTING_2OO3` exactly 3, `SAPI_VOTING_NMR` at least 1
+with `1 <= quorum_size <= channel_count`.
+
+### 3d.1 Single-link channel — `sapi_channel.h` (`channel_link/`, ADR-025 §2.1)
+
+| ID | Requirement |
+|---|---|
+| REQ-CHANNEL-001 | No dynamic allocation; caller supplies storage for every `sapi_channel_t`. |
+| REQ-CHANNEL-002 | `sapi_channel_init()` shall return `SAPI_STATUS_INVALID_PARAM` if `config->send` or `config->recv` is `NULL` — a channel with no way to move data is a construction-time error, not a deferred one. |
+| REQ-CHANNEL-003 | `sapi_channel_send()`/`_receive()` shall dispatch to `config->send`/`config->recv` and update `health.send_count`/`health.receive_count` (or the matching `_error_count`, plus `health.last_error`) on every call, regardless of outcome. |
+| REQ-CHANNEL-004 | `is_healthy` shall default to `true` at `sapi_channel_init()` and shall never be cleared automatically by a send/receive failure — only an explicit `sapi_channel_set_healthy(handle, false)` call by the channel's owner (e.g. `sapi_voter`, `sapi_cross_comparator`) may mark it unhealthy. A single transient I/O failure alone does not condemn a link; that judgment belongs to whichever component is tracking the pattern of failures across calls. |
+
+### 3d.2 N-way voter — `sapi_voter.h` (ADR-025 §2.2)
+
+| ID | Requirement |
+|---|---|
+| REQ-VOTER-001 | No dynamic allocation; every `sapi_voter_t` holds a fixed array of at most `SAPI_VOTER_MAX_CHANNELS` (8) registered `sapi_channel_t *` pointers. |
+| REQ-VOTER-002 | `sapi_voter_init()` shall return `SAPI_STATUS_INVALID_PARAM` for a `voting_strategy` other than `SAPI_VOTING_2OO2`/`_2OO3`/`_NMR`, or for `SAPI_VOTING_NMR` with `quorum_size == 0`. |
+| REQ-VOTER-003 | `sapi_voter_send()`/`_receive()` shall return `SAPI_STATUS_INVALID_PARAM` unless the number of currently registered channels matches the configured strategy's required count (`SAPI_VOTING_2OO2` = exactly 2, `SAPI_VOTING_2OO3` = exactly 3, `SAPI_VOTING_NMR` = at least `quorum_size`). |
+| REQ-VOTER-004 | `sapi_voter_receive()` shall group every successfully-received, per-channel payload into equality classes (via `config->compare` if registered, otherwise `memcmp`) and select the *largest* class, reporting `SAPI_VOTING_AGREED` with that class's data if its size meets the strategy's required quorum (`voter_required_quorum()`), or `SAPI_VOTING_DISAGREED` otherwise. This is a majority vote across all registered channels, not a pairwise comparison against a single reference channel — see ADR-025 §1 for the bug this replaced. |
+| REQ-VOTER-005 | On `SAPI_VOTING_DISAGREED`, `sapi_voter_receive()` shall call `sapi_safestate_enter()` at `SAPI_SAFESTATE_LEVEL_SAFE` when `config->trigger_safestate_on_disagreement` is `true` (the default), and shall always invoke `config->on_disagreement` (if registered) regardless of that flag. |
+
+### 3d.3 2-way cross-comparator — `sapi_cross_comparator.h` (ADR-025 §2.3)
+
+| ID | Requirement |
+|---|---|
+| REQ-CROSSCOMPARATOR-001 | No dynamic allocation; every `sapi_cross_comparator_t` holds exactly 2 registered `sapi_channel_t *` slots. |
+| REQ-CROSSCOMPARATOR-002 | A 3rd `sapi_cross_comparator_register_channel()` call on an already-fully-registered comparator shall return `SAPI_STATUS_RESOURCE_EXHAUSTED` without disturbing the 2 already-registered channels. |
+| REQ-CROSSCOMPARATOR-003 | `sapi_cross_comparator_execute()` shall require both registered channels to be healthy and to successfully receive `data_size` bytes before comparing; any unhealthy channel or receive failure shall short-circuit to `SAPI_VOTING_TIMEOUT`/`SAPI_VOTING_INSUFFICIENT_QUORUM` as appropriate without invoking the compare step. |
+| REQ-CROSSCOMPARATOR-004 | The comparison itself shall use `config->compare` if registered, otherwise a full `memcmp()` of the two channels' received payloads — CRC-64 transport-integrity verification (`sapi_checksum`) is a separate, already-applied concern and is never itself treated as "the comparison" (ADR-025 §2.4). |
 
 ## 3e. Dual-transfer state negotiation — `sapi_dual` (ADR-020)
 
@@ -324,6 +387,7 @@ require.
 | REQ-DUAL-CHANNEL-005 | `sapi_dual_channel_receive()` and `_receive_state_frame()` shall poll every configured link on every call, even after an earlier link in the same sweep already staged a frame — stopping early would let one link (e.g. one with consistently shorter latency) starve every other redundant link of its own auto-ACK indefinitely. |
 | REQ-DUAL-CHANNEL-006 | An inbound frame shorter than this layer's own 4-byte `sapi_dual_frame_header_t`, or shorter than the full fixed frame its `kind` implies, shall be reported as `SAPI_STATUS_DATA_CORRUPTION` rather than silently ignored or misinterpreted. |
 | REQ-DUAL-CHANNEL-007 | `sapi_dual_channel_send()`'s per-link ACK-wait loop shall keep polling for further frames within `config->ack_timeout_ms` even when `sapi_timer_now()` shows no measurable progress between polls (a real round trip may legitimately complete within a single timer tick) — bounded by a fixed cap (`SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`) on consecutive no-progress polls, so a link with a genuinely non-advancing or absent timer backend still cannot spin unboundedly. Added post-acceptance after a live run over a real transport (ADR-022's SITE migration) surfaced that the prior behavior gave up after exactly one poll — see ADR-020's "Post-acceptance fix" section. |
+| REQ-DUAL-CHANNEL-008 | If no link produces a usable frame/ACK before `sapi_dual_channel_send()`/`_receive()` return, and at least one link's own underlying send/receive reported `SAPI_STATUS_HARDWARE_FAULT` (a closed/reset connection, not just "nothing arrived within this poll"), that status shall be returned instead of the generic `SAPI_STATUS_TIMEOUT` every other "nothing usable this call" case returns. Found via a `safeAPIRBC2oo2` container-topology failover test: `sapi_dual_channel_send()`/`_receive()` previously collapsed *every* non-success outcome — a genuinely dead TCP connection (peer container restarted) exactly as much as an ordinary "peer hasn't answered yet" — into the same `SAPI_STATUS_TIMEOUT`, so a consumer's own reconnect logic (`channel_ab_negotiate_execute()`, gating link teardown on "status is neither OK nor TIMEOUT") could never distinguish the two and never reconnected, leaving one side listening forever for a peer that had already come back up on a fresh socket. A malformed/corrupted frame (`SAPI_STATUS_DATA_CORRUPTION`) on an otherwise-healthy link is deliberately NOT included in this escalation — it does not indicate a broken transport, only a defended-integrity rejection of one bad frame (REQ-DUAL-CHANNEL-006), and continues to fold into the generic `SAPI_STATUS_TIMEOUT` as before. |
 
 ### 3e.4 Dual state negotiator — `sapi_dual_negotiator.h` (ADR-020 §3)
 
@@ -331,7 +395,7 @@ require.
 |---|---|
 | REQ-DUAL-NEGOTIATOR-001 | No dynamic allocation; caller supplies storage and an already-initialized `sapi_dual_channel_t`. |
 | REQ-DUAL-NEGOTIATOR-002 | `sapi_dual_negotiator_execute()` shall never call `sapi_safestate_enter()` itself — deciding what a sustained `SAPI_DUAL_STATE_UNKNOWN` means for safety stays an application policy decision (ADR-020 §4's "no automatic safety reaction" non-goal). |
-| REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (same rule `safeAPIExample`'s `site.c` `decide_online()` uses today). |
+| REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (same rule `safeAPIRBC2oo2`'s `site.c` `decide_online()` uses today). |
 | REQ-DUAL-NEGOTIATOR-004 | The HOT/COLD determination for whichever side is currently STANDBY shall always be derived from the ONLINE side's own channel-degradation bit — never from the STANDBY side's own self-reported degradation, and never from the ONLINE side's opinion of its own label. This applies symmetrically regardless of which side (own or peer) is the one currently ONLINE. |
 | REQ-DUAL-NEGOTIATOR-005 | Loss of peer contact for longer than `config->peer_lost_timeout_ms` shall set `peer_state` to `SAPI_DUAL_STATE_UNKNOWN`; `own_state` shall degrade to `SAPI_DUAL_STATE_UNKNOWN` too unless it was already `SAPI_DUAL_STATE_ONLINE`, in which case it shall remain `SAPI_DUAL_STATE_ONLINE` (an active instance keeps acting without needing continuous peer confirmation). |
 
@@ -344,8 +408,49 @@ holds a `sapi_netlink_handle_t` itself.
 | ID | Requirement |
 |---|---|
 | REQ-SAFECHANNEL-001 | `sapi_safechannel_open()` shall open every configured endpoint itself via the registered `sapi_netlink` backend; the caller shall never need to call `sapi_netlink_open()` or hold a `sapi_netlink_handle_t`. |
-| REQ-SAFECHANNEL-002 | No dynamic allocation; all storage (`sapi_safechannel_t`, including its opened links and wrapped `sapi_dual_channel_t`/`sapi_vital_channel_t`) is caller-owned and fixed-size, sized to `SAPI_SAFECHANNEL_MAX_LINKS`. |
-| REQ-SAFECHANNEL-003 | `sapi_safechannel_send()`/`_receive()` shall behave identically to the caller regardless of `config.type` — a uniform facade over `sapi_dual_channel_t`/`sapi_vital_channel_t`. |
+| REQ-SAFECHANNEL-002 | No dynamic allocation; all storage (`sapi_safechannel_t`, including its opened links and wrapped `sapi_dual_channel_t`/`sapi_channel_t`) is caller-owned and fixed-size, sized to `SAPI_SAFECHANNEL_MAX_LINKS`. |
+| REQ-SAFECHANNEL-003 | `sapi_safechannel_send()`/`_receive()` shall behave identically to the caller regardless of `config.type` — a uniform facade over `sapi_dual_channel_t`/`sapi_channel_t`. |
+
+## 3g. Checksum / CRC-64 data integrity — `sapi_checksum.h`
+
+CRC-64 computation and a "vital message" envelope (sequence + sender +
+CRC-64) used by `sapi_dual_msgchannel` (REQ-DUAL-MSGCHANNEL-003) and
+`sapi_checkpoint` for cross-channel/cross-site data integrity. Depends
+only on `sapi_timer` (best-effort message timestamping — see
+REQ-CHECKSUM-005's note that a missing timer backend degrades
+gracefully, not a hard failure of message creation), not on `sapi_log`
+or `sapi_safestate` despite once `#include`-ing both unused.
+
+| ID | Requirement |
+|---|---|
+| REQ-CHECKSUM-001 | `sapi_checksum_crc64_init()` shall be callable exactly once; a subsequent call before any re-init mechanism exists shall return `SAPI_STATUS_ALREADY_INITIALIZED` and leave the already-selected table/polynomial unchanged. |
+| REQ-CHECKSUM-002 | `sapi_checksum_crc64()` shall return 0 — never dereferencing `data` — if the module is not yet initialized, if its lookup table is unset, or if `data` is `NULL` while `size` is nonzero. |
+| REQ-CHECKSUM-003 | `sapi_checksum_crc64()` shall be deterministic and O(n) in `size`, using a precomputed 256-entry lookup table. |
+| REQ-CHECKSUM-004 | `sapi_checksum_crc64_verify()` shall report `SAPI_STATUS_DATA_CORRUPTION` (not merely a boolean) on mismatch and increment `stats.verification_failures`; on match it shall return `SAPI_STATUS_OK` and increment `stats.verification_passes`. |
+| REQ-CHECKSUM-005 | `sapi_checksum_vital_message_create()` shall reject a payload larger than `sizeof(sapi_vital_message_t::payload)` with `SAPI_STATUS_INVALID_PARAM`, incrementing `stats.payload_oversize`, without writing `msg_out`. |
+| REQ-CHECKSUM-006 | `sapi_checksum_vital_message_verify()` shall verify the message's CRC-64 before trusting any other field, and report `SAPI_STATUS_DATA_CORRUPTION` — without writing to `payload_out`/`payload_size_out` — on either a CRC mismatch or a `sequence_number` that does not equal the caller-supplied `expected_sequence` (incrementing `stats.sequence_errors` in the latter case). |
+| REQ-CHECKSUM-007 | `sapi_checksum_vital_message_verify()` shall reject a decoded `payload_size` exceeding the caller's `payload_max_size` with `SAPI_STATUS_INVALID_PARAM`, incrementing `stats.payload_oversize`, without copying into `payload_out`. |
+| REQ-CHECKSUM-008 | `sapi_checksum_get_stats()`/`_reset_stats()` are diagnostics-only (never on a safety-decision path); `_get_stats()` returns `SAPI_STATUS_INVALID_PARAM` for a `NULL stats_out`, otherwise both always return `SAPI_STATUS_OK`. |
+
+## 3h. RBC Train/IL/CTC scenario — `safeAPIRBC2oo2` (ADR-029)
+
+Entirely `safeAPIRBC2oo2`-side (no framework header changes) - kept here
+per this document's own cross-repo convention (REQ-APPMANAGER-011 already
+set this precedent for a `safeAPIRBC2oo2`-discovered requirement). See
+ADR-029 for the full design and the live debugging that produced several
+of these.
+
+| ID | Requirement |
+|---|---|
+| REQ-RBC-001 | **REVISED (this session, wording only — see status note below).** The RBC envelope (`rbc_envelope_t`, `rbc_wire_types.h`) shall carry a real Subset-026-style header — `NID_MESSAGE` (message identity), `L_MESSAGE` (message length in bytes, genuinely variable per message kind), `T_TRAIN` (message timestamp) — and MAY be variable-length per message kind, decoded/encoded via `L_MESSAGE` rather than a single fixed frame size for every kind. This supersedes the prior fixed-28-byte-for-every-kind mandate to allow real Subset-026 message/packet shapes (nested/`N_ITER`-repeated packets, e.g. Packet 15 Movement Authority) that do not fit a flat fixed-size struct — see `TrainRBCSim/src/train/message_catalog.json`'s `_subset026Reference`/`_subset026PacketsReference` for the real field/packet data this now needs to support. **Status: partially implemented (this session).** `rbc_wire_types.h`/`rbc_wire.c` (C) and `SimCore/src/simcore/rbc_wire.py` (Python mirror) now carry a real, always-fully-populated 80-byte envelope (`RBC_ENVELOPE_WIRE_SIZE`/`ENVELOPE_SIZE`) with genuine `NID_MESSAGE`/`L_MESSAGE`/`T_TRAIN` header fields, plus the real flat Subset-026 content fields for message 146 (`t_train_ack`) and message 136 (the ten real Packet 0 fields — `nid_lrbg`, `q_dirlrbg`, `q_dlrbg`, `l_doubtover`, `l_doubtunder`, `q_length`, `v_train`, `q_dirtrain`, `m_mode`, `m_level`). `L_MESSAGE` genuinely varies by kind (`content_size_for_kind()`/`build_envelope()`'s own calculation) and is checked on decode, but the frame itself is NOT actually variable-length on the wire — every kind still occupies the same fixed 80-byte slot, with fields not meaningful for a given kind simply left zero, specifically to avoid the C/Python offset-aliasing bug this approach was chosen to sidestep (see `rbc_wire.c`'s own header comment). Byte-for-byte C/Python encode parity verified for both message 146 and 136. Still NOT done: a genuinely variable-length wire frame (so an unrelated kind doesn't pay for fields it never uses), and the nested/`N_ITER`-repeated packet content (e.g. Packet 15 Movement Authority for message 3) — both remain separately-scoped follow-on work; check `rbc_wire_types.h`'s own header comment for the current exact field layout before relying on either doc. |
+| REQ-RBC-002 | `rbc_wire_decode()` shall reject a frame whose leading kind byte is not a recognized `rbc_msg_kind_t` value, returning `false` and leaving `*out_env` unmodified, rather than casting an out-of-range byte into the enum. |
+| REQ-RBC-003 | Every link that can carry more than one distinct envelope within a single report cycle (C's Train/IL/A/B links, A/B's own link from C) shall demultiplex arrivals through a fixed-capacity single-producer/single-consumer queue (`rbc_envelope_queue_t`, `RBC_ENVELOPE_QUEUE_CAPACITY`) drained fully every cycle, not a single-slot "latest value only" primitive - a link carrying interleaved multi-train traffic can legitimately receive more than one distinct event before the next drain. |
+| REQ-RBC-004 | `rbc_envelope_queue_push()` shall return `false` (dropping the new entry) rather than growing dynamically when the queue is full (`RBC_ENVELOPE_QUEUE_CAPACITY` unread entries already pending); the caller shall log the drop rather than fail silently. |
+| REQ-RBC-005 | Any code path that indexes a per-train array (`ctx->sessions[]`, `train_rx_queue[]`, etc.) by a wire-supplied `train_id` shall validate `1 <= train_id <= SAFEAPI_EXAMPLE_MAX_TRAINS` first and drop (logged) an out-of-range value, never indexing out of bounds with unchecked wire input. |
+| REQ-RBC-006 | On a STANDBY-to-ONLINE promotion (`channel_ab_negotiate.c`'s `apply_state_transfer()`), the whole train-session table (`ctx->sessions[]`) shall be overwritten from the transferred snapshot unconditionally - unlike the transferred cycle counter (still gated by `SAFEAPI_EXAMPLE_TRANSFER_POLICY_ENV`), there is no operator-configurable "restart" policy for live train sessions: a promoted site refusing to remember an in-flight Movement Authority would be unsafe, not a preference. |
+| REQ-RBC-007 | Cross-compare (`channel_ab_crosscompare.c`) shall vote on the whole per-train session state relevant to the RBC's own decisions (`in_use`/`train_id`/`cycle`/`d_lrbg`/`granted_length`/`ma_seq`/`ma_acked`), not a single scalar value - `ma_pending_send` and the CTC-notification-sent flags are local scratch only and shall be excluded, since they carry no cross-compare-relevant decision content. The compared payload shall be the wire-encoded form, not the raw `train_session_t` struct, since `sapi_cross_comparator_execute()` compares via raw `memcmp()` and the struct's mixed-width members admit compiler-inserted padding a raw comparison would treat as significant. |
+| REQ-RBC-008 | `channel_ab_crosscompare_execute()` shall skip (not disagree) cross-comparing a given train for up to `SAFEAPI_EXAMPLE_XCOMPARE_SYNC_SKIP_LIMIT` consecutive cycles while its local and peer session snapshots do not yet field-match, to tolerate the ordinary asynchronous-arrival timing skew between two independently-cycling channels; past that bound it shall fall through to the real comparator so a genuine, persistent divergence (e.g. a relay datagram lost to only one channel) is still detected and reacted to, not silently skipped forever. |
+| REQ-RBC-009 | `monitor_c_init()` shall NOT block C's own startup waiting for a Train/IL/CTC client to connect (unlike the A/B links, which are this project's own co-deployed, expected-reachable containers) - each such link's background rx task shall start with a NULL handle and establish the connection lazily on its own reconnect-forever loop, since a Train/IL/CTC sim is a genuinely external, opportunistically-connecting client that may not be running yet. |
 
 ## 4. Traceability
 

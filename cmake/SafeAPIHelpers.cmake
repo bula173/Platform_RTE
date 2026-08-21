@@ -112,6 +112,28 @@ function(sapi_generate_presets_template OUTPUT_FILE)
   message(STATUS "CMakePresets.json template written to ${OUTPUT_FILE}")
 endfunction()
 
+# Enforce a feature option's build-time dependencies (ADR-024). FATAL_ERRORs
+# with the exact -D flag to pass, rather than silently auto-enabling code the
+# integrator didn't explicitly ask for - a disabled dependency here is a
+# configuration mistake to surface, not a gap to paper over, since which
+# modules get compiled also bounds this build's SIL verification scope.
+# Usage: safeapi_require_feature(SAFEAPI_ENABLE_WATCHDOG DEPENDS SAFEAPI_ENABLE_LOG SAFEAPI_ENABLE_TIMER)
+function(safeapi_require_feature FEATURE_VAR)
+  cmake_parse_arguments(ARGS "" "" "DEPENDS" ${ARGN})
+
+  if(NOT ${FEATURE_VAR})
+    return()  # feature itself is off - its dependencies are irrelevant
+  endif()
+
+  foreach(_dep ${ARGS_DEPENDS})
+    if(NOT ${_dep})
+      message(FATAL_ERROR
+        "${FEATURE_VAR}=ON requires ${_dep}=ON, but ${_dep} is OFF. "
+        "Enable it with -D${_dep}=ON, or turn ${FEATURE_VAR} OFF.")
+    endif()
+  endforeach()
+endfunction()
+
 # Verify that project follows safeAPIFramework conventions
 # Usage: sapi_verify_conventions()
 function(sapi_verify_conventions)

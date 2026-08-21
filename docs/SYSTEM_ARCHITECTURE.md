@@ -619,8 +619,8 @@
  * ```c
  * typedef struct {
  *     // Vital channel (2oo2 voting)
- *     sapi_vital_channel_t vital_command;      // Online ←→ Standbies
- *     sapi_vital_channel_t vital_feedback;     // Standby ←→ Online (health)
+ *     sapi_channel_t vital_command;      // Online ←→ Standbies
+ *     sapi_channel_t vital_feedback;     // Standby ←→ Online (health)
  *
  *     // Non-vital channels
  *     sapi_ipc_handle_t internal_events;       // App Mgr ←→ Tasks (internal)
@@ -675,7 +675,7 @@
  *         prepare_dual_output(&sys->current_state, &output);
  *
  *         // === SEND ===
- *         sapi_vital_channel_send(&sys->vital_command, &output);
+ *         sapi_channel_send(&sys->vital_command, &output);
  *
  *         // === MONITOR ===
  *         check_health(&sys->vital_feedback);

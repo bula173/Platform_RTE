@@ -50,7 +50,7 @@
  *
  * // Option B: Application state (initialized once)
  * typedef struct {
- *     sapi_vital_channel_t vital_channel;
+ *     sapi_channel_t vital_channel;
  *     sapi_timer_t heartbeat_timer;
  *     uint8_t work_buffer[1024];
  * } app_t;
@@ -71,7 +71,7 @@
  * #define BUFFER_SIZE    (MAX_CHANNELS * 256)
  *
  * typedef struct {
- *     sapi_vital_channel_t channels[MAX_CHANNELS];  // 16 channels
+ *     sapi_channel_t channels[MAX_CHANNELS];  // 16 channels
  *     sapi_timer_t timers[MAX_TIMERS];              // 32 timers
  *     task_t task_queue[MAX_TASKS];                 // 64 task slots
  *     uint8_t buffer[BUFFER_SIZE];                  // Shared buffer
@@ -105,7 +105,7 @@
  * @code
  * typedef struct {
  *     // Channels
- *     sapi_vital_channel_t vital_channel;
+ *     sapi_channel_t vital_channel;
  *     sapi_ipc_handle_t diag_channel;
  *
  *     // Services
@@ -185,8 +185,8 @@
  * @code
  * typedef struct {
  *     // Communication
- *     sapi_vital_channel_t vital_from_online;
- *     sapi_vital_channel_t vital_to_online;
+ *     sapi_channel_t vital_from_online;
+ *     sapi_channel_t vital_to_online;
  *     sapi_ipc_handle_t diagnostic_channel;
  *
  *     // Timing

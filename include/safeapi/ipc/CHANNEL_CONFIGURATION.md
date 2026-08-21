@@ -310,7 +310,7 @@
  * sapi_ipc_create_udp(&udp_ch, &udp_config);
  *
  * // Wrap in vital channel for 2oo2 voting
- * sapi_vital_channel_config_t vital_cfg = {
+ * sapi_channel_config_t vital_cfg = {
  *     .voting_strategy = SAPI_VOTING_2OO2,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,
@@ -319,7 +319,7 @@
  * };
  *
  * void *channels[2] = { &tcp_ch, &udp_ch };
- * sapi_vital_channel_init(&vital, &vital_cfg, channels, 2);
+ * sapi_channel_init(&vital, &vital_cfg, channels, 2);
  *
  * // Now ready for voting communication!
  * ```
@@ -353,7 +353,7 @@
  * sapi_ipc_create_udp(&udp_ch, &udp_server_config);
  *
  * // Same vital channel config (but roles reversed in logic)
- * sapi_vital_channel_init(&vital, &vital_cfg, channels, 2);
+ * sapi_channel_init(&vital, &vital_cfg, channels, 2);
  * ```
  *
  * @section channel_configuration_dispatcher_callback Dispatcher Callback Pattern

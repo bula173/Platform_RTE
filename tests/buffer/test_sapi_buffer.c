@@ -117,6 +117,65 @@ int main(void)
         unsigned char tiny_storage[1] __attribute__((unused));
         assert(sapi_buffer_init(&tiny, tiny_storage, sizeof(tiny_storage)) == SAPI_STATUS_OK);
         assert(sapi_buffer_write_u16_le(&tiny, 1U) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+
+        /* out_value == NULL for every read_*_le/be function. */
+        assert(sapi_buffer_read_u16_le(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u16_be(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u32_le(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u32_be(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u64_le(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u64_be(&eb, 0U, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+        /* Out-of-range read passthrough for the remaining le/be pairs
+         * (u32_le's is already covered above). */
+        assert(sapi_buffer_read_u16_le(&eb, 27U, &u16) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+        assert(sapi_buffer_read_u16_be(&eb, 27U, &u16) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+        assert(sapi_buffer_read_u32_be(&eb, 25U, &u32) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+        assert(sapi_buffer_read_u64_le(&eb, 21U, &u64) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+        assert(sapi_buffer_read_u64_be(&eb, 21U, &u64) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+
+        /* buf == NULL for the shared append/peek helpers, reached through
+         * any write_ or read_ entry point. */
+        assert(sapi_buffer_write_u16_le(NULL, 1U) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_read_u16_le(NULL, 0U, &u16) == SAPI_STATUS_INVALID_PARAM);
+    }
+
+    /* clear()/set_length()/copy_in()/copy_out()/as_const(): NULL-param and
+     * NULL-data-member branches not yet hit above. */
+    assert(sapi_buffer_clear(NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_set_length(NULL, 1U) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_copy_in(NULL, src, sizeof(src)) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_copy_in(&buf, NULL, sizeof(src)) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_copy_out(NULL, dest, sizeof(dest), &copied) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_copy_out(&buf, NULL, sizeof(dest), &copied) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_copy_out(&buf, dest, sizeof(dest), NULL) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_as_const(NULL, &view) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_buffer_as_const(&buf, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    /* A buffer whose data pointer was never set (zero-initialized, not
+     * sapi_buffer_init()'d) is invalid, and every entry point that checks
+     * buf->data == NULL directly (not through is_valid()) must reject it
+     * too. */
+    {
+        sapi_buffer_t uninit_buf __attribute__((unused));
+        memset(&uninit_buf, 0, sizeof(uninit_buf));
+        assert(!sapi_buffer_is_valid(&uninit_buf));
+        assert(sapi_buffer_set_length(&uninit_buf, 1U) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_copy_in(&uninit_buf, src, sizeof(src)) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_copy_out(&uninit_buf, dest, sizeof(dest), &copied) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_buffer_as_const(&uninit_buf, &view) == SAPI_STATUS_INVALID_PARAM);
+    }
+
+    /* as_const()'s defensive length > capacity check: not reachable through
+     * any normal API sequence (every mutator bounds-checks length against
+     * capacity before assigning it), only by directly corrupting
+     * caller-owned storage, which is exactly what this simulates. */
+    {
+        sapi_buffer_t corrupt_buf __attribute__((unused));
+        unsigned char corrupt_storage[4] __attribute__((unused));
+        assert(sapi_buffer_init(&corrupt_buf, corrupt_storage, sizeof(corrupt_storage)) == SAPI_STATUS_OK);
+        corrupt_buf.length = sizeof(corrupt_storage) + 1U;
+        assert(sapi_buffer_as_const(&corrupt_buf, &view) == SAPI_STATUS_INTERNAL_ERROR);
     }
 
     return 0;

@@ -6,7 +6,11 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'tests/**'
       - 'docs/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'scripts/coverage.sh'
       - 'Doxyfile'
       - 'README.md'
       - '.github/workflows/docs.yml'
@@ -15,7 +19,11 @@ on:
     paths:
       - 'include/**'
       - 'src/**'
+      - 'tests/**'
       - 'docs/**'
+      - 'CMakeLists.txt'
+      - 'cmake/**'
+      - 'scripts/coverage.sh'
       - 'Doxyfile'
       - 'README.md'
   workflow_dispatch:  # Allow manual trigger
@@ -60,6 +68,29 @@ jobs:
             echo "✗ HTML documentation NOT generated"
             exit 1
           fi
+
+      - name: Install coverage toolchain
+        run: |
+          sudo apt-get install -y cmake build-essential
+          pip install --user gcovr
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Generate coverage report
+        run: |
+          gcovr --version
+          # --no-fail: this page should always publish something, even on
+          # a build with <100% coverage - the pass/fail gate itself is
+          # enforced by CI's own test job, not by whether this subpage
+          # exists.
+          ./scripts/coverage.sh --no-fail
+        working-directory: ${{ github.workspace }}
+
+      - name: Publish coverage report as a Doxygen subpage
+        run: |
+          mkdir -p docs/api/html/coverage
+          cp -r build-coverage/coverage/. docs/api/html/coverage/
+          echo "Coverage report copied to docs/api/html/coverage/"
+          ls -la docs/api/html/coverage/ | head -20
 
       - name: Upload documentation artifact
         uses: actions/upload-artifact@v4
@@ -131,6 +162,13 @@ jobs:
             echo "⚠ Found undocumented warnings in docs"
           fi
 
+          # Coverage subpage
+          if [ ! -f "docs-output/coverage/index.html" ]; then
+            echo "✗ coverage/index.html not found"
+            exit 1
+          fi
+          echo "✓ Coverage subpage present"
+
       - name: Generate documentation summary
         run: |
           echo "# Documentation Build Summary" >> $GITHUB_STEP_SUMMARY
@@ -142,4 +180,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Documentation Location" >> $GITHUB_STEP_SUMMARY
           echo "- GitHub Pages: Will be available after deployment" >> $GITHUB_STEP_SUMMARY
+          echo "- Coverage report subpage: \`<pages-url>/coverage/index.html\`" >> $GITHUB_STEP_SUMMARY
           echo "- Artifact: Check 'doxygen-documentation' in workflow artifacts" >> $GITHUB_STEP_SUMMARY

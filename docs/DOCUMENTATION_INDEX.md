@@ -50,7 +50,7 @@
  *   - Pattern 4: Triple redundancy (2oo3)
  *   - Decision tree for selecting topology
  *
- * - **sapi_vital_channel.h** - Public API (code)
+ * - **sapi_channel.h** - Public API (code)
  *   - init(), send(), receive(), get_health()
  *   - Voting strategies and result codes
  *

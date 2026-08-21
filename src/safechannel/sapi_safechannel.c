@@ -1,8 +1,8 @@
 /**
  * @file sapi_safechannel.c
  * @brief Unified channel factory: opens netlink links internally, wraps
- *        sapi_dual_channel_t or sapi_vital_channel_t - see
- *        sapi_safechannel.h and ADR-022.
+ *        sapi_dual_channel_t or a sapi_voter_t over N sapi_channel_t
+ *        links (ADR-025) - see sapi_safechannel.h and ADR-022.
  */
 #include "safeapi/safechannel/sapi_safechannel.h"
 
@@ -30,7 +30,7 @@ static void safechannel_close_links(sapi_safechannel_t *channel, uint32_t count)
 /** @brief Opens one endpoint, retrying sapi_netlink_open() with a short
  *         fixed delay until connect_timeout_ms elapses - the same retry
  *         shape every current hand-rolled CONNECT-role caller in
- *         safeAPIExample already implements itself (site.c, etc.). */
+ *         safeAPIRBC2oo2 already implements itself (site.c, etc.). */
 static sapi_status_t safechannel_open_one_endpoint(sapi_netlink_storage_t *storage,
                                                     const sapi_safechannel_endpoint_t *endpoint, size_t message_size,
                                                     sapi_duration_ms_t connect_timeout_ms,
@@ -108,21 +108,23 @@ static sapi_status_t safechannel_open_dual(sapi_safechannel_t *channel, const sa
     return SAPI_STATUS_OK;
 }
 
-/** @brief sapi_vital_channel_config_t::backend_send bridge: casts the
- *         opaque channel handle back to the sapi_netlink_handle_t it
- *         actually is (this module is the only place that made that
- *         handle) and forwards to sapi_netlink_send(). */
+/** @brief sapi_channel_config_t::send bridge: casts the opaque
+ *         channel handle back to the sapi_netlink_handle_t it actually
+ *         is (this module is the only place that made that handle) and
+ *         forwards to sapi_netlink_send(). One of these is wired into
+ *         each of the voter's N individual sapi_channel_t links
+ *         (ADR-025). */
 static sapi_status_t safechannel_vital_backend_send(void *channel_handle, const void *data, size_t data_size)
 {
-    /* Fixed, generous per-op timeout: vital_channel's own
+    /* Fixed, generous per-op timeout: the voter's own
      * config->channel_timeout_ms already bounds the overall voting
-     * round from the caller's perspective (sapi_vital_channel_send()
-     * calls this once per configured channel); this per-send value only
-     * bounds one individual transport call within that round. */
+     * round from the caller's perspective (sapi_voter_send() calls this
+     * once per registered channel); this per-send value only bounds one
+     * individual transport call within that round. */
     return sapi_netlink_send((sapi_netlink_handle_t)channel_handle, data, data_size, 5000U);
 }
 
-/** @brief sapi_vital_channel_config_t::backend_recv bridge - see
+/** @brief sapi_channel_config_t::recv bridge - see
  *         safechannel_vital_backend_send(). */
 static sapi_status_t safechannel_vital_backend_recv(void *channel_handle, void *data, size_t data_size,
                                                      uint32_t timeout_ms)
@@ -133,12 +135,11 @@ static sapi_status_t safechannel_vital_backend_recv(void *channel_handle, void *
 
 static sapi_status_t safechannel_open_vital(sapi_safechannel_t *channel, const sapi_safechannel_vital_config_t *cfg)
 {
-    sapi_vital_channel_config_t vital_cfg;
+    sapi_voter_config_t voter_cfg;
     sapi_status_t status;
     uint32_t i;
 
-    if ((cfg->link_count == 0U) || (cfg->link_count > SAPI_VITAL_CHANNEL_MAX_CHANNELS)
-        || (cfg->link_count > SAPI_SAFECHANNEL_MAX_LINKS) || (cfg->message_size == 0U))
+    if ((cfg->link_count == 0U) || (cfg->link_count > SAPI_SAFECHANNEL_MAX_LINKS) || (cfg->message_size == 0U))
     {
         return SAPI_STATUS_INVALID_PARAM;
     }
@@ -162,30 +163,45 @@ static sapi_status_t safechannel_open_vital(sapi_safechannel_t *channel, const s
     }
     channel->link_count = cfg->link_count;
 
-    memset(&vital_cfg, 0, sizeof(vital_cfg));
-    vital_cfg.voting_strategy = cfg->voting_strategy;
-    vital_cfg.channel_count = cfg->link_count;
-    vital_cfg.quorum_size = cfg->quorum_size;
-    vital_cfg.channel_timeout_ms = (uint32_t)cfg->channel_timeout_ms;
-    vital_cfg.log_disagreements = cfg->log_disagreements;
-    vital_cfg.on_disagreement = cfg->on_disagreement;
-    vital_cfg.context = cfg->context;
-    vital_cfg.backend_send = safechannel_vital_backend_send;
-    vital_cfg.backend_recv = safechannel_vital_backend_recv;
+    memset(&voter_cfg, 0, sizeof(voter_cfg));
+    voter_cfg.voting_strategy = cfg->voting_strategy;
+    voter_cfg.quorum_size = cfg->quorum_size;
+    voter_cfg.channel_timeout_ms = (uint32_t)cfg->channel_timeout_ms;
+    voter_cfg.log_disagreements = cfg->log_disagreements;
+    voter_cfg.trigger_safestate_on_disagreement = true;
+    voter_cfg.on_disagreement = cfg->on_disagreement;
+    voter_cfg.disagreement_context = cfg->context;
 
-    for (i = 0U; i < cfg->link_count; i++)
-    {
-        channel->impl.vital.channel_ptrs[i] = (void *)channel->link_handles[i];
-    }
-
-    status = sapi_vital_channel_init(&channel->impl.vital.channel, &vital_cfg, channel->impl.vital.channel_ptrs,
-                                      cfg->link_count);
+    status = sapi_voter_init(&channel->impl.vital.voter, &voter_cfg);
     if (status != SAPI_STATUS_OK)
     {
         safechannel_close_links(channel, channel->link_count);
         channel->link_count = 0U;
         return status;
     }
+
+    for (i = 0U; i < cfg->link_count; i++)
+    {
+        sapi_channel_config_t chan_cfg;
+
+        memset(&chan_cfg, 0, sizeof(chan_cfg));
+        chan_cfg.channel_handle = (void *)channel->link_handles[i];
+        chan_cfg.send = safechannel_vital_backend_send;
+        chan_cfg.recv = safechannel_vital_backend_recv;
+
+        status = sapi_channel_init(&channel->impl.vital.channels[i], &chan_cfg);
+        if (status == SAPI_STATUS_OK)
+        {
+            status = sapi_voter_register_channel(&channel->impl.vital.voter, &channel->impl.vital.channels[i]);
+        }
+        if (status != SAPI_STATUS_OK)
+        {
+            safechannel_close_links(channel, channel->link_count);
+            channel->link_count = 0U;
+            return status;
+        }
+    }
+
     return SAPI_STATUS_OK;
 }
 
@@ -232,7 +248,7 @@ sapi_status_t sapi_safechannel_send(sapi_safechannel_t *channel, const uint8_t *
         }
         return sapi_dual_channel_send(&channel->impl.dual, payload, (uint8_t)payload_size, NULL);
     }
-    return sapi_vital_channel_send(&channel->impl.vital.channel, payload, payload_size);
+    return sapi_voter_send(&channel->impl.vital.voter, payload, payload_size);
 }
 
 sapi_status_t sapi_safechannel_receive(sapi_safechannel_t *channel, uint8_t *out_payload, size_t max_size,
@@ -260,7 +276,7 @@ sapi_status_t sapi_safechannel_receive(sapi_safechannel_t *channel, uint8_t *out
     {
         sapi_voting_result_t result = SAPI_VOTING_TIMEOUT;
 
-        return sapi_vital_channel_receive(&channel->impl.vital.channel, out_payload, max_size, &result, out_size);
+        return sapi_voter_receive(&channel->impl.vital.voter, out_payload, max_size, &result, out_size);
     }
 }
 
@@ -287,12 +303,8 @@ sapi_safechannel_link_status_t sapi_safechannel_get_status(const sapi_safechanne
     {
         uint32_t healthy_count = 0U;
 
-        /* sapi_vital_channel_get_aggregated_health() takes a non-const
-         * handle even for this read-only query; channel is only const
-         * at this function's own boundary, so cast away constness here
-         * rather than widening this function's own signature. */
-        (void)sapi_vital_channel_get_aggregated_health((sapi_vital_channel_t *)&channel->impl.vital.channel,
-                                                        &healthy_count, NULL);
+        (void)sapi_voter_get_aggregated_health(&channel->impl.vital.voter,
+                                                &healthy_count, NULL);
         if (healthy_count == 0U)
         {
             return SAPI_SAFECHANNEL_LINK_DOWN;
@@ -318,7 +330,13 @@ sapi_status_t sapi_safechannel_close(sapi_safechannel_t *channel)
 
     if (channel->type == SAPI_SAFECHANNEL_TYPE_VITAL_VOTED)
     {
-        (void)sapi_vital_channel_destroy(&channel->impl.vital.channel);
+        uint32_t i;
+
+        for (i = 0U; i < channel->link_count; i++)
+        {
+            (void)sapi_channel_destroy(&channel->impl.vital.channels[i]);
+        }
+        (void)sapi_voter_destroy(&channel->impl.vital.voter);
     }
     safechannel_close_links(channel, channel->link_count);
     channel->link_count = 0U;

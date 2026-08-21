@@ -6,7 +6,7 @@
  * 1. Creating different channel types with user-specified parameters
  * 2. TCP/IP for remote standby communication (primary use case)
  * 3. Optional fallback channels (UDP, shared memory for local)
- * 4. Wrapping in vital_channel for voting/redundancy
+ * 4. Wrapping in sapi_voter for voting/redundancy (ADR-025)
  * 5. Dispatcher pattern for mixed transport types
  *
  * User responsibility: Provide configuration values (IPs, ports, paths)
@@ -19,7 +19,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "safeapi/vital_channel/sapi_vital_channel.h"
+#include "safeapi/channel_link/sapi_channel.h"
+#include "safeapi/voter/sapi_voter.h"
 #include "safeapi/status/sapi_status.h"
 
 /* ============================================================================
@@ -59,7 +60,7 @@ typedef struct {
  */
 typedef struct {
     const char *name;
-    const char *descriptor_path;     // e.g., "/dev/shm/vital_channel"
+    const char *descriptor_path;     // e.g., "/dev/shm/sapi_channel"
     size_t message_size;             // e.g., 256
     size_t queue_depth;              // e.g., 10
     uint32_t timeout_ms;             // e.g., 100
@@ -71,7 +72,7 @@ typedef struct {
  */
 typedef struct {
     const char *name;
-    const char *fifo_path;           // e.g., "/tmp/vital_channel_fifo"
+    const char *fifo_path;           // e.g., "/tmp/sapi_channel_fifo"
     size_t message_size;             // e.g., 256
     uint32_t timeout_ms;             // e.g., 500
     bool blocking;                   // true = blocking, false = non-blocking
@@ -90,7 +91,7 @@ typedef enum {
 
 /**
  * Opaque channel wrapper with type identification
- * This allows vital_channel to work with ANY transport
+ * This allows the voter to work with ANY mix of transports
  */
 typedef struct {
     channel_type_t type;
@@ -230,7 +231,10 @@ void example_tcp_based_redundancy(void)
     printf("    Local: %s:%u\n", udp_config_online.local_ip, udp_config_online.local_port);
     printf("    Remote: %s:%u\n", udp_config_online.remote_ip, udp_config_online.remote_port);
 
-    // Create wrapper channels for vital_channel
+    // Create wrapper channels, one sapi_channel_t per transport (ADR-025:
+    // a single "vital channel" type used to bundle N transports plus
+    // voting; that split into one sapi_channel_t per link registered
+    // into a separate sapi_voter_t for the voting itself).
     static channel_wrapper_t online_ch0 = {
         .type = CHANNEL_TYPE_TCP,
         .impl = (void *)0x1000,  // Placeholder (actual handle from OS backend)
@@ -243,27 +247,46 @@ void example_tcp_based_redundancy(void)
         .timeout_ms = 500,
     };
 
-    // Configure vital channel for 2oo2 voting (both must agree)
-    sapi_vital_channel_config_t vital_cfg_online = {
+    // Configure a voter for 2oo2 voting (both must agree)
+    sapi_voter_config_t voter_cfg_online = {
         .voting_strategy = SAPI_VOTING_2OO2,
-        .channel_count = 2,
         .channel_timeout_ms = 1000,
         .log_disagreements = true,
         .on_disagreement = NULL,
-        .context = NULL,
-        .backend_send = app_backend_send,    // User's dispatcher
-        .backend_recv = app_backend_recv,
+        .disagreement_context = NULL,
     };
 
-    sapi_vital_channel_storage_t vital_online = {0};
-    void *online_channels[2] = { &online_ch0, &online_ch1 };
+    static sapi_channel_t online_channels[2];
+    static sapi_voter_t voter_online;
 
-    sapi_status_t rc = sapi_vital_channel_init(&vital_online, &vital_cfg_online,
-                                               online_channels, 2);
+    sapi_status_t rc = sapi_voter_init(&voter_online, &voter_cfg_online);
     if (rc == SAPI_STATUS_OK) {
-        printf("  ✓ Vital Channel (2oo2) initialized\n");
+        sapi_channel_config_t chan_cfg0 = {
+            .channel_handle = &online_ch0,
+            .send = app_backend_send,    // User's dispatcher
+            .recv = app_backend_recv,
+        };
+        sapi_channel_config_t chan_cfg1 = {
+            .channel_handle = &online_ch1,
+            .send = app_backend_send,
+            .recv = app_backend_recv,
+        };
+
+        rc = sapi_channel_init(&online_channels[0], &chan_cfg0);
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_voter_register_channel(&voter_online, &online_channels[0]);
+        }
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_channel_init(&online_channels[1], &chan_cfg1);
+        }
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_voter_register_channel(&voter_online, &online_channels[1]);
+        }
+    }
+    if (rc == SAPI_STATUS_OK) {
+        printf("  ✓ Voter (2oo2) initialized over 2 channels\n");
     } else {
-        printf("  ✗ Failed to initialize vital channel\n");
+        printf("  ✗ Failed to initialize channels/voter\n");
         return;
     }
 
@@ -313,13 +336,35 @@ void example_tcp_based_redundancy(void)
         .timeout_ms = 500,
     };
 
-    sapi_vital_channel_storage_t vital_standby = {0};
-    void *standby_channels[2] = { &standby_ch0, &standby_ch1 };
+    static sapi_channel_t standby_channels[2];
+    static sapi_voter_t voter_standby;
 
-    rc = sapi_vital_channel_init(&vital_standby, &vital_cfg_online,
-                                 standby_channels, 2);
+    rc = sapi_voter_init(&voter_standby, &voter_cfg_online);
     if (rc == SAPI_STATUS_OK) {
-        printf("  ✓ Vital Channel (2oo2) initialized\n");
+        sapi_channel_config_t chan_cfg0 = {
+            .channel_handle = &standby_ch0,
+            .send = app_backend_send,
+            .recv = app_backend_recv,
+        };
+        sapi_channel_config_t chan_cfg1 = {
+            .channel_handle = &standby_ch1,
+            .send = app_backend_send,
+            .recv = app_backend_recv,
+        };
+
+        rc = sapi_channel_init(&standby_channels[0], &chan_cfg0);
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_voter_register_channel(&voter_standby, &standby_channels[0]);
+        }
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_channel_init(&standby_channels[1], &chan_cfg1);
+        }
+        if (rc == SAPI_STATUS_OK) {
+            rc = sapi_voter_register_channel(&voter_standby, &standby_channels[1]);
+        }
+    }
+    if (rc == SAPI_STATUS_OK) {
+        printf("  ✓ Voter (2oo2) initialized over 2 channels\n");
     }
 
     /* ========================================================================
@@ -330,19 +375,20 @@ void example_tcp_based_redundancy(void)
 
     uint8_t command[256] = {0x42};  // Dummy command
 
-    printf("  1. Online sends command via vital_channel...\n");
-    rc = sapi_vital_channel_send(&vital_online, command, 256);
+    printf("  1. Online broadcasts command via the voter...\n");
+    rc = sapi_voter_send(&voter_online, command, 256);
     printf("     Result: %d (broadcasts via TCP + UDP)\n", rc);
 
     printf("  2. Standby receives and votes...\n");
     uint8_t received[256] = {0};
     sapi_voting_result_t vote = SAPI_VOTING_AGREED;
-    rc = sapi_vital_channel_receive(&vital_standby, received, 256, &vote, NULL);
+    size_t bytes_received = 0;
+    rc = sapi_voter_receive(&voter_standby, received, 256, &vote, &bytes_received);
     printf("     Result: %d, Voting: %d\n", rc, vote);
 
     printf("  3. Check health...\n");
-    sapi_vital_channel_health_t health;
-    rc = sapi_vital_channel_get_health(&vital_online, 0, &health);
+    sapi_channel_health_t health;
+    rc = sapi_channel_get_health(&online_channels[0], &health);
     printf("     Channel 0 health: sends=%u, errors=%u\n",
            health.send_count, health.send_error_count);
 }
@@ -415,7 +461,7 @@ int main(void)
     printf("  ✓ Framework handles voting and health tracking\n");
     printf("  ✓ OS integrator implements actual I/O (send/recv)\n");
     printf("  ✓ Dispatcher routes to correct transport\n");
-    printf("  ✓ Same vital_channel code works with ANY transport\n");
+    printf("  ✓ Same channel/voter code works with ANY transport\n");
 
     return 0;
 }

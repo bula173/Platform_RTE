@@ -63,7 +63,7 @@
  *
  * @section vital_channel_architecture_send_semantics Send Semantics (Atomic Broadcast)
  *
- * When sapi_vital_channel_send() is called:
+ * When sapi_channel_send() is called:
  *
  * 1. **Broadcast Phase**: Invoke backend_send() for each redundant channel
  *    - All channels receive the same data
@@ -78,7 +78,7 @@
  *
  * @section vital_channel_architecture_receive_semantics Receive Semantics (Voting)
  *
- * When sapi_vital_channel_receive() is called:
+ * When sapi_channel_receive() is called:
  *
  * 1. **Collection Phase**: Invoke backend_recv() for each redundant channel
  *    - Store results in static voting buffers (one per channel)
@@ -123,10 +123,10 @@
  *     uint32_t disagreement_count;      // Times this channel disagreed with majority
  *     bool is_healthy;                  // Current health state (true = healthy)
  *     sapi_status_t last_error;         // Last error code
- * } sapi_vital_channel_health_t;
+ * } sapi_channel_health_t;
  * ```
  *
- * Applications can query this via sapi_vital_channel_get_health() to:
+ * Applications can query this via sapi_channel_get_health() to:
  * - Detect early signs of channel degradation (rising error counters)
  * - Isolate faulty channels (high disagreement_count)
  * - Implement predictive fault detection (before safe-state is triggered)
@@ -152,7 +152,7 @@
  * }
  *
  * // Step 3: Initialize vital channel with callbacks
- * sapi_vital_channel_config_t vital_config = {
+ * sapi_channel_config_t vital_config = {
  *     .voting_strategy = SAPI_VOTING_2OO2,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,
@@ -160,16 +160,16 @@
  *     .backend_recv = backend_recv,      // Transport-specific callback
  * };
  *
- * sapi_vital_channel_storage_t vital;
- * sapi_vital_channel_init(&vital, &vital_config, channels, 2);
+ * sapi_channel_storage_t vital;
+ * sapi_channel_init(&vital, &vital_config, channels, 2);
  *
  * // Step 4: Use vital channel for redundant communication
- * sapi_vital_channel_send(&vital, &cmd, sizeof(cmd));  // Atomic broadcast
- * sapi_vital_channel_receive(&vital, &result, sizeof(result), NULL, NULL);  // Voting
+ * sapi_channel_send(&vital, &cmd, sizeof(cmd));  // Atomic broadcast
+ * sapi_channel_receive(&vital, &result, sizeof(result), NULL, NULL);  // Voting
  *
  * // Step 5: Monitor health (watchdog role)
- * sapi_vital_channel_health_t health;
- * sapi_vital_channel_get_health(&vital, 0, &health);
+ * sapi_channel_health_t health;
+ * sapi_channel_get_health(&vital, 0, &health);
  * if (health.disagreement_count > THRESHOLD) {
  *     // Early warning: channel drifting, consider isolation
  * }
