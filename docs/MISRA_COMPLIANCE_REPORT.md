@@ -726,6 +726,32 @@ issue at every call site rather than in just one place. Standalone
 compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`): clean, zero
 warnings.
 
+**Update (2026-08-21): new module, `include/safeapi/mutex/sapi_mutex.h` +
+`include/safeapi_backend/mutex/sapi_mutex_backend.h` + `src/mutex/sapi_mutex.c`
+(ADR-033).** Added after an architecture review of `safeAPIRBC2oo2` found
+it calling `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`
+directly on a raw `pthread_mutex_t` application struct field - a real
+violation of this framework's own OAL premise (an application should
+depend only on this framework's portable API, never a platform threading
+primitive directly). `cmake --build build --target cppcheck` run against
+the new `src/mutex/sapi_mutex.c`: only rule 15.5 (single point of exit,
+the same accepted guard-clause deviation already documented above at
+scale - see the 387-count table entry) and `unusedFunction` (the same
+established false-positive class every other OAL dispatch file gets,
+since cppcheck's single-project analysis cannot see these public API
+functions called from a downstream consumer like `safeAPIRBC2oo2`) - no
+new rule category introduced beyond what `sapi_timer.c` (this module's
+own template) already carries; in fact strictly fewer findings than
+`sapi_timer.c`, since the pointer-cast rules (11.5/11.6/8.9) that
+`sapi_timer.c` triggers live only in the POSIX backend implementation
+for mutex (`safeAPIRBC2oo2/src/posix_backend/sapi_posix_backend_mutex.c`,
+outside this repo's own cppcheck scope), not in the dispatch file itself.
+`cmake --build build` + `ctest --test-dir build`: full rebuild, 27/27
+pass. `safeAPIRBC2oo2` (downstream): migrated off `pthread_mutex_t`
+entirely (`channel_ab_types.h`/`channel_ab.c`/`channel_ab_checkpoint.c`/
+`channel_ab_io.c`), full rebuild, `ctest` (2/2), and the real Docker-based
+`safeAPITestEnv` Robot Framework suite (11/11) all re-verified clean.
+
 **Update (2026-08-20): setup-phase lock coverage extended (ADR-032).**
 Fourteen functions across ten files (`sapi_timer_register_backend`,
 `sapi_ipc_register_backend`, `sapi_task_register_backend`,
