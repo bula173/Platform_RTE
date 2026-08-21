@@ -202,7 +202,7 @@ Application Lifecycle</h1>
 <li><code></code></li>
 <li><code> // ===== STEP 6: SEND VITAL =====</code></li>
 <li><code> // Via vital_channel (automatic 2oo2 voting)</code></li>
-<li><code> sapi_vital_channel_send(&amp;app-&gt;vital_channel, &amp;output);</code></li>
+<li><code> sapi_channel_send(&amp;app-&gt;vital_channel, &amp;output);</code></li>
 <li><code></code></li>
 <li><code> // ===== STEP 7: SEND NON-VITAL =====</code></li>
 <li><code> // Fire-and-forget diagnostics (non-blocking)</code></li>
@@ -272,7 +272,7 @@ Complete Example</h1>
 <li><code>typedef struct {</code></li>
 <li><code> // Channels</code></li>
 <li><code> channel_registry_t *channel_registry;</code></li>
-<li><code> sapi_vital_channel_t vital_channel;</code></li>
+<li><code> sapi_channel_t vital_channel;</code></li>
 <li><code> sapi_ipc_handle_t diag_channel;</code></li>
 <li><code></code></li>
 <li><code> // Services</code></li>

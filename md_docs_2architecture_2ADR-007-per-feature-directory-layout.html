@@ -91,6 +91,7 @@ timer service" meant filtering one file out of a flat directory of seven.</p>
 `os`" is still a valid and answerable question — see section 2.3).</p>
 <h2><a class="anchor" id="autotoc_md78"></a>
 2.2 One CMake target per feature</h2>
+<p><b>Superseded by ADR-023</b> (2026-08-07): the 21 per-feature targets this section describes were later collapsed into 4 grouped static libraries (<code>safeapi_core</code>/<code>oal</code>/<code>channels</code>/<code>appmanager</code>) because the fine-grained linking this section promised was never actually exercised by any real consumer. The directory-per-feature layout described in section 2.1 above is unaffected and remains current.</p>
 <p>Each <code>src/&lt;feature&gt;/CMakeLists.txt</code> builds a small static library <code>safeapi_&lt;feature&gt;</code>, aliased <code>safeapi::&lt;feature&gt;</code>. Most features have zero inter-feature dependencies and link nothing but the shared include path; <code>sapi_string</code> is the one exception (it calls <code>sapi_buffer_*</code> and <code>sapi_cast_*</code> functions directly) and links <code>safeapi::buffer</code> and <code>safeapi::cast</code> publicly. This was already implicit in ADR-001 section 3.5's "consumer can link the whole OAL or a single service" goal — this ADR is what actually delivers it, down to individual-feature granularity rather than whole-layer granularity.</p>
 <h2><a class="anchor" id="autotoc_md79"></a>
 2.3 What stays true from earlier ADRs despite the directory change</h2>

@@ -154,7 +154,7 @@ Transport Backends</h1>
 Send Semantics (Atomic Broadcast)</h1>
 <ul>
 <li></li>
-<li>When <a class="el" href="group__vital__channel.html#ga0602cb44a0e70310a49f7aeb5f04a903" title="Send data via vital channel (broadcast to all redundant channels)">sapi_vital_channel_send()</a> is called:</li>
+<li>When <a class="el" href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e" title="Sends data on this channel via its backend send callback.">sapi_channel_send()</a> is called:</li>
 <li></li>
 <li>1. <b>Broadcast Phase</b>: Invoke backend_send() for each redundant channel</li>
 <li>- All channels receive the same data</li>
@@ -173,7 +173,7 @@ Send Semantics (Atomic Broadcast)</h1>
 Receive Semantics (Voting)</h1>
 <ul>
 <li></li>
-<li>When <a class="el" href="group__vital__channel.html#ga62ae3766da674903454060f31a3c797e" title="Receive data via vital channel (voting-based reception)">sapi_vital_channel_receive()</a> is called:</li>
+<li>When <a class="el" href="group__channel__link.html#ga81dd83683d1802758b2d32ab8f4e62f6" title="Receives data on this channel via its backend receive callback.">sapi_channel_receive()</a> is called:</li>
 <li></li>
 <li>1. <b>Collection Phase</b>: Invoke backend_recv() for each redundant channel</li>
 <li>- Store results in static voting buffers (one per channel)</li>
@@ -226,9 +226,9 @@ Health Monitoring</h1>
 <li><code> uint32_t disagreement_count; // Times this channel disagreed with majority</code></li>
 <li><code> bool is_healthy; // Current health state (true = healthy)</code></li>
 <li><code> sapi_status_t last_error; // Last error code</code></li>
-<li><code>} <a class="el" href="structsapi__vital__channel__health__t.html" title="Per-channel health statistics.">sapi_vital_channel_health_t</a>; *</code></li>
+<li><code>} <a class="el" href="structsapi__channel__health__t.html" title="Health statistics for one vital channel.">sapi_channel_health_t</a>; *</code></li>
 <li></li>
-<li>Applications can query this via <a class="el" href="group__vital__channel.html#ga49f28755d52f2a9f709be80257bb2cbb" title="Query per-channel health statistics.">sapi_vital_channel_get_health()</a> to:</li>
+<li>Applications can query this via <a class="el" href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9" title="Queries this channel&#39;s health statistics.">sapi_channel_get_health()</a> to:</li>
 <li>- Detect early signs of channel degradation (rising error counters)</li>
 <li>- Isolate faulty channels (high disagreement_count)</li>
 <li>- Implement predictive fault detection (before safe-state is triggered)</li>
@@ -258,7 +258,7 @@ Application Integration</h1>
 <li><code>}</code></li>
 <li><code></code></li>
 <li><code>// Step 3: Initialize vital channel with callbacks</code></li>
-<li><code><a class="el" href="structsapi__vital__channel__config__t.html" title="Vital channel configuration.">sapi_vital_channel_config_t</a> vital_config = {</code></li>
+<li><code><a class="el" href="structsapi__channel__config__t.html" title="Configuration for sapi_channel_init().">sapi_channel_config_t</a> vital_config = {</code></li>
 <li><code> .voting_strategy = SAPI_VOTING_2OO2,</code></li>
 <li><code> .channel_timeout_ms = 1000,</code></li>
 <li><code> .log_disagreements = true,</code></li>
@@ -266,16 +266,16 @@ Application Integration</h1>
 <li><code> .backend_recv = backend_recv, // Transport-specific callback</code></li>
 <li><code>};</code></li>
 <li><code></code></li>
-<li><code><a class="el" href="structsapi__vital__channel__storage__t.html" title="Storage for vital channel instance (opaque to caller)">sapi_vital_channel_storage_t</a> vital;</code></li>
-<li><code>sapi_vital_channel_init(&amp;vital, &amp;vital_config, channels, 2);</code></li>
+<li><code><a class="el" href="structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller).">sapi_channel_storage_t</a> vital;</code></li>
+<li><code>sapi_channel_init(&amp;vital, &amp;vital_config, channels, 2);</code></li>
 <li><code></code></li>
 <li><code>// Step 4: Use vital channel for redundant communication</code></li>
-<li><code>sapi_vital_channel_send(&amp;vital, &amp;cmd, sizeof(cmd)); // Atomic broadcast</code></li>
-<li><code>sapi_vital_channel_receive(&amp;vital, &amp;result, sizeof(result), NULL, NULL); // Voting</code></li>
+<li><code>sapi_channel_send(&amp;vital, &amp;cmd, sizeof(cmd)); // Atomic broadcast</code></li>
+<li><code>sapi_channel_receive(&amp;vital, &amp;result, sizeof(result), NULL, NULL); // Voting</code></li>
 <li><code></code></li>
 <li><code>// Step 5: Monitor health (watchdog role)</code></li>
-<li><code><a class="el" href="structsapi__vital__channel__health__t.html" title="Per-channel health statistics.">sapi_vital_channel_health_t</a> health;</code></li>
-<li><code>sapi_vital_channel_get_health(&amp;vital, 0, &amp;health);</code></li>
+<li><code><a class="el" href="structsapi__channel__health__t.html" title="Health statistics for one vital channel.">sapi_channel_health_t</a> health;</code></li>
+<li><code>sapi_channel_get_health(&amp;vital, 0, &amp;health);</code></li>
 <li><code>if (health.disagreement_count &gt; THRESHOLD) {</code></li>
 <li><code> // Early warning: channel drifting, consider isolation</code></li>
 <li><code>} *</code></li>

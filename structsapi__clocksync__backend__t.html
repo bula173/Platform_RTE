@@ -72,14 +72,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_clocksync_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__CLOCKSYNC.html">Clock Synchronization (diagnostic/timeout-sizing only)</a></div></div></div>
+  <div class="headertitle"><div class="title">sapi_clocksync_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__CLOCKSYNC__BACKEND.html">Clock Synchronization - Backend Adaptation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Backend vtable: an integrator's implementation of clock synchronization for a specific mechanism (PTP/GPS/NTP/custom). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  
  <a href="structsapi__clocksync__backend__t.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="sapi__clocksync_8h_source.html">sapi_clocksync.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="sapi__clocksync__backend_8h_source.html">sapi_clocksync_backend.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -91,7 +91,7 @@ Data Fields</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of clock synchronization for a specific mechanism (PTP/GPS/NTP/custom). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8h_source.html#l00079">79</a> of file <a class="el" href="sapi__clocksync_8h_source.html">sapi_clocksync.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync__backend_8h_source.html#l00035">35</a> of file <a class="el" href="sapi__clocksync__backend_8h_source.html">sapi_clocksync_backend.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ae82617e8b988a4f1f0b67749c935424d" name="ae82617e8b988a4f1f0b67749c935424d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae82617e8b988a4f1f0b67749c935424d">&#9670;&#160;</a></span>get_offset_ms</h2>
@@ -106,7 +106,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Reports this node's estimated clock offset, in milliseconds, relative to the backend's reference (positive: local clock is ahead). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8h_source.html#l00084">84</a> of file <a class="el" href="sapi__clocksync_8h_source.html">sapi_clocksync.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync__backend_8h_source.html#l00040">40</a> of file <a class="el" href="sapi__clocksync__backend_8h_source.html">sapi_clocksync_backend.h</a>.</p>
 
 </div>
 </div>
@@ -123,12 +123,12 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Reports the backend's current confidence in that offset. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8h_source.html#l00086">86</a> of file <a class="el" href="sapi__clocksync_8h_source.html">sapi_clocksync.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync__backend_8h_source.html#l00042">42</a> of file <a class="el" href="sapi__clocksync__backend_8h_source.html">sapi_clocksync_backend.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/clocksync/<a class="el" href="sapi__clocksync_8h_source.html">sapi_clocksync.h</a></li>
+<li>include/safeapi_backend/clocksync/<a class="el" href="sapi__clocksync__backend_8h_source.html">sapi_clocksync_backend.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

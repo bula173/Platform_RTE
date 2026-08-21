@@ -1,7 +1,27 @@
 var searchData=
 [
-  ['data_20buffer_0',['Cross-Layer Data Buffer',['../group__BUFFER.html',1,'']]],
-  ['diagnostic_20timeout_20sizing_20only_1',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]],
-  ['diagnostics_2',['Logging and Diagnostics',['../group__LOG.html',1,'']]],
-  ['dual_20channel_20identity_20and_20comparison_3',['Dual-Channel Identity and Comparison',['../group__CHANNEL.html',1,'']]]
+  ['callback_20list_20storage_20shape_0',['Registered-Callback List Storage Shape',['../group__NOTIFY.html',1,'']]],
+  ['casting_1',['Checked Integer Casting',['../group__CAST.html',1,'']]],
+  ['channel_20comparison_2',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
+  ['channel_20factory_3',['Unified Channel Factory',['../group__SAFECHANNEL.html',1,'']]],
+  ['channel_20link_20single_20redundant_20link_4',['Channel Link (single redundant link)',['../group__channel__link.html',1,'']]],
+  ['channel_20voting_5',['Voter (N-way channel voting)',['../group__voter.html',1,'']]],
+  ['checked_20assertions_6',['Safe-State Transitions and Checked Assertions',['../group__SAFESTATE.html',1,'']]],
+  ['checked_20integer_20casting_7',['Checked Integer Casting',['../group__CAST.html',1,'']]],
+  ['checkpoint_20rendezvous_8',['Checkpoint Rendezvous',['../group__CHECKPOINT.html',1,'']]],
+  ['checksum_20crc_20utilities_9',['Checksum &amp; CRC Utilities',['../group__CHECKSUM.html',1,'']]],
+  ['clock_20synchronization_20backend_20adaptation_10',['Clock Synchronization - Backend Adaptation',['../group__CLOCKSYNC__BACKEND.html',1,'']]],
+  ['clock_20synchronization_20diagnostic_20timeout_20sizing_20only_11',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]],
+  ['codes_12',['Common Status and Error Codes',['../group__STATUS.html',1,'']]],
+  ['common_20status_20and_20error_20codes_13',['Common Status and Error Codes',['../group__STATUS.html',1,'']]],
+  ['common_20types_14',['Common Types',['../group__TYPES.html',1,'']]],
+  ['communication_15',['Inter-Process Communication',['../group__IPC.html',1,'']]],
+  ['communication_20backend_20adaptation_16',['Inter-Process Communication - Backend Adaptation',['../group__IPC__BACKEND.html',1,'']]],
+  ['comparator_202_20way_20channel_20comparison_17',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
+  ['comparison_18',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
+  ['controlled_20reboot_19',['Controlled Reboot',['../group__REBOOT.html',1,'']]],
+  ['controlled_20reboot_20backend_20adaptation_20',['Controlled Reboot - Backend Adaptation',['../group__REBOOT__BACKEND.html',1,'']]],
+  ['crc_20utilities_21',['Checksum &amp; CRC Utilities',['../group__CHECKSUM.html',1,'']]],
+  ['cross_20comparator_202_20way_20channel_20comparison_22',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
+  ['cross_20layer_20data_20buffer_23',['Cross-Layer Data Buffer',['../group__BUFFER.html',1,'']]]
 ];

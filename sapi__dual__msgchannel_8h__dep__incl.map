@@ -1,0 +1,17 @@
+<map id="include/safeapi/dual/sapi_dual_msgchannel.h" name="include/safeapi/dual/sapi_dual_msgchannel.h">
+<area shape="rect" id="Node000001" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="299,5,485,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,93,385,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="365,57,326,95,323,91,361,53"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__msgchannel_8c.html" title="&quot;Channel&quot; layer of ADR&#45;020 &#45; see sapi_dual_msgchannel.h." alt="" coords="409,93,548,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="423,53,461,91,458,95,419,57"/>
+<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,181,179,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="247,141,140,184,138,179,245,136"/>
+<area shape="rect" id="Node000005" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,181,407,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="308,147,308,181,303,181,303,147"/>
+<area shape="rect" id="Node000007" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,181,571,221"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="362,136,459,179,457,184,360,141"/>
+<area shape="rect" id="Node000004" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,269,161,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="95,235,95,269,89,269,89,235"/>
+<area shape="rect" id="Node000006" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="228,269,383,309"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="308,235,308,269,303,269,303,235"/>
+</map>

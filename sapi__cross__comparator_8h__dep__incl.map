@@ -1,0 +1,5 @@
+<map id="include/safeapi/cross_comparator/sapi_cross_comparator.h" name="include/safeapi/cross_comparator/sapi_cross_comparator.h">
+<area shape="rect" id="Node000001" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="11,5,187,60"/>
+<area shape="rect" id="Node000002" href="$sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="5,108,192,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,74,101,108,96,108,96,74"/>
+</map>

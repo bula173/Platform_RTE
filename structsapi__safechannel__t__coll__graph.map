@@ -1,0 +1,22 @@
+<map id="sapi_safechannel_t" name="sapi_safechannel_t">
+<area shape="rect" id="Node000001" title="Caller&#45;owned storage for one sapi_safechannel_t instance. Every field is private &#45; reach it only thro..." alt="" coords="871,123,1017,148"/>
+<area shape="rect" id="Node000002" href="$structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller&#45;owned storage; every field is private &#45; reach it onl..." alt="" coords="627,55,782,80"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="764,81,899,120,898,125,763,86"/>
+<area shape="rect" id="Node000003" href="$structsapi__dual__msgchannel__t.html" title="One sapi_dual_msgchannel_t instance&#39;s state. Caller&#45;owned storage (REQ&#45;DUAL&#45;MSGCHANNEL&#45;001); opaque i..." alt="" coords="297,5,480,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="494,29,602,45,642,52,641,57,601,50,493,34"/>
+<area shape="rect" id="Node000004" href="$structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload &#45; sapi_dual_negotiator_t&#39;s own periodic beacon." alt="" coords="297,55,480,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="494,65,627,65,627,70,494,70"/>
+<area shape="rect" id="Node000005" href="$structsapi__dual__frame__header__t.html" title="Common 4&#45;byte header prefixing every Layer&#45;2 frame; kept a fixed 4 bytes (not just 1) so the fields t..." alt="" coords="5,55,200,80"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="214,65,297,65,297,70,214,70"/>
+<area shape="rect" id="Node000006" href="$structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="301,165,476,191"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="490,181,629,183,707,180,784,173,847,161,903,145,904,151,848,166,784,178,707,185,629,188,490,187"/>
+<area shape="rect" id="Node000009" href="$structsapi__voter__storage__t.html" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="625,123,784,148"/>
+<area shape="poly" id="edge10_Node000009_Node000006" title=" " alt="" coords="489,162,601,147,624,144,625,149,602,153,490,168"/>
+<area shape="rect" id="Node000007" href="$structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="20,128,185,153"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="199,151,301,164,301,169,199,156"/>
+<area shape="rect" id="Node000008" href="$structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="19,177,186,203"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="200,185,273,182,301,181,301,186,273,187,200,190"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="798,133,871,133,871,138,798,138"/>
+<area shape="rect" id="Node000010" href="$structsapi__voter__config__t.html" title="Configuration for sapi_voter_init()." alt="" coords="315,104,463,129"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="476,119,625,128,625,133,476,124"/>
+</map>

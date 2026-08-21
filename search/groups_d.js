@@ -1,10 +1,10 @@
 var searchData=
 [
-  ['task_20thread_20scheduling_0',['Task/Thread Scheduling',['../group__TASK.html',1,'']]],
-  ['thread_20scheduling_1',['Task/Thread Scheduling',['../group__TASK.html',1,'']]],
-  ['timeout_20sizing_20only_2',['Clock Synchronization (diagnostic/timeout-sizing only)',['../group__CLOCKSYNC.html',1,'']]],
-  ['timer_20service_3',['Timer Service',['../group__TIMER.html',1,'']]],
-  ['to_20point_20network_20link_4',['Point-to-Point Network Link',['../group__NETLINK.html',1,'']]],
-  ['transitions_20and_20checked_20assertions_5',['Safe-State Transitions and Checked Assertions',['../group__SAFESTATE.html',1,'']]],
-  ['types_6',['Common Types',['../group__TYPES.html',1,'']]]
+  ['reboot_0',['Controlled Reboot',['../group__REBOOT.html',1,'']]],
+  ['reboot_20backend_20adaptation_1',['Controlled Reboot - Backend Adaptation',['../group__REBOOT__BACKEND.html',1,'']]],
+  ['redundant_20link_2',['Channel Link (single redundant link)',['../group__channel__link.html',1,'']]],
+  ['registered_20callback_20list_20storage_20shape_3',['Registered-Callback List Storage Shape',['../group__NOTIFY.html',1,'']]],
+  ['rendezvous_4',['Checkpoint Rendezvous',['../group__CHECKPOINT.html',1,'']]],
+  ['reservation_5',['Static Memory Reservation',['../group__MEMORY.html',1,'']]],
+  ['reservation_20backend_20adaptation_6',['Static Memory Reservation - Backend Adaptation',['../group__MEMORY__BACKEND.html',1,'']]]
 ];

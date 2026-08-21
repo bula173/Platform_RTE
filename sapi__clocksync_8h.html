@@ -75,7 +75,6 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">sapi_clocksync.h File Reference</div></div>
@@ -111,20 +110,17 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__clocksync_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2clocksync_2sapi__clocksync_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2clocksync_2sapi__clocksync_8hdep" id="ainclude_2safeapi_2clocksync_2sapi__clocksync_8hdep">
-<area shape="rect" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="5,5,195,45"/>
-<area shape="rect" href="sapi__clocksync_8c.html" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="30,93,170,133"/>
-<area shape="poly" title=" " alt="" coords="103,59,103,93,97,93,97,59"/>
+<area shape="rect" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="73,5,263,45"/>
+<area shape="rect" href="sapi__clocksync__backend_8h.html" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="5,93,197,148"/>
+<area shape="poly" title=" " alt="" coords="149,58,122,95,118,92,144,55"/>
+<area shape="rect" href="sapi__clocksync_8c.html" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="98,196,238,236"/>
+<area shape="poly" title=" " alt="" coords="194,56,212,93,217,121,212,149,201,175,186,197,182,194,196,172,207,147,212,121,207,94,189,58"/>
+<area shape="poly" title=" " alt="" coords="130,158,157,194,152,198,126,161"/>
 </map>
 </div>
 </div>
 <p><a href="sapi__clocksync_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of clock synchronization for a specific mechanism (PTP/GPS/NTP/custom). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  <a href="structsapi__clocksync__backend__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:gaaa5c09cfbaf2f186b8b3d84940f92483" id="r_gaaa5c09cfbaf2f186b8b3d84940f92483"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gaaa5c09cfbaf2f186b8b3d84940f92483">sapi_clocksync_quality_t</a> { <a class="el" href="group__CLOCKSYNC.html#ggaaa5c09cfbaf2f186b8b3d84940f92483a6e0355a599a5e82c3c7536a8838e7f0c">SAPI_CLOCKSYNC_UNSYNCHRONIZED</a> = 0
@@ -136,9 +132,6 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga5be8c579111936b9c6918b1c46d6c760" id="r_ga5be8c579111936b9c6918b1c46d6c760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_register_backend</a> (const <a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:ga5be8c579111936b9c6918b1c46d6c760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global backend).  <br /></td></tr>
-<tr class="separator:ga5be8c579111936b9c6918b1c46d6c760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacb7e052e70c3db3b3213fb278ad14fdc" id="r_gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a> (int64_t *out_offset_ms)</td></tr>
 <tr class="memdesc:gacb7e052e70c3db3b3213fb278ad14fdc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports this node's estimated clock offset (diagnostic/timeout- sizing only - see the file-level note; never use this to decide whether channel results are comparable).  <br /></td></tr>
 <tr class="separator:gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>

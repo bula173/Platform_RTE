@@ -1,11 +1,13 @@
 var searchData=
 [
-  ['data_20buffer_20abstraction_0',['ADR-002: Cross-Layer Data Buffer Abstraction',['../md_docs_2architecture_2ADR-002-cross-layer-data-buffers.html',1,'']]],
-  ['data_20integrity_20for_20redundant_20channels_1',['ADR-016: CRC-64 Data Integrity for Redundant Channels',['../md_docs_2architecture_2ADR-016-crc64-data-integrity.html',1,'']]],
-  ['diagrams_20with_20plantuml_20doxygen_2',['Architecture Diagrams with PlantUML &amp; Doxygen',['../md_docs_2architecture_2DIAGRAMS__GUIDE.html',1,'']]],
-  ['directory_20layout_3',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
-  ['distributed_20vital_20channels_4',['ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels',['../md_docs_2architecture_2ADR-017-checkpoint-and-clock-sync.html',1,'']]],
-  ['diversity_5',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]],
-  ['doxygen_6',['Architecture Diagrams with PlantUML &amp; Doxygen',['../md_docs_2architecture_2DIAGRAMS__GUIDE.html',1,'']]],
-  ['dual_20channel_20vital_20architecture_20—_20ccf_20mitigation_20via_20build_20diversity_7',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]]
+  ['backend_0',['ADR-018: A Real POSIX/Linux OAL Backend',['../md_docs_2architecture_2ADR-018-posix-oal-backend.html',1,'']]],
+  ['backend_20header_20separation_1',['ADR-021: Consumer / OS-Backend Header Separation',['../md_docs_2architecture_2ADR-021-consumer-backend-header-split.html',1,'']]],
+  ['backend_20registration_20and_20remaining_20setup_20only_20constructors_2',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
+  ['backend_20registration_20via_20callbacks_3',['ADR-005: OAL Backend Registration via Callbacks',['../md_docs_2architecture_2ADR-005-oal-backend-registration.html',1,'']]],
+  ['buffer_20abstraction_4',['ADR-002: Cross-Layer Data Buffer Abstraction',['../md_docs_2architecture_2ADR-002-cross-layer-data-buffers.html',1,'']]],
+  ['buffer_20access_5',['ADR-006: Safe String Manipulation and Endianness-Safe Buffer Access',['../md_docs_2architecture_2ADR-006-string-and-endian-buffer-access.html',1,'']]],
+  ['buffer_20module_20architecture_6',['Buffer Module - Architecture',['../buffer_architecture.html',1,'']]],
+  ['buffer_20module_20user_20guide_7',['Buffer Module - User Guide',['../buffer_user_guide.html',1,'']]],
+  ['build_20diversity_8',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]],
+  ['built_20in_20checkpoint_20rendezvous_9',['ADR-019: AppManager Cycle Hooks and Built-In Checkpoint Rendezvous',['../md_docs_2architecture_2ADR-019-appmanager-cycle-hooks-and-checkpoint.html',1,'']]]
 ];

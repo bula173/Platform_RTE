@@ -1,7 +1,24 @@
 <map id="include/safeapi/checksum/sapi_checksum.h" name="include/safeapi/checksum/sapi_checksum.h">
-<area shape="rect" id="Node000001" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="89,5,279,45"/>
-<area shape="rect" id="Node000002" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="5,93,152,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="152,56,104,95,100,91,149,52"/>
-<area shape="rect" id="Node000003" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="176,101,403,126"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="220,52,276,98,273,102,216,56"/>
+<area shape="rect" id="Node000001" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="567,5,758,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="384,93,571,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="611,54,519,96,517,91,608,49"/>
+<area shape="rect" id="Node000007" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="379,357,533,397"/>
+<area shape="poly" id="edge11_Node000001_Node000007" title=" " alt="" coords="650,59,636,94,627,127,623,156,622,207,614,257,603,283,585,311,553,340,517,359,514,355,550,335,581,308,599,280,609,255,616,207,618,155,622,126,631,92,645,57"/>
+<area shape="rect" id="Node000010" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="645,93,792,133"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="685,56,709,92,704,95,680,58"/>
+<area shape="rect" id="Node000011" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="816,101,1043,126"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="735,47,895,98,893,103,733,52"/>
+<area shape="rect" id="Node000003" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,181,385,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="428,142,344,184,342,179,426,137"/>
+<area shape="rect" id="Node000009" href="$sapi__dual__msgchannel_8c.html" title="&quot;Channel&quot; layer of ADR&#45;020 &#45; see sapi_dual_msgchannel.h." alt="" coords="409,181,548,221"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="481,147,481,181,476,181,475,147"/>
+<area shape="rect" id="Node000004" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,269,179,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="247,229,140,272,138,267,245,224"/>
+<area shape="rect" id="Node000006" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,269,407,309"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="308,235,308,269,303,269,303,235"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,269,571,309"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="362,224,459,267,457,272,360,229"/>
+<area shape="rect" id="Node000005" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,357,161,397"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="95,323,95,357,89,357,89,323"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="351,314,424,355,422,360,349,318"/>
 </map>

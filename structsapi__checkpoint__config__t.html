@@ -96,7 +96,7 @@ Data Fields</h2></td></tr>
 <div class="textblock"><p>Checkpoint configuration. </p>
 <p>Field names match the illustrative usage already present in docs/REDUNDANCY_ARCHITECTURE.md, so those examples describe real behavior rather than an aspirational API. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00068">68</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00069">69</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a913ef1efa939a3713153a9a5761a1151" name="a913ef1efa939a3713153a9a5761a1151"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a913ef1efa939a3713153a9a5761a1151">&#9670;&#160;</a></span>checkpoint_id</h2>
@@ -111,7 +111,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Identifies this checkpoint (e.g. a per-cycle counter). Carried as both the sequence number and payload of the underlying <a class="el" href="structsapi__vital__message__t.html" title="Vital channel message with integrated CRC-64.">sapi_vital_message_t</a>, so a stale or wrong-cycle reply is rejected rather than silently accepted (REQ-CHECKPOINT-002). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00074">74</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00075">75</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 
 </div>
 </div>
@@ -128,7 +128,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Maximum time to wait for peer confirmations before treating this checkpoint as failed (REQ-CHECKPOINT-001). Sized using the deployment's known network/clock jitter - see <a class="el" href="sapi__clocksync_8h.html" title="Pluggable wall-clock synchronization backend (ADR-017)">sapi_clocksync.h</a> - never assumed to be zero-jitter. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00080">80</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00081">81</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 
 </div>
 </div>
@@ -145,7 +145,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Minimum number of <em>other</em> channels whose valid confirmation must arrive within max_delay_ms for this checkpoint to succeed. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00084">84</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00085">85</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 
 </div>
 </div>
@@ -162,7 +162,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Optional SAPI_WATCHDOG_CHECKPOINT-type watchdog to kick on a successful checkpoint, for liveness monitoring across many checkpoints independent of any single checkpoint's own timeout reaction. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00090">90</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00091">91</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 
 </div>
 </div>

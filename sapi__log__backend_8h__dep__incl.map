@@ -1,0 +1,5 @@
+<map id="include/safeapi_backend/log/sapi_log_backend.h" name="include/safeapi_backend/log/sapi_log_backend.h">
+<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,5,188,45"/>
+<area shape="rect" id="Node000002" href="$sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="29,93,164,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,59,99,93,94,93,94,59"/>
+</map>

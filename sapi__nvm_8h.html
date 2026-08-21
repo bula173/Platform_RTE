@@ -109,9 +109,12 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__nvm_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2nvm_2sapi__nvm_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2nvm_2sapi__nvm_8hdep" id="ainclude_2safeapi_2nvm_2sapi__nvm_8hdep">
-<area shape="rect" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="5,5,160,45"/>
-<area shape="rect" href="sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="7,93,159,119"/>
-<area shape="poly" title=" " alt="" coords="85,59,85,93,80,93,80,59"/>
+<area shape="rect" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="92,5,247,45"/>
+<area shape="rect" href="sapi__nvm__backend_8h.html" title="OS&#45;backend adaptation surface for the NVM service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,200,133"/>
+<area shape="poly" title=" " alt="" coords="148,58,120,95,115,91,144,55"/>
+<area shape="rect" href="sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="93,181,245,207"/>
+<area shape="poly" title=" " alt="" coords="196,55,215,92,219,113,215,134,200,162,183,183,179,180,196,159,209,132,213,113,209,94,191,58"/>
+<area shape="poly" title=" " alt="" coords="130,142,161,179,157,183,126,146"/>
 </map>
 </div>
 </div>
@@ -121,9 +124,6 @@ This graph shows which files directly or indirectly include this file:</div>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for <a class="el" href="group__NVM.html#ga0124801b6ab70ba06ceb6fb6e971da2e" title="Opens (creating if necessary) a named NVM region.">sapi_nvm_open()</a>.  <a href="structsapi__nvm__config__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__nvm__backend__t.html">sapi_nvm_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the NVM service for a specific storage medium (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  <a href="structsapi__nvm__backend__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -153,9 +153,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga24800c911fe9ae13f0df7d987450d81a" id="r_ga24800c911fe9ae13f0df7d987450d81a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NVM.html#ga24800c911fe9ae13f0df7d987450d81a">sapi_nvm_close</a> (<a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> handle)</td></tr>
 <tr class="memdesc:ga24800c911fe9ae13f0df7d987450d81a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes an NVM region handle.  <br /></td></tr>
 <tr class="separator:ga24800c911fe9ae13f0df7d987450d81a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf5348d814b574e6791759a424becd589" id="r_gaf5348d814b574e6791759a424becd589"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NVM.html#gaf5348d814b574e6791759a424becd589">sapi_nvm_register_backend</a> (const <a class="el" href="structsapi__nvm__backend__t.html">sapi_nvm_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:gaf5348d814b574e6791759a424becd589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:gaf5348d814b574e6791759a424becd589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Non-Volatile Memory service. </p>

@@ -109,9 +109,12 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__memory_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2memory_2sapi__memory_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2memory_2sapi__memory_8hdep" id="ainclude_2safeapi_2memory_2sapi__memory_8hdep">
-<area shape="rect" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="17,5,197,45"/>
-<area shape="rect" href="sapi__memory_8c.html" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="5,93,208,119"/>
-<area shape="poly" title=" " alt="" coords="109,59,109,93,104,93,104,59"/>
+<area shape="rect" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="119,5,299,45"/>
+<area shape="rect" href="sapi__memory__backend_8h.html" title="OS&#45;backend adaptation surface for the static memory pool service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,252,133"/>
+<area shape="poly" title=" " alt="" coords="184,57,148,95,144,91,180,54"/>
+<area shape="rect" href="sapi__memory_8c.html" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="107,181,310,207"/>
+<area shape="poly" title=" " alt="" coords="241,53,255,72,266,92,271,113,266,134,248,162,226,183,223,179,244,159,261,132,265,113,261,94,251,74,237,57"/>
+<area shape="poly" title=" " alt="" coords="160,141,199,179,195,183,156,145"/>
 </map>
 </div>
 </div>
@@ -121,9 +124,6 @@ This graph shows which files directly or indirectly include this file:</div>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__config__t.html">sapi_mem_pool_config_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for <a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a>.  <a href="structsapi__mem__pool__config__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the memory pool service (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  <a href="structsapi__mem__pool__backend__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -150,9 +150,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gaf3be5304eb88f7c8c179fdc209dbc888" id="r_gaf3be5304eb88f7c8c179fdc209dbc888"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#gaf3be5304eb88f7c8c179fdc209dbc888">sapi_mem_pool_stats</a> (<a class="el" href="group__MEMORY.html#gadf03ce97cb7905977f9a80bc73059cf8">sapi_mem_pool_handle_t</a> handle, size_t *out_free_blocks, size_t *out_used_blocks)</td></tr>
 <tr class="memdesc:gaf3be5304eb88f7c8c179fdc209dbc888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reports current free/used block counts for diagnostics.  <br /></td></tr>
 <tr class="separator:gaf3be5304eb88f7c8c179fdc209dbc888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3d890b9d724722c2c3aa0f5ad6b308b5" id="r_ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__MEMORY.html#ga3d890b9d724722c2c3aa0f5ad6b308b5">sapi_mem_pool_register_backend</a> (const <a class="el" href="structsapi__mem__pool__backend__t.html">sapi_mem_pool_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
-<tr class="separator:ga3d890b9d724722c2c3aa0f5ad6b308b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Static memory reservation service. </p>

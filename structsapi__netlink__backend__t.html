@@ -72,14 +72,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_netlink_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__NETLINK.html">Point-to-Point Network Link</a></div></div></div>
+  <div class="headertitle"><div class="title">sapi_netlink_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__NETLINK__BACKEND.html">Point-to-Point Network Link - Backend Adaptation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Backend vtable: an integrator's implementation of the network link service for a specific transport/target (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  
  <a href="structsapi__netlink__backend__t.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -99,7 +99,7 @@ Data Fields</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the network link service for a specific transport/target (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00151">151</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink__backend_8h_source.html#l00032">32</a> of file <a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="aebb91e307214f22625b89cde3db6fd1b" name="aebb91e307214f22625b89cde3db6fd1b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aebb91e307214f22625b89cde3db6fd1b">&#9670;&#160;</a></span>open</h2>
@@ -115,7 +115,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4" title="Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.">sapi_netlink_open()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00154">154</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink__backend_8h_source.html#l00035">35</a> of file <a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>.</p>
 
 </div>
 </div>
@@ -133,7 +133,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__NETLINK.html#ga1820f4806751d395bee004d78edeba31" title="Sends one fixed-size message, blocking at most timeout_ms.">sapi_netlink_send()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00158">158</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink__backend_8h_source.html#l00039">39</a> of file <a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>.</p>
 
 </div>
 </div>
@@ -151,7 +151,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__NETLINK.html#ga4c86e3cbba235b624c0a4bac55c19cbb" title="Receives one fixed-size message, blocking at most timeout_ms.">sapi_netlink_receive()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00161">161</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink__backend_8h_source.html#l00042">42</a> of file <a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>.</p>
 
 </div>
 </div>
@@ -169,12 +169,12 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__NETLINK.html#ga0e5b33034707e37de73131a00bf098df" title="Closes a link.">sapi_netlink_close()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8h_source.html#l00164">164</a> of file <a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink__backend_8h_source.html#l00045">45</a> of file <a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/netlink/<a class="el" href="sapi__netlink_8h_source.html">sapi_netlink.h</a></li>
+<li>include/safeapi_backend/netlink/<a class="el" href="sapi__netlink__backend_8h_source.html">sapi_netlink_backend.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

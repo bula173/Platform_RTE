@@ -86,35 +86,41 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/types/sapi_types.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__vital__channel_8h_source.html">safeapi/vital_channel/sapi_vital_channel.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__voter_8h_source.html">safeapi/voter/sapi_voter.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__watchdog_8h_source.html">safeapi/watchdog/sapi_watchdog.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_checkpoint.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__checkpoint_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8h" alt=""/></div>
 <map name="ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8h" id="ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8h">
-<area shape="rect" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="59,5,255,45"/>
-<area shape="rect" title=" " alt="" coords="58,269,128,295"/>
-<area shape="poly" title=" " alt="" coords="116,48,83,68,52,95,36,116,26,135,13,182,9,202,13,220,31,243,55,261,52,265,28,247,8,222,3,202,8,181,21,133,31,113,48,92,80,64,113,43"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="188,181,334,221"/>
-<area shape="poly" title=" " alt="" coords="201,43,231,64,255,92,263,111,267,130,268,168,263,168,262,131,258,112,251,95,227,68,198,48"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="22,181,164,221"/>
-<area shape="poly" title=" " alt="" coords="115,48,86,67,63,95,58,113,60,131,74,168,69,170,54,133,53,112,59,92,82,64,112,43"/>
-<area shape="rect" href="sapi__vital__channel_8h.html" title="Safety&#45;critical redundant channel abstraction with voting logic." alt="" coords="316,93,478,133"/>
-<area shape="poly" title=" " alt="" coords="211,43,333,86,331,91,209,48"/>
-<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="73,93,241,133"/>
-<area shape="poly" title=" " alt="" coords="160,46,160,79,154,79,154,46"/>
-<area shape="poly" title=" " alt="" coords="96,222,96,255,90,255,90,222"/>
-<area shape="rect" title=" " alt="" coords="386,269,469,295"/>
-<area shape="poly" title=" " alt="" coords="165,217,374,265,373,271,163,222"/>
-<area shape="rect" title=" " alt="" coords="242,269,317,295"/>
-<area shape="poly" title=" " alt="" coords="139,219,241,261,239,266,137,224"/>
-<area shape="poly" title=" " alt="" coords="396,134,380,179,367,203,348,223,311,241,257,256,143,277,142,272,256,251,309,236,345,219,362,200,376,177,391,133"/>
-<area shape="poly" title=" " alt="" coords="369,136,304,176,301,172,366,131"/>
-<area shape="poly" title=" " alt="" coords="416,132,431,154,444,181,447,200,447,220,439,256,434,255,441,220,442,201,438,182,427,157,412,135"/>
-<area shape="poly" title=" " alt="" coords="404,134,406,176,402,200,393,223,380,238,365,251,331,269,329,264,362,246,376,234,388,220,397,199,401,176,398,134"/>
-<area shape="poly" title=" " alt="" coords="182,132,229,170,226,174,178,136"/>
-<area shape="poly" title=" " alt="" coords="145,135,118,172,113,168,141,132"/>
+<area shape="rect" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="159,5,355,45"/>
+<area shape="rect" title=" " alt="" coords="18,277,89,302"/>
+<area shape="poly" title=" " alt="" coords="196,48,148,68,96,97,49,135,29,158,13,182,8,203,12,225,23,246,36,265,31,268,18,249,7,227,3,203,8,180,25,154,45,131,93,93,145,64,194,43"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="450,269,595,309"/>
+<area shape="poly" title=" " alt="" coords="356,36,461,57,504,73,533,91,545,110,553,131,556,176,550,220,538,257,533,256,544,219,551,176,548,132,540,113,529,95,502,78,459,63,355,41"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="36,181,177,221"/>
+<area shape="poly" title=" " alt="" coords="232,48,205,69,178,95,149,133,126,170,121,168,144,130,174,92,201,65,229,43"/>
+<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="188,93,327,133"/>
+<area shape="poly" title=" " alt="" coords="260,46,260,79,255,79,255,46"/>
+<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="351,93,519,133"/>
+<area shape="poly" title=" " alt="" coords="297,43,385,85,382,90,295,48"/>
+<area shape="poly" title=" " alt="" coords="97,223,70,266,66,263,93,220"/>
+<area shape="rect" title=" " alt="" coords="173,277,256,302"/>
+<area shape="poly" title=" " alt="" coords="132,220,191,266,187,270,129,224"/>
+<area shape="rect" title=" " alt="" coords="293,277,368,302"/>
+<area shape="poly" title=" " alt="" coords="157,219,289,269,287,274,155,224"/>
+<area shape="poly" title=" " alt="" coords="189,128,91,150,51,165,26,183,19,202,20,223,28,245,39,264,34,266,23,247,15,224,13,201,22,180,48,161,90,145,187,123"/>
+<area shape="poly" title=" " alt="" coords="322,131,393,155,444,179,481,216,508,255,504,258,477,219,441,184,391,160,320,136"/>
+<area shape="poly" title=" " alt="" coords="255,134,223,264,218,263,250,133"/>
+<area shape="poly" title=" " alt="" coords="325,131,384,153,408,166,424,180,431,201,424,223,401,252,371,272,368,268,397,248,419,220,425,201,419,183,405,171,382,158,323,136"/>
+<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="253,181,409,221"/>
+<area shape="poly" title=" " alt="" coords="276,132,308,169,304,173,272,135"/>
+<area shape="poly" title=" " alt="" coords="271,224,103,276,101,270,269,219"/>
+<area shape="poly" title=" " alt="" coords="374,219,469,261,467,266,372,224"/>
+<area shape="poly" title=" " alt="" coords="306,224,243,271,240,266,303,219"/>
+<area shape="poly" title=" " alt="" coords="333,222,333,263,328,263,328,222"/>
+<area shape="poly" title=" " alt="" coords="471,131,497,152,518,180,529,218,530,256,524,256,524,219,514,183,493,156,467,136"/>
+<area shape="poly" title=" " alt="" coords="363,136,191,181,190,176,362,131"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -122,9 +128,11 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__checkpoint_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8hdep" id="ainclude_2safeapi_2checkpoint_2sapi__checkpoint_8hdep">
-<area shape="rect" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="5,5,201,45"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="30,93,177,133"/>
-<area shape="poly" title=" " alt="" coords="106,59,106,93,101,93,101,59"/>
+<area shape="rect" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="75,5,271,45"/>
+<area shape="rect" href="sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="5,93,164,133"/>
+<area shape="poly" title=" " alt="" coords="145,57,106,95,102,91,141,53"/>
+<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="189,93,335,133"/>
+<area shape="poly" title=" " alt="" coords="204,53,244,91,240,95,201,57"/>
 </map>
 </div>
 </div>
@@ -138,14 +146,14 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3801dbad75b15d71c5b72053c972b9ca" id="r_ga3801dbad75b15d71c5b72053c972b9ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca">sapi_channel_checkpoint</a> (<a class="el" href="group__vital__channel.html#ga4146ca743eeb01de7b305b3f92db7a70">sapi_vital_channel_t</a> *handle, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
-<tr class="memdesc:ga3801dbad75b15d71c5b72053c972b9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital channel instance.  <br /></td></tr>
-<tr class="separator:ga3801dbad75b15d71c5b72053c972b9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9d2c128dd981154b0ce7ee3ea2e4f85e" id="r_ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e">sapi_channel_checkpoint</a> (<a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
+<tr class="memdesc:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel registered with a voter.  <br /></td></tr>
+<tr class="separator:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Bounded checkpoint rendezvous for distributed vital channels (ADR-017) </p>
-<p>Implements <a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a>, already specified (but never built) in docs/REDUNDANCY_ARCHITECTURE.md: a bounded-time rendezvous that lets channels running on separate machines - possibly in separate geographic locations - agree on "we are both at the same point" without depending on wall-clock agreement. Two channels are considered synchronized not because their clocks match, but because they both confirmed the same checkpoint_id to each other within max_delay_ms; if that confirmation doesn't happen in time, that is itself a fault and is handled exactly like a voting disagreement is elsewhere in this framework - safe-state, not silence.</p>
-<p>This module adds no new transport backend of its own (ADR-017 section 2.2): it reuses the sapi_vital_channel_t instance's own already- registered backend_send/backend_recv callbacks, so whatever transport an integrator plugged into vital_channel (sapi_ipc over POSIX/RTOS, or a real network link) is what checkpoint messages travel over too - this is how "pluggable" is achieved here, consistent with ADR-005 rather than inventing a second plug-in point.</p>
+<p>Implements <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a>, already specified (but never built) in docs/REDUNDANCY_ARCHITECTURE.md: a bounded-time rendezvous that lets channels running on separate machines - possibly in separate geographic locations - agree on "we are both at the same point" without depending on wall-clock agreement. Two channels are considered synchronized not because their clocks match, but because they both confirmed the same checkpoint_id to each other within max_delay_ms; if that confirmation doesn't happen in time, that is itself a fault and is handled exactly like a voting disagreement is elsewhere in this framework - safe-state, not silence.</p>
+<p>This module adds no new transport backend of its own (ADR-017 section 2.2, updated by ADR-025): it reuses a sapi_voter_t's own registered sapi_channel_t links - each already carrying whatever transport an integrator plugged in (sapi_ipc over POSIX/RTOS, or a real network link) - so checkpoint messages travel over the same channels a disagreement vote already would. This is how "pluggable" is achieved here, consistent with ADR-005 rather than inventing a second plug-in point.</p>
 <p>The EN 50159-style message envelope (sequence number, sender ID, timestamp, CRC-64) is not reinvented either: every checkpoint-arrival message is a <a class="el" href="structsapi__vital__message__t.html" title="Vital channel message with integrated CRC-64.">sapi_vital_message_t</a> (<a class="el" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems.">sapi_checksum.h</a>), verified with <a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3" title="Verify vital channel message and extract payload.">sapi_checksum_vital_message_verify()</a> before it is allowed to count toward quorum. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>

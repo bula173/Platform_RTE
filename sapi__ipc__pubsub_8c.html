@@ -83,31 +83,36 @@ $(function() {
 <p>IPC Publish-Subscribe implementation.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__ipc__pubsub_8h_source.html">safeapi/ipc/sapi_ipc_pubsub.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
 <code>#include &quot;safeapi/log.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_ipc_pubsub.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__ipc__pubsub_8c__incl.png" border="0" usemap="#asrc_2ipc_2sapi__ipc__pubsub_8c" alt=""/></div>
 <map name="asrc_2ipc_2sapi__ipc__pubsub_8c" id="asrc_2ipc_2sapi__ipc__pubsub_8c">
-<area shape="rect" title="IPC Publish&#45;Subscribe implementation." alt="" coords="146,5,333,31"/>
-<area shape="rect" href="sapi__ipc__pubsub_8h.html" title="IPC Publish&#45;Subscribe Pattern (one&#45;to&#45;many broadcasting)" alt="" coords="88,79,239,119"/>
-<area shape="poly" title=" " alt="" coords="230,33,193,71,189,67,226,29"/>
-<area shape="rect" title=" " alt="" coords="263,86,370,111"/>
-<area shape="poly" title=" " alt="" coords="253,29,297,74,294,78,249,33"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,240,151,280"/>
-<area shape="poly" title=" " alt="" coords="146,121,127,142,110,168,97,198,88,227,82,226,92,196,105,165,123,139,142,117"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,240,317,280"/>
-<area shape="poly" title=" " alt="" coords="184,117,203,139,220,165,233,196,242,226,237,227,228,198,216,168,199,142,180,121"/>
-<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="120,167,207,192"/>
-<area shape="poly" title=" " alt="" coords="166,119,166,153,161,153,161,119"/>
-<area shape="rect" title=" " alt="" coords="102,328,185,353"/>
-<area shape="poly" title=" " alt="" coords="223,282,171,322,168,317,220,278"/>
-<area shape="rect" title=" " alt="" coords="209,328,283,353"/>
-<area shape="poly" title=" " alt="" coords="249,280,249,314,243,314,243,280"/>
-<area shape="rect" title=" " alt="" coords="308,328,379,353"/>
-<area shape="poly" title=" " alt="" coords="271,278,320,317,317,321,268,282"/>
-<area shape="poly" title=" " alt="" coords="153,194,110,233,107,229,149,190"/>
-<area shape="poly" title=" " alt="" coords="177,190,218,229,214,233,174,194"/>
+<area shape="rect" title="IPC Publish&#45;Subscribe implementation." alt="" coords="253,5,439,31"/>
+<area shape="rect" href="sapi__ipc__pubsub_8h.html" title="IPC Publish&#45;Subscribe Pattern (one&#45;to&#45;many broadcasting)" alt="" coords="135,79,285,119"/>
+<area shape="poly" title=" " alt="" coords="327,33,256,74,254,69,325,29"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="289,167,449,207"/>
+<area shape="poly" title=" " alt="" coords="350,30,367,152,362,153,345,31"/>
+<area shape="rect" title=" " alt="" coords="383,86,490,111"/>
+<area shape="poly" title=" " alt="" coords="361,29,415,75,411,79,358,33"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="184,255,329,295"/>
+<area shape="poly" title=" " alt="" coords="218,118,251,241,245,242,213,120"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="18,255,159,295"/>
+<area shape="poly" title=" " alt="" coords="172,121,142,141,116,168,100,204,93,241,88,240,95,203,112,165,138,137,169,117"/>
+<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="127,174,213,199"/>
+<area shape="poly" title=" " alt="" coords="204,120,184,163,179,160,199,118"/>
+<area shape="rect" title=" " alt="" coords="262,343,345,368"/>
+<area shape="poly" title=" " alt="" coords="141,292,260,335,258,340,139,297"/>
+<area shape="rect" title=" " alt="" coords="101,343,175,368"/>
+<area shape="poly" title=" " alt="" coords="103,293,126,330,121,332,98,296"/>
+<area shape="rect" title=" " alt="" coords="5,343,76,368"/>
+<area shape="poly" title=" " alt="" coords="79,296,57,332,53,329,75,293"/>
+<area shape="poly" title=" " alt="" coords="184,198,229,243,226,246,180,201"/>
+<area shape="poly" title=" " alt="" coords="161,201,118,246,115,242,157,198"/>
+<area shape="poly" title=" " alt="" coords="345,209,294,248,291,244,342,205"/>
+<area shape="poly" title=" " alt="" coords="369,207,360,249,344,296,323,333,318,330,340,294,355,247,363,206"/>
 </map>
 </div>
 </div>
@@ -182,12 +187,12 @@ Functions</h2></td></tr>
 <div class="line">};</div>
 <div class="line"><a class="code hl_typedef" href="sapi__ipc__pubsub_8h.html#ae21b975b760ff3e1ec1b5a1c7c0d661c">sapi_ipc_pubsub_topic_t</a> topic;</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__pubsub_8h.html#a41a40054c6835cd52a3266898b8ebf22">sapi_ipc_pubsub_topic_create</a>(&amp;topic, &amp;topic_config);</div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a41a40054c6835cd52a3266898b8ebf22"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a41a40054c6835cd52a3266898b8ebf22">sapi_ipc_pubsub_topic_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out, const sapi_ipc_pubsub_topic_config_t *config)</div><div class="ttdoc">Create a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00012">sapi_ipc_pubsub.c:12</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a41a40054c6835cd52a3266898b8ebf22"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a41a40054c6835cd52a3266898b8ebf22">sapi_ipc_pubsub_topic_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out, const sapi_ipc_pubsub_topic_config_t *config)</div><div class="ttdoc">Create a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00013">sapi_ipc_pubsub.c:13</a></div></div>
 <div class="ttc" id="asapi__ipc__pubsub_8h_html_ae21b975b760ff3e1ec1b5a1c7c0d661c"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#ae21b975b760ff3e1ec1b5a1c7c0d661c">sapi_ipc_pubsub_topic_t</a></div><div class="ttdeci">struct sapi_ipc_pubsub_topic_s * sapi_ipc_pubsub_topic_t</div><div class="ttdoc">Publish-subscribe topic handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00065">sapi_ipc_pubsub.h:65</a></div></div>
 <div class="ttc" id="astructsapi__ipc__pubsub__topic__config__t_html"><div class="ttname"><a href="structsapi__ipc__pubsub__topic__config__t.html">sapi_ipc_pubsub_topic_config_t</a></div><div class="ttdoc">Configuration for a pub-sub topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00070">sapi_ipc_pubsub.h:70</a></div></div>
 <div class="ttc" id="astructsapi__ipc__pubsub__topic__config__t_html_af5e5c968f8cd8ade9e48cee52a65ce79"><div class="ttname"><a href="structsapi__ipc__pubsub__topic__config__t.html#af5e5c968f8cd8ade9e48cee52a65ce79">sapi_ipc_pubsub_topic_config_t::topic_name</a></div><div class="ttdeci">const char * topic_name</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00071">sapi_ipc_pubsub.h:71</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>
@@ -240,9 +245,9 @@ Functions</h2></td></tr>
 <div class="line">    .speed_limit = 40</div>
 <div class="line">};</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__pubsub_8h.html#af94ddad686f00005f2c9f49962f68fcb">sapi_ipc_pubsub_publish</a>(topic, &amp;status, <span class="keyword">sizeof</span>(status));</div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_af94ddad686f00005f2c9f49962f68fcb"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#af94ddad686f00005f2c9f49962f68fcb">sapi_ipc_pubsub_publish</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_publish(sapi_ipc_pubsub_topic_t topic, const void *message, size_t message_size)</div><div class="ttdoc">Publish a message to all subscribers on a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00030">sapi_ipc_pubsub.c:30</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_af94ddad686f00005f2c9f49962f68fcb"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#af94ddad686f00005f2c9f49962f68fcb">sapi_ipc_pubsub_publish</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_publish(sapi_ipc_pubsub_topic_t topic, const void *message, size_t message_size)</div><div class="ttdoc">Publish a message to all subscribers on a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00041">sapi_ipc_pubsub.c:41</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00030">30</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00041">41</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>
@@ -271,7 +276,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00055">55</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>
@@ -318,12 +323,12 @@ Functions</h2></td></tr>
 <div class="line">};</div>
 <div class="line"><a class="code hl_typedef" href="sapi__ipc__pubsub_8h.html#aadca09966165b45631c9ad712d05710b">sapi_ipc_pubsub_subscriber_t</a> subscriber;</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__pubsub_8h.html#a0603de784275db40f7e444954c39d650">sapi_ipc_pubsub_subscribe</a>(&amp;subscriber, &amp;sub_config);</div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a0603de784275db40f7e444954c39d650"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a0603de784275db40f7e444954c39d650">sapi_ipc_pubsub_subscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_subscribe(sapi_ipc_pubsub_subscriber_t *subscriber_out, const sapi_ipc_pubsub_subscriber_config_t *config)</div><div class="ttdoc">Subscribe to a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00054">sapi_ipc_pubsub.c:54</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a0603de784275db40f7e444954c39d650"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a0603de784275db40f7e444954c39d650">sapi_ipc_pubsub_subscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_subscribe(sapi_ipc_pubsub_subscriber_t *subscriber_out, const sapi_ipc_pubsub_subscriber_config_t *config)</div><div class="ttdoc">Subscribe to a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00065">sapi_ipc_pubsub.c:65</a></div></div>
 <div class="ttc" id="asapi__ipc__pubsub_8h_html_aadca09966165b45631c9ad712d05710b"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aadca09966165b45631c9ad712d05710b">sapi_ipc_pubsub_subscriber_t</a></div><div class="ttdeci">struct sapi_ipc_pubsub_subscriber_s * sapi_ipc_pubsub_subscriber_t</div><div class="ttdoc">Subscriber handle for receiving from a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00142">sapi_ipc_pubsub.h:142</a></div></div>
 <div class="ttc" id="astructsapi__ipc__pubsub__subscriber__config__t_html"><div class="ttname"><a href="structsapi__ipc__pubsub__subscriber__config__t.html">sapi_ipc_pubsub_subscriber_config_t</a></div><div class="ttdoc">Configuration for a subscriber.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00147">sapi_ipc_pubsub.h:147</a></div></div>
 <div class="ttc" id="astructsapi__ipc__pubsub__subscriber__config__t_html_a26488d6cc3b75525c631cc515f363c61"><div class="ttname"><a href="structsapi__ipc__pubsub__subscriber__config__t.html#a26488d6cc3b75525c631cc515f363c61">sapi_ipc_pubsub_subscriber_config_t::subscriber_name</a></div><div class="ttdeci">const char * subscriber_name</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00148">sapi_ipc_pubsub.h:148</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00054">54</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00065">65</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>
@@ -389,9 +394,9 @@ Functions</h2></td></tr>
 <div class="line">}</div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a6330aac8cc489abbbf5b62cd2dc6824e"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a6330aac8cc489abbbf5b62cd2dc6824e">sapi_ipc_pubsub_receive</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_receive(sapi_ipc_pubsub_subscriber_t subscriber, void *message_out, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a message from subscribed topic (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00072">sapi_ipc_pubsub.c:72</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a6330aac8cc489abbbf5b62cd2dc6824e"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a6330aac8cc489abbbf5b62cd2dc6824e">sapi_ipc_pubsub_receive</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_receive(sapi_ipc_pubsub_subscriber_t subscriber, void *message_out, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a message from subscribed topic (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00083">sapi_ipc_pubsub.c:83</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00072">72</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00083">83</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>
@@ -420,7 +425,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00085">85</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__pubsub_8c_source.html#l00096">96</a> of file <a class="el" href="sapi__ipc__pubsub_8c_source.html">sapi_ipc_pubsub.c</a>.</p>
 
 </div>
 </div>

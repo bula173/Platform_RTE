@@ -93,14 +93,18 @@ Layering</h1>
 <li>itself ships no OS-specific code.</li>
 <li>-# <b>Common utilities</b> - layer-agnostic building blocks with no OS</li>
 <li>dependency: <a class="el" href="group__BUFFER.html">Cross-Layer Data Buffer</a>, <a class="el" href="group__STRING.html">Bounded String Manipulation</a>, <a class="el" href="group__CAST.html">Checked Integer Casting</a>, <a class="el" href="group__TYPES.html">Common Types</a>,</li>
-<li><a class="el" href="group__STATUS.html">Common Status and Error Codes</a>, <a class="el" href="group__SAFESTATE.html">Safe-State Transitions and Checked Assertions</a>, <a class="el" href="group__CHANNEL.html">Dual-Channel Identity and Comparison</a>.</li>
+<li><a class="el" href="group__STATUS.html">Common Status and Error Codes</a>, <a class="el" href="group__SAFESTATE.html">Safe-State Transitions and Checked Assertions</a>.</li>
 <li>-# <b>Redundancy / vital communication</b> - built on top of the first two</li>
-<li>layers: vital_channel (voting across 2oo2/2oo3/NMR), <a class="el" href="group__CHECKPOINT.html">Checkpoint Rendezvous</a></li>
-<li>(bounded checkpoint-ID rendezvous for cross-node agreement),</li>
-<li><a class="el" href="group__CLOCKSYNC.html">Clock Synchronization (diagnostic/timeout-sizing only)</a> (diagnostic-only wall-clock offset, never a</li>
-<li>correctness dependency), <a class="el" href="group__CHECKSUM.html">Checksum &amp; CRC Utilities</a> (CRC-64 data integrity), and</li>
-<li><a class="el" href="group__WATCHDOG.html">Watchdog Mechanism</a> (hang detection and recovery, including</li>
-<li>SAPI_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss reactions).</li>
+<li>layers: <a class="el" href="group__channel__link.html">Channel Link (single redundant link)</a> (one point-to-point redundant link),</li>
+<li><a class="el" href="group__voter.html">Voter (N-way channel voting)</a> (N-way 2oo2/2oo3/NMR voting across registered</li>
+<li><a class="el" href="group__channel__link.html">Channel Link (single redundant link)</a> instances), <a class="el" href="group__cross__comparator.html">Cross-Comparator (2-way channel comparison)</a> (2-way</li>
+<li>consistency check between two independent peer channels, ADR-025),</li>
+<li><a class="el" href="group__CHECKPOINT.html">Checkpoint Rendezvous</a> (bounded checkpoint-ID rendezvous for cross-node</li>
+<li>agreement), <a class="el" href="group__CLOCKSYNC.html">Clock Synchronization (diagnostic/timeout-sizing only)</a> (diagnostic-only wall-clock offset,</li>
+<li>never a correctness dependency), <a class="el" href="group__CHECKSUM.html">Checksum &amp; CRC Utilities</a> (CRC-64 data</li>
+<li>integrity), and <a class="el" href="group__WATCHDOG.html">Watchdog Mechanism</a> (hang detection and recovery,</li>
+<li>including SAPI_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss</li>
+<li>reactions).</li>
 <li></li>
 <li><a class="el" href="group__APPMANAGER.html">Application Manager</a> sits above all three layers, giving an application a</li>
 <li>single init/execute/shutdown lifecycle entry point.</li>
@@ -113,8 +117,11 @@ Common-Cause-Failure Mitigation</h1>
 <li></li>
 <li>For SIL 3/4 dual-channel deployments, ADR-008 covers build-diversity</li>
 <li>mitigation (two independently-configured toolchains compiling channel A</li>
-<li>and channel B) and the sapi_channel comparator that answers "which
- * channel is this binary?" and "do the two channels' results agree?".</li>
+<li>and channel B); <a class="el" href="group__cross__comparator.html">Cross-Comparator (2-way channel comparison)</a> (ADR-025) is the framework</li>
+<li>primitive that answers "do channel A's and channel B's results agree?"</li>
+<li>for exactly that kind of independent peer pair - it supersedes the</li>
+<li>ADR-008-era standalone comparator module, which was never built and has</li>
+<li>since been removed outright.</li>
 <li></li>
 <li></li>
 </ul>
@@ -128,10 +135,10 @@ Where to Go Next</h1>
 <li>ARCHITECTURE.md and USER_GUIDE.md pair).</li>
 <li>- IPC transport choice: <a class="el" href="ipc_transport_selection.html">IPC Transport Selection Guide</a>,</li>
 <li><a class="el" href="channel_configuration.html">Channel Configuration Guide</a></li>
-<li>- Vital channel topologies: <a class="el" href="vital_channel_topologies.html">Channel Topologies and Redundancy Patterns</a></li>
+<li>- Channel topologies: <a class="el" href="vital_channel_topologies.html">Channel Topologies and Redundancy Patterns</a></li>
 <li>- Architecture Decision Records (design rationale, one per major</li>
 <li>decision): <code>docs/architecture/ADR-*.md</code></li>
-<li>- Requirements traceability: <code>docs/requirements/SRS.md</code></li>
+<li>- Requirements traceability: <a class="el" href="safeapi_srs.html">Software Requirements Specification (SRS)</a></li>
 <li>- MISRA C:2012 conformance status: <code>docs/MISRA_COMPLIANCE_REPORT.md</code></li>
 <li>- Cross-compilation (Linux, QNX, etc.): <code>docs/CROSS_COMPILATION.md</code> */ </li>
 </ul>

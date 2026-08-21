@@ -123,7 +123,7 @@ Pattern 1: Single-System 2oo2 (A ↔ B → C)</h1>
 <li><b>Channel Configuration:</b></li>
 <li><code>c</code></li>
 <li><code>// Vital Channels (A ↔ B)</code></li>
-<li><code>Channel 0: sapi_vital_channel (2oo2 voting)</code></li>
+<li><code>Channel 0: sapi_channel (2oo2 voting)</code></li>
 <li><code>├─ Transport 0: Shared Memory Queue</code></li>
 <li><code>│ ├─ Latency: &lt;1µs</code></li>
 <li><code>│ ├─ Reliability: FIFO queue (atomic)</code></li>
@@ -415,7 +415,7 @@ Pattern 4: Triple Redundancy (2oo3)</h1>
 <li><code>└─ Use: Fast path, best-effort</code></li>
 <li><code></code></li>
 <li><code>// Voting configuration</code></li>
-<li><code><a class="el" href="structsapi__vital__channel__config__t.html" title="Vital channel configuration.">sapi_vital_channel_config_t</a> cfg = {</code></li>
+<li><code><a class="el" href="structsapi__channel__config__t.html" title="Configuration for sapi_channel_init().">sapi_channel_config_t</a> cfg = {</code></li>
 <li><code> .voting_strategy = SAPI_VOTING_2OO3,</code></li>
 <li><code> .channel_count = 3,</code></li>
 <li><code> .channel_timeout_ms = 1000,</code></li>

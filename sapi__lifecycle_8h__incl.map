@@ -1,0 +1,7 @@
+<map id="include/safeapi/lifecycle/sapi_lifecycle.h" name="include/safeapi/lifecycle/sapi_lifecycle.h">
+<area shape="rect" id="Node000001" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="26,5,206,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,101,88,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,47,67,91,63,88,99,44"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="113,93,258,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="133,44,163,81,159,84,129,47"/>
+</map>

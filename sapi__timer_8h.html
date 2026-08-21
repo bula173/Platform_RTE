@@ -110,15 +110,26 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__timer_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2timer_2sapi__timer_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2timer_2sapi__timer_8hdep" id="ainclude_2safeapi_2timer_2sapi__timer_8hdep">
-<area shape="rect" title="OS Abstraction Layer &#45; Timer service." alt="" coords="319,5,479,45"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="5,93,152,133"/>
-<area shape="poly" title=" " alt="" coords="316,52,149,96,148,91,314,46"/>
-<area shape="rect" href="sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="176,101,403,126"/>
-<area shape="poly" title=" " alt="" coords="365,56,306,102,303,98,362,52"/>
-<area shape="rect" href="sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="427,101,589,126"/>
-<area shape="poly" title=" " alt="" coords="435,52,495,98,491,102,432,56"/>
-<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="614,101,834,126"/>
-<area shape="poly" title=" " alt="" coords="484,46,681,98,680,103,483,51"/>
+<area shape="rect" title="OS Abstraction Layer &#45; Timer service." alt="" coords="675,5,835,45"/>
+<area shape="rect" href="sapi__timer__backend_8h.html" title="OS&#45;backend adaptation surface for the Timer service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,212,133"/>
+<area shape="poly" title=" " alt="" coords="662,41,232,96,213,99,212,93,231,91,661,35"/>
+<area shape="rect" href="sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="98,181,261,207"/>
+<area shape="poly" title=" " alt="" coords="662,35,449,56,348,74,308,84,278,96,249,115,224,139,189,183,185,179,220,135,246,111,275,91,306,79,347,69,448,51,661,30"/>
+<area shape="rect" href="sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="288,93,447,133"/>
+<area shape="poly" title=" " alt="" coords="662,50,448,97,446,92,661,45"/>
+<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="471,93,618,133"/>
+<area shape="poly" title=" " alt="" coords="698,53,592,96,590,91,696,48"/>
+<area shape="rect" href="sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="642,101,869,126"/>
+<area shape="poly" title=" " alt="" coords="758,59,758,100,753,100,753,59"/>
+<area shape="rect" href="sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="893,93,1031,133"/>
+<area shape="poly" title=" " alt="" coords="814,48,918,91,916,96,812,53"/>
+<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1055,93,1194,133"/>
+<area shape="poly" title=" " alt="" coords="849,46,1056,93,1055,99,848,51"/>
+<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="1219,101,1353,126"/>
+<area shape="poly" title=" " alt="" coords="849,36,1016,59,1206,91,1241,98,1239,103,1206,96,1015,64,849,41"/>
+<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="1377,101,1597,126"/>
+<area shape="poly" title=" " alt="" coords="849,33,1084,57,1366,91,1417,98,1416,103,1366,96,1084,63,849,38"/>
+<area shape="poly" title=" " alt="" coords="137,142,171,179,167,183,133,145"/>
 </map>
 </div>
 </div>
@@ -128,9 +139,6 @@ This graph shows which files directly or indirectly include this file:</div>
 Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__timer__config__t.html">sapi_timer_config_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configuration for <a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a>.  <a href="structsapi__timer__config__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the timer service for a specific OS/RTOS/BSP target (ADR-005). Any slot may be NULL if that operation is unsupported by the backend, in which case the corresponding sapi_timer_* call returns SAPI_STATUS_NOT_SUPPORTED.  <a href="structsapi__timer__backend__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
@@ -168,9 +176,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga5bf111759c24ea6e7f8f1a7ff84786ed" id="r_ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed">sapi_timer_now</a> (<a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> *out_now_ms)</td></tr>
 <tr class="memdesc:ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current monotonic time base used by all timers.  <br /></td></tr>
 <tr class="separator:ga5bf111759c24ea6e7f8f1a7ff84786ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga45ba555c8be39f02390b33a99721a4f1" id="r_ga45ba555c8be39f02390b33a99721a4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1">sapi_timer_register_backend</a> (const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:ga45ba555c8be39f02390b33a99721a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_timer_* call. This is how an integrator supplies their own timer implementation (ADR-005 section 2.1) - call once at startup, before any other sapi_timer_* function.  <br /></td></tr>
-<tr class="separator:ga45ba555c8be39f02390b33a99721a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Timer service. </p>

@@ -75,7 +75,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">sapi_log.h File Reference</div></div>
@@ -109,25 +109,28 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__log_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2log_2sapi__log_8hdep" alt=""/></div>
 <map name="ainclude_2safeapi_2log_2sapi__log_8hdep" id="ainclude_2safeapi_2log_2sapi__log_8hdep">
-<area shape="rect" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="338,5,483,45"/>
-<area shape="rect" href="sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="5,101,232,126"/>
-<area shape="poly" title=" " alt="" coords="334,52,158,103,157,98,333,47"/>
-<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="257,101,391,126"/>
-<area shape="poly" title=" " alt="" coords="384,57,338,102,334,98,380,53"/>
-<area shape="rect" href="sapi__vital__channel_8c.html" title="Implementation of vital (redundant) channel abstraction." alt="" coords="416,93,579,133"/>
-<area shape="poly" title=" " alt="" coords="441,53,480,91,476,95,438,57"/>
-<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="603,101,823,126"/>
-<area shape="poly" title=" " alt="" coords="491,46,674,98,672,103,489,52"/>
+<area shape="rect" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="284,5,429,45"/>
+<area shape="rect" href="sapi__log__backend_8h.html" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,188,133"/>
+<area shape="poly" title=" " alt="" coords="287,52,154,96,153,91,286,47"/>
+<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="93,181,228,207"/>
+<area shape="poly" title=" " alt="" coords="311,55,253,95,205,142,171,183,167,180,201,139,250,91,308,50"/>
+<area shape="rect" href="sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="263,93,450,133"/>
+<area shape="poly" title=" " alt="" coords="359,59,359,93,354,93,354,59"/>
+<area shape="rect" href="sapi__voter_8c.html" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="475,101,636,126"/>
+<area shape="poly" title=" " alt="" coords="414,48,530,98,528,103,412,53"/>
+<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="660,101,880,126"/>
+<area shape="poly" title=" " alt="" coords="443,42,715,98,714,103,442,47"/>
+<area shape="poly" title=" " alt="" coords="123,142,153,179,149,183,119,146"/>
 </map>
 </div>
 </div>
 <p><a href="sapi__log_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Data Structures</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Backend vtable: an integrator's implementation of the logging sink (ADR-005). Unlike every other OAL service, an unregistered backend is not an error here: <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> with no backend registered silently does nothing, consistent with REQ-OAL-LOG-001 (logging must never affect caller control flow).  <a href="structsapi__log__backend__t.html#details">More...</a><br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:gaf66f4f79dba51e806a7ac506bb37beb0" id="r_gaf66f4f79dba51e806a7ac506bb37beb0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gaf66f4f79dba51e806a7ac506bb37beb0">SAPI_LOG_EVENT_LINE_MAX_LEN</a>&#160;&#160;&#160;256U</td></tr>
+<tr class="memdesc:gaf66f4f79dba51e806a7ac506bb37beb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max length, in bytes and not counting the NUL terminator, of one <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> line - fields are truncated, not rejected, if the formatted line would exceed this (REQ-OAL-LOG-001: a formatting limit must never turn into a blocked/failed caller). Sized generously for the 8 mandatory fields plus a typical extra_fields value; a longer extra_fields is where truncation would first show up in practice.  <br /></td></tr>
+<tr class="separator:gaf66f4f79dba51e806a7ac506bb37beb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -147,9 +150,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gae503764e3fb83a2ee19e57d3f6b057a1" id="r_gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *tag, const char *message)</td></tr>
 <tr class="memdesc:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dropped.  <br /></td></tr>
 <tr class="separator:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaedcbc8ee1aa520a1fbf3f29b2b143b6d" id="r_gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d">sapi_log_register_backend</a> (const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *backend)</td></tr>
-<tr class="memdesc:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>/ <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> (ADR-005 section 2.1/2.5). Call once at startup.  <br /></td></tr>
-<tr class="separator:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga039f92d06b19a508fc70d476bd715e4d" id="r_ga039f92d06b19a508fc70d476bd715e4d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d">sapi_log_level_to_string</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level)</td></tr>
+<tr class="memdesc:ga039f92d06b19a508fc70d476bd715e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a sapi_log_level_t as a fixed, human-readable tag - "DEBUG"/"INFO"/"WARNING"/"ERROR" - used as the LEVEL field of <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a>'s structured line and available to any backend/integrator wanting the same canonical spelling.  <br /></td></tr>
+<tr class="separator:ga039f92d06b19a508fc70d476bd715e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga004ab3c470ffcbce6c4c5470a3e93c48" id="r_ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48">sapi_log_write_event</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *site, uint32_t cycle, const char *source, const char *destination, const char *type, const char *info, const char *extra_fields)</td></tr>
+<tr class="memdesc:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one structured inter-channel event/message-trail log line - for a message actually sent/received/decided between channels or nodes (e.g. an AB_SAMPLE frame, an M136 report, a checkpoint REQUEST/REPLY, a cross-compare AGREE/DISAGREE) - distinct from <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>'s free-text diagnostic logging, which remains the right call for an event with no natural cycle/source/destination (e.g. an NVM write failure).  <br /></td></tr>
+<tr class="separator:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS Abstraction Layer - Logging/diagnostics service. </p>

@@ -1,0 +1,10 @@
+<map id="sapi_safechannel_config_t" name="sapi_safechannel_config_t">
+<area shape="rect" id="Node000001" title="Configuration for sapi_safechannel_open()." alt="" coords="91,196,285,221"/>
+<area shape="rect" id="Node000002" href="$structsapi__safechannel__dual__config__t.html" title="Configuration specific to SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT." alt="" coords="5,93,176,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,141,178,194,174,198,118,145"/>
+<area shape="rect" id="Node000003" href="$structsapi__safechannel__endpoint__t.html" title="One remote endpoint to open internally &#45; replaces a caller&#45; supplied sapi_netlink_handle_t (ADR&#45;022 s..." alt="" coords="81,5,292,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="167,42,112,95,108,91,163,38"/>
+<area shape="rect" id="Node000004" href="$structsapi__safechannel__vital__config__t.html" title="Configuration specific to SAPI_SAFECHANNEL_TYPE_VITAL_VOTED." alt="" coords="200,93,371,133"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="211,38,267,91,263,95,207,42"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="258,145,202,198,198,194,254,141"/>
+</map>

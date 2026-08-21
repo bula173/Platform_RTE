@@ -81,27 +81,37 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005).  
+<p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC__BACKEND.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__ipc_8h_source.html">safeapi/ipc/sapi_ipc.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__ipc__backend_8h_source.html">safeapi_backend/ipc/sapi_ipc_backend.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_ipc.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__ipc_8c__incl.png" border="0" usemap="#asrc_2ipc_2sapi__ipc_8c" alt=""/></div>
 <map name="asrc_2ipc_2sapi__ipc_8c" id="asrc_2ipc_2sapi__ipc_8c">
-<area shape="rect" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba..." alt="" coords="96,5,228,31"/>
-<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="81,79,243,104"/>
-<area shape="poly" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,152,151,192"/>
-<area shape="poly" title=" " alt="" coords="151,106,110,145,106,141,148,102"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,152,317,192"/>
-<area shape="poly" title=" " alt="" coords="176,102,218,141,214,145,173,106"/>
-<area shape="rect" title=" " alt="" coords="102,240,185,265"/>
-<area shape="poly" title=" " alt="" coords="223,194,171,234,168,229,220,190"/>
-<area shape="rect" title=" " alt="" coords="209,240,283,265"/>
-<area shape="poly" title=" " alt="" coords="249,192,249,226,243,226,243,192"/>
-<area shape="rect" title=" " alt="" coords="308,240,379,265"/>
-<area shape="poly" title=" " alt="" coords="271,190,320,229,317,233,268,194"/>
+<area shape="rect" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba..." alt="" coords="138,5,270,31"/>
+<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="240,174,403,199"/>
+<area shape="poly" title=" " alt="" coords="232,28,265,48,295,77,307,97,315,119,322,160,317,161,310,121,302,100,291,80,262,52,230,33"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" title=" " alt="" coords="178,33,146,52,117,80,99,116,91,154,86,152,94,115,113,77,143,48,176,28"/>
+<area shape="rect" href="sapi__ipc__backend_8h.html" title="OS&#45;backend adaptation surface for the IPC service (ADR&#45;005, ADR&#45;021)." alt="" coords="127,79,281,119"/>
+<area shape="poly" title=" " alt="" coords="207,31,207,65,201,65,201,31"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
+<area shape="poly" title=" " alt="" coords="306,202,237,249,234,244,303,197"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
+<area shape="poly" title=" " alt="" coords="329,198,351,241,346,243,325,201"/>
+<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
+<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
+<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
+<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
+<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
+<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
+<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
+<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
+<area shape="poly" title=" " alt="" coords="232,117,296,164,293,168,228,121"/>
+<area shape="poly" title=" " alt="" coords="206,119,200,241,195,241,200,119"/>
 </map>
 </div>
 </div>
@@ -109,7 +119,7 @@ Include dependency graph for sapi_ipc.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gac358505516016f8431e8c6f45be560d3" id="r_gac358505516016f8431e8c6f45be560d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3">sapi_ipc_register_backend</a> (const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *backend)</td></tr>
+<tr class="memitem:gac358505516016f8431e8c6f45be560d3" id="r_gac358505516016f8431e8c6f45be560d3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC__BACKEND.html#gac358505516016f8431e8c6f45be560d3">sapi_ipc_register_backend</a> (const <a class="el" href="structsapi__ipc__backend__t.html">sapi_ipc_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:gac358505516016f8431e8c6f45be560d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
 <tr class="separator:gac358505516016f8431e8c6f45be560d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga026464f85b0ab549c64cdd835e88e8c4" id="r_ga026464f85b0ab549c64cdd835e88e8c4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__IPC.html#ga026464f85b0ab549c64cdd835e88e8c4">sapi_ipc_create</a> (sapi_ipc_storage_t *storage, const <a class="el" href="structsapi__ipc__config__t.html">sapi_ipc_config_t</a> *config, <a class="el" href="group__IPC.html#ga2bdbcdff68590e6b32719845e86d5551">sapi_ipc_handle_t</a> *out_handle)</td></tr>
@@ -132,7 +142,7 @@ Variables</h2></td></tr>
 <tr class="separator:abf00ed2fda458ec8dad55dff4dbd97ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>IPC service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__IPC__BACKEND.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
 </div><h2 class="groupheader">Variable Documentation</h2>
@@ -158,7 +168,7 @@ Variables</h2></td></tr>
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__ipc_8c_source.html">sapi_ipc.c</a>.</p>
 
 </div>
 </div>

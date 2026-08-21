@@ -72,14 +72,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_task_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__TASK.html">Task/Thread Scheduling</a></div></div></div>
+  <div class="headertitle"><div class="title">sapi_task_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__TASK__BACKEND.html">Task/Thread Scheduling - Backend Adaptation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Backend vtable: an integrator's implementation of the task scheduling service for a specific OS/RTOS (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  
  <a href="structsapi__task__backend__t.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -99,7 +99,7 @@ Data Fields</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the task scheduling service for a specific OS/RTOS (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00093">93</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task__backend_8h_source.html#l00030">30</a> of file <a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a8b20d555d130c0bec62f4d7994f44e05" name="a8b20d555d130c0bec62f4d7994f44e05"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8b20d555d130c0bec62f4d7994f44e05">&#9670;&#160;</a></span>create</h2>
@@ -115,7 +115,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709" title="Creates a task in the suspended state.">sapi_task_create()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00096">96</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task__backend_8h_source.html#l00033">33</a> of file <a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>.</p>
 
 </div>
 </div>
@@ -133,7 +133,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__TASK.html#ga389dce24bc562446331c89f58844e0e7" title="Starts a created task.">sapi_task_start()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00100">100</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task__backend_8h_source.html#l00037">37</a> of file <a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>.</p>
 
 </div>
 </div>
@@ -151,7 +151,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__TASK.html#ga6e1a985b12190d6c94792e31716b9e3e" title="Suspends a running task.">sapi_task_suspend()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00102">102</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task__backend_8h_source.html#l00039">39</a> of file <a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>.</p>
 
 </div>
 </div>
@@ -169,12 +169,12 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__TASK.html#ga9420b4f76a7ad6c8c076dba4c8b20785" title="Terminates and destroys a task.">sapi_task_destroy()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__task_8h_source.html#l00104">104</a> of file <a class="el" href="sapi__task_8h_source.html">sapi_task.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__task__backend_8h_source.html#l00041">41</a> of file <a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/task/<a class="el" href="sapi__task_8h_source.html">sapi_task.h</a></li>
+<li>include/safeapi_backend/task/<a class="el" href="sapi__task__backend_8h_source.html">sapi_task_backend.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

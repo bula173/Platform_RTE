@@ -114,7 +114,7 @@ Data Fields</h2></td></tr>
 <div class="textblock"><p>Watchdog handle (opaque) </p>
 <p>One pool slot's full state. The public sapi_watchdog_t handle is a pointer to one of these slots. This module owns the storage itself (a static pool), unlike most other OAL services in this framework, which take caller-owned storage via SAFEAPI_DECLARE_STORAGE - <a class="el" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions.">sapi_watchdog.h</a>'s own documented API (<a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8" title="Create a watchdog.">sapi_watchdog_create()</a> takes only a config and returns a handle from an implicit "manager", with no caller-storage parameter anywhere in its signature or its own doc examples) was written against a pool-owned design from the start; this implementation follows that, rather than silently changing the public API's contract. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00047">47</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00048">48</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a00a99f33928204f56a499f1a1dfe420b" name="a00a99f33928204f56a499f1a1dfe420b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a00a99f33928204f56a499f1a1dfe420b">&#9670;&#160;</a></span>in_use</h2>
@@ -129,7 +129,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>1 if this pool slot is allocated to a live watchdog. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00049">49</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00050">50</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -146,7 +146,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>1 if counting down (started and not stopped). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00050">50</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00051">51</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -163,7 +163,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Fired and not yet restarted via start(). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00051">51</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00052">52</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -180,7 +180,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Configuration this watchdog was created with. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00052">52</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00053">53</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -197,7 +197,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Absolute time at which this watchdog next fires. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00053">53</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00054">54</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -214,7 +214,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Absolute time of the most recent kick/start. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00054">54</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00055">55</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -231,7 +231,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Total number of successful kicks. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00055">55</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -248,7 +248,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Total number of times this watchdog has fired. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00057">57</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -265,7 +265,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Total number of recovery actions dispatched. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00057">57</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00058">58</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,8 @@
 <map id="include/safeapi/task/sapi_task.h" name="include/safeapi/task/sapi_task.h">
-<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Task/thread scheduling service." alt="" coords="5,5,159,45"/>
-<area shape="rect" id="Node000002" href="$sapi__task_8c.html" title="Task service: validates parameters, then dispatches to the backend registered via sapi_task_register_..." alt="" coords="7,93,157,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,59,85,93,79,93,79,59"/>
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Task/thread scheduling service." alt="" coords="92,5,245,45"/>
+<area shape="rect" id="Node000002" href="$sapi__task__backend_8h.html" title="OS&#45;backend adaptation surface for the Task/thread scheduling service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,199,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,58,119,95,115,91,143,55"/>
+<area shape="rect" id="Node000003" href="$sapi__task_8c.html" title="Task service: validates parameters, then dispatches to the backend registered via sapi_task_register_..." alt="" coords="93,181,244,207"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="195,55,214,92,218,113,214,134,200,162,182,183,178,180,195,159,209,132,213,113,209,94,191,58"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="129,142,161,179,157,183,125,146"/>
 </map>

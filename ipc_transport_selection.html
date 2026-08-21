@@ -340,7 +340,7 @@ Integration with Vital Channel</h1>
 <li><code>sapi_ipc_create(&amp;storage1, &amp;cfg1, &amp;ch1); // Uses registered backend</code></li>
 <li><code></code></li>
 <li><code>// Wrap in vital channel for 2oo2 voting</code></li>
-<li><code><a class="el" href="structsapi__vital__channel__config__t.html" title="Vital channel configuration.">sapi_vital_channel_config_t</a> vital_cfg = {</code></li>
+<li><code><a class="el" href="structsapi__channel__config__t.html" title="Configuration for sapi_channel_init().">sapi_channel_config_t</a> vital_cfg = {</code></li>
 <li><code> .voting_strategy = SAPI_VOTING_2OO2,</code></li>
 <li><code> .channel_timeout_ms = 1000,</code></li>
 <li><code> .log_disagreements = true,</code></li>
@@ -349,10 +349,10 @@ Integration with Vital Channel</h1>
 <li><code>};</code></li>
 <li><code></code></li>
 <li><code>void *channels[2] = { &amp;ch0, &amp;ch1 };</code></li>
-<li><code>sapi_vital_channel_init(&amp;vital_channel, &amp;vital_cfg, channels, 2);</code></li>
+<li><code>sapi_channel_init(&amp;vital_channel, &amp;vital_cfg, channels, 2);</code></li>
 <li><code></code></li>
 <li><code>// Now use vital_channel for voting communication</code></li>
-<li><code>sapi_vital_channel_send(&amp;vital_channel, &amp;cmd, sizeof(cmd)); *</code></li>
+<li><code>sapi_channel_send(&amp;vital_channel, &amp;cmd, sizeof(cmd)); *</code></li>
 <li></li>
 <li>### Custom Callbacks for Multi-Transport Support</li>
 <li></li>
@@ -592,8 +592,8 @@ Implementation Checklist</h1>
 <li>- [ ] Implement backend callbacks (backend_send/backend_recv)</li>
 <li>- [ ] Create transport-specific channels (2 or 3)</li>
 <li>- [ ] Configure vital_channel with callbacks and channels</li>
-<li>- [ ] Use sapi_vital_channel_send/receive for voting communication</li>
-<li>- [ ] Monitor health via <a class="el" href="group__vital__channel.html#ga49f28755d52f2a9f709be80257bb2cbb" title="Query per-channel health statistics.">sapi_vital_channel_get_health()</a></li>
+<li>- [ ] Use sapi_channel_send/receive for voting communication</li>
+<li>- [ ] Monitor health via <a class="el" href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9" title="Queries this channel&#39;s health statistics.">sapi_channel_get_health()</a></li>
 <li>- [ ] Implement watchdog for health-based channel isolation</li>
 <li>- [ ] Test disagreement scenarios (simulate channel failures)</li>
 <li>- [ ] Verify safe-state triggers on voting failure</li>

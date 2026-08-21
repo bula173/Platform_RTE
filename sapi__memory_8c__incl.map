@@ -1,15 +1,23 @@
 <map id="src/memory/sapi_memory.c" name="src/memory/sapi_memory.c">
-<area shape="rect" id="Node000001" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="61,5,263,31"/>
-<area shape="rect" id="Node000002" href="$sapi__memory_8h.html" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="82,79,242,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="145,121,108,159,104,155,141,117"/>
-<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="183,117,220,155,216,159,179,121"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
+<area shape="rect" id="Node000001" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="109,5,312,31"/>
+<area shape="rect" id="Node000002" href="$sapi__memory_8h.html" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="253,167,413,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,28,288,47,306,61,321,77,330,95,336,115,339,153,334,153,330,116,325,97,316,80,303,64,286,52,249,33"/>
+<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="173,33,136,52,119,64,105,80,96,97,90,116,86,153,81,153,85,115,91,95,100,77,115,61,133,47,171,28"/>
+<area shape="rect" id="Node000009" href="$sapi__memory__backend_8h.html" title="OS&#45;backend adaptation surface for the static memory pool service (ADR&#45;005, ADR&#45;021)." alt="" coords="115,79,306,119"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="213,31,213,65,208,65,208,31"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="305,209,239,250,237,245,302,204"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="343,206,355,241,350,242,338,208"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="132,343,215,368"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="375,343,449,368"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="279,343,350,368"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
+<area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="239,117,297,157,294,161,236,121"/>
+<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="212,119,201,241,196,241,206,119"/>
 </map>

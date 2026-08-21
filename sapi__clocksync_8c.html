@@ -84,25 +84,36 @@ $(function() {
 <p>Implementation of the pluggable clock-sync backend (ADR-017).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__clocksync_8h_source.html">safeapi/clocksync/sapi_clocksync.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__clocksync__backend_8h_source.html">safeapi_backend/clocksync/sapi_clocksync_backend.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_clocksync.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__clocksync_8c__incl.png" border="0" usemap="#asrc_2clocksync_2sapi__clocksync_8c" alt=""/></div>
 <map name="asrc_2clocksync_2sapi__clocksync_8c" id="asrc_2clocksync_2sapi__clocksync_8c">
-<area shape="rect" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="26,5,166,45"/>
-<area shape="rect" href="sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="12,93,181,133"/>
-<area shape="poly" title=" " alt="" coords="99,46,99,79,94,79,94,46"/>
-<area shape="rect" title=" " alt="" coords="38,269,109,295"/>
-<area shape="poly" title=" " alt="" coords="61,136,34,156,13,183,8,201,13,220,27,242,46,259,42,263,23,245,9,222,3,201,9,180,30,152,57,131"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="24,181,169,221"/>
-<area shape="poly" title=" " alt="" coords="99,134,99,167,94,167,94,134"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="194,181,335,221"/>
-<area shape="poly" title=" " alt="" coords="134,131,217,173,214,178,132,136"/>
-<area shape="poly" title=" " alt="" coords="220,224,115,267,113,262,218,219"/>
-<area shape="rect" title=" " alt="" coords="171,269,254,295"/>
-<area shape="poly" title=" " alt="" coords="254,223,230,259,225,256,250,220"/>
-<area shape="rect" title=" " alt="" coords="278,269,352,295"/>
-<area shape="poly" title=" " alt="" coords="279,220,302,256,298,259,274,223"/>
+<area shape="rect" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="215,5,355,45"/>
+<area shape="rect" href="sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="64,181,233,221"/>
+<area shape="poly" title=" " alt="" coords="287,46,281,89,274,113,261,135,238,159,211,177,208,173,235,155,257,132,269,111,276,88,282,45"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="309,181,469,221"/>
+<area shape="poly" title=" " alt="" coords="298,44,373,168,368,171,294,47"/>
+<area shape="rect" href="sapi__clocksync__backend_8h.html" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="49,93,248,133"/>
+<area shape="poly" title=" " alt="" coords="256,48,192,88,189,84,253,43"/>
+<area shape="rect" title=" " alt="" coords="5,357,76,383"/>
+<area shape="poly" title=" " alt="" coords="118,223,91,244,68,271,52,308,45,344,40,343,47,306,64,268,88,240,115,219"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="244,269,389,309"/>
+<area shape="poly" title=" " alt="" coords="187,219,269,261,267,266,184,224"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="78,269,219,309"/>
+<area shape="poly" title=" " alt="" coords="151,222,151,255,146,255,146,222"/>
+<area shape="poly" title=" " alt="" coords="124,312,70,351,67,347,121,307"/>
+<area shape="rect" title=" " alt="" coords="298,357,381,383"/>
+<area shape="poly" title=" " alt="" coords="195,307,300,350,298,355,193,312"/>
+<area shape="rect" title=" " alt="" coords="111,357,186,383"/>
+<area shape="poly" title=" " alt="" coords="151,310,151,343,146,343,146,310"/>
+<area shape="poly" title=" " alt="" coords="375,223,343,261,339,257,371,220"/>
+<area shape="poly" title=" " alt="" coords="399,221,410,263,410,287,404,310,390,333,371,351,367,347,386,330,400,308,405,286,404,263,394,222"/>
+<area shape="poly" title=" " alt="" coords="151,134,151,167,146,167,146,134"/>
+<area shape="poly" title=" " alt="" coords="107,136,77,156,54,183,38,224,32,268,34,309,38,343,33,344,28,310,27,267,33,222,49,180,74,152,104,131"/>
+<area shape="poly" title=" " alt="" coords="184,131,216,153,248,179,279,217,303,255,298,258,274,221,244,183,213,157,181,136"/>
 </map>
 </div>
 </div>
@@ -110,7 +121,7 @@ Include dependency graph for sapi_clocksync.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga5be8c579111936b9c6918b1c46d6c760" id="r_ga5be8c579111936b9c6918b1c46d6c760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_register_backend</a> (const <a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a> *backend)</td></tr>
+<tr class="memitem:ga5be8c579111936b9c6918b1c46d6c760" id="r_ga5be8c579111936b9c6918b1c46d6c760"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_register_backend</a> (const <a class="el" href="structsapi__clocksync__backend__t.html">sapi_clocksync_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:ga5be8c579111936b9c6918b1c46d6c760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global backend).  <br /></td></tr>
 <tr class="separator:ga5be8c579111936b9c6918b1c46d6c760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacb7e052e70c3db3b3213fb278ad14fdc" id="r_gacb7e052e70c3db3b3213fb278ad14fdc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a> (int64_t *out_offset_ms)</td></tr>
@@ -149,9 +160,9 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Single global backend, following ADR-005's established convention (see sapi_timer/sapi_ipc). NULL until <a class="el" href="group__CLOCKSYNC.html#ga5be8c579111936b9c6918b1c46d6c760" title="Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global...">sapi_clocksync_register_backend()</a> is called. </p>
+<p>Single global backend, following ADR-005's established convention (see sapi_timer/sapi_ipc). NULL until <a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760" title="Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global...">sapi_clocksync_register_backend()</a> is called. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
 
 </div>
 </div>

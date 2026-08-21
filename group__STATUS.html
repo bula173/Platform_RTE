@@ -104,6 +104,8 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83ab7963d39f461bd0ab15e661827ac8d55">SAPI_STATUS_DATA_CORRUPTION</a> = 9
 , <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447">SAPI_STATUS_INTERNAL_ERROR</a> = 10
 , <a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c">SAPI_STATUS_VALUE_OUT_OF_RANGE</a> = 11
+, <br />
+&#160;&#160;<a class="el" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a1aa6956dacfce267580d60a93e862d0b">SAPI_STATUS_INVALID_STATE</a> = 12
 <br />
  }</td></tr>
 <tr class="memdesc:gacaa927d6005081fd4daff3d99df9ed83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Common result/status codes.  <a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">More...</a><br /></td></tr>
@@ -156,6 +158,8 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="ggacaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447" name="ggacaa927d6005081fd4daff3d99df9ed83a7d235473873c2ed4859a196bb76eb447"></a>SAPI_STATUS_INTERNAL_ERROR&#160;</td><td class="fielddoc"><p>Defensive catch-all: should never happen. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c" name="ggacaa927d6005081fd4daff3d99df9ed83aa7799d7102dfc50486a105bc0246501c"></a>SAPI_STATUS_VALUE_OUT_OF_RANGE&#160;</td><td class="fielddoc"><p>Checked cast: value does not fit the destination type. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggacaa927d6005081fd4daff3d99df9ed83a1aa6956dacfce267580d60a93e862d0b" name="ggacaa927d6005081fd4daff3d99df9ed83a1aa6956dacfce267580d60a93e862d0b"></a>SAPI_STATUS_INVALID_STATE&#160;</td><td class="fielddoc"><p>Operation not permitted in the application's current lifecycle phase (e.g. a setup-only constructor called after <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> has locked setup - see <a class="el" href="sapi__lifecycle_8h.html" title="Process-wide application setup-phase lock (ADR-026).">sapi_lifecycle.h</a>). </p>
 </td></tr>
 </table>
 

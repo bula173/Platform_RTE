@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['↔_20b_20→_20c_0',['Pattern 1: Single-System 2oo2 (A ↔ B → C)',['../vital_channel_topologies.html#vital_channel_topologies_pattern_single_2oo2',1,'']]],
-  ['↔_20b_20across_20network_1',['Pattern 2: Distributed 2oo2 (A ↔ B Across Network)',['../vital_channel_topologies.html#vital_channel_topologies_pattern_distributed_2oo2',1,'']]]
+  ['yet_20tagged_20per_20function_0',['3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)',['../safeapi_srs.html#autotoc_md419',1,'']]],
+  ['you_20need_20to_20implement_1',['What You Need to Implement',['../appmanager_integration.html#appmanager_integration_you_implement',1,'']]],
+  ['your_20application_2',['4. Use in Your Application',['../md_docs_2CROSS__COMPILATION.html#autotoc_md376',1,'']]],
+  ['your_20qnx_20application_3',['5. Use in Your QNX Application',['../md_docs_2CROSS__COMPILATION.html#autotoc_md383',1,'']]]
 ];

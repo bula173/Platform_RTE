@@ -86,6 +86,7 @@ $(function() {
 <p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__watchdog_8h_source.html">safeapi/watchdog/sapi_watchdog.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__log_8h_source.html">safeapi/log/sapi_log.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__safestate_8h_source.html">safeapi/safestate/sapi_safestate.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
@@ -96,34 +97,38 @@ Include dependency graph for sapi_watchdog.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__watchdog_8c__incl.png" border="0" usemap="#asrc_2watchdog_2sapi__watchdog_8c" alt=""/></div>
 <map name="asrc_2watchdog_2sapi__watchdog_8c" id="asrc_2watchdog_2sapi__watchdog_8c">
-<area shape="rect" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="447,5,667,31"/>
-<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="5,79,173,119"/>
-<area shape="poly" title=" " alt="" coords="482,33,187,81,187,76,481,28"/>
-<area shape="rect" title=" " alt="" coords="563,255,645,280"/>
-<area shape="poly" title=" " alt="" coords="654,28,697,46,716,60,732,77,742,101,742,126,733,150,718,174,678,216,636,249,632,244,674,212,714,171,729,148,737,125,737,102,727,80,712,64,694,51,652,33"/>
-<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="198,86,362,111"/>
-<area shape="poly" title=" " alt="" coords="518,33,334,85,333,80,516,28"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="386,79,553,119"/>
-<area shape="poly" title=" " alt="" coords="546,33,502,72,499,68,543,29"/>
-<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="577,79,717,119"/>
-<area shape="poly" title=" " alt="" coords="572,29,617,68,613,72,569,33"/>
-<area shape="rect" title=" " alt="" coords="793,86,863,111"/>
-<area shape="poly" title=" " alt="" coords="603,28,774,76,784,79,782,84,773,81,601,33"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="397,167,542,207"/>
-<area shape="poly" title=" " alt="" coords="173,116,384,163,383,169,172,121"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="231,167,372,207"/>
-<area shape="poly" title=" " alt="" coords="137,116,243,159,241,164,135,121"/>
-<area shape="poly" title=" " alt="" coords="373,204,550,249,548,254,372,209"/>
-<area shape="rect" title=" " alt="" coords="313,255,388,280"/>
-<area shape="poly" title=" " alt="" coords="316,205,338,242,334,244,311,208"/>
-<area shape="rect" title=" " alt="" coords="218,255,289,280"/>
-<area shape="poly" title=" " alt="" coords="292,208,270,244,265,241,287,205"/>
-<area shape="poly" title=" " alt="" coords="307,109,416,159,414,163,304,114"/>
-<area shape="poly" title=" " alt="" coords="285,111,296,152,291,154,280,112"/>
-<area shape="poly" title=" " alt="" coords="472,119,472,153,467,153,467,119"/>
-<area shape="poly" title=" " alt="" coords="434,121,351,163,349,158,431,116"/>
-<area shape="poly" title=" " alt="" coords="609,121,522,163,519,158,607,116"/>
-<area shape="poly" title=" " alt="" coords="577,120,386,167,384,162,576,115"/>
+<area shape="rect" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="524,5,744,31"/>
+<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="170,79,338,119"/>
+<area shape="poly" title=" " alt="" coords="579,33,352,80,351,75,578,28"/>
+<area shape="rect" title=" " alt="" coords="781,255,863,280"/>
+<area shape="poly" title=" " alt="" coords="745,26,847,44,889,58,916,77,928,99,930,122,925,146,914,170,882,213,848,247,844,243,878,210,909,167,920,144,925,122,923,100,912,80,887,63,846,49,744,31"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="742,79,902,119"/>
+<area shape="poly" title=" " alt="" coords="662,28,765,71,763,76,660,33"/>
+<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="363,86,527,111"/>
+<area shape="poly" title=" " alt="" coords="607,33,486,83,484,78,605,28"/>
+<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="551,79,717,119"/>
+<area shape="poly" title=" " alt="" coords="637,31,637,65,631,65,631,31"/>
+<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="5,79,145,119"/>
+<area shape="poly" title=" " alt="" coords="524,33,357,52,159,81,158,76,356,47,524,27"/>
+<area shape="rect" title=" " alt="" coords="977,86,1048,111"/>
+<area shape="poly" title=" " alt="" coords="715,28,831,48,959,76,969,79,968,84,957,81,830,53,714,33"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="456,167,601,207"/>
+<area shape="poly" title=" " alt="" coords="315,116,456,160,454,165,313,121"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="290,167,431,207"/>
+<area shape="poly" title=" " alt="" coords="279,117,328,156,325,160,276,121"/>
+<area shape="poly" title=" " alt="" coords="432,201,445,204,621,234,767,256,767,261,621,239,444,209,431,207"/>
+<area shape="rect" title=" " alt="" coords="373,255,447,280"/>
+<area shape="poly" title=" " alt="" coords="375,205,398,242,393,244,370,208"/>
+<area shape="rect" title=" " alt="" coords="277,255,348,280"/>
+<area shape="poly" title=" " alt="" coords="351,208,329,244,325,241,347,205"/>
+<area shape="poly" title=" " alt="" coords="758,121,607,165,605,160,757,116"/>
+<area shape="poly" title=" " alt="" coords="825,119,825,241,819,241,819,119"/>
+<area shape="poly" title=" " alt="" coords="458,110,502,155,498,158,454,113"/>
+<area shape="poly" title=" " alt="" coords="435,113,391,158,387,155,431,110"/>
+<area shape="poly" title=" " alt="" coords="612,121,564,160,561,156,609,117"/>
+<area shape="poly" title=" " alt="" coords="575,121,435,165,433,160,573,116"/>
+<area shape="poly" title=" " alt="" coords="146,114,158,116,299,140,443,164,442,169,298,145,158,121,145,119"/>
+<area shape="poly" title=" " alt="" coords="139,116,286,160,284,165,137,121"/>
 </map>
 </div>
 </div>
@@ -191,7 +196,7 @@ Variables</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> OAL primitive rather than any new OS-specific timing code of its own (REQ-OAL-COMMON-010: no dynamic allocation). </p>
 <p>Timeout detection is polling-based: something (the application's own loop, or a periodic sapi_timer callback) must call <a class="el" href="group__WATCHDOG.html#gad32b54f5e3f62b0ba4f6d2379f970f67" title="Poll all active watchdogs for expiry (call periodically)">sapi_watchdog_timer_tick()</a> regularly for a fired watchdog to actually be detected - see that function's own doc for why a poll-driven design was chosen here over a true ISR/thread-driven one.</p>
-<p>Replaces a previous stub where kick()/start()/get_status() were all no-ops and no timeout was ever detected (see git history) - discovered while wiring a real per-role watchdog into safeAPIExample. </p>
+<p>Replaces a previous stub where kick()/start()/get_status() were all no-ops and no timeout was ever detected (see git history) - discovered while wiring a real per-role watchdog into safeAPIRBC2oo2. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 </div><h2 class="groupheader">Macro Definition Documentation</h2>
@@ -208,7 +213,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>Fixed pool size. <a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8" title="Create a watchdog.">sapi_watchdog_create()</a> returns SAPI_STATUS_RESOURCE_EXHAUSTED once this many watchdogs are live at once - no dynamic growth, per this framework's no-malloc rule. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00033">33</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00034">34</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -247,7 +252,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if watchdog points at an in-use slot of g_watchdog_pool; false otherwise (including NULL). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00080">80</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00081">81</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -284,7 +289,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if action is a recognized enumerator; false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00093">93</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00094">94</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -311,7 +316,7 @@ Variables</h2></td></tr>
 
 <p>Fixed-size static pool backing every sapi_watchdog_t handle. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00061">61</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00062">62</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -337,7 +342,7 @@ Variables</h2></td></tr>
 
 <p>1 once <a class="el" href="group__WATCHDOG.html#ga31be658bf401a59aa1fbf7145061e983" title="Initialize watchdog manager (call once at startup)">sapi_watchdog_manager_initialize()</a> has been called. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00063">63</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00064">64</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>

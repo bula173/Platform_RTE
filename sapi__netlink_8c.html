@@ -81,27 +81,37 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Network link service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NETLINK.html#gaf87d47543bbfc4a3ba9bd54588f84ad7" title="Registers the backend implementation used by every sapi_netlink_* call (ADR-005 section 2....">sapi_netlink_register_backend()</a> (ADR-005). See <a class="el" href="sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba...">sapi_ipc.c</a> for the pattern this follows.  
+<p>Network link service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NETLINK__BACKEND.html#gaf87d47543bbfc4a3ba9bd54588f84ad7" title="Registers the backend implementation used by every sapi_netlink_* call (ADR-005 section 2....">sapi_netlink_register_backend()</a> (ADR-005). See <a class="el" href="sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba...">sapi_ipc.c</a> for the pattern this follows.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__netlink_8h_source.html">safeapi/netlink/sapi_netlink.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__netlink__backend_8h_source.html">safeapi_backend/netlink/sapi_netlink_backend.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_netlink.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__netlink_8c__incl.png" border="0" usemap="#asrc_2netlink_2sapi__netlink_8c" alt=""/></div>
 <map name="asrc_2netlink_2sapi__netlink_8c" id="asrc_2netlink_2sapi__netlink_8c">
-<area shape="rect" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="70,5,254,31"/>
-<area shape="rect" href="sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="87,79,237,119"/>
-<area shape="poly" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" title=" " alt="" coords="145,121,108,159,104,155,141,117"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" title=" " alt="" coords="183,117,220,155,216,159,179,121"/>
-<area shape="rect" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
+<area shape="rect" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="116,5,300,31"/>
+<area shape="rect" href="sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="251,167,402,207"/>
+<area shape="poly" title=" " alt="" coords="245,28,281,47,299,61,313,77,322,95,328,115,332,153,326,153,323,116,317,97,308,80,295,65,278,52,242,33"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" title=" " alt="" coords="174,33,138,52,121,65,108,80,98,97,92,116,87,153,82,153,87,115,93,95,103,77,118,61,135,47,172,28"/>
+<area shape="rect" href="sapi__netlink__backend_8h.html" title="OS&#45;backend adaptation surface for the Point&#45;to&#45;Point Network Link service (ADR&#45;005,..." alt="" coords="118,79,298,119"/>
+<area shape="poly" title=" " alt="" coords="211,31,211,65,205,65,205,31"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
+<area shape="poly" title=" " alt="" coords="299,209,238,249,235,245,296,205"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
+<area shape="poly" title=" " alt="" coords="337,206,353,241,348,243,333,208"/>
+<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
+<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
+<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
+<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
+<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
+<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
+<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
+<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
+<area shape="poly" title=" " alt="" coords="236,117,291,156,288,161,233,121"/>
+<area shape="poly" title=" " alt="" coords="209,119,201,241,196,241,204,119"/>
 </map>
 </div>
 </div>
@@ -109,7 +119,7 @@ Include dependency graph for sapi_netlink.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaf87d47543bbfc4a3ba9bd54588f84ad7" id="r_gaf87d47543bbfc4a3ba9bd54588f84ad7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NETLINK.html#gaf87d47543bbfc4a3ba9bd54588f84ad7">sapi_netlink_register_backend</a> (const <a class="el" href="structsapi__netlink__backend__t.html">sapi_netlink_backend_t</a> *backend)</td></tr>
+<tr class="memitem:gaf87d47543bbfc4a3ba9bd54588f84ad7" id="r_gaf87d47543bbfc4a3ba9bd54588f84ad7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NETLINK__BACKEND.html#gaf87d47543bbfc4a3ba9bd54588f84ad7">sapi_netlink_register_backend</a> (const <a class="el" href="structsapi__netlink__backend__t.html">sapi_netlink_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:gaf87d47543bbfc4a3ba9bd54588f84ad7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_netlink_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
 <tr class="separator:gaf87d47543bbfc4a3ba9bd54588f84ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac7df60f4ae08e2e08056fde96c3240d4" id="r_gac7df60f4ae08e2e08056fde96c3240d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4">sapi_netlink_open</a> (sapi_netlink_storage_t *storage, const <a class="el" href="structsapi__netlink__config__t.html">sapi_netlink_config_t</a> *config, <a class="el" href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a> *out_handle)</td></tr>
@@ -132,7 +142,7 @@ Variables</h2></td></tr>
 <tr class="separator:ae9eac3d9a850fe39e15fc0b4086f391d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Network link service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NETLINK.html#gaf87d47543bbfc4a3ba9bd54588f84ad7" title="Registers the backend implementation used by every sapi_netlink_* call (ADR-005 section 2....">sapi_netlink_register_backend()</a> (ADR-005). See <a class="el" href="sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba...">sapi_ipc.c</a> for the pattern this follows. </p>
+<div class="textblock"><p>Network link service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NETLINK__BACKEND.html#gaf87d47543bbfc4a3ba9bd54588f84ad7" title="Registers the backend implementation used by every sapi_netlink_* call (ADR-005 section 2....">sapi_netlink_register_backend()</a> (ADR-005). See <a class="el" href="sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba...">sapi_ipc.c</a> for the pattern this follows. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__netlink_8c_source.html">sapi_netlink.c</a>.</p>
 </div><h2 class="groupheader">Variable Documentation</h2>
@@ -158,7 +168,7 @@ Variables</h2></td></tr>
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__netlink_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__netlink_8c_source.html">sapi_netlink.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__netlink_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__netlink_8c_source.html">sapi_netlink.c</a>.</p>
 
 </div>
 </div>

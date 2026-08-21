@@ -85,9 +85,21 @@ Collaboration diagram for sapi_appmanager_config_t:</div>
 <div class="dyncontent">
 <div class="center"><img src="structsapi__appmanager__config__t__coll__graph.png" border="0" usemap="#asapi__appmanager__config__t_coll__map" alt="Collaboration graph"/></div>
 <map name="asapi__appmanager__config__t_coll__map" id="asapi__appmanager__config__t_coll__map">
-<area shape="rect" title="Application manager configuration." alt="" coords="21,93,217,119"/>
-<area shape="rect" href="structsapi__appmanager__operations__t.html" title="Application lifecycle operations." alt="" coords="5,5,232,31"/>
-<area shape="poly" title=" " alt="" coords="121,45,121,93,116,93,116,45"/>
+<area shape="rect" title="Application manager configuration." alt="" coords="50,372,246,397"/>
+<area shape="rect" href="structsapi__appmanager__operations__t.html" title="Application lifecycle operations." alt="" coords="5,277,232,302"/>
+<area shape="poly" title=" " alt="" coords="129,314,147,371,142,373,124,316"/>
+<area shape="rect" href="structsapi__appmanager__checkpoint__config__t.html" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019)." alt="" coords="256,269,472,309"/>
+<area shape="poly" title=" " alt="" coords="309,317,176,374,174,369,307,312"/>
+<area shape="rect" href="structsapi__voter__storage__t.html" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="285,181,443,207"/>
+<area shape="poly" title=" " alt="" coords="367,220,367,269,361,269,361,220"/>
+<area shape="rect" href="structsapi__voter__config__t.html" title="Configuration for sapi_voter_init()." alt="" coords="253,93,401,119"/>
+<area shape="poly" title=" " alt="" coords="340,130,361,180,356,182,335,132"/>
+<area shape="rect" href="structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="425,93,599,119"/>
+<area shape="poly" title=" " alt="" coords="482,128,385,183,383,179,479,123"/>
+<area shape="rect" href="structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="335,5,500,31"/>
+<area shape="poly" title=" " alt="" coords="442,38,501,91,497,95,439,42"/>
+<area shape="rect" href="structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="525,5,691,31"/>
+<area shape="poly" title=" " alt="" coords="587,42,527,95,524,91,583,38"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -101,11 +113,13 @@ Data Fields</h2></td></tr>
 <tr class="separator:a2d37adf24afa17dbb84364a50d121215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea836b854f51d6062bf60cc97222d0b" id="r_a5ea836b854f51d6062bf60cc97222d0b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__config__t.html#a5ea836b854f51d6062bf60cc97222d0b">error_threshold</a></td></tr>
 <tr class="separator:a5ea836b854f51d6062bf60cc97222d0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66870b9887cb1982aacab3db22c00140" id="r_a66870b9887cb1982aacab3db22c00140"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">checkpoint</a></td></tr>
+<tr class="separator:a66870b9887cb1982aacab3db22c00140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Application manager configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00134">134</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00241">241</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ae03d69327899e03ea71555cd42f563fb" name="ae03d69327899e03ea71555cd42f563fb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae03d69327899e03ea71555cd42f563fb">&#9670;&#160;</a></span>ops</h2>
@@ -120,7 +134,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Application operations </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00135">135</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00242">242</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -137,7 +151,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Application context </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00136">136</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00243">243</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -154,7 +168,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Max execute() calls (0 = infinite) </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00137">137</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00244">244</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +185,24 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Errors before shutdown (0 = no limit) </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00138">138</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00245">245</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+
+</div>
+</div>
+<a id="a66870b9887cb1982aacab3db22c00140" name="a66870b9887cb1982aacab3db22c00140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66870b9887cb1982aacab3db22c00140">&#9670;&#160;</a></span>checkpoint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a>* sapi_appmanager_config_t::checkpoint</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optional built-in cycle checkpoint (ADR-019); NULL = disabled (default). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00246">246</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>

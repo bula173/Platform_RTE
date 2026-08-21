@@ -1,0 +1,11 @@
+<map id="sapi_cross_comparator_storage_t" name="sapi_cross_comparator_storage_t">
+<area shape="rect" id="Node000001" title="Storage for one cross&#45;comparator instance (opaque to caller). No dynamic memory." alt="" coords="43,211,215,251"/>
+<area shape="rect" id="Node000002" href="$structsapi__cross__comparator__config__t.html" title="Configuration for sapi_cross_comparator_init()." alt="" coords="5,93,177,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,146,125,210,120,211,99,148"/>
+<area shape="rect" id="Node000003" href="$structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="201,101,376,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="263,136,157,213,154,208,260,132"/>
+<area shape="rect" id="Node000004" href="$structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="111,5,277,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="217,38,279,99,275,102,213,42"/>
+<area shape="rect" id="Node000005" href="$structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="301,5,468,31"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="365,42,302,102,299,99,361,38"/>
+</map>

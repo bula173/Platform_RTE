@@ -1,0 +1,5 @@
+<map id="include/safeapi/dual/sapi_dual_negotiator.h" name="include/safeapi/dual/sapi_dual_negotiator.h">
+<area shape="rect" id="Node000001" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,5,179,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,93,161,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,59,95,93,89,93,89,59"/>
+</map>

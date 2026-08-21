@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['watchdog_20mechanism_0',['Watchdog Mechanism',['../group__WATCHDOG.html',1,'']]]
+  ['unified_20channel_20factory_0',['Unified Channel Factory',['../group__SAFECHANNEL.html',1,'']]],
+  ['utilities_1',['Checksum &amp; CRC Utilities',['../group__CHECKSUM.html',1,'']]]
 ];

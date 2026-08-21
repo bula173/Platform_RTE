@@ -83,31 +83,36 @@ $(function() {
 <p>IPC Request-Reply implementation.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__ipc__request__reply_8h_source.html">safeapi/ipc/sapi_ipc_request_reply.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
 <code>#include &quot;safeapi/log.h&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_ipc_request_reply.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__ipc__request__reply_8c__incl.png" border="0" usemap="#asrc_2ipc_2sapi__ipc__request__reply_8c" alt=""/></div>
 <map name="asrc_2ipc_2sapi__ipc__request__reply_8c" id="asrc_2ipc_2sapi__ipc__request__reply_8c">
-<area shape="rect" title="IPC Request&#45;Reply implementation." alt="" coords="151,5,328,45"/>
-<area shape="rect" href="sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="88,93,239,133"/>
-<area shape="poly" title=" " alt="" coords="224,47,191,85,187,81,220,44"/>
-<area shape="rect" title=" " alt="" coords="263,101,370,126"/>
-<area shape="poly" title=" " alt="" coords="258,44,299,88,295,92,255,47"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,255,151,295"/>
-<area shape="poly" title=" " alt="" coords="146,135,127,157,110,183,97,212,88,242,82,240,92,210,105,180,123,154,142,132"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,255,317,295"/>
-<area shape="poly" title=" " alt="" coords="184,132,203,154,220,180,233,210,242,240,237,242,228,212,216,183,199,157,180,135"/>
-<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="120,181,207,207"/>
-<area shape="poly" title=" " alt="" coords="166,134,166,167,161,167,161,134"/>
-<area shape="rect" title=" " alt="" coords="102,343,185,368"/>
-<area shape="poly" title=" " alt="" coords="223,297,171,336,168,332,220,293"/>
-<area shape="rect" title=" " alt="" coords="209,343,283,368"/>
-<area shape="poly" title=" " alt="" coords="249,295,249,329,243,329,243,295"/>
-<area shape="rect" title=" " alt="" coords="308,343,379,368"/>
-<area shape="poly" title=" " alt="" coords="271,293,320,332,317,336,268,297"/>
-<area shape="poly" title=" " alt="" coords="153,209,110,247,107,243,149,205"/>
-<area shape="poly" title=" " alt="" coords="177,205,218,243,214,247,174,209"/>
+<area shape="rect" title="IPC Request&#45;Reply implementation." alt="" coords="257,5,435,45"/>
+<area shape="rect" href="sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="135,93,285,133"/>
+<area shape="poly" title=" " alt="" coords="318,48,253,88,250,84,315,43"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="289,181,449,221"/>
+<area shape="poly" title=" " alt="" coords="351,45,367,167,362,168,346,46"/>
+<area shape="rect" title=" " alt="" coords="383,101,490,126"/>
+<area shape="poly" title=" " alt="" coords="368,44,416,89,412,93,364,48"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="184,269,329,309"/>
+<area shape="poly" title=" " alt="" coords="218,133,251,255,245,257,213,134"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="18,269,159,309"/>
+<area shape="poly" title=" " alt="" coords="172,136,142,156,116,183,100,219,93,256,88,255,95,217,112,180,138,152,169,131"/>
+<area shape="rect" href="sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="127,189,213,214"/>
+<area shape="poly" title=" " alt="" coords="204,135,184,177,179,175,199,132"/>
+<area shape="rect" title=" " alt="" coords="262,357,345,383"/>
+<area shape="poly" title=" " alt="" coords="141,307,260,350,258,355,139,312"/>
+<area shape="rect" title=" " alt="" coords="101,357,175,383"/>
+<area shape="poly" title=" " alt="" coords="103,308,126,344,121,347,98,311"/>
+<area shape="rect" title=" " alt="" coords="5,357,76,383"/>
+<area shape="poly" title=" " alt="" coords="79,311,57,347,53,344,75,308"/>
+<area shape="poly" title=" " alt="" coords="184,212,229,257,226,261,180,216"/>
+<area shape="poly" title=" " alt="" coords="161,216,118,261,115,257,157,212"/>
+<area shape="poly" title=" " alt="" coords="345,224,294,263,291,259,342,219"/>
+<area shape="poly" title=" " alt="" coords="369,222,360,263,344,310,323,348,318,345,340,308,355,262,363,221"/>
 </map>
 </div>
 </div>
@@ -186,11 +191,11 @@ Functions</h2></td></tr>
 <div class="line"><a class="code hl_typedef" href="sapi__ipc__request__reply_8h.html#a9fc9c3bdb03d5824df76b9b4673a5210">sapi_ipc_rr_server_t</a> server;</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__request__reply_8h.html#ac05dac28fa825e2d2cdc1dbcb995a4e9">sapi_ipc_rr_server_create</a>(&amp;server, &amp;config);</div>
 <div class="ttc" id="asapi__ipc__request__reply_8h_html_a9fc9c3bdb03d5824df76b9b4673a5210"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a9fc9c3bdb03d5824df76b9b4673a5210">sapi_ipc_rr_server_t</a></div><div class="ttdeci">struct sapi_ipc_rr_server_s * sapi_ipc_rr_server_t</div><div class="ttdoc">Request-Reply server channel handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00042">sapi_ipc_request_reply.h:42</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_ac05dac28fa825e2d2cdc1dbcb995a4e9"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ac05dac28fa825e2d2cdc1dbcb995a4e9">sapi_ipc_rr_server_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out, const sapi_ipc_rr_server_config_t *config)</div><div class="ttdoc">Create a request-reply server channel.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00012">sapi_ipc_request_reply.c:12</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_ac05dac28fa825e2d2cdc1dbcb995a4e9"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ac05dac28fa825e2d2cdc1dbcb995a4e9">sapi_ipc_rr_server_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out, const sapi_ipc_rr_server_config_t *config)</div><div class="ttdoc">Create a request-reply server channel.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00013">sapi_ipc_request_reply.c:13</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__server__config__t_html"><div class="ttname"><a href="structsapi__ipc__rr__server__config__t.html">sapi_ipc_rr_server_config_t</a></div><div class="ttdoc">Configuration for request-reply server.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00047">sapi_ipc_request_reply.h:47</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__server__config__t_html_afe7ce817b82fe66a710bce9e39e40ab2"><div class="ttname"><a href="structsapi__ipc__rr__server__config__t.html#afe7ce817b82fe66a710bce9e39e40ab2">sapi_ipc_rr_server_config_t::name</a></div><div class="ttdeci">const char * name</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00048">sapi_ipc_request_reply.h:48</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -243,11 +248,11 @@ Functions</h2></td></tr>
 <div class="line">    <span class="comment">// Send reply...</span></div>
 <div class="line">}</div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_a24dbb4ce30d156f00894c97563ee5fd5"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a24dbb4ce30d156f00894c97563ee5fd5">sapi_ipc_rr_receive_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_receive_request(sapi_ipc_rr_server_t server, sapi_ipc_rr_request_t *request_out, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a request (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00027">sapi_ipc_request_reply.c:27</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_a24dbb4ce30d156f00894c97563ee5fd5"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a24dbb4ce30d156f00894c97563ee5fd5">sapi_ipc_rr_receive_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_receive_request(sapi_ipc_rr_server_t server, sapi_ipc_rr_request_t *request_out, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a request (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00038">sapi_ipc_request_reply.c:38</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__request__t_html"><div class="ttname"><a href="structsapi__ipc__rr__request__t.html">sapi_ipc_rr_request_t</a></div><div class="ttdoc">Incoming request with context for sending reply.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00057">sapi_ipc_request_reply.h:57</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__request__t_html_ad518e14d7ee868c573418e58a3dd6619"><div class="ttname"><a href="structsapi__ipc__rr__request__t.html#ad518e14d7ee868c573418e58a3dd6619">sapi_ipc_rr_request_t::request_data</a></div><div class="ttdeci">uint8_t * request_data</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00059">sapi_ipc_request_reply.h:59</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00027">27</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00038">38</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -305,9 +310,9 @@ Functions</h2></td></tr>
 <div class="line">    .track_speed = 80</div>
 <div class="line">};</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__request__reply_8h.html#ab72dd38034995dbc736585792e395279">sapi_ipc_rr_send_reply</a>(server, request.request_id, &amp;reply, <span class="keyword">sizeof</span>(reply));</div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_ab72dd38034995dbc736585792e395279"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ab72dd38034995dbc736585792e395279">sapi_ipc_rr_send_reply</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_send_reply(sapi_ipc_rr_server_t server, uint32_t request_id, const void *reply_data, size_t reply_size)</div><div class="ttdoc">Send reply to a request.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00039">sapi_ipc_request_reply.c:39</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_ab72dd38034995dbc736585792e395279"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ab72dd38034995dbc736585792e395279">sapi_ipc_rr_send_reply</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_send_reply(sapi_ipc_rr_server_t server, uint32_t request_id, const void *reply_data, size_t reply_size)</div><div class="ttdoc">Send reply to a request.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00050">sapi_ipc_request_reply.c:50</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00039">39</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00050">50</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -336,7 +341,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00054">54</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00065">65</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -383,11 +388,11 @@ Functions</h2></td></tr>
 <div class="line"><a class="code hl_typedef" href="sapi__ipc__request__reply_8h.html#a3825db006f8d116a1448cca6b76b7730">sapi_ipc_rr_client_t</a> client;</div>
 <div class="line"><a class="code hl_function" href="sapi__ipc__request__reply_8h.html#a96fd7a0a6bb864ea18fab5b1fa36c522">sapi_ipc_rr_client_create</a>(&amp;client, &amp;config);</div>
 <div class="ttc" id="asapi__ipc__request__reply_8h_html_a3825db006f8d116a1448cca6b76b7730"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a3825db006f8d116a1448cca6b76b7730">sapi_ipc_rr_client_t</a></div><div class="ttdeci">struct sapi_ipc_rr_client_s * sapi_ipc_rr_client_t</div><div class="ttdoc">Request-reply client handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00149">sapi_ipc_request_reply.h:149</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_a96fd7a0a6bb864ea18fab5b1fa36c522"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a96fd7a0a6bb864ea18fab5b1fa36c522">sapi_ipc_rr_client_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_create(sapi_ipc_rr_client_t *handle_out, const sapi_ipc_rr_client_config_t *config)</div><div class="ttdoc">Create a request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00064">sapi_ipc_request_reply.c:64</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_a96fd7a0a6bb864ea18fab5b1fa36c522"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a96fd7a0a6bb864ea18fab5b1fa36c522">sapi_ipc_rr_client_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_create(sapi_ipc_rr_client_t *handle_out, const sapi_ipc_rr_client_config_t *config)</div><div class="ttdoc">Create a request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00075">sapi_ipc_request_reply.c:75</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__client__config__t_html"><div class="ttname"><a href="structsapi__ipc__rr__client__config__t.html">sapi_ipc_rr_client_config_t</a></div><div class="ttdoc">Configuration for request-reply client.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00154">sapi_ipc_request_reply.h:154</a></div></div>
 <div class="ttc" id="astructsapi__ipc__rr__client__config__t_html_a47eb2b18c6756d1f31ec00d82b6bb73a"><div class="ttname"><a href="structsapi__ipc__rr__client__config__t.html#a47eb2b18c6756d1f31ec00d82b6bb73a">sapi_ipc_rr_client_config_t::server_name</a></div><div class="ttdeci">const char * server_name</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00155">sapi_ipc_request_reply.h:155</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00064">64</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00075">75</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -472,9 +477,9 @@ Functions</h2></td></tr>
 <div class="line">}</div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a4bfe86de4c4ad1928d7476c55cf0e9d7">SAPI_STATUS_TIMEOUT</a></div><div class="ttdeci">@ SAPI_STATUS_TIMEOUT</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00032">sapi_status.h:32</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_afa30694cd24cc49703147df7b4fb536b"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#afa30694cd24cc49703147df7b4fb536b">sapi_ipc_rr_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_request(sapi_ipc_rr_client_t client, const void *request_data, size_t request_size, void *reply_out, size_t reply_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Send request and wait for reply (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00077">sapi_ipc_request_reply.c:77</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_afa30694cd24cc49703147df7b4fb536b"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#afa30694cd24cc49703147df7b4fb536b">sapi_ipc_rr_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_request(sapi_ipc_rr_client_t client, const void *request_data, size_t request_size, void *reply_out, size_t reply_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Send request and wait for reply (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00098">sapi_ipc_request_reply.c:98</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00077">77</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00098">98</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>
@@ -503,7 +508,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00095">95</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__request__reply_8c_source.html#l00116">116</a> of file <a class="el" href="sapi__ipc__request__reply_8c_source.html">sapi_ipc_request_reply.c</a>.</p>
 
 </div>
 </div>

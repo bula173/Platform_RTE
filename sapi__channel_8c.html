@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: src/channel/sapi_channel.c File Reference</title>
+<title>Safe API Framework: src/channel_link/sapi_channel.c File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -70,48 +70,40 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_bbca32ae125625ab0d7554a76a48380c.html">channel</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_76edae3c51beddcef54f03079a8671a3.html">channel_link</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
-  <div class="headertitle"><div class="title">sapi_channel.c File Reference<div class="ingroups"><a class="el" href="group__CHANNEL.html">Dual-Channel Identity and Comparison</a></div></div></div>
+  <div class="headertitle"><div class="title">sapi_channel.c File Reference<div class="ingroups"><a class="el" href="group__channel__link.html">Channel Link (single redundant link)</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Implementation of dual-channel identity and result comparison (ADR-008).  
+<p>One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks, tracking health as a side effect (ADR-025).  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__channel_8h_source.html">safeapi/channel/sapi_channel.h</a>&quot;</code><br />
-<code>#include &lt;string.h&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__channel_8h_source.html">safeapi/channel_link/sapi_channel.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_channel.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__channel_8c__incl.png" border="0" usemap="#asrc_2channel_2sapi__channel_8c" alt=""/></div>
-<map name="asrc_2channel_2sapi__channel_8c" id="asrc_2channel_2sapi__channel_8c">
-<area shape="rect" title="Implementation of dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="155,5,351,31"/>
-<area shape="rect" href="sapi__channel_8h.html" title="Dual&#45;channel identity and result comparison (ADR&#45;008)." alt="" coords="107,79,263,119"/>
-<area shape="poly" title=" " alt="" coords="245,33,213,70,209,66,241,29"/>
-<area shape="rect" title=" " alt="" coords="287,86,358,111"/>
-<area shape="poly" title=" " alt="" coords="265,29,305,74,301,77,261,33"/>
-<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="24,167,167,207"/>
-<area shape="poly" title=" " alt="" coords="167,121,127,159,124,155,163,117"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="23,255,168,295"/>
-<area shape="poly" title=" " alt="" coords="108,112,81,121,56,132,32,148,14,168,9,178,8,188,16,208,32,228,54,245,50,249,29,231,11,211,3,189,4,177,9,165,29,144,53,127,79,116,106,107"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="204,255,345,295"/>
-<area shape="poly" title=" " alt="" coords="264,116,330,138,356,151,373,165,380,186,373,208,355,232,332,250,328,246,351,228,368,205,375,186,368,168,353,155,328,143,262,121"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="191,167,358,207"/>
-<area shape="poly" title=" " alt="" coords="207,117,246,155,243,159,203,121"/>
-<area shape="poly" title=" " alt="" coords="98,207,98,241,93,241,93,207"/>
-<area shape="poly" title=" " alt="" coords="136,204,224,246,222,251,134,209"/>
-<area shape="rect" title=" " alt="" coords="130,343,213,368"/>
-<area shape="poly" title=" " alt="" coords="251,297,199,336,196,332,248,293"/>
-<area shape="rect" title=" " alt="" coords="237,343,312,368"/>
-<area shape="poly" title=" " alt="" coords="277,295,277,329,272,329,272,295"/>
-<area shape="rect" title=" " alt="" coords="336,343,407,368"/>
-<area shape="poly" title=" " alt="" coords="300,293,348,332,345,336,296,297"/>
-<area shape="poly" title=" " alt="" coords="236,209,148,251,146,246,234,204"/>
-<area shape="poly" title=" " alt="" coords="277,207,277,241,272,241,272,207"/>
+<div class="center"><img src="sapi__channel_8c__incl.png" border="0" usemap="#asrc_2channel__link_2sapi__channel_8c" alt=""/></div>
+<map name="asrc_2channel__link_2sapi__channel_8c" id="asrc_2channel__link_2sapi__channel_8c">
+<area shape="rect" title="One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks,..." alt="" coords="179,5,337,45"/>
+<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="89,93,245,133"/>
+<area shape="poly" title=" " alt="" coords="240,48,199,86,195,82,236,44"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="270,93,430,133"/>
+<area shape="poly" title=" " alt="" coords="280,44,322,82,318,86,277,48"/>
+<area shape="rect" title=" " alt="" coords="5,189,76,214"/>
+<area shape="poly" title=" " alt="" coords="141,136,71,183,68,179,138,131"/>
+<area shape="rect" title=" " alt="" coords="199,189,282,214"/>
+<area shape="poly" title=" " alt="" coords="186,132,224,176,220,179,182,135"/>
+<area shape="rect" title=" " alt="" coords="101,189,175,214"/>
+<area shape="poly" title=" " alt="" coords="163,134,149,176,144,174,158,133"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="307,181,452,221"/>
+<area shape="poly" title=" " alt="" coords="215,131,321,174,319,179,213,136"/>
+<area shape="poly" title=" " alt="" coords="327,136,268,182,265,178,324,132"/>
+<area shape="poly" title=" " alt="" coords="359,133,371,167,366,169,354,134"/>
 </map>
 </div>
 </div>
@@ -119,21 +111,27 @@ Include dependency graph for sapi_channel.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga9666d632f79ec29ad78c5129e4b5dc79" id="r_ga9666d632f79ec29ad78c5129e4b5dc79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__CHANNEL.html#ga562d7ea051a4480418a7655fcd1a1cc8">sapi_channel_id_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHANNEL.html#ga9666d632f79ec29ad78c5129e4b5dc79">sapi_channel_local_id</a> (void)</td></tr>
-<tr class="memdesc:ga9666d632f79ec29ad78c5129e4b5dc79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the local channel identity, fixed at compile time by which of SAPI_CHANNEL_BUILD_A / SAPI_CHANNEL_BUILD_B was defined for this translation unit's build.  <br /></td></tr>
-<tr class="separator:ga9666d632f79ec29ad78c5129e4b5dc79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga94f76127d1cbc4d8fc0f6950294e7449" id="r_ga94f76127d1cbc4d8fc0f6950294e7449"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHANNEL.html#ga94f76127d1cbc4d8fc0f6950294e7449">sapi_channel_id_to_string</a> (<a class="el" href="group__CHANNEL.html#ga562d7ea051a4480418a7655fcd1a1cc8">sapi_channel_id_t</a> id)</td></tr>
-<tr class="memdesc:ga94f76127d1cbc4d8fc0f6950294e7449"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a short, static, human-readable string for a channel id. Diagnostics/logging only; never on a safety-decision path (mirrors <a class="el" href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad" title="Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...">sapi_status_to_string()</a>, ADR-001 section 3.6).  <br /></td></tr>
-<tr class="separator:ga94f76127d1cbc4d8fc0f6950294e7449"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga69a4d008846630cf7a5419842f0d66e3" id="r_ga69a4d008846630cf7a5419842f0d66e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHANNEL.html#ga69a4d008846630cf7a5419842f0d66e3">sapi_channel_compare</a> (<a class="el" href="structsapi__const__buffer__t.html">sapi_const_buffer_t</a> local_result, <a class="el" href="structsapi__const__buffer__t.html">sapi_const_buffer_t</a> peer_result, <a class="el" href="group__CHANNEL.html#ga256c657c255ca8d22185303fc4e7e90a">sapi_channel_compare_result_t</a> *out_result)</td></tr>
-<tr class="memdesc:ga69a4d008846630cf7a5419842f0d66e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounds-checked, byte-for-byte comparison of the local channel's computed result against the peer channel's result.  <br /></td></tr>
-<tr class="separator:ga69a4d008846630cf7a5419842f0d66e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga967c4120d3ff3217511adf290b6dade6" id="r_ga967c4120d3ff3217511adf290b6dade6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHANNEL.html#ga967c4120d3ff3217511adf290b6dade6">sapi_channel_compare_and_enter_safestate</a> (<a class="el" href="structsapi__const__buffer__t.html">sapi_const_buffer_t</a> local_result, <a class="el" href="structsapi__const__buffer__t.html">sapi_const_buffer_t</a> peer_result, <a class="el" href="group__SAFESTATE.html#ga21e00aebd55809df7fc153e42d9494a5">sapi_safestate_reason_t</a> reason)</td></tr>
-<tr class="memdesc:ga967c4120d3ff3217511adf290b6dade6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convenience wrapper: compares local_result against peer_result, and on a mismatch enters SAPI_SAFESTATE_LEVEL_SAFE with SAPI_SAFESTATE_REASON_CHANNEL_MISMATCH (or reason, if nonzero - see below), reusing <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> (ADR-004).  <br /></td></tr>
-<tr class="separator:ga967c4120d3ff3217511adf290b6dade6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8972fa352eba4f25f1b0af7712d227cc" id="r_ga8972fa352eba4f25f1b0af7712d227cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc">sapi_channel_init</a> (<a class="el" href="structsapi__channel__storage__t.html">sapi_channel_storage_t</a> *storage, const <a class="el" href="structsapi__channel__config__t.html">sapi_channel_config_t</a> *config)</td></tr>
+<tr class="memdesc:ga8972fa352eba4f25f1b0af7712d227cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes one vital channel over a caller-supplied transport.  <br /></td></tr>
+<tr class="separator:ga8972fa352eba4f25f1b0af7712d227cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga75fd92400c60979baf8aff1396841c1e" id="r_ga75fd92400c60979baf8aff1396841c1e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e">sapi_channel_send</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, const void *data, size_t data_size)</td></tr>
+<tr class="memdesc:ga75fd92400c60979baf8aff1396841c1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends data on this channel via its backend send callback.  <br /></td></tr>
+<tr class="separator:ga75fd92400c60979baf8aff1396841c1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga81dd83683d1802758b2d32ab8f4e62f6" id="r_ga81dd83683d1802758b2d32ab8f4e62f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga81dd83683d1802758b2d32ab8f4e62f6">sapi_channel_receive</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, void *data, size_t data_size, uint32_t timeout_ms)</td></tr>
+<tr class="memdesc:ga81dd83683d1802758b2d32ab8f4e62f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Receives data on this channel via its backend receive callback.  <br /></td></tr>
+<tr class="separator:ga81dd83683d1802758b2d32ab8f4e62f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2ae7274dce915ff92b132f88a7676cc9" id="r_ga2ae7274dce915ff92b132f88a7676cc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9">sapi_channel_get_health</a> (const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, <a class="el" href="structsapi__channel__health__t.html">sapi_channel_health_t</a> *out_health)</td></tr>
+<tr class="memdesc:ga2ae7274dce915ff92b132f88a7676cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries this channel's health statistics.  <br /></td></tr>
+<tr class="separator:ga2ae7274dce915ff92b132f88a7676cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga590548924653a0a40936bbdde77a35c0" id="r_ga590548924653a0a40936bbdde77a35c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, bool is_healthy)</td></tr>
+<tr class="memdesc:ga590548924653a0a40936bbdde77a35c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this channel healthy/unhealthy.  <br /></td></tr>
+<tr class="separator:ga590548924653a0a40936bbdde77a35c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga619a0f285b37214103f8342bb05269af" id="r_ga619a0f285b37214103f8342bb05269af"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga619a0f285b37214103f8342bb05269af">sapi_channel_destroy</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle)</td></tr>
+<tr class="memdesc:ga619a0f285b37214103f8342bb05269af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a vital channel instance.  <br /></td></tr>
+<tr class="separator:ga619a0f285b37214103f8342bb05269af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Implementation of dual-channel identity and result comparison (ADR-008). </p>
+<div class="textblock"><p>One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks, tracking health as a side effect (ADR-025). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
 </div></div><!-- contents -->

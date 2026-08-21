@@ -1,0 +1,18 @@
+<map id="include/safeapi_backend/clocksync/sapi_clocksync_backend.h" name="include/safeapi_backend/clocksync/sapi_clocksync_backend.h">
+<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="53,5,245,60"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,284,76,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,62,74,83,54,109,39,151,33,195,34,236,38,270,33,271,29,237,28,194,33,149,49,107,70,79,97,58"/>
+<area shape="rect" id="Node000003" href="$sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="64,108,233,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="151,60,151,94,146,94,146,60"/>
+<area shape="rect" id="Node000004" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="244,196,389,236"/>
+<area shape="poly" id="edge9_Node000001_Node000004" title=" " alt="" coords="191,58,220,80,248,106,278,145,302,182,298,185,274,148,244,110,216,84,187,62"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="118,150,91,171,68,197,52,235,45,271,40,270,47,233,64,195,88,167,115,146"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="187,146,269,188,267,192,184,150"/>
+<area shape="rect" id="Node000005" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="78,196,219,236"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="151,148,151,182,146,182,146,148"/>
+<area shape="poly" id="edge8_Node000005_Node000002" title=" " alt="" coords="124,238,70,278,67,273,121,234"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="103,284,186,309"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="150,236,149,270,143,270,145,236"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="210,284,285,309"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="174,234,223,273,220,277,171,238"/>
+</map>

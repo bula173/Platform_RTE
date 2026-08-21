@@ -1,0 +1,11 @@
+<map id="sapi_dual_negotiator_t" name="sapi_dual_negotiator_t">
+<area shape="rect" id="Node000001" title="One sapi_dual_negotiator_t instance&#39;s state. Caller&#45;owned storage; every field is private &#45; reach it ..." alt="" coords="79,269,250,295"/>
+<area shape="rect" id="Node000002" href="$structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller&#45;owned storage; every field is private &#45; reach it onl..." alt="" coords="87,181,242,207"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,221,167,269,162,269,162,221"/>
+<area shape="rect" id="Node000003" href="$structsapi__dual__msgchannel__t.html" title="One sapi_dual_msgchannel_t instance&#39;s state. Caller&#45;owned storage (REQ&#45;DUAL&#45;MSGCHANNEL&#45;001); opaque i..." alt="" coords="5,93,188,119"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="117,128,157,179,153,182,112,131"/>
+<area shape="rect" id="Node000004" href="$structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload &#45; sapi_dual_negotiator_t&#39;s own periodic beacon." alt="" coords="212,93,395,119"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="274,128,185,183,182,179,272,124"/>
+<area shape="rect" id="Node000005" href="$structsapi__dual__frame__header__t.html" title="Common 4&#45;byte header prefixing every Layer&#45;2 frame; kept a fixed 4 bytes (not just 1) so the fields t..." alt="" coords="206,5,401,31"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="306,45,306,93,301,93,301,45"/>
+</map>

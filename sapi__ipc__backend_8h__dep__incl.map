@@ -1,0 +1,5 @@
+<map id="include/safeapi_backend/ipc/sapi_ipc_backend.h" name="include/safeapi_backend/ipc/sapi_ipc_backend.h">
+<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the IPC service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,5,188,45"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc_8c.html" title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba..." alt="" coords="31,93,163,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,59,99,93,94,93,94,59"/>
+</map>

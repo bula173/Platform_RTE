@@ -72,14 +72,14 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
-  <div class="headertitle"><div class="title">sapi_ipc_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__IPC.html">Inter-Process Communication</a></div></div></div>
+  <div class="headertitle"><div class="title">sapi_ipc_backend_t Struct Reference<div class="ingroups"><a class="el" href="group__IPC__BACKEND.html">Inter-Process Communication - Backend Adaptation</a></div></div></div>
 </div><!--header-->
 <div class="contents">
 
 <p>Backend vtable: an integrator's implementation of the IPC service for a specific OS/RTOS (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED).  
  <a href="structsapi__ipc__backend__t.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Data Fields</h2></td></tr>
@@ -99,7 +99,7 @@ Data Fields</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Backend vtable: an integrator's implementation of the IPC service for a specific OS/RTOS (ADR-005). Any slot may be NULL if unsupported by the backend (-&gt; SAPI_STATUS_NOT_SUPPORTED). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8h_source.html#l00106">106</a> of file <a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__backend_8h_source.html#l00030">30</a> of file <a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a66f30d1c595623e38ad851da9deabb7a" name="a66f30d1c595623e38ad851da9deabb7a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a66f30d1c595623e38ad851da9deabb7a">&#9670;&#160;</a></span>create</h2>
@@ -115,7 +115,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__IPC.html#ga026464f85b0ab549c64cdd835e88e8c4" title="Creates a bounded message channel.">sapi_ipc_create()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8h_source.html#l00109">109</a> of file <a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__backend_8h_source.html#l00033">33</a> of file <a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>.</p>
 
 </div>
 </div>
@@ -133,7 +133,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f" title="Sends one message, blocking at most timeout_ms.">sapi_ipc_send()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8h_source.html#l00113">113</a> of file <a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__backend_8h_source.html#l00037">37</a> of file <a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>.</p>
 
 </div>
 </div>
@@ -151,7 +151,7 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__IPC.html#ga6e576eecff591184e8686fe85421d7a6" title="Receives one message, blocking at most timeout_ms.">sapi_ipc_receive()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8h_source.html#l00116">116</a> of file <a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__backend_8h_source.html#l00040">40</a> of file <a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>.</p>
 
 </div>
 </div>
@@ -169,12 +169,12 @@ Data Fields</h2></td></tr>
 
 <p>Backend implementation of <a class="el" href="group__IPC.html#gad58ecff38329de6beeb47b38b2a80bb7" title="Destroys a message channel.">sapi_ipc_destroy()</a>. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__ipc_8h_source.html#l00119">119</a> of file <a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__ipc__backend_8h_source.html#l00043">43</a> of file <a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/ipc/<a class="el" href="sapi__ipc_8h_source.html">sapi_ipc.h</a></li>
+<li>include/safeapi_backend/ipc/<a class="el" href="sapi__ipc__backend_8h_source.html">sapi_ipc_backend.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -1,0 +1,5 @@
+<map id="sapi_safechannel_dual_config_t" name="sapi_safechannel_dual_config_t">
+<area shape="rect" id="Node000001" title="Configuration specific to SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT." alt="" coords="25,93,196,133"/>
+<area shape="rect" id="Node000002" href="$structsapi__safechannel__endpoint__t.html" title="One remote endpoint to open internally &#45; replaces a caller&#45; supplied sapi_netlink_handle_t (ADR&#45;022 s..." alt="" coords="5,5,216,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,44,113,93,108,93,108,44"/>
+</map>

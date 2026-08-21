@@ -151,7 +151,7 @@ Quick Start</h1>
 <div class="line">*</div>
 <div class="line">* // Option B: Application state (initialized once)</div>
 <div class="line">* typedef struct {</div>
-<div class="line">*     sapi_vital_channel_t vital_channel;</div>
+<div class="line">*     sapi_channel_t vital_channel;</div>
 <div class="line">*     sapi_timer_t heartbeat_timer;</div>
 <div class="line">*     uint8_t work_buffer[1024];</div>
 <div class="line">* } app_t;</div>
@@ -176,7 +176,7 @@ Quick Start</h1>
 <div class="line">* #define BUFFER_SIZE    (MAX_CHANNELS * 256)</div>
 <div class="line">*</div>
 <div class="line">* typedef struct {</div>
-<div class="line">*     sapi_vital_channel_t channels[MAX_CHANNELS];  // 16 channels</div>
+<div class="line">*     sapi_channel_t channels[MAX_CHANNELS];  // 16 channels</div>
 <div class="line">*     sapi_timer_t timers[MAX_TIMERS];              // 32 timers</div>
 <div class="line">*     task_t task_queue[MAX_TASKS];                 // 64 task slots</div>
 <div class="line">*     uint8_t buffer[BUFFER_SIZE];                  // Shared buffer</div>
@@ -222,7 +222,7 @@ Pattern 2: Application State Structure</h2>
 <li></li>
 <li><div class="fragment"><div class="line">* typedef struct {</div>
 <div class="line">*     // Channels</div>
-<div class="line">*     sapi_vital_channel_t vital_channel;</div>
+<div class="line">*     sapi_channel_t vital_channel;</div>
 <div class="line">*     sapi_ipc_handle_t diag_channel;</div>
 <div class="line">*</div>
 <div class="line">*     // Services</div>
@@ -326,8 +326,8 @@ Example 1: Train Control System</h2>
 <li></li>
 <li><div class="fragment"><div class="line">* typedef struct {</div>
 <div class="line">*     // Communication</div>
-<div class="line">*     sapi_vital_channel_t vital_from_online;</div>
-<div class="line">*     sapi_vital_channel_t vital_to_online;</div>
+<div class="line">*     sapi_channel_t vital_from_online;</div>
+<div class="line">*     sapi_channel_t vital_to_online;</div>
 <div class="line">*     sapi_ipc_handle_t diagnostic_channel;</div>
 <div class="line">*</div>
 <div class="line">*     // Timing</div>

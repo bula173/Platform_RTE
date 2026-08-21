@@ -263,13 +263,13 @@ Functions</h2></td></tr>
 <div class="line">};</div>
 <div class="line">sapi_watchdog_t wd;</div>
 <div class="line"><a class="code hl_function" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8">sapi_watchdog_create</a>(&amp;wd, &amp;config);</div>
-<div class="ttc" id="agroup__WATCHDOG_html_gaa459a30f525834a12cad00a0f40f15b8"><div class="ttname"><a href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8">sapi_watchdog_create</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out, const sapi_watchdog_config_t *config)</div><div class="ttdoc">Create a watchdog.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00145">sapi_watchdog.c:145</a></div></div>
+<div class="ttc" id="agroup__WATCHDOG_html_gaa459a30f525834a12cad00a0f40f15b8"><div class="ttname"><a href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8">sapi_watchdog_create</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out, const sapi_watchdog_config_t *config)</div><div class="ttdoc">Create a watchdog.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00146">sapi_watchdog.c:146</a></div></div>
 <div class="ttc" id="agroup__WATCHDOG_html_gga8b5df0648d1416ec8196719ae7d49c2ba439afdf511e20c25ed987ee13f5865e4"><div class="ttname"><a href="group__WATCHDOG.html#gga8b5df0648d1416ec8196719ae7d49c2ba439afdf511e20c25ed987ee13f5865e4">SAPI_WATCHDOG_SYSTEM</a></div><div class="ttdeci">@ SAPI_WATCHDOG_SYSTEM</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00042">sapi_watchdog.h:42</a></div></div>
 <div class="ttc" id="agroup__WATCHDOG_html_gga8ea2354635a9eb8b54711c1a5798b052a8942a7be11240f562f72e4d247a9b51e"><div class="ttname"><a href="group__WATCHDOG.html#gga8ea2354635a9eb8b54711c1a5798b052a8942a7be11240f562f72e4d247a9b51e">SAPI_WATCHDOG_ACTION_SAFESTATE</a></div><div class="ttdeci">@ SAPI_WATCHDOG_ACTION_SAFESTATE</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00055">sapi_watchdog.h:55</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__config__t_html"><div class="ttname"><a href="structsapi__watchdog__config__t.html">sapi_watchdog_config_t</a></div><div class="ttdoc">Watchdog configuration.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00075">sapi_watchdog.h:75</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__config__t_html_aa19e608c5e4ecd70e0270f634f44b017"><div class="ttname"><a href="structsapi__watchdog__config__t.html#aa19e608c5e4ecd70e0270f634f44b017">sapi_watchdog_config_t::type</a></div><div class="ttdeci">sapi_watchdog_type_t type</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00076">sapi_watchdog.h:76</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00145">145</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00146">146</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -302,7 +302,7 @@ Functions</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>watchdog is counting down; will fire if not kicked</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Deterministic: no blocking, no dynamic allocation </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00184">184</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00195">195</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -335,7 +335,7 @@ Functions</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>watchdog is stopped; no timeout possible until start() called</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Deterministic; disarms watchdog </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00201">201</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00212">212</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -372,9 +372,9 @@ Functions</h2></td></tr>
 <div class="line">    process_events();</div>
 <div class="line">    <a class="code hl_function" href="group__WATCHDOG.html#gab7deaf1b9fcc7072703e997ff3af0054">sapi_watchdog_kick</a>(wd);  <span class="comment">// Prove we&#39;re alive</span></div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__WATCHDOG_html_gab7deaf1b9fcc7072703e997ff3af0054"><div class="ttname"><a href="group__WATCHDOG.html#gab7deaf1b9fcc7072703e997ff3af0054">sapi_watchdog_kick</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_kick(sapi_watchdog_t watchdog)</div><div class="ttdoc">Kick (pet) watchdog - prove liveness.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00213">sapi_watchdog.c:213</a></div></div>
+<div class="ttc" id="agroup__WATCHDOG_html_gab7deaf1b9fcc7072703e997ff3af0054"><div class="ttname"><a href="group__WATCHDOG.html#gab7deaf1b9fcc7072703e997ff3af0054">sapi_watchdog_kick</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_kick(sapi_watchdog_t watchdog)</div><div class="ttdoc">Kick (pet) watchdog - prove liveness.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00224">sapi_watchdog.c:224</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00213">213</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00224">224</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -421,13 +421,13 @@ Functions</h2></td></tr>
 <div class="line"><a class="code hl_function" href="group__WATCHDOG.html#ga3b92357e5848a5dd4f3abbbe109c1059">sapi_watchdog_get_status</a>(wd, &amp;status);</div>
 <div class="line">printf(<span class="stringliteral">&quot;Watchdog: %u kicks, %u fires, %u ms until timeout\n&quot;</span>,</div>
 <div class="line">       status.<a class="code hl_variable" href="structsapi__watchdog__status__t.html#a01dbd1ca3283410c65be9734f3920902">kicks</a>, status.<a class="code hl_variable" href="structsapi__watchdog__status__t.html#ab7fb0ebc0718e4b056894043caea91a8">fires</a>, status.<a class="code hl_variable" href="structsapi__watchdog__status__t.html#ab42417835dfa51abec11a6ca87ec9ea2">time_until_fire</a>);</div>
-<div class="ttc" id="agroup__WATCHDOG_html_ga3b92357e5848a5dd4f3abbbe109c1059"><div class="ttname"><a href="group__WATCHDOG.html#ga3b92357e5848a5dd4f3abbbe109c1059">sapi_watchdog_get_status</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog, sapi_watchdog_status_t *status_out)</div><div class="ttdoc">Get watchdog status.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00238">sapi_watchdog.c:238</a></div></div>
+<div class="ttc" id="agroup__WATCHDOG_html_ga3b92357e5848a5dd4f3abbbe109c1059"><div class="ttname"><a href="group__WATCHDOG.html#ga3b92357e5848a5dd4f3abbbe109c1059">sapi_watchdog_get_status</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog, sapi_watchdog_status_t *status_out)</div><div class="ttdoc">Get watchdog status.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00249">sapi_watchdog.c:249</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__status__t_html"><div class="ttname"><a href="structsapi__watchdog__status__t.html">sapi_watchdog_status_t</a></div><div class="ttdoc">Watchdog health/status information.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00093">sapi_watchdog.h:93</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__status__t_html_a01dbd1ca3283410c65be9734f3920902"><div class="ttname"><a href="structsapi__watchdog__status__t.html#a01dbd1ca3283410c65be9734f3920902">sapi_watchdog_status_t::kicks</a></div><div class="ttdeci">uint32_t kicks</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00095">sapi_watchdog.h:95</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__status__t_html_ab42417835dfa51abec11a6ca87ec9ea2"><div class="ttname"><a href="structsapi__watchdog__status__t.html#ab42417835dfa51abec11a6ca87ec9ea2">sapi_watchdog_status_t::time_until_fire</a></div><div class="ttdeci">sapi_duration_ms_t time_until_fire</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00099">sapi_watchdog.h:99</a></div></div>
 <div class="ttc" id="astructsapi__watchdog__status__t_html_ab7fb0ebc0718e4b056894043caea91a8"><div class="ttname"><a href="structsapi__watchdog__status__t.html#ab7fb0ebc0718e4b056894043caea91a8">sapi_watchdog_status_t::fires</a></div><div class="ttdeci">uint32_t fires</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8h_source.html#l00096">sapi_watchdog.h:96</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00238">238</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00249">249</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -460,7 +460,7 @@ Functions</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>watchdog is stopped and deallocated</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Deterministic; safe to call on stopped or running watchdog </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00258">258</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00269">269</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -486,7 +486,7 @@ Functions</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>watchdog manager is ready to create watchdogs</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Called once at startup </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00117">117</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00118">118</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -512,7 +512,7 @@ Functions</h2></td></tr>
 <dl class="section post"><dt>Postcondition</dt><dd>all watchdogs stopped; manager deallocated</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Safe to call multiple times; idempotent </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00128">128</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00129">129</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -545,7 +545,7 @@ Functions</h2></td></tr>
 <dd>
 Recovery actions are async/deferred (logged, queued) </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00275">275</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00286">286</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>
@@ -571,7 +571,7 @@ Recovery actions are async/deferred (logged, queued) </dd></dl>
 <dd>
 No-op if the watchdog manager has not been initialized. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00347">347</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__watchdog_8c_source.html#l00369">369</a> of file <a class="el" href="sapi__watchdog_8c_source.html">sapi_watchdog.c</a>.</p>
 
 </div>
 </div>

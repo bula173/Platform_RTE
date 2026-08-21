@@ -1,0 +1,16 @@
+<map id="include/safeapi_backend/timer/sapi_timer_backend.h" name="include/safeapi_backend/timer/sapi_timer_backend.h">
+<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the Timer service (ADR&#45;005, ADR&#45;021)." alt="" coords="28,5,235,45"/>
+<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,151,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,47,106,94,87,168,82,167,101,93,120,45"/>
+<area shape="rect" id="Node000003" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="116,93,256,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="146,44,169,80,164,83,141,47"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="164,136,114,175,111,171,160,132"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,181,317,221"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="201,132,227,169,223,172,197,135"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="102,269,185,295"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="223,224,171,263,168,259,220,219"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="209,269,283,295"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="249,222,249,255,243,255,243,222"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="308,269,379,295"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="271,219,320,258,317,263,268,224"/>
+</map>

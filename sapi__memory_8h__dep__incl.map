@@ -1,5 +1,8 @@
 <map id="include/safeapi/memory/sapi_memory.h" name="include/safeapi/memory/sapi_memory.h">
-<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="17,5,197,45"/>
-<area shape="rect" id="Node000002" href="$sapi__memory_8c.html" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="5,93,208,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,59,109,93,104,93,104,59"/>
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="119,5,299,45"/>
+<area shape="rect" id="Node000002" href="$sapi__memory__backend_8h.html" title="OS&#45;backend adaptation surface for the static memory pool service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,252,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,57,148,95,144,91,180,54"/>
+<area shape="rect" id="Node000003" href="$sapi__memory_8c.html" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="107,181,310,207"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="241,53,255,72,266,92,271,113,266,134,248,162,226,183,223,179,244,159,261,132,265,113,261,94,251,74,237,57"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="160,141,199,179,195,183,156,145"/>
 </map>

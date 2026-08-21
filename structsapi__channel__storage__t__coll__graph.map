@@ -1,0 +1,7 @@
+<map id="sapi_channel_storage_t" name="sapi_channel_storage_t">
+<area shape="rect" id="Node000001" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="95,93,270,119"/>
+<area shape="rect" id="Node000002" href="$structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="5,5,171,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="113,38,171,91,168,95,109,42"/>
+<area shape="rect" id="Node000003" href="$structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="195,5,362,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="257,42,198,95,194,91,254,38"/>
+</map>

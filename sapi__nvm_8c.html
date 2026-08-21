@@ -81,27 +81,37 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>NVM service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NVM.html#gaf5348d814b574e6791759a424becd589" title="Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2....">sapi_nvm_register_backend()</a> (ADR-005).  
+<p>NVM service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NVM__BACKEND.html#gaf5348d814b574e6791759a424becd589" title="Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2....">sapi_nvm_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__nvm_8h_source.html">safeapi/nvm/sapi_nvm.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__nvm__backend_8h_source.html">safeapi_backend/nvm/sapi_nvm_backend.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_nvm.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__nvm_8c__incl.png" border="0" usemap="#asrc_2nvm_2sapi__nvm_8c" alt=""/></div>
 <map name="asrc_2nvm_2sapi__nvm_8c" id="asrc_2nvm_2sapi__nvm_8c">
-<area shape="rect" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="86,5,238,31"/>
-<area shape="rect" href="sapi__nvm_8h.html" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="71,79,253,104"/>
-<area shape="poly" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,152,151,192"/>
-<area shape="poly" title=" " alt="" coords="151,106,110,145,106,141,148,102"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,152,317,192"/>
-<area shape="poly" title=" " alt="" coords="176,102,218,141,214,145,173,106"/>
-<area shape="rect" title=" " alt="" coords="102,240,185,265"/>
-<area shape="poly" title=" " alt="" coords="223,194,171,234,168,229,220,190"/>
-<area shape="rect" title=" " alt="" coords="209,240,283,265"/>
-<area shape="poly" title=" " alt="" coords="249,192,249,226,243,226,243,192"/>
-<area shape="rect" title=" " alt="" coords="308,240,379,265"/>
-<area shape="poly" title=" " alt="" coords="271,190,320,229,317,233,268,194"/>
+<area shape="rect" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="133,5,285,31"/>
+<area shape="rect" href="sapi__nvm_8h.html" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="241,174,423,199"/>
+<area shape="poly" title=" " alt="" coords="240,28,275,48,306,77,318,97,326,119,333,160,328,161,321,121,313,100,302,80,272,52,237,33"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" title=" " alt="" coords="181,33,147,52,117,80,99,116,91,153,85,152,94,114,113,77,144,48,179,28"/>
+<area shape="rect" href="sapi__nvm__backend_8h.html" title="OS&#45;backend adaptation surface for the NVM service (ADR&#45;005, ADR&#45;021)." alt="" coords="127,79,291,119"/>
+<area shape="poly" title=" " alt="" coords="212,31,212,65,207,65,207,31"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
+<area shape="poly" title=" " alt="" coords="315,202,239,250,236,245,312,197"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
+<area shape="poly" title=" " alt="" coords="339,199,355,240,350,242,334,200"/>
+<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
+<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
+<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
+<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
+<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
+<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
+<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
+<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
+<area shape="poly" title=" " alt="" coords="238,117,306,164,303,168,235,121"/>
+<area shape="poly" title=" " alt="" coords="211,119,201,241,196,241,205,119"/>
 </map>
 </div>
 </div>
@@ -109,7 +119,7 @@ Include dependency graph for sapi_nvm.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaf5348d814b574e6791759a424becd589" id="r_gaf5348d814b574e6791759a424becd589"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NVM.html#gaf5348d814b574e6791759a424becd589">sapi_nvm_register_backend</a> (const <a class="el" href="structsapi__nvm__backend__t.html">sapi_nvm_backend_t</a> *backend)</td></tr>
+<tr class="memitem:gaf5348d814b574e6791759a424becd589" id="r_gaf5348d814b574e6791759a424becd589"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NVM__BACKEND.html#gaf5348d814b574e6791759a424becd589">sapi_nvm_register_backend</a> (const <a class="el" href="structsapi__nvm__backend__t.html">sapi_nvm_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:gaf5348d814b574e6791759a424becd589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2.1). Call once at startup.  <br /></td></tr>
 <tr class="separator:gaf5348d814b574e6791759a424becd589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0124801b6ab70ba06ceb6fb6e971da2e" id="r_ga0124801b6ab70ba06ceb6fb6e971da2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__NVM.html#ga0124801b6ab70ba06ceb6fb6e971da2e">sapi_nvm_open</a> (sapi_nvm_storage_t *storage, const <a class="el" href="structsapi__nvm__config__t.html">sapi_nvm_config_t</a> *config, <a class="el" href="group__NVM.html#gab437c71e4df85e23e7468816246beb67">sapi_nvm_handle_t</a> *out_handle)</td></tr>
@@ -135,7 +145,7 @@ Variables</h2></td></tr>
 <tr class="separator:a4b4b7c63b5e46a00714b5811a0a911c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>NVM service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NVM.html#gaf5348d814b574e6791759a424becd589" title="Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2....">sapi_nvm_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>NVM service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__NVM__BACKEND.html#gaf5348d814b574e6791759a424becd589" title="Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2....">sapi_nvm_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__nvm_8c_source.html">sapi_nvm.c</a>.</p>
 </div><h2 class="groupheader">Variable Documentation</h2>
@@ -161,7 +171,7 @@ Variables</h2></td></tr>
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__nvm_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__nvm_8c_source.html">sapi_nvm.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__nvm_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__nvm_8c_source.html">sapi_nvm.c</a>.</p>
 
 </div>
 </div>

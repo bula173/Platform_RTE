@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['remaining_5fbudget_5fms_0',['remaining_budget_ms',['../sapi__checkpoint_8c.html#af417ffad5639f066111c166f6dcf92b9',1,'sapi_checkpoint.c']]],
-  ['reply_5fconfirms_5fcheckpoint_1',['reply_confirms_checkpoint',['../sapi__checkpoint_8c.html#a543471f9296dbaf8a5eee2f432b99c75',1,'sapi_checkpoint.c']]]
+  ['is_5fvalid_5faction_0',['is_valid_action',['../sapi__watchdog_8c.html#ae80e4fca3c6bbb43bf990420aa97df19',1,'sapi_watchdog.c']]],
+  ['is_5fvalid_5fhandle_1',['is_valid_handle',['../sapi__watchdog_8c.html#a276607429a1cd38238764fc6cd8cef70',1,'sapi_watchdog.c']]]
 ];

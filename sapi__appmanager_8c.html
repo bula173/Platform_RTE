@@ -84,25 +84,68 @@ $(function() {
 
 <p>Application Manager implementation.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdlib.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sapi__appmanager_8h_source.html">safeapi/appmanager/sapi_appmanager.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__checkpoint_8h_source.html">safeapi/checkpoint/sapi_checkpoint.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_appmanager.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__appmanager_8c__incl.png" border="0" usemap="#asrc_2appmanager_2sapi__appmanager_8c" alt=""/></div>
 <map name="asrc_2appmanager_2sapi__appmanager_8c" id="asrc_2appmanager_2sapi__appmanager_8c">
-<area shape="rect" title="Application Manager implementation." alt="" coords="53,5,211,45"/>
-<area shape="rect" title=" " alt="" coords="5,101,72,126"/>
-<area shape="poly" title=" " alt="" coords="113,48,63,93,60,89,109,44"/>
-<area shape="rect" title=" " alt="" coords="97,101,167,126"/>
-<area shape="poly" title=" " alt="" coords="135,46,135,87,129,87,129,46"/>
-<area shape="rect" href="sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="191,93,347,133"/>
-<area shape="poly" title=" " alt="" coords="164,43,229,84,226,88,161,48"/>
-<area shape="rect" title=" " alt="" coords="167,189,238,214"/>
-<area shape="poly" title=" " alt="" coords="257,135,222,179,218,176,252,132"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="262,181,407,221"/>
-<area shape="poly" title=" " alt="" coords="286,132,314,169,310,172,282,135"/>
+<area shape="rect" title="Application Manager implementation." alt="" coords="314,5,472,45"/>
+<area shape="rect" title=" " alt="" coords="265,365,348,390"/>
+<area shape="poly" title=" " alt="" coords="314,32,266,39,215,50,165,69,119,96,75,133,48,170,31,213,14,270,8,291,9,299,14,308,29,320,52,331,114,349,185,361,251,369,250,374,185,366,113,354,50,336,26,324,10,311,4,300,3,290,9,269,26,211,44,167,71,129,115,91,162,64,214,45,265,33,313,27"/>
+<area shape="rect" title=" " alt="" coords="670,101,737,126"/>
+<area shape="poly" title=" " alt="" coords="473,41,563,63,659,91,666,93,664,98,658,96,562,68,472,46"/>
+<area shape="rect" title=" " alt="" coords="762,101,832,126"/>
+<area shape="poly" title=" " alt="" coords="473,35,604,57,750,91,759,94,757,99,748,96,602,62,472,40"/>
+<area shape="rect" href="sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="490,93,646,133"/>
+<area shape="poly" title=" " alt="" coords="433,43,518,85,516,90,430,48"/>
+<area shape="rect" href="sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="320,93,466,133"/>
+<area shape="poly" title=" " alt="" coords="396,46,396,79,390,79,390,46"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="24,269,184,309"/>
+<area shape="poly" title=" " alt="" coords="314,44,253,62,189,90,158,108,130,130,104,154,83,183,77,200,77,219,88,256,83,258,72,220,72,199,79,180,100,151,126,125,155,104,187,85,252,57,313,39"/>
+<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="94,181,234,221"/>
+<area shape="poly" title=" " alt="" coords="370,48,201,175,198,171,366,43"/>
+<area shape="rect" title=" " alt="" coords="887,365,958,390"/>
+<area shape="poly" title=" " alt="" coords="646,128,659,131,735,136,834,138,884,142,930,149,967,161,994,180,1013,211,1017,242,1009,274,994,311,976,337,954,358,950,354,972,334,989,308,1004,272,1011,242,1008,213,990,183,965,166,929,154,884,147,834,144,735,141,658,136,645,134"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="372,357,518,397"/>
+<area shape="poly" title=" " alt="" coords="568,134,553,214,538,264,515,311,482,350,478,346,511,308,533,262,548,213,563,133"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="360,269,501,309"/>
+<area shape="poly" title=" " alt="" coords="562,135,541,177,511,223,470,263,466,259,507,220,537,174,557,132"/>
+<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="653,181,792,221"/>
+<area shape="poly" title=" " alt="" coords="603,131,678,172,675,177,600,136"/>
+<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="309,181,477,221"/>
+<area shape="poly" title=" " alt="" coords="531,136,445,178,442,173,528,131"/>
+<area shape="poly" title=" " alt="" coords="404,312,336,359,333,355,401,307"/>
+<area shape="poly" title=" " alt="" coords="502,300,874,365,873,370,501,306"/>
+<area shape="rect" title=" " alt="" coords="718,365,793,390"/>
+<area shape="poly" title=" " alt="" coords="502,307,706,360,704,365,501,312"/>
+<area shape="poly" title=" " alt="" coords="691,224,612,266,514,312,438,338,362,360,353,363,351,358,360,355,437,333,512,307,609,262,689,219"/>
+<area shape="poly" title=" " alt="" coords="787,219,830,239,869,267,886,287,900,309,917,350,913,353,895,311,882,290,866,271,827,243,785,224"/>
+<area shape="poly" title=" " alt="" coords="708,223,666,267,609,312,564,336,519,355,517,350,562,331,606,307,662,263,704,220"/>
+<area shape="poly" title=" " alt="" coords="788,219,822,239,837,252,849,268,855,289,849,311,826,340,796,360,793,356,822,336,844,308,850,289,844,271,833,256,818,243,785,224"/>
+<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="678,269,834,309"/>
+<area shape="poly" title=" " alt="" coords="732,221,746,256,741,258,727,223"/>
+<area shape="poly" title=" " alt="" coords="678,303,530,325,362,360,350,363,349,358,360,355,529,320,677,297"/>
+<area shape="poly" title=" " alt="" coords="793,307,889,356,887,361,791,312"/>
+<area shape="poly" title=" " alt="" coords="688,312,527,356,525,351,687,307"/>
+<area shape="poly" title=" " alt="" coords="758,310,758,351,753,351,753,310"/>
+<area shape="poly" title=" " alt="" coords="377,223,363,242,351,263,345,286,350,308,367,330,390,348,387,352,363,334,345,310,340,286,346,261,358,239,373,220"/>
+<area shape="poly" title=" " alt="" coords="404,221,419,256,414,258,399,223"/>
+<area shape="poly" title=" " alt="" coords="467,128,479,131,528,138,571,140,646,141,681,143,718,148,759,160,805,179,838,196,862,214,882,236,902,268,918,310,924,351,919,351,913,312,897,271,878,239,859,218,835,201,803,184,757,165,717,154,680,148,645,146,571,146,528,143,478,136,466,134"/>
+<area shape="poly" title=" " alt="" coords="351,136,322,155,299,183,295,201,300,221,312,268,322,286,339,308,364,330,392,348,389,353,361,334,335,311,318,289,307,270,294,222,290,201,295,180,318,152,348,131"/>
+<area shape="poly" title=" " alt="" coords="438,131,468,152,491,180,496,202,491,223,480,244,465,261,461,258,475,240,486,221,491,202,487,183,464,155,435,136"/>
+<area shape="poly" title=" " alt="" coords="466,131,640,176,639,181,465,136"/>
+<area shape="poly" title=" " alt="" coords="396,134,396,167,390,167,390,134"/>
+<area shape="poly" title=" " alt="" coords="149,307,268,357,266,362,147,312"/>
+<area shape="poly" title=" " alt="" coords="179,307,360,352,358,357,178,312"/>
+<area shape="poly" title=" " alt="" coords="177,220,209,264,230,287,254,307,306,335,360,354,358,359,304,340,252,312,227,291,205,267,173,223"/>
+<area shape="poly" title=" " alt="" coords="223,219,360,263,358,268,221,224"/>
 </map>
 </div>
 </div>
@@ -111,7 +154,7 @@ Include dependency graph for sapi_appmanager.c:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:a3024ccd4a9af5109d24e6c57565d74a1" id="r_a3024ccd4a9af5109d24e6c57565d74a1"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a3024ccd4a9af5109d24e6c57565d74a1">_POSIX_C_SOURCE</a>&#160;&#160;&#160;200809L</td></tr>
-<tr class="memdesc:a3024ccd4a9af5109d24e6c57565d74a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
+<tr class="memdesc:a3024ccd4a9af5109d24e6c57565d74a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIRBC2oo2's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
        known" / implicit-declaration errors under -Werror - caught via a real GitHub Actions failure, not local testing.  <br /></td></tr>
 <tr class="separator:a3024ccd4a9af5109d24e6c57565d74a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7b7b1ad11e159a620be224048dd94ef" id="r_af7b7b1ad11e159a620be224048dd94ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#af7b7b1ad11e159a620be224048dd94ef">SAPI_APPMANAGER_HAVE_POSIX_SIGNALS</a>&#160;&#160;&#160;0</td></tr>
@@ -120,6 +163,12 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a7132d21c4dce0134623310054ed6d6f6" id="r_a7132d21c4dce0134623310054ed6d6f6"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#a7132d21c4dce0134623310054ed6d6f6">sapi_appmanager_handle_stage_result</a> (<a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> status, const char *stage_name, uint32_t error_threshold)</td></tr>
+<tr class="memdesc:a7132d21c4dce0134623310054ed6d6f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records the outcome of one per-cycle stage (checkpoint, pre_execute, execute, or post_execute) against the shared error accounting, and decides whether the remaining stages of this cycle should run.  <br /></td></tr>
+<tr class="separator:a7132d21c4dce0134623310054ed6d6f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2755e9aa3ea68bb4eef7d562273dce1" id="r_ae2755e9aa3ea68bb4eef7d562273dce1"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__appmanager_8c.html#ae2755e9aa3ea68bb4eef7d562273dce1">sapi_appmanager_pace_failed_checkpoint</a> (<a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> checkpoint_start_ms, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> max_delay_ms)</td></tr>
+<tr class="memdesc:ae2755e9aa3ea68bb4eef7d562273dce1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Floors the retry interval for a failed checkpoint-stage attempt at max_delay_ms, measured from checkpoint_start_ms.  <br /></td></tr>
+<tr class="separator:ae2755e9aa3ea68bb4eef7d562273dce1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab9538e91ca0849775b4989d3b1c0f566" id="r_gab9538e91ca0849775b4989d3b1c0f566"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a> (const <a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> *config)</td></tr>
 <tr class="memdesc:gab9538e91ca0849775b4989d3b1c0f566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run application with lifecycle management.  <br /></td></tr>
 <tr class="separator:gab9538e91ca0849775b4989d3b1c0f566"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,6 +181,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga1468e27c9a31327305fd5a152d7f13b1" id="r_ga1468e27c9a31327305fd5a152d7f13b1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1">sapi_appmanager_request_shutdown</a> (void)</td></tr>
 <tr class="memdesc:ga1468e27c9a31327305fd5a152d7f13b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request application shutdown.  <br /></td></tr>
 <tr class="separator:ga1468e27c9a31327305fd5a152d7f13b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac5fc16f43be6b25dbd2587ab9581e47e" id="r_gac5fc16f43be6b25dbd2587ab9581e47e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gac5fc16f43be6b25dbd2587ab9581e47e">sapi_appmanager_reset_state</a> (void)</td></tr>
+<tr class="memdesc:gac5fc16f43be6b25dbd2587ab9581e47e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forcibly resets the application manager's own bookkeeping (lifecycle state, iteration/error counters, shutdown-request flag, and the ADR-026 setup-phase lock) back to its initial, pre-run condition.  <br /></td></tr>
+<tr class="separator:gac5fc16f43be6b25dbd2587ab9581e47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad7a9a181120aa3e9821a9479a8f55e52" id="r_gad7a9a181120aa3e9821a9479a8f55e52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52">sapi_appmanager_install_default_signal_handlers</a> (void)</td></tr>
 <tr class="memdesc:gad7a9a181120aa3e9821a9479a8f55e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">POSIX-only convenience: installs SIGINT and SIGTERM handlers that call <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>, so an operator (Ctrl+C) or process manager (SIGTERM) can stop a <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> loop gracefully - shutdown() still runs, this is not a hard kill.  <br /></td></tr>
 <tr class="separator:gad7a9a181120aa3e9821a9479a8f55e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,7 +215,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIExample's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
+<p>struct sigaction/sigaction()/sigemptyset() below are POSIX.1-2001, not base ISO C99 - must be defined before ANY header is included (same rule/pattern as safeAPIRBC2oo2's channel_ab.c/site.c/ monitor_c.c). Without this, glibc's strict-C99 mode hides these declarations entirely: this exact omission passed on macOS (Apple's libc does not gate them behind the same feature-test macro) but failed Linux CI with "storage size of 'sa' isn't
        known" / implicit-declaration errors under -Werror - caught via a real GitHub Actions failure, not local testing. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
@@ -184,7 +236,115 @@ Variables</h2></td></tr>
 
 <p>1 when compiled on a POSIX-ish target (signal.h available) so <a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52" title="POSIX-only convenience: installs SIGINT and SIGTERM handlers that call sapi_appmanager_request_shutdo...">sapi_appmanager_install_default_signal_handlers()</a> can install a real SIGINT/SIGTERM handler; 0 otherwise, in which case that function returns SAPI_STATUS_NOT_SUPPORTED. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00043">43</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00047">47</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a7132d21c4dce0134623310054ed6d6f6" name="a7132d21c4dce0134623310054ed6d6f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7132d21c4dce0134623310054ed6d6f6">&#9670;&#160;</a></span>sapi_appmanager_handle_stage_result()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static bool sapi_appmanager_handle_stage_result </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td>
+          <td class="paramname"><em>status</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>stage_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>error_threshold</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Records the outcome of one per-cycle stage (checkpoint, pre_execute, execute, or post_execute) against the shared error accounting, and decides whether the remaining stages of this cycle should run. </p>
+<p>Centralizes the "log, count against error_count, check error_threshold" behavior that ADR-019's checkpoint/pre_execute/post_execute stages share with execute()'s pre-existing error handling, so all four stages react to a non-OK status identically (REQ-APPMANAGER-007).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">status</td><td>Status returned by the stage that just ran. </td></tr>
+    <tr><td class="paramname">stage_name</td><td>Short, human-readable stage name for the log line on failure (e.g. "checkpoint", "pre_execute"). Must not be NULL. </td></tr>
+    <tr><td class="paramname">error_threshold</td><td>Errors before shutdown (0 = no limit), forwarded from <a class="el" href="structsapi__appmanager__config__t.html#a5ea836b854f51d6062bf60cc97222d0b">sapi_appmanager_config_t::error_threshold</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if status is SAPI_STATUS_OK (caller should proceed to the next stage of this cycle); false otherwise (caller should skip the remaining stages for this cycle - g_app_state.error_count and, if error_threshold was reached, g_shutdown_requested have already been updated). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00084">84</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+
+</div>
+</div>
+<a id="ae2755e9aa3ea68bb4eef7d562273dce1" name="ae2755e9aa3ea68bb4eef7d562273dce1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2755e9aa3ea68bb4eef7d562273dce1">&#9670;&#160;</a></span>sapi_appmanager_pace_failed_checkpoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void sapi_appmanager_pace_failed_checkpoint </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a>&#160;</td>
+          <td class="paramname"><em>checkpoint_start_ms</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td>
+          <td class="paramname"><em>max_delay_ms</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Floors the retry interval for a failed checkpoint-stage attempt at max_delay_ms, measured from checkpoint_start_ms. </p>
+<p>The checkpoint stage runs before pre_execute() every cycle (ADR-019) so a desynced peer is caught before either channel acts on that cycle's data - but that ordering means pre_execute() is never reached on a failed-checkpoint cycle, and pre_execute() is the ONLY place any of this framework's consumers own their cycle pacing (this module deliberately owns no timer of its own - ADR-001 section 4). A checkpoint that fails <em>validation</em> (e.g. <code>voter == NULL</code> - a normal, documented way to pause checkpointing while its own underlying transport is known down, not a rare condition - see <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s own doc above) returns immediately, at zero cost, every single call - without this floor, <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s own loop would retry it as fast as the CPU allows, one failed attempt (and one error log line) at a time, forever.</p>
+<p>Reuses max_delay_ms (already a caller-configured, meaningful budget) as the floor rather than inventing a new config field: a failed checkpoint now never retries faster than a checkpoint that blocked for its full timeout and then failed would have.</p>
+<p>REQ-APPMANAGER-008: a failed checkpoint-stage attempt shall not be retried faster than max_delay_ms (when a timer backend is registered).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">checkpoint_start_ms</td><td>Timestamp captured immediately before the failed <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> call. </td></tr>
+    <tr><td class="paramname">max_delay_ms</td><td>The checkpoint's own configured budget.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section user"><dt>Safety:</dt><dd>No-op if no timer backend is registered (checkpoint_start_ms degrades to 0 - see <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a>'s own doc, same convention used elsewhere in this framework, e.g. sapi_dual_negotiator's own startup timestamp) or max_delay_ms is 0: neither can be paced without fabricating a wait time nobody configured - a known, accepted limitation, not a silent behavior change for an integrator who never registered a timer backend at all. Implemented as a bounded <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> poll: no portable blocking-sleep primitive exists at this layer by design (this framework never owns an OS-specific blocking call itself); this matches the same polling pattern this framework's own consumers already use for their bounded waits. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00151">151</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -214,12 +374,12 @@ Variables</h2></td></tr>
 <div class="line">    .error_count = 0,</div>
 <div class="line">    .last_error = <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__APPMANAGER_html_ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264"><div class="ttname"><a href="group__APPMANAGER.html#ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a></div><div class="ttdeci">@ SAPI_APP_STATE_UNINITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00056">sapi_appmanager.h:56</a></div></div>
+<div class="ttc" id="agroup__APPMANAGER_html_ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264"><div class="ttname"><a href="group__APPMANAGER.html#ggaad6d0861be88c336d15ab5642dc28966aedbf3819226e7d912eaf201df268f264">SAPI_APP_STATE_UNINITIALIZED</a></div><div class="ttdeci">@ SAPI_APP_STATE_UNINITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00080">sapi_appmanager.h:80</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
 </div><!-- fragment -->
 <p>Global application state (single instance; no dynamic allocation). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00047">47</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00051">51</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -245,7 +405,7 @@ Variables</h2></td></tr>
 
 <p>Set by the installed signal handler (or <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>) to request that <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s loop exit cleanly. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00060">60</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>

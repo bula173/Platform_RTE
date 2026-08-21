@@ -84,24 +84,29 @@ $(function() {
 <p>Implementation of the safe-state transition facility (ADR-004).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__safestate_8h_source.html">safeapi/safestate/sapi_safestate.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_safestate.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__safestate_8c__incl.png" border="0" usemap="#asrc_2safestate_2sapi__safestate_8c" alt=""/></div>
 <map name="asrc_2safestate_2sapi__safestate_8c" id="asrc_2safestate_2sapi__safestate_8c">
-<area shape="rect" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="93,5,231,45"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="79,93,245,133"/>
-<area shape="poly" title=" " alt="" coords="165,46,165,79,159,79,159,46"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,151,221"/>
-<area shape="poly" title=" " alt="" coords="145,135,108,173,104,170,141,132"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,181,317,221"/>
-<area shape="poly" title=" " alt="" coords="183,132,220,170,216,173,179,135"/>
-<area shape="rect" title=" " alt="" coords="102,269,185,295"/>
-<area shape="poly" title=" " alt="" coords="223,224,171,263,168,259,220,219"/>
-<area shape="rect" title=" " alt="" coords="209,269,283,295"/>
-<area shape="poly" title=" " alt="" coords="249,222,249,255,243,255,243,222"/>
-<area shape="rect" title=" " alt="" coords="308,269,379,295"/>
-<area shape="poly" title=" " alt="" coords="271,219,320,258,317,263,268,224"/>
+<area shape="rect" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="161,5,298,45"/>
+<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="53,93,219,133"/>
+<area shape="poly" title=" " alt="" coords="210,48,168,86,165,82,207,44"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="244,93,404,133"/>
+<area shape="poly" title=" " alt="" coords="252,44,295,82,291,86,249,48"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="186,181,331,221"/>
+<area shape="poly" title=" " alt="" coords="165,131,222,171,219,176,162,136"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="20,181,161,221"/>
+<area shape="poly" title=" " alt="" coords="128,135,110,170,105,168,124,132"/>
+<area shape="rect" title=" " alt="" coords="264,269,347,295"/>
+<area shape="poly" title=" " alt="" coords="143,219,262,262,260,267,141,224"/>
+<area shape="rect" title=" " alt="" coords="5,269,80,295"/>
+<area shape="poly" title=" " alt="" coords="81,223,59,259,55,256,77,220"/>
+<area shape="rect" title=" " alt="" coords="105,269,175,295"/>
+<area shape="poly" title=" " alt="" coords="105,220,128,256,123,259,100,223"/>
+<area shape="poly" title=" " alt="" coords="312,135,283,172,279,169,307,132"/>
+<area shape="poly" title=" " alt="" coords="335,133,348,174,350,198,347,222,338,242,327,260,322,257,333,240,341,221,345,198,342,175,330,134"/>
 </map>
 </div>
 </div>
@@ -173,7 +178,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true and sets *out_index if level is a known value; false (index left unset) otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00018">18</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00019">19</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>
@@ -199,7 +204,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 <p>One handler slot per sapi_safestate_level_t value; no dynamic allocation. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00009">9</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>

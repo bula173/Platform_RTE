@@ -79,29 +79,44 @@ $(function() {
 Status</h1>
 <p>Actively growing framework with SIL 4 safety focus.</p>
 <p><b>IMPLEMENTED (Production Ready):</b> 14 core modules</p><ul>
-<li>Timer, IPC (pubsub + request-reply), Memory, NVM, Task/Thread, Logging, Reboot</li>
+<li>Timer, IPC (base queue API only — see note below), Memory, NVM, Task/Thread, Logging, Reboot</li>
 <li>AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String</li>
 <li>Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions</li>
+<li>Note: <code>sapi_ipc</code>'s pub/sub and request-reply variants (<code><a class="el" href="sapi__ipc__pubsub_8c.html" title="IPC Publish-Subscribe implementation.">src/ipc/sapi_ipc_pubsub.c</a></code>, <code><a class="el" href="sapi__ipc__request__reply_8c.html" title="IPC Request-Reply implementation.">sapi_ipc_request_reply.c</a></code>) are TODO-only stubs, excluded from the build (see their own file headers and <code>CMakeLists.txt</code>'s <code>SAFEAPI_ENABLE_IPC</code> comment) — only the base queue API (<code>sapi_ipc_create</code>/<code>_send</code>/<code>_receive</code>/<code>_destroy</code>) is implemented.</li>
 </ul>
-<p><b>IN PROGRESS:</b> Watchdog (System/Task/Channel/Checkpoint)</p><ul>
-<li>API design complete (<code><a class="el" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions.">include/safeapi/watchdog/sapi_watchdog.h</a></code>)</li>
-<li>Implementation pending (v0.3.0 target)</li>
-<li>Marks fault detection and recovery actions for SIL 4</li>
+<p><b>IMPLEMENTED:</b> Watchdog (<code><a class="el" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions.">include/safeapi/watchdog/sapi_watchdog.h</a></code>, <code><a class="el" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable sap...">src/watchdog/sapi_watchdog.c</a></code>)</p><ul>
+<li>Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM) dispatched on timeout, real timer integration, full test coverage</li>
+<li>Depended on directly by <code>sapi_checkpoint</code> and <code>sapi_appmanager</code>'s optional checkpoint stage (ADR-024's dependency graph)</li>
 </ul>
-<p><b>IMPLEMENTED:</b> Distributed channel synchronization (ADR-017)</p><ul>
-<li><code>sapi_checkpoint</code> — bounded checkpoint-ID rendezvous across vital channels, correct even without wall-clock agreement between nodes; fills in <code><a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a></code> as already specified (but not previously built) in <code>docs/REDUNDANCY_ARCHITECTURE.md</code></li>
+<p><b>IMPLEMENTED:</b> Redundancy Framework — vital channels, voting, checkpoints, data integrity (ADR-008/ADR-017; supersedes the "design phase" framing <code>docs/REDUNDANCY_ARCHITECTURE.md</code> originally described this as — that document is now a design <em>record</em>, not a proposal still to be built)</p><ul>
+<li><code>sapi_channel</code> — 2oo2/2oo3/NMR quorum voting across redundant channels, disagreement/health tracking</li>
+<li><code>sapi_checksum</code> — CRC-64 data integrity and the <code><a class="el" href="structsapi__vital__message__t.html" title="Vital channel message with integrated CRC-64.">sapi_vital_message_t</a></code> envelope (sequence + sender + CRC) both of the modules below build on</li>
+<li><code>sapi_checkpoint</code> — bounded checkpoint-ID rendezvous across vital channels, correct even without wall-clock agreement between nodes; fills in <code><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a></code> as already specified (but not previously built) in <code>docs/REDUNDANCY_ARCHITECTURE.md</code></li>
 <li><code>sapi_clocksync</code> — pluggable, diagnostic-only wall-clock offset/quality query (never the basis of vital-comparison correctness — see its header)</li>
 <li>Example: <code>examples/geo_distributed_checkpoint_sync.c</code></li>
-<li>Note: <code>sapi_vital_channel</code> and <code>sapi_checksum</code> (CRC-64) are also present in <code>include/</code>/<code>src/</code> and used by the two modules above, but are not yet reflected in this status summary's own categorization - see <code>docs/architecture/ADR-017-checkpoint-and-clock-sync.md</code> section 1 for what's actually wired together today.</li>
+<li>See <code>docs/architecture/ADR-017-checkpoint-and-clock-sync.md</code> section 1 and ADR-024's dependency table for exactly what's wired to what.</li>
 </ul>
-<p><b>DESIGN PHASE:</b> Redundancy Framework (Vital Channels, Voting, Checkpoints)</p><ul>
-<li>Documented in <code>docs/REDUNDANCY_ARCHITECTURE.md</code> as design proposal</li>
-<li>Planned for v0.4.0+</li>
-<li>Requires implementation of voting logic and checkpoint synchronization for full SIL 4 support</li>
-<li>See ROADMAP.md for detailed timeline</li>
+<p><b>IMPLEMENTED:</b> AppManager cycle hooks + built-in checkpoint (ADR-019)</p><ul>
+<li><code>pre_execute</code>/<code>post_execute</code> — optional per-cycle hooks bracketing the existing mandatory <code>execute()</code>, so a cyclic application's "gather
+  inputs" / "decide" / "send outputs" phases can be three named functions instead of one function with phase-numbered comments; both default to NULL (skipped) and are fully backward-compatible with every existing <code><a class="el" href="structsapi__appmanager__operations__t.html" title="Application lifecycle operations.">sapi_appmanager_operations_t</a></code> caller.</li>
+<li>Optional built-in checkpoint stage — <code><a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a></code> (NULL by default) wires a bounded <code><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a></code> (ADR-017) rendezvous into the loop automatically, ahead of <code>pre_execute()</code>, so a dual/multi-channel application no longer hand-rolls that call itself.</li>
+<li>Addendum (§5): relaxed <code><a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a></code>'s <code>channel_count</code> floor from <code>&gt;= 2</code> to <code>&gt;= 1</code> (<code>SAPI_VOTING_NMR</code>, <code>quorum_size == 1</code> only — 2oo2/2oo3 floors unchanged) to support a single-physical-link topology; see <code>docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md</code> for the full retrofit writeup (including the multiplexed-frame wire protocol needed to carry checkpoint traffic on an existing link), first live-verified in <code>safeAPIRBC2oo2</code>'s A/B channel.</li>
+</ul>
+<p><b>IMPLEMENTED:</b> Structured message-trail logging (<code><a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a></code>)</p><ul>
+<li>New addition to <code>sapi_log</code> alongside the existing free-text <code><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a></code>: emits a fixed, space-separated <code>Key=Value</code> line - <code>Timestamp=&lt;ms&gt; Level=&lt;LEVEL&gt; Cycle=&lt;n&gt; Source=&lt;src&gt; Destination=&lt;dst&gt; Type=&lt;type&gt; Info=&lt;info&gt;[ &lt;extra_fields&gt;]</code> - for logging an actual inter-channel message (a frame sent/received, a decision like AGREE/ DISAGREE) — the mandatory fields a message-trail log needs, with room for caller-supplied extra <code>Key=Value</code> fields beyond those seven. Fixed-arity, no <code>&lt;stdarg.h&gt;</code> (MISRA C:2012 Rule 17.1); the same backend as <code><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a></code> receives it, so no backend changes are required. First real consumer: <code>safeAPIRBC2oo2</code>'s A/B/C/SITE cyclic executives now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/ DISAGREE, and SITE heartbeat this way.</li>
+</ul>
+<p><b>IMPLEMENTED:</b> Dual-transfer state negotiation (<code>sapi_dual</code>, ADR-020)</p><ul>
+<li><code>sapi_dual_state_t</code> — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY vocabulary for "which of two redundant instances is active, and how
+  well-backed is the standby one", generalizing the ad hoc versions of this <code>safeAPIRBC2oo2</code>'s <code>site.c</code>/<code>channel_ab.c</code> each grew independently.</li>
+<li><code><a class="el" href="structsapi__dual__msgchannel__t.html" title="One sapi_dual_msgchannel_t instance&#39;s state. Caller-owned storage (REQ-DUAL-MSGCHANNEL-001); opaque i...">sapi_dual_msgchannel_t</a></code> ("Channel") — one EN 50159-defended message channel over a single <code>sapi_netlink_handle_t</code>, reusing the framework's existing <code><a class="el" href="structsapi__vital__message__t.html" title="Vital channel message with integrated CRC-64.">sapi_vital_message_t</a></code> envelope (sequence/sender/CRC-64) plus a masquerade check against an expected peer ID.</li>
+<li><code><a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a></code> ("DualChannel") — wraps 1..N redundant Channels with always-send + bounded-ACK-wait delivery (the real payload traffic itself is the liveness signal, never gated by negotiated state), aggregate <code>DOWN</code>/<code>DEGRADED</code>/<code>FULL</code> connection-status tracking with an optional change callback, and a second fire-and-forget frame flow for carrying a negotiator's own STATE beacons on the same links.</li>
+<li><code><a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a></code> — drives one round of state negotiation per <code>execute()</code> call: older-startup-timestamp-wins tie-break for the initial ONLINE/STANDBY decision, and an asymmetric HOT/COLD rule where the <em>currently-ONLINE</em> side's own channel health (never the STANDBY side's self-report) determines the STANDBY side's HOTSTANDBY/COLDSTANDBY label. One-directional dependency: the negotiator depends on a DualChannel, a DualChannel has no knowledge of the negotiator.</li>
+<li>Framework-only in this pass — <code>safeAPIRBC2oo2</code>'s <code>site.c</code>/<code>channel_ab.c</code> keep their existing hand-rolled logic for now; retrofitting them to <code>sapi_dual</code> is a deliberate follow-up (see ADR-020 §4 non-goals).</li>
+<li>See <code>docs/architecture/ADR-020-dual-transfer-state-negotiation.md</code>.</li>
 </ul>
 <p><b>Key Documentation:</b></p><ul>
-<li><code>docs/architecture/</code> — Architecture Decision Records (ADRs 001-008, 016-017; 009-015 do not exist) + PlantUML diagrams</li>
+<li><a href="coverage/index.html">Test Coverage Report</a> — gcovr line/function/branch coverage (generated by CI on every push to <code>master</code>/<code>develop</code>; only live on the published GitHub Pages site, not in a plain repo checkout — run <code>./scripts/coverage.sh</code> locally for the same report)</li>
+<li><code>docs/architecture/</code> — Architecture Decision Records (ADRs 001-008, 016-019; 009-015 do not exist) + PlantUML diagrams</li>
 <li><code>docs/requirements/SRS.md</code> — Consolidated requirements specification</li>
 <li><code>docs/MISRA_COMPLIANCE_REPORT.md</code> — MISRA C:2012 conformance status</li>
 <li><code>docs/EN_50128_ALIGNMENT.md</code> — <b>EN 50126/50128/50129 alignment &amp; safety case</b> ← Start here for certification<ul>
@@ -227,9 +242,13 @@ Layout</h1>
 <div class="line">                                status, types, buffer, cast, safestate,</div>
 <div class="line">                                string, timer, nvm, memory, task, ipc, log,</div>
 <div class="line">                                reboot, appmanager, watchdog, checksum,</div>
-<div class="line">                                vital_channel, clocksync, checkpoint</div>
-<div class="line">src/&lt;feature&gt;/                 matching implementation + CMakeLists.txt,</div>
-<div class="line">                                one static library target safeapi::&lt;feature&gt;</div>
+<div class="line">                                vital_channel, clocksync, checkpoint, dual</div>
+<div class="line">src/&lt;feature&gt;/                 matching implementation (ADR-007 directory</div>
+<div class="line">                                layout is unchanged); compiled into one of</div>
+<div class="line">                                4 grouped library targets - safeapi::core,</div>
+<div class="line">                                safeapi::oal, safeapi::channels,</div>
+<div class="line">                                safeapi::appmanager (ADR-023) - rather than</div>
+<div class="line">                                one target per feature</div>
 <div class="line">tests/&lt;feature&gt;/                matching CTest test file per feature</div>
 <div class="line">examples/                      standalone example programs (see</div>
 <div class="line">                                examples/README.md), e.g.</div>

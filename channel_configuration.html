@@ -384,7 +384,7 @@ Creating Channels for Vital Communication</h1>
 <li><code>sapi_ipc_create_udp(&amp;udp_ch, &amp;udp_config);</code></li>
 <li><code></code></li>
 <li><code>// Wrap in vital channel for 2oo2 voting</code></li>
-<li><code><a class="el" href="structsapi__vital__channel__config__t.html" title="Vital channel configuration.">sapi_vital_channel_config_t</a> vital_cfg = {</code></li>
+<li><code><a class="el" href="structsapi__channel__config__t.html" title="Configuration for sapi_channel_init().">sapi_channel_config_t</a> vital_cfg = {</code></li>
 <li><code> .voting_strategy = SAPI_VOTING_2OO2,</code></li>
 <li><code> .channel_timeout_ms = 1000,</code></li>
 <li><code> .log_disagreements = true,</code></li>
@@ -393,7 +393,7 @@ Creating Channels for Vital Communication</h1>
 <li><code>};</code></li>
 <li><code></code></li>
 <li><code>void *channels[2] = { &amp;tcp_ch, &amp;udp_ch };</code></li>
-<li><code>sapi_vital_channel_init(&amp;vital, &amp;vital_cfg, channels, 2);</code></li>
+<li><code>sapi_channel_init(&amp;vital, &amp;vital_cfg, channels, 2);</code></li>
 <li><code></code></li>
 <li><code>// Now ready for voting communication! *</code></li>
 <li></li>
@@ -426,7 +426,7 @@ Creating Channels for Vital Communication</h1>
 <li><code>sapi_ipc_create_udp(&amp;udp_ch, &amp;udp_server_config);</code></li>
 <li><code></code></li>
 <li><code>// Same vital channel config (but roles reversed in logic)</code></li>
-<li><code>sapi_vital_channel_init(&amp;vital, &amp;vital_cfg, channels, 2); *</code></li>
+<li><code>sapi_channel_init(&amp;vital, &amp;vital_cfg, channels, 2); *</code></li>
 <li></li>
 <li></li>
 </ul>

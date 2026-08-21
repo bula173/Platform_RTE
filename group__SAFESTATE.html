@@ -184,7 +184,7 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set by <a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a> (ADR-017) when fewer than expected_node_count peers confirm a checkpoint within max_delay_ms. </p>
+<p>Set by <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> (ADR-017) when fewer than expected_node_count peers confirm a checkpoint within max_delay_ms. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__safestate_8h_source.html#l00071">71</a> of file <a class="el" href="sapi__safestate_8h_source.html">sapi_safestate.h</a>.</p>
 
@@ -408,7 +408,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_INVALID_PARAM if handler is NULL or level is not a valid sapi_safestate_level_t value; SAPI_STATUS_OK otherwise. Registering again for the same level replaces the previous handler.</dd></dl>
 <p>REQ-COMMON-SAFESTATE-010 </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00043">43</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>
@@ -470,7 +470,7 @@ Functions</h2></td></tr>
 <dl class="section note"><dt>Note</dt><dd>Prefer the SAPI_ASSERT / SAPI_SAFESTATE / SAPI_REBOOT macros over calling this directly, so <b>FILE</b>/__LINE__ are captured correctly.</dd></dl>
 <p>REQ-COMMON-SAFESTATE-011 </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00065">65</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>

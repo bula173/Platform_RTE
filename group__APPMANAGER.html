@@ -93,6 +93,9 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application lifecycle operations.  <a href="structsapi__appmanager__operations__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional built-in checkpoint rendezvous configuration (ADR-019).  <a href="structsapi__appmanager__checkpoint__config__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application manager configuration.  <a href="structsapi__appmanager__config__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,6 +135,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gad7a9a181120aa3e9821a9479a8f55e52" id="r_gad7a9a181120aa3e9821a9479a8f55e52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52">sapi_appmanager_install_default_signal_handlers</a> (void)</td></tr>
 <tr class="memdesc:gad7a9a181120aa3e9821a9479a8f55e52"><td class="mdescLeft">&#160;</td><td class="mdescRight">POSIX-only convenience: installs SIGINT and SIGTERM handlers that call <a class="el" href="group__APPMANAGER.html#ga1468e27c9a31327305fd5a152d7f13b1" title="Request application shutdown.">sapi_appmanager_request_shutdown()</a>, so an operator (Ctrl+C) or process manager (SIGTERM) can stop a <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> loop gracefully - shutdown() still runs, this is not a hard kill.  <br /></td></tr>
 <tr class="separator:gad7a9a181120aa3e9821a9479a8f55e52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac5fc16f43be6b25dbd2587ab9581e47e" id="r_gac5fc16f43be6b25dbd2587ab9581e47e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gac5fc16f43be6b25dbd2587ab9581e47e">sapi_appmanager_reset_state</a> (void)</td></tr>
+<tr class="memdesc:gac5fc16f43be6b25dbd2587ab9581e47e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Forcibly resets the application manager's own bookkeeping (lifecycle state, iteration/error counters, shutdown-request flag, and the ADR-026 setup-phase lock) back to its initial, pre-run condition.  <br /></td></tr>
+<tr class="separator:gac5fc16f43be6b25dbd2587ab9581e47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>init/execute/shutdown lifecycle entry point for applications </p>
@@ -165,7 +171,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00055">55</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00079">79</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -189,12 +195,13 @@ Functions</h2></td></tr>
 <p>Run application with lifecycle management. </p>
 <p>This is the single entry point for all applications. It manages the complete lifecycle:</p><ol type="1">
 <li>Initialize (init)</li>
-<li>Execute loop (execute)</li>
+<li>Per-cycle loop, in order (ADR-019): a. Checkpoint rendezvous, if config-&gt;checkpoint is non-NULL b. pre_execute(), if ops-&gt;pre_execute is non-NULL c. execute() d. post_execute(), if ops-&gt;post_execute is non-NULL</li>
 <li>Shutdown (shutdown)</li>
 </ol>
 <p>Error handling:</p><ul>
+<li>REQ-APPMANAGER-009 (ADR-026): if a PREVIOUS call to this function is still mid-lifecycle (its own INITIALIZING/RUNNING/SHUTTING_DOWN) when this one is entered, it is refused immediately with EXIT_FAILURE and none of that previous call's state is touched - this is the single entry point and cannot be concurrently re-entered. A NEW call made only after a previous one has fully returned (state SHUTDOWN/ERROR) is unaffected - this framework's own test suite relies on exactly that sequential-call pattern.</li>
 <li>If init() fails, shutdown() is still called and EXIT_FAILURE is returned</li>
-<li>If execute() fails, error is logged and loop continues (unless threshold reached)</li>
+<li>If the checkpoint, pre_execute(), execute(), or post_execute() stage of a cycle returns non-OK, that is logged and counted against error_count exactly the same way regardless of which stage failed; the remaining stages of that same cycle are skipped, and the loop continues to the next cycle (unless error_threshold is reached)</li>
 <li>If error_threshold is reached, application shuts down</li>
 <li>shutdown() is always called, even on error</li>
 </ul>
@@ -205,7 +212,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>0 (EXIT_SUCCESS) if application completed normally 1 (EXIT_FAILURE) if initialization failed or errors exceeded threshold</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a> ops = {</div>
+<p>Example (single-stage, unchanged from before ADR-019): </p><div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a> ops = {</div>
 <div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">init</a> = my_app_init,</div>
 <div class="line">    .execute = my_app_execute,</div>
 <div class="line">    .shutdown = my_app_shutdown,</div>
@@ -221,13 +228,41 @@ Functions</h2></td></tr>
 <div class="line">};</div>
 <div class="line"> </div>
 <div class="line"><span class="keywordflow">return</span> <a class="code hl_function" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a>(&amp;config);</div>
-<div class="ttc" id="agroup__APPMANAGER_html_gab9538e91ca0849775b4989d3b1c0f566"><div class="ttname"><a href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a></div><div class="ttdeci">int sapi_appmanager_run(const sapi_appmanager_config_t *config)</div><div class="ttdoc">Run application with lifecycle management.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8c_source.html#l00062">sapi_appmanager.c:62</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__config__t_html"><div class="ttname"><a href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a></div><div class="ttdoc">Application manager configuration.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00134">sapi_appmanager.h:134</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__config__t_html_ae03d69327899e03ea71555cd42f563fb"><div class="ttname"><a href="structsapi__appmanager__config__t.html#ae03d69327899e03ea71555cd42f563fb">sapi_appmanager_config_t::ops</a></div><div class="ttdeci">const sapi_appmanager_operations_t * ops</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00135">sapi_appmanager.h:135</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__operations__t_html"><div class="ttname"><a href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a></div><div class="ttdoc">Application lifecycle operations.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00073">sapi_appmanager.h:73</a></div></div>
-<div class="ttc" id="astructsapi__appmanager__operations__t_html_a1f03aa6489eaf45e7ef8c29044af48b1"><div class="ttname"><a href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">sapi_appmanager_operations_t::init</a></div><div class="ttdeci">sapi_status_t(* init)(void *context)</div><div class="ttdoc">Initialize application.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00083">sapi_appmanager.h:83</a></div></div>
+<div class="ttc" id="agroup__APPMANAGER_html_gab9538e91ca0849775b4989d3b1c0f566"><div class="ttname"><a href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a></div><div class="ttdeci">int sapi_appmanager_run(const sapi_appmanager_config_t *config)</div><div class="ttdoc">Run application with lifecycle management.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8c_source.html#l00170">sapi_appmanager.c:170</a></div></div>
+<div class="ttc" id="astructsapi__appmanager__config__t_html"><div class="ttname"><a href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a></div><div class="ttdoc">Application manager configuration.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00241">sapi_appmanager.h:241</a></div></div>
+<div class="ttc" id="astructsapi__appmanager__config__t_html_ae03d69327899e03ea71555cd42f563fb"><div class="ttname"><a href="structsapi__appmanager__config__t.html#ae03d69327899e03ea71555cd42f563fb">sapi_appmanager_config_t::ops</a></div><div class="ttdeci">const sapi_appmanager_operations_t * ops</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00242">sapi_appmanager.h:242</a></div></div>
+<div class="ttc" id="astructsapi__appmanager__operations__t_html"><div class="ttname"><a href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a></div><div class="ttdoc">Application lifecycle operations.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00099">sapi_appmanager.h:99</a></div></div>
+<div class="ttc" id="astructsapi__appmanager__operations__t_html_a1f03aa6489eaf45e7ef8c29044af48b1"><div class="ttname"><a href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">sapi_appmanager_operations_t::init</a></div><div class="ttdeci">sapi_status_t(* init)(void *context)</div><div class="ttdoc">Initialize application.</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00109">sapi_appmanager.h:109</a></div></div>
+</div><!-- fragment --><p>Example (pre/post hooks plus a built-in cross-channel checkpoint, ADR-019): </p><div class="fragment"><div class="line"><span class="keyword">const</span> <a class="code hl_struct" href="structsapi__appmanager__operations__t.html">sapi_appmanager_operations_t</a> ops = {</div>
+<div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__operations__t.html#a1f03aa6489eaf45e7ef8c29044af48b1">init</a> = my_app_init,</div>
+<div class="line">    .pre_execute = my_app_read_inputs,</div>
+<div class="line">    .execute = my_app_decide,</div>
+<div class="line">    .post_execute = my_app_send_outputs,</div>
+<div class="line">    .shutdown = my_app_shutdown,</div>
+<div class="line">    .get_name = my_app_get_name,</div>
+<div class="line">    .get_version = my_app_get_version</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a> checkpoint_cfg = {</div>
+<div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__checkpoint__config__t.html#ab70a3fceb4f2a593ca44d7eea58dd4c5">voter</a> = &amp;my_voter,   <span class="comment">// already has its channels sapi_voter_register_channel()-ed</span></div>
+<div class="line">    .max_delay_ms = 200,</div>
+<div class="line">    .expected_node_count = 1,</div>
+<div class="line">    .watchdog = NULL</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><a class="code hl_struct" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> config = {</div>
+<div class="line">    .<a class="code hl_variable" href="structsapi__appmanager__config__t.html#ae03d69327899e03ea71555cd42f563fb">ops</a> = &amp;ops,</div>
+<div class="line">    .context = &amp;my_app_context,</div>
+<div class="line">    .max_iterations = 0,</div>
+<div class="line">    .error_threshold = 10,</div>
+<div class="line">    .checkpoint = &amp;checkpoint_cfg</div>
+<div class="line">};</div>
+<div class="line"> </div>
+<div class="line"><span class="keywordflow">return</span> <a class="code hl_function" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a>(&amp;config);</div>
+<div class="ttc" id="astructsapi__appmanager__checkpoint__config__t_html"><div class="ttname"><a href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a></div><div class="ttdoc">Optional built-in checkpoint rendezvous configuration (ADR-019).</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00224">sapi_appmanager.h:224</a></div></div>
+<div class="ttc" id="astructsapi__appmanager__checkpoint__config__t_html_ab70a3fceb4f2a593ca44d7eea58dd4c5"><div class="ttname"><a href="structsapi__appmanager__checkpoint__config__t.html#ab70a3fceb4f2a593ca44d7eea58dd4c5">sapi_appmanager_checkpoint_config_t::voter</a></div><div class="ttdeci">sapi_voter_t * voter</div><div class="ttdef"><b>Definition</b> <a href="sapi__appmanager_8h_source.html#l00225">sapi_appmanager.h:225</a></div></div>
 </div><!-- fragment --> 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00062">62</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00170">170</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -251,7 +286,7 @@ Functions</h2></td></tr>
 <p>Returns the current state of a running application manager. Note: This is intended for monitoring, not for control.</p>
 <dl class="section return"><dt>Returns</dt><dd>Current application state </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00180">180</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00405">405</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -281,7 +316,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00185">185</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00410">410</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -305,7 +340,7 @@ Functions</h2></td></tr>
 <p>Signals the application to begin shutdown. The execute loop will terminate after the current iteration.</p>
 <p>Note: This function requests shutdown but does not guarantee immediate termination. The shutdown may take one iteration to complete. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00195">195</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00420">420</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>
@@ -332,7 +367,31 @@ previous" convention).</p>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if both handlers were installed; SAPI_STATUS_NOT_SUPPORTED on a non-POSIX build; SAPI_STATUS_INTERNAL_ERROR if the underlying sigaction() call itself failed (see errno at the call site for detail - not surfaced here, consistent with this framework not using errno in its own public API, CLAUDE.md's "no use of errno in
         production paths"). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00236">236</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00479">479</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
+
+</div>
+</div>
+<a id="gac5fc16f43be6b25dbd2587ab9581e47e" name="gac5fc16f43be6b25dbd2587ab9581e47e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac5fc16f43be6b25dbd2587ab9581e47e">&#9670;&#160;</a></span>sapi_appmanager_reset_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sapi_appmanager_reset_state </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Forcibly resets the application manager's own bookkeeping (lifecycle state, iteration/error counters, shutdown-request flag, and the ADR-026 setup-phase lock) back to its initial, pre-run condition. </p>
+<p>Normal use of <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> never requires this: every one of its own entry/exit paths already resets this same state on its own (see REQ-APPMANAGER-009). This function exists for the one case that bypasses those paths entirely: an application-level fault handler that itself performs a non-local jump (e.g. <code>longjmp()</code>) out of a <code>SAPI_SAFESTATE_LEVEL_SAFE</code>/<code>_REBOOT</code> reaction instead of the framework's own documented never-returns contract (REQ-COMMON-SAFESTATE-002). After such a jump, <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> never reaches its own SHUTDOWN phase, and this module's internal state would otherwise stay permanently stuck mid-lifecycle - causing every subsequent <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> call to be rejected by the single-entry-point guard. Call this once, immediately after regaining control via such a non-local jump, before calling <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> again.</p>
+<dl class="section user"><dt>Safety:</dt><dd>Calling this while a <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> call is genuinely still executing (not abandoned via a non-local jump) corrupts that call's own state. This function exists specifically for the abandoned-via-non-local-jump case, not general use - MISRA C:2012 Rule 21.4 already prohibits <code>&lt;setjmp.h&gt;</code> in production code, so this situation should never arise there; it exists because this framework's own test suite has no other way to exercise a <code>SAPI_SAFESTATE_LEVEL_SAFE</code> reaction (which never returns) without one. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8c_source.html#l00425">425</a> of file <a class="el" href="sapi__appmanager_8c_source.html">sapi_appmanager.c</a>.</p>
 
 </div>
 </div>

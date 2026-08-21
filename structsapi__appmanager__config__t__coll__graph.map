@@ -1,5 +1,17 @@
 <map id="sapi_appmanager_config_t" name="sapi_appmanager_config_t">
-<area shape="rect" id="Node000001" title="Application manager configuration." alt="" coords="21,93,217,119"/>
-<area shape="rect" id="Node000002" href="$structsapi__appmanager__operations__t.html" title="Application lifecycle operations." alt="" coords="5,5,232,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="121,45,121,93,116,93,116,45"/>
+<area shape="rect" id="Node000001" title="Application manager configuration." alt="" coords="50,372,246,397"/>
+<area shape="rect" id="Node000002" href="$structsapi__appmanager__operations__t.html" title="Application lifecycle operations." alt="" coords="5,277,232,302"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,314,147,371,142,373,124,316"/>
+<area shape="rect" id="Node000003" href="$structsapi__appmanager__checkpoint__config__t.html" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019)." alt="" coords="256,269,472,309"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="309,317,176,374,174,369,307,312"/>
+<area shape="rect" id="Node000004" href="$structsapi__voter__storage__t.html" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="285,181,443,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="367,220,367,269,361,269,361,220"/>
+<area shape="rect" id="Node000005" href="$structsapi__voter__config__t.html" title="Configuration for sapi_voter_init()." alt="" coords="253,93,401,119"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="340,130,361,180,356,182,335,132"/>
+<area shape="rect" id="Node000006" href="$structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="425,93,599,119"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="482,128,385,183,383,179,479,123"/>
+<area shape="rect" id="Node000007" href="$structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="335,5,500,31"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="442,38,501,91,497,95,439,42"/>
+<area shape="rect" id="Node000008" href="$structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="525,5,691,31"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="587,42,527,95,524,91,583,38"/>
 </map>

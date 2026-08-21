@@ -85,6 +85,7 @@ $(function() {
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__checkpoint_8h_source.html">safeapi/checkpoint/sapi_checkpoint.h</a>&quot;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
+<code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &quot;<a class="el" href="sapi__buffer_8h_source.html">safeapi/buffer/sapi_buffer.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__checksum_8h_source.html">safeapi/checksum/sapi_checksum.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sapi__safestate_8h_source.html">safeapi/safestate/sapi_safestate.h</a>&quot;</code><br />
@@ -94,49 +95,57 @@ Include dependency graph for sapi_checkpoint.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__checkpoint_8c__incl.png" border="0" usemap="#asrc_2checkpoint_2sapi__checkpoint_8c" alt=""/></div>
 <map name="asrc_2checkpoint_2sapi__checkpoint_8c" id="asrc_2checkpoint_2sapi__checkpoint_8c">
-<area shape="rect" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="608,5,755,45"/>
-<area shape="rect" href="sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="297,93,442,133"/>
-<area shape="poly" title=" " alt="" coords="614,48,452,92,450,87,612,43"/>
-<area shape="rect" title=" " alt="" coords="5,357,88,383"/>
-<area shape="poly" title=" " alt="" coords="608,38,474,56,317,87,241,106,174,129,121,155,101,168,86,183,64,222,52,266,48,309,47,344,42,344,42,308,47,265,59,220,82,180,97,164,118,150,172,124,239,101,315,82,473,51,607,32"/>
-<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="539,181,682,221"/>
-<area shape="poly" title=" " alt="" coords="676,47,626,170,621,168,671,45"/>
-<area shape="rect" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="1113,181,1284,221"/>
-<area shape="poly" title=" " alt="" coords="738,43,1131,174,1129,179,736,48"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="758,181,925,221"/>
-<area shape="poly" title=" " alt="" coords="701,44,816,169,813,173,697,47"/>
-<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="949,181,1089,221"/>
-<area shape="poly" title=" " alt="" coords="719,43,971,173,969,177,717,48"/>
-<area shape="rect" title=" " alt="" coords="395,357,466,383"/>
-<area shape="poly" title=" " alt="" coords="297,119,219,127,180,135,144,145,116,158,97,175,91,195,100,220,126,254,158,282,195,305,234,324,314,349,382,361,381,367,312,354,232,329,192,310,155,286,122,258,95,223,86,195,93,172,113,154,143,140,178,129,218,122,296,114"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="479,269,625,309"/>
-<area shape="poly" title=" " alt="" coords="356,135,343,155,333,177,330,199,337,220,363,245,395,264,430,276,466,282,465,288,429,281,393,268,360,250,332,223,324,200,328,175,338,152,351,132"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="649,269,791,309"/>
-<area shape="poly" title=" " alt="" coords="442,118,513,126,587,139,653,156,678,167,697,179,709,196,717,216,724,255,718,256,712,217,705,199,693,183,676,172,651,161,586,144,512,131,442,123"/>
-<area shape="rect" href="sapi__vital__channel_8h.html" title="Safety&#45;critical redundant channel abstraction with voting logic." alt="" coords="110,181,271,221"/>
-<area shape="poly" title=" " alt="" coords="331,136,243,178,241,173,329,131"/>
-<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="347,181,515,221"/>
-<area shape="poly" title=" " alt="" coords="385,132,411,169,407,172,381,135"/>
-<area shape="poly" title=" " alt="" coords="651,312,480,358,478,353,650,307"/>
-<area shape="poly" title=" " alt="" coords="650,310,638,312,486,333,336,349,102,368,102,363,335,344,486,328,637,307,649,305"/>
-<area shape="rect" title=" " alt="" coords="683,357,757,383"/>
-<area shape="poly" title=" " alt="" coords="723,310,723,343,717,343,717,310"/>
-<area shape="poly" title=" " alt="" coords="213,220,263,261,324,307,396,349,393,353,321,312,260,266,210,224"/>
-<area shape="poly" title=" " alt="" coords="271,219,466,265,465,270,269,224"/>
-<area shape="poly" title=" " alt="" coords="176,223,68,349,63,345,172,220"/>
-<area shape="poly" title=" " alt="" coords="235,219,340,262,467,307,575,336,670,356,668,361,574,341,466,312,338,267,233,224"/>
-<area shape="poly" title=" " alt="" coords="459,219,516,259,513,264,456,224"/>
-<area shape="poly" title=" " alt="" coords="495,219,645,263,643,268,493,224"/>
-<area shape="poly" title=" " alt="" coords="600,223,575,260,570,257,595,220"/>
-<area shape="poly" title=" " alt="" coords="637,220,687,259,683,263,633,224"/>
-<area shape="poly" title=" " alt="" coords="1138,224,986,267,803,312,625,344,480,365,479,360,624,339,802,307,985,262,1136,219"/>
-<area shape="poly" title=" " alt="" coords="1114,222,1102,224,974,239,872,247,770,255,639,272,638,267,769,250,872,242,973,234,1101,219,1113,217"/>
-<area shape="poly" title=" " alt="" coords="1114,222,1102,224,805,276,804,271,1101,219,1113,217"/>
-<area shape="poly" title=" " alt="" coords="1173,224,1100,268,1055,292,1008,312,945,332,881,347,771,365,770,360,880,342,944,327,1006,307,1052,287,1097,263,1170,219"/>
-<area shape="poly" title=" " alt="" coords="779,224,629,268,627,263,777,219"/>
-<area shape="poly" title=" " alt="" coords="816,224,759,264,756,259,813,219"/>
-<area shape="poly" title=" " alt="" coords="949,222,938,224,790,248,639,272,638,267,789,243,937,219,948,216"/>
-<area shape="poly" title=" " alt="" coords="954,224,799,268,798,263,952,219"/>
+<area shape="rect" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="660,5,807,45"/>
+<area shape="rect" href="sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="455,93,601,133"/>
+<area shape="poly" title=" " alt="" coords="689,48,586,91,584,86,687,43"/>
+<area shape="rect" title=" " alt="" coords="5,365,88,390"/>
+<area shape="poly" title=" " alt="" coords="660,36,514,54,340,84,255,103,180,127,119,153,96,168,79,183,66,202,56,223,45,269,43,314,45,351,40,351,38,314,40,268,51,221,61,199,75,180,93,163,117,148,178,122,254,98,339,78,514,49,659,31"/>
+<area shape="rect" title=" " alt="" coords="872,101,939,126"/>
+<area shape="poly" title=" " alt="" coords="772,43,871,92,869,97,770,48"/>
+<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="710,181,853,221"/>
+<area shape="poly" title=" " alt="" coords="741,45,775,167,770,169,736,46"/>
+<area shape="rect" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="272,181,443,221"/>
+<area shape="poly" title=" " alt="" coords="660,33,610,40,554,51,498,70,445,96,424,112,406,131,376,171,372,168,401,128,421,108,443,91,496,65,553,46,609,34,660,28"/>
+<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="877,181,1043,221"/>
+<area shape="poly" title=" " alt="" coords="746,44,776,87,795,110,818,131,854,155,892,174,890,179,851,160,814,135,791,114,771,90,742,47"/>
+<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="1119,181,1259,221"/>
+<area shape="poly" title=" " alt="" coords="758,43,816,91,838,113,861,131,924,156,977,165,1032,169,1100,179,1106,180,1105,185,1100,184,1031,174,976,170,923,161,859,136,834,117,813,95,755,47"/>
+<area shape="rect" title=" " alt="" coords="138,365,209,390"/>
+<area shape="poly" title=" " alt="" coords="455,118,359,122,252,132,202,140,158,152,122,166,99,183,88,203,85,225,88,248,97,272,124,317,154,353,150,356,120,320,92,274,83,250,79,225,83,201,95,180,120,161,156,146,201,135,251,127,359,116,455,112"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="726,357,871,397"/>
+<area shape="poly" title=" " alt="" coords="601,116,726,124,869,138,992,156,1035,167,1058,179,1068,194,1074,208,1072,236,1056,261,1029,285,994,306,955,325,877,356,875,351,953,320,992,302,1025,281,1052,258,1067,234,1068,209,1064,196,1054,183,1033,172,991,161,869,143,726,130,601,121"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="595,269,736,309"/>
+<area shape="poly" title=" " alt="" coords="518,135,509,154,502,176,500,199,508,220,519,231,538,242,589,262,587,267,536,247,516,235,503,223,495,200,497,175,504,152,514,132"/>
+<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="109,181,248,221"/>
+<area shape="poly" title=" " alt="" coords="456,135,262,182,261,177,455,130"/>
+<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="517,181,685,221"/>
+<area shape="poly" title=" " alt="" coords="546,132,578,169,574,173,542,135"/>
+<area shape="poly" title=" " alt="" coords="595,306,223,370,222,365,594,300"/>
+<area shape="poly" title=" " alt="" coords="595,300,384,322,255,339,126,360,102,365,101,360,125,355,254,334,384,317,594,294"/>
+<area shape="rect" title=" " alt="" coords="419,365,493,390"/>
+<area shape="poly" title=" " alt="" coords="620,312,498,362,496,357,618,307"/>
+<area shape="poly" title=" " alt="" coords="172,222,157,270,158,312,167,350,161,352,152,313,152,269,167,221"/>
+<area shape="poly" title=" " alt="" coords="249,218,344,243,417,267,453,287,489,307,546,326,604,341,712,362,711,367,603,346,544,331,487,312,451,292,415,272,342,248,248,223"/>
+<area shape="poly" title=" " alt="" coords="166,223,66,355,62,352,162,220"/>
+<area shape="poly" title=" " alt="" coords="249,218,325,242,357,255,380,267,402,286,420,308,447,351,442,354,416,312,398,290,377,272,355,260,323,247,248,224"/>
+<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="211,269,367,309"/>
+<area shape="poly" title=" " alt="" coords="205,219,256,259,252,263,202,224"/>
+<area shape="poly" title=" " alt="" coords="265,312,202,359,198,354,262,307"/>
+<area shape="poly" title=" " alt="" coords="368,301,713,359,712,364,367,306"/>
+<area shape="poly" title=" " alt="" coords="237,312,93,363,91,358,235,307"/>
+<area shape="poly" title=" " alt="" coords="327,307,423,356,421,361,325,312"/>
+<area shape="poly" title=" " alt="" coords="668,219,711,239,750,267,776,304,792,343,787,345,772,307,746,271,708,243,666,224"/>
+<area shape="poly" title=" " alt="" coords="618,220,645,256,641,260,613,223"/>
+<area shape="poly" title=" " alt="" coords="788,221,795,269,800,343,795,344,789,270,782,222"/>
+<area shape="poly" title=" " alt="" coords="757,224,704,263,700,259,754,219"/>
+<area shape="poly" title=" " alt="" coords="275,224,235,243,201,271,189,290,182,310,176,351,170,351,176,309,184,287,197,268,232,238,273,219"/>
+<area shape="poly" title=" " alt="" coords="394,219,480,261,584,307,717,351,716,356,582,312,477,266,392,224"/>
+<area shape="poly" title=" " alt="" coords="426,219,586,263,584,268,424,224"/>
+<area shape="poly" title=" " alt="" coords="383,219,406,241,426,268,445,310,455,350,449,351,440,312,422,271,402,245,379,223"/>
+<area shape="poly" title=" " alt="" coords="944,223,827,349,823,346,940,220"/>
+<area shape="poly" title=" " alt="" coords="896,224,744,268,742,263,895,219"/>
+<area shape="poly" title=" " alt="" coords="1181,223,1150,268,1127,292,1101,312,1049,337,993,355,937,367,886,374,885,369,936,362,991,350,1047,332,1099,307,1124,288,1146,265,1177,220"/>
+<area shape="poly" title=" " alt="" coords="1120,217,750,277,749,272,1119,211"/>
 </map>
 </div>
 </div>
@@ -158,9 +167,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af417ffad5639f066111c166f6dcf92b9" id="r_af417ffad5639f066111c166f6dcf92b9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__checkpoint_8c.html#af417ffad5639f066111c166f6dcf92b9">remaining_budget_ms</a> (<a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> start_ms, <a class="el" href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a> now_ms, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> max_delay_ms)</td></tr>
 <tr class="memdesc:af417ffad5639f066111c166f6dcf92b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the time budget remaining until start_ms + max_delay_ms.  <br /></td></tr>
 <tr class="separator:af417ffad5639f066111c166f6dcf92b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3801dbad75b15d71c5b72053c972b9ca" id="r_ga3801dbad75b15d71c5b72053c972b9ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca">sapi_channel_checkpoint</a> (<a class="el" href="group__vital__channel.html#ga4146ca743eeb01de7b305b3f92db7a70">sapi_vital_channel_t</a> *handle, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
-<tr class="memdesc:ga3801dbad75b15d71c5b72053c972b9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital channel instance.  <br /></td></tr>
-<tr class="separator:ga3801dbad75b15d71c5b72053c972b9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9d2c128dd981154b0ce7ee3ea2e4f85e" id="r_ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e">sapi_channel_checkpoint</a> (<a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
+<tr class="memdesc:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel registered with a voter.  <br /></td></tr>
+<tr class="separator:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of the bounded checkpoint rendezvous (ADR-017). </p>
@@ -180,7 +189,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Fixed sender id for checkpoint-arrival markers. sapi_checksum's verify path does not constrain this value; it only matters for diagnostics, so a single framework-reserved constant is sufficient rather than threading a real per-channel identity through this module. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00019">19</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -230,7 +239,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; a sapi_buffer_t/sapi_checksum error status otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00039">39</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00040">40</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -279,7 +288,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if reply is a valid, current confirmation; false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00075">75</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00076">76</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -335,7 +344,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Remaining budget in ms; 0 if the deadline has already passed. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00119">119</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00120">120</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>

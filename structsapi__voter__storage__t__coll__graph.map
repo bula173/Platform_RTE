@@ -1,0 +1,11 @@
+<map id="sapi_voter_storage_t" name="sapi_voter_storage_t">
+<area shape="rect" id="Node000001" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="37,181,196,207"/>
+<area shape="rect" id="Node000002" href="$structsapi__voter__config__t.html" title="Configuration for sapi_voter_init()." alt="" coords="5,93,153,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,130,114,180,109,182,87,132"/>
+<area shape="rect" id="Node000003" href="$structsapi__channel__storage__t.html" title="Storage for one vital channel instance (opaque to caller)." alt="" coords="177,93,352,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="234,128,138,183,135,179,232,123"/>
+<area shape="rect" id="Node000004" href="$structsapi__channel__config__t.html" title="Configuration for sapi_channel_init()." alt="" coords="87,5,253,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="195,38,253,91,250,95,191,42"/>
+<area shape="rect" id="Node000005" href="$structsapi__channel__health__t.html" title="Health statistics for one vital channel." alt="" coords="277,5,444,31"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="339,42,280,95,276,91,336,38"/>
+</map>

@@ -95,16 +95,16 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga3801dbad75b15d71c5b72053c972b9ca" id="r_ga3801dbad75b15d71c5b72053c972b9ca"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca">sapi_channel_checkpoint</a> (<a class="el" href="group__vital__channel.html#ga4146ca743eeb01de7b305b3f92db7a70">sapi_vital_channel_t</a> *handle, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
-<tr class="memdesc:ga3801dbad75b15d71c5b72053c972b9ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital channel instance.  <br /></td></tr>
-<tr class="separator:ga3801dbad75b15d71c5b72053c972b9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9d2c128dd981154b0ce7ee3ea2e4f85e" id="r_ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e">sapi_channel_checkpoint</a> (<a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, const <a class="el" href="structsapi__checkpoint__config__t.html">sapi_checkpoint_config_t</a> *config)</td></tr>
+<tr class="memdesc:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs one bounded checkpoint rendezvous across every channel registered with a voter.  <br /></td></tr>
+<tr class="separator:ga9d2c128dd981154b0ce7ee3ea2e4f85e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Bounded cross-channel synchronization for distributed vital channels. </p>
-<p>REQ-CHECKPOINT-001: <a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a> shall never block longer than config-&gt;max_delay_ms. REQ-CHECKPOINT-002: a checkpoint-arrival reply that fails CRC verification or carries a different checkpoint_id shall not count toward expected_node_count. REQ-CHECKPOINT-003: if fewer than expected_node_count valid replies arrive within max_delay_ms, <a class="el" href="group__CHECKPOINT.html#ga3801dbad75b15d71c5b72053c972b9ca" title="Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital chann...">sapi_channel_checkpoint()</a> shall call <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> at SAPI_SAFESTATE_LEVEL_SAFE with SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT before returning SAPI_STATUS_TIMEOUT. </p>
+<p>REQ-CHECKPOINT-001: <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> shall never block longer than config-&gt;max_delay_ms. REQ-CHECKPOINT-002: a checkpoint-arrival reply that fails CRC verification or carries a different checkpoint_id shall not count toward expected_node_count. REQ-CHECKPOINT-003: if fewer than expected_node_count valid replies arrive within max_delay_ms, <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> shall call <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> at SAPI_SAFESTATE_LEVEL_SAFE with SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT before returning SAPI_STATUS_TIMEOUT. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga3801dbad75b15d71c5b72053c972b9ca" name="ga3801dbad75b15d71c5b72053c972b9ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3801dbad75b15d71c5b72053c972b9ca">&#9670;&#160;</a></span>sapi_channel_checkpoint()</h2>
+<a id="ga9d2c128dd981154b0ce7ee3ea2e4f85e" name="ga9d2c128dd981154b0ce7ee3ea2e4f85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9d2c128dd981154b0ce7ee3ea2e4f85e">&#9670;&#160;</a></span>sapi_channel_checkpoint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -112,8 +112,8 @@ Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_channel_checkpoint </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group__vital__channel.html#ga4146ca743eeb01de7b305b3f92db7a70">sapi_vital_channel_t</a> *&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
+          <td class="paramtype"><a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *&#160;</td>
+          <td class="paramname"><em>voter</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -129,26 +129,26 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Performs one bounded checkpoint rendezvous across every channel of an already-initialized vital channel instance. </p>
-<p>Broadcasts a checkpoint-arrival message (config-&gt;checkpoint_id) to every channel via the vital channel's own backend_send, then polls each channel's backend_recv bounded by config-&gt;max_delay_ms, counting only replies that pass <a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3" title="Verify vital channel message and extract payload.">sapi_checksum_vital_message_verify()</a> and carry the matching checkpoint_id.</p>
+<p>Performs one bounded checkpoint rendezvous across every channel registered with a voter. </p>
+<p>Broadcasts a checkpoint-arrival message (config-&gt;checkpoint_id) to every one of voter's registered channels (via each channel's own <a class="el" href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e" title="Sends data on this channel via its backend send callback.">sapi_channel_send()</a>), then polls each channel's <a class="el" href="group__channel__link.html#ga81dd83683d1802758b2d32ab8f4e62f6" title="Receives data on this channel via its backend receive callback.">sapi_channel_receive()</a> bounded by config-&gt;max_delay_ms, counting only replies that pass <a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3" title="Verify vital channel message and extract payload.">sapi_checksum_vital_message_verify()</a> and carry the matching checkpoint_id. This is direct per-channel I/O, not a <a class="el" href="group__voter.html#gab568635cb2a165e691516682c468c6d7" title="Broadcasts data to every registered, healthy channel.">sapi_voter_send()</a>/_receive() voting round - checkpoint messages are rendezvous markers, not data to vote on.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">handle</td><td>Initialized vital channel instance (<a class="el" href="group__vital__channel.html#gab138b5adbed07c3e180678be203761aa" title="Initialize a vital (redundant) channel with voting logic.">sapi_vital_channel_init()</a> already called). Must not be NULL. </td></tr>
+    <tr><td class="paramname">voter</td><td>Voter with 1+ channels already registered (<a class="el" href="group__voter.html#ga66332ef828ac44ac9ff08ccfbf68d602" title="Registers one already-initialized channel with this voter.">sapi_voter_register_channel()</a>). Must not be NULL. </td></tr>
     <tr><td class="paramname">config</td><td>Checkpoint configuration. Must not be NULL. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if at least config-&gt;expected_node_count valid confirmations arrived within config-&gt;max_delay_ms (the optional watchdog, if any, has been kicked). </dd>
 <dd>
-SAPI_STATUS_INVALID_PARAM if handle or config is NULL, or config-&gt;expected_node_count exceeds handle-&gt;channel_count. </dd>
+SAPI_STATUS_INVALID_PARAM if voter or config is NULL, or config-&gt;expected_node_count exceeds voter's registered channel count. </dd>
 <dd>
 SAPI_STATUS_TIMEOUT if fewer than expected_node_count valid confirmations arrived in time.</dd></dl>
-<dl class="section pre"><dt>Precondition</dt><dd>handle != NULL, config != NULL </dd></dl>
+<dl class="section pre"><dt>Precondition</dt><dd>voter != NULL, config != NULL </dd></dl>
 <dl class="section post"><dt>Postcondition</dt><dd>On SAPI_STATUS_TIMEOUT, <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> has already been called at SAPI_SAFESTATE_LEVEL_SAFE with SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT before this function returns (REQ-CHECKPOINT-003) - the same "safe-state is triggered
-      automatically by the sync/vote logic itself" pattern <a class="el" href="group__vital__channel.html#ga62ae3766da674903454060f31a3c797e" title="Receive data via vital channel (voting-based reception)">sapi_vital_channel_receive()</a> already uses on a voting disagreement.</dd></dl>
+      automatically by the sync/vote logic itself" pattern <a class="el" href="group__voter.html#gae73e861bc9f4db2276051add1a471ee2" title="Receives from every registered, healthy channel and votes.">sapi_voter_receive()</a> already uses on a voting disagreement.</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>No dynamic memory allocation. Never blocks longer than config-&gt;max_delay_ms (REQ-CHECKPOINT-001). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00138">138</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00139">139</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>

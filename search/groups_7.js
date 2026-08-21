@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['manager_0',['Application Manager',['../group__APPMANAGER.html',1,'']]],
-  ['manipulation_1',['Bounded String Manipulation',['../group__STRING.html',1,'']]],
-  ['mechanism_2',['Watchdog Mechanism',['../group__WATCHDOG.html',1,'']]],
-  ['memory_3',['Non-Volatile Memory',['../group__NVM.html',1,'']]],
-  ['memory_20reservation_4',['Static Memory Reservation',['../group__MEMORY.html',1,'']]]
+  ['integer_20casting_0',['Checked Integer Casting',['../group__CAST.html',1,'']]],
+  ['inter_20process_20communication_1',['Inter-Process Communication',['../group__IPC.html',1,'']]],
+  ['inter_20process_20communication_20backend_20adaptation_2',['Inter-Process Communication - Backend Adaptation',['../group__IPC__BACKEND.html',1,'']]]
 ];

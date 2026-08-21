@@ -1,9 +1,4 @@
 var searchData=
 [
-  ['layer_20data_20buffer_20abstraction_0',['ADR-002: Cross-Layer Data Buffer Abstraction',['../md_docs_2architecture_2ADR-002-cross-layer-data-buffers.html',1,'']]],
-  ['layer_20oal_20for_20the_20safe_20api_20framework_1',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
-  ['layout_2',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
-  ['linux_20oal_20backend_3',['ADR-018: A Real POSIX/Linux OAL Backend',['../md_docs_2architecture_2ADR-018-posix-oal-backend.html',1,'']]],
-  ['log_20module_20architecture_4',['Log Module - Architecture',['../log_architecture.html',1,'']]],
-  ['logging_20module_20user_20guide_5',['Logging Module - User Guide',['../log_user_guide.html',1,'']]]
+  ['guide_0',['guide',['../buffer_user_guide.html',1,'Buffer Module - User Guide'],['../cast_user_guide.html',1,'Cast Module - User Guide'],['../channel_configuration.html',1,'Channel Configuration Guide'],['../checksum_user_guide.html',1,'Checksum Module - User Guide'],['../md_docs_2CROSS__COMPILATION.html',1,'Cross-Compilation Guide'],['../ipc_guide.html',1,'IPC (Inter-Process Communication) Guide'],['../ipc_transport_selection.html',1,'IPC Transport Selection Guide'],['../log_user_guide.html',1,'Logging Module - User Guide'],['../memory_user_guide.html',1,'Memory Module - User Guide'],['../nvm_user_guide.html',1,'Non-Volatile Memory User Guide'],['../reboot_user_guide.html',1,'Reboot Module - User Guide'],['../safestate_user_guide.html',1,'Safe-State Module - User Guide'],['../status_user_guide.html',1,'Status Module - User Guide'],['../string_user_guide.html',1,'String Module - User Guide'],['../task_user_guide.html',1,'Task Queue Module - User Guide'],['../timer_user_guide.html',1,'Timer Module - User Guide'],['../types_user_guide.html',1,'Types Module - User Guide'],['../vital_channel_user_guide.html',1,'Vital Channel Module - User Guide'],['../watchdog_user_guide.html',1,'Watchdog Module - User Guide']]]
 ];

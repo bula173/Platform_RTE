@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['is_5fvalid_5faction_0',['is_valid_action',['../sapi__watchdog_8c.html#ae80e4fca3c6bbb43bf990420aa97df19',1,'sapi_watchdog.c']]],
-  ['is_5fvalid_5fhandle_1',['is_valid_handle',['../sapi__watchdog_8c.html#a276607429a1cd38238764fc6cd8cef70',1,'sapi_watchdog.c']]]
+  ['dual_5fchannel_5fpoll_5flink_5fonce_0',['dual_channel_poll_link_once',['../sapi__dual__channel_8c.html#ac4d3d8d2c0c66f3040d503be3f2a7917',1,'sapi_dual_channel.c']]]
 ];

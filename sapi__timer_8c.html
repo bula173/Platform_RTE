@@ -81,27 +81,37 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005).  
+<p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER__BACKEND.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005).  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__timer__backend_8h_source.html">safeapi_backend/timer/sapi_timer_backend.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_timer.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__timer_8c__incl.png" border="0" usemap="#asrc_2timer_2sapi__timer_8c" alt=""/></div>
 <map name="asrc_2timer_2sapi__timer_8c" id="asrc_2timer_2sapi__timer_8c">
-<area shape="rect" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="81,5,243,31"/>
-<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="92,79,232,119"/>
-<area shape="poly" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" title=" " alt="" coords="145,121,108,159,104,155,141,117"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" title=" " alt="" coords="183,117,220,155,216,159,179,121"/>
-<area shape="rect" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
+<area shape="rect" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="124,5,287,31"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" title=" " alt="" coords="175,33,140,52,124,65,110,80,94,116,88,153,83,153,89,115,106,77,120,61,137,47,173,28"/>
+<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="250,167,390,207"/>
+<area shape="poly" title=" " alt="" coords="239,28,274,47,291,61,305,77,314,95,320,115,324,152,319,153,315,116,309,97,300,80,287,65,271,52,236,33"/>
+<area shape="rect" href="sapi__timer__backend_8h.html" title="OS&#45;backend adaptation surface for the Timer service (ADR&#45;005, ADR&#45;021)." alt="" coords="120,79,291,119"/>
+<area shape="poly" title=" " alt="" coords="208,31,208,65,203,65,203,31"/>
+<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
+<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
+<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
+<area shape="poly" title=" " alt="" coords="294,209,236,249,233,245,291,205"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
+<area shape="poly" title=" " alt="" coords="332,206,350,241,346,244,327,208"/>
+<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
+<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
+<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
+<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
+<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
+<area shape="poly" title=" " alt="" coords="207,119,200,241,195,241,202,119"/>
+<area shape="poly" title=" " alt="" coords="232,117,285,156,282,161,229,121"/>
 </map>
 </div>
 </div>
@@ -109,7 +119,7 @@ Include dependency graph for sapi_timer.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga45ba555c8be39f02390b33a99721a4f1" id="r_ga45ba555c8be39f02390b33a99721a4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1">sapi_timer_register_backend</a> (const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *backend)</td></tr>
+<tr class="memitem:ga45ba555c8be39f02390b33a99721a4f1" id="r_ga45ba555c8be39f02390b33a99721a4f1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER__BACKEND.html#ga45ba555c8be39f02390b33a99721a4f1">sapi_timer_register_backend</a> (const <a class="el" href="structsapi__timer__backend__t.html">sapi_timer_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:ga45ba555c8be39f02390b33a99721a4f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by every sapi_timer_* call. This is how an integrator supplies their own timer implementation (ADR-005 section 2.1) - call once at startup, before any other sapi_timer_* function.  <br /></td></tr>
 <tr class="separator:ga45ba555c8be39f02390b33a99721a4f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7ec1f35543b16aaf3fe24c7ad7ae55dc" id="r_ga7ec1f35543b16aaf3fe24c7ad7ae55dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc">sapi_timer_create</a> (sapi_timer_storage_t *storage, const <a class="el" href="structsapi__timer__config__t.html">sapi_timer_config_t</a> *config, <a class="el" href="group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270">sapi_timer_handle_t</a> *out_handle)</td></tr>
@@ -135,7 +145,7 @@ Variables</h2></td></tr>
 <tr class="separator:ad4ef23a978a776f39c1e7b857f255dc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005). </p>
+<div class="textblock"><p>Timer service: validates parameters, then dispatches to the backend registered via <a class="el" href="group__TIMER__BACKEND.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a> (ADR-005). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
 </div><h2 class="groupheader">Variable Documentation</h2>
@@ -161,7 +171,7 @@ Variables</h2></td></tr>
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__timer_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__timer_8c_source.html">sapi_timer.c</a>.</p>
 
 </div>
 </div>

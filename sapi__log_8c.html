@@ -81,27 +81,51 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Logging service: dispatches to the backend registered via <a class="el" href="group__LOG.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> (ADR-005). No backend registered is not an error for this service - see <a class="el" href="sapi__log_8h.html" title="OS Abstraction Layer - Logging/diagnostics service.">sapi_log.h</a>.  
+<p>Logging service: dispatches to the backend registered via <a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> (ADR-005). No backend registered is not an error for this service - see <a class="el" href="sapi__log_8h.html" title="OS Abstraction Layer - Logging/diagnostics service.">sapi_log.h</a>.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="sapi__log_8h_source.html">safeapi/log/sapi_log.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__lifecycle_8h_source.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__log__backend_8h_source.html">safeapi_backend/log/sapi_log_backend.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__string_8h_source.html">safeapi/string/sapi_string.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_log.c:</div>
 <div class="dyncontent">
 <div class="center"><img src="sapi__log_8c__incl.png" border="0" usemap="#asrc_2log_2sapi__log_8c" alt=""/></div>
 <map name="asrc_2log_2sapi__log_8c" id="asrc_2log_2sapi__log_8c">
-<area shape="rect" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="95,5,229,31"/>
-<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="80,79,244,104"/>
-<area shape="poly" title=" " alt="" coords="165,31,165,65,159,65,159,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,152,151,192"/>
-<area shape="poly" title=" " alt="" coords="151,106,110,145,106,141,148,102"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,152,317,192"/>
-<area shape="poly" title=" " alt="" coords="176,102,218,141,214,145,173,106"/>
-<area shape="rect" title=" " alt="" coords="102,240,185,265"/>
-<area shape="poly" title=" " alt="" coords="223,194,171,234,168,229,220,190"/>
-<area shape="rect" title=" " alt="" coords="209,240,283,265"/>
-<area shape="poly" title=" " alt="" coords="249,192,249,226,243,226,243,192"/>
-<area shape="rect" title=" " alt="" coords="308,240,379,265"/>
-<area shape="poly" title=" " alt="" coords="271,190,320,229,317,233,268,194"/>
+<area shape="rect" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="261,5,395,31"/>
+<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="241,174,405,199"/>
+<area shape="poly" title=" " alt="" coords="330,31,326,160,321,160,325,31"/>
+<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
+<area shape="poly" title=" " alt="" coords="261,26,227,32,191,43,156,59,126,81,113,97,103,115,92,154,87,152,98,113,108,94,122,77,153,54,189,38,225,27,260,21"/>
+<area shape="rect" href="sapi__log__backend_8h.html" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="136,79,291,119"/>
+<area shape="poly" title=" " alt="" coords="313,33,254,73,251,69,310,29"/>
+<area shape="rect" href="sapi__string_8h.html" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="413,79,555,119"/>
+<area shape="poly" title=" " alt="" coords="352,28,435,70,433,75,349,33"/>
+<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="647,167,787,207"/>
+<area shape="poly" title=" " alt="" coords="396,26,480,45,526,59,569,76,635,115,688,156,685,160,632,119,567,81,524,64,479,50,395,32"/>
+<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="281,255,426,295"/>
+<area shape="poly" title=" " alt="" coords="329,199,344,241,339,242,324,200"/>
+<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="481,255,623,295"/>
+<area shape="poly" title=" " alt="" coords="355,197,490,247,488,252,353,202"/>
+<area shape="rect" title=" " alt="" coords="289,343,372,368"/>
+<area shape="poly" title=" " alt="" coords="500,297,377,340,375,335,498,292"/>
+<area shape="rect" title=" " alt="" coords="563,343,637,368"/>
+<area shape="poly" title=" " alt="" coords="566,293,588,329,583,332,561,296"/>
+<area shape="rect" title=" " alt="" coords="467,343,538,368"/>
+<area shape="poly" title=" " alt="" coords="542,296,519,332,515,330,538,293"/>
+<area shape="poly" title=" " alt="" coords="145,204,282,248,281,253,143,209"/>
+<area shape="poly" title=" " alt="" coords="114,205,304,333,301,337,112,209"/>
+<area shape="poly" title=" " alt="" coords="239,117,298,163,295,167,236,121"/>
+<area shape="poly" title=" " alt="" coords="214,119,216,161,221,184,232,205,254,229,283,246,280,251,251,233,227,208,216,186,210,162,209,119"/>
+<area shape="poly" title=" " alt="" coords="476,120,452,162,419,208,385,247,381,243,415,205,447,159,471,118"/>
+<area shape="poly" title=" " alt="" coords="556,102,625,110,698,122,762,140,786,151,802,165,814,188,811,208,796,224,772,238,708,257,637,269,636,263,706,252,770,233,792,220,806,205,808,189,798,168,783,156,760,145,697,127,624,115,555,108"/>
+<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="481,167,623,207"/>
+<area shape="poly" title=" " alt="" coords="501,117,531,154,526,157,497,121"/>
+<area shape="poly" title=" " alt="" coords="509,209,410,252,408,247,507,204"/>
+<area shape="poly" title=" " alt="" coords="555,207,555,241,549,241,549,207"/>
+<area shape="poly" title=" " alt="" coords="648,207,440,256,439,251,647,202"/>
+<area shape="poly" title=" " alt="" coords="682,209,602,251,599,246,680,204"/>
 </map>
 </div>
 </div>
@@ -109,7 +133,7 @@ Include dependency graph for sapi_log.c:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaedcbc8ee1aa520a1fbf3f29b2b143b6d" id="r_gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d">sapi_log_register_backend</a> (const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *backend)</td></tr>
+<tr class="memitem:gaedcbc8ee1aa520a1fbf3f29b2b143b6d" id="r_gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d">sapi_log_register_backend</a> (const <a class="el" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *backend)</td></tr>
 <tr class="memdesc:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers the backend implementation used by <a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40" title="Initializes the logging backend. Safe to call once at startup.">sapi_log_init()</a>/ <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> (ADR-005 section 2.1/2.5). Call once at startup.  <br /></td></tr>
 <tr class="separator:gaedcbc8ee1aa520a1fbf3f29b2b143b6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacdd734b3bf37ecb5856b1498f6776c40" id="r_gacdd734b3bf37ecb5856b1498f6776c40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40">sapi_log_init</a> (void)</td></tr>
@@ -118,6 +142,18 @@ Functions</h2></td></tr>
 <tr class="memitem:gae503764e3fb83a2ee19e57d3f6b057a1" id="r_gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *tag, const char *message)</td></tr>
 <tr class="memdesc:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dropped.  <br /></td></tr>
 <tr class="separator:gae503764e3fb83a2ee19e57d3f6b057a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga039f92d06b19a508fc70d476bd715e4d" id="r_ga039f92d06b19a508fc70d476bd715e4d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d">sapi_log_level_to_string</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level)</td></tr>
+<tr class="memdesc:ga039f92d06b19a508fc70d476bd715e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a sapi_log_level_t as a fixed, human-readable tag - "DEBUG"/"INFO"/"WARNING"/"ERROR" - used as the LEVEL field of <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a>'s structured line and available to any backend/integrator wanting the same canonical spelling.  <br /></td></tr>
+<tr class="separator:ga039f92d06b19a508fc70d476bd715e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b024434752b5d600ddebb4f53275d49" id="r_a7b024434752b5d600ddebb4f53275d49"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__log_8c.html#a7b024434752b5d600ddebb4f53275d49">sapi_log_append_event_field</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *line, const char *key, const char *value)</td></tr>
+<tr class="memdesc:a7b024434752b5d600ddebb4f53275d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Appends " Key=Value" to *line (a leading space, then key, "=", then value or "" if value is NULL) - the Key=Value pair convention <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> uses for every field. Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from any concat is silently accepted (line is left truncated at whatever fit) - REQ-OAL-LOG-001, this must never fail the caller's control flow, so there is nothing to report here.  <br /></td></tr>
+<tr class="separator:a7b024434752b5d600ddebb4f53275d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae93924553b2c120a7e4058320eee9d30" id="r_ae93924553b2c120a7e4058320eee9d30"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__log_8c.html#ae93924553b2c120a7e4058320eee9d30">sapi_log_append_event_field_u32</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *line, const char *key, uint32_t value)</td></tr>
+<tr class="memdesc:ae93924553b2c120a7e4058320eee9d30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formats value in base 10 and appends it as "Key=value" via <a class="el" href="sapi__log_8c.html#a7b024434752b5d600ddebb4f53275d49" title="Appends &quot; Key=Value&quot; to *line (a leading space, then key, &quot;=&quot;, then value or &quot;&quot; if value is NULL) - t...">sapi_log_append_event_field()</a>. Uses a small local sapi_string_t/buffer, independent of *line's own storage.  <br /></td></tr>
+<tr class="separator:ae93924553b2c120a7e4058320eee9d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga004ab3c470ffcbce6c4c5470a3e93c48" id="r_ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48">sapi_log_write_event</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *site, uint32_t cycle, const char *source, const char *destination, const char *type, const char *info, const char *extra_fields)</td></tr>
+<tr class="memdesc:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one structured inter-channel event/message-trail log line - for a message actually sent/received/decided between channels or nodes (e.g. an AB_SAMPLE frame, an M136 report, a checkpoint REQUEST/REPLY, a cross-compare AGREE/DISAGREE) - distinct from <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>'s free-text diagnostic logging, which remains the right call for an event with no natural cycle/source/destination (e.g. an NVM write failure).  <br /></td></tr>
+<tr class="separator:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
@@ -126,10 +162,120 @@ Variables</h2></td></tr>
 <tr class="separator:ae97d049dded7146bd09328d904d1f4a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Logging service: dispatches to the backend registered via <a class="el" href="group__LOG.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> (ADR-005). No backend registered is not an error for this service - see <a class="el" href="sapi__log_8h.html" title="OS Abstraction Layer - Logging/diagnostics service.">sapi_log.h</a>. </p>
+<div class="textblock"><p>Logging service: dispatches to the backend registered via <a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> (ADR-005). No backend registered is not an error for this service - see <a class="el" href="sapi__log_8h.html" title="OS Abstraction Layer - Logging/diagnostics service.">sapi_log.h</a>. </p>
+<p><a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a>'s structured-line formatting (added alongside this file's own module) is what introduces this module's only two new dependencies, <code>safeapi::string</code> (bounded formatting - ADR-006) and <code>safeapi::timer</code> (TIMESTAMP field - <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a>); <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> itself and the backend dispatch below are unchanged and still have neither dependency. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
-</div><h2 class="groupheader">Variable Documentation</h2>
+</div><h2 class="groupheader">Function Documentation</h2>
+<a id="a7b024434752b5d600ddebb4f53275d49" name="a7b024434752b5d600ddebb4f53275d49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b024434752b5d600ddebb4f53275d49">&#9670;&#160;</a></span>sapi_log_append_event_field()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void sapi_log_append_event_field </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Appends " Key=Value" to *line (a leading space, then key, "=", then value or "" if value is NULL) - the Key=Value pair convention <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> uses for every field. Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from any concat is silently accepted (line is left truncated at whatever fit) - REQ-OAL-LOG-001, this must never fail the caller's control flow, so there is nothing to report here. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">line</td><td>Line being built. Must not be NULL. </td></tr>
+    <tr><td class="paramname">key</td><td>Field key/label (e.g. "Cycle"). Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Field value to append; NULL is treated as an empty value. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00102">102</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+
+</div>
+</div>
+<a id="ae93924553b2c120a7e4058320eee9d30" name="ae93924553b2c120a7e4058320eee9d30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae93924553b2c120a7e4058320eee9d30">&#9670;&#160;</a></span>sapi_log_append_event_field_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static void sapi_log_append_event_field_u32 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>line</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Formats value in base 10 and appends it as "Key=value" via <a class="el" href="sapi__log_8c.html#a7b024434752b5d600ddebb4f53275d49" title="Appends &quot; Key=Value&quot; to *line (a leading space, then key, &quot;=&quot;, then value or &quot;&quot; if value is NULL) - t...">sapi_log_append_event_field()</a>. Uses a small local sapi_string_t/buffer, independent of *line's own storage. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">line</td><td>Line being built. Must not be NULL. </td></tr>
+    <tr><td class="paramname">key</td><td>Field key/label. Must not be NULL. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00118">118</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
 <a id="ae97d049dded7146bd09328d904d1f4a7" name="ae97d049dded7146bd09328d904d1f4a7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae97d049dded7146bd09328d904d1f4a7">&#9670;&#160;</a></span>s_backend</h2>
 
@@ -152,7 +298,7 @@ Variables</h2></td></tr>
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00022">22</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
 
 </div>
 </div>

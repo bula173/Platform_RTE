@@ -1,5 +1,26 @@
 <map id="include/safeapi/netlink/sapi_netlink.h" name="include/safeapi/netlink/sapi_netlink.h">
-<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="12,5,183,45"/>
-<area shape="rect" id="Node000002" href="$sapi__netlink_8c.html" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="5,93,189,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,59,100,93,95,93,95,59"/>
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="432,5,603,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="158,196,317,236"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="419,37,383,44,347,56,313,73,283,95,265,118,253,146,242,196,236,195,248,144,260,116,279,91,310,68,345,51,381,39,417,31"/>
+<area shape="rect" id="Node000005" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="399,284,603,324"/>
+<area shape="poly" id="edge10_Node000001_Node000005" title=" " alt="" coords="518,59,505,284,500,284,513,59"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="293,101,480,141"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="481,56,415,103,412,98,478,51"/>
+<area shape="rect" id="Node000010" href="$sapi__netlink__backend_8h.html" title="OS&#45;backend adaptation surface for the Point&#45;to&#45;Point Network Link service (ADR&#45;005,..." alt="" coords="606,93,789,148"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="567,49,648,91,645,96,565,54"/>
+<area shape="rect" id="Node000011" href="$sapi__netlink_8c.html" title="Network link service: validates parameters, then dispatches to the backend registered via sapi_netlin..." alt="" coords="580,203,764,229"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="535,56,562,100,595,146,627,177,657,201,654,205,624,181,591,150,557,103,531,59"/>
+<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="168,284,341,324"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="246,249,253,283,248,284,241,250"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="309,238,444,281,443,287,307,243"/>
+<area shape="rect" id="Node000007" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="5,284,144,324"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="191,245,112,286,109,282,188,240"/>
+<area shape="rect" id="Node000004" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="185,372,324,412"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="257,338,257,372,252,372,252,338"/>
+<area shape="rect" id="Node000006" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="424,372,579,412"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="504,338,504,372,499,372,499,338"/>
+<area shape="poly" id="edge8_Node000008_Node000002" title=" " alt="" coords="346,150,269,198,266,194,344,146"/>
+<area shape="rect" id="Node000009" href="$sapi__dual__msgchannel_8c.html" title="&quot;Channel&quot; layer of ADR&#45;020 &#45; see sapi_dual_msgchannel.h." alt="" coords="341,196,480,236"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="398,153,408,195,403,197,392,155"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="689,162,678,204,673,202,684,161"/>
 </map>

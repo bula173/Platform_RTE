@@ -198,7 +198,7 @@ Key Design Decisions</h2>
 <div class="line">    uint8_t  payload[248];       <span class="comment">// Actual data</span></div>
 <div class="line">    uint64_t crc64;              <span class="comment">// Data integrity</span></div>
 <div class="line">} <a class="code hl_struct" href="structsapi__vital__message__t.html">sapi_vital_message_t</a>;</div>
-<div class="ttc" id="astructsapi__vital__message__t_html"><div class="ttname"><a href="structsapi__vital__message__t.html">sapi_vital_message_t</a></div><div class="ttdoc">Vital channel message with integrated CRC-64.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8h_source.html#l00192">sapi_checksum.h:192</a></div></div>
+<div class="ttc" id="astructsapi__vital__message__t_html"><div class="ttname"><a href="structsapi__vital__message__t.html">sapi_vital_message_t</a></div><div class="ttdoc">Vital channel message with integrated CRC-64.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8h_source.html#l00233">sapi_checksum.h:233</a></div></div>
 </div><!-- fragment --><p><b>Usage Pattern:</b></p><ol type="1">
 <li><b>Sender:</b> <code><a class="el" href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b" title="Create vital channel message with CRC.">sapi_checksum_vital_message_create()</a></code> → CRC computed</li>
 <li><b>Network:</b> Send 256-byte message</li>
@@ -220,7 +220,7 @@ Key Design Decisions</h2>
 Architectural Fit</h1>
 <h2><a class="anchor" id="autotoc_md108"></a>
 With Redundancy Framework (Future v0.4.0+)</h2>
-<div class="fragment"><div class="line">Vital Channel (Future sapi_vital_channel_t)</div>
+<div class="fragment"><div class="line">Vital Channel (Future sapi_channel_t)</div>
 <div class="line">    ↓</div>
 <div class="line">Payload data</div>
 <div class="line">    ↓</div>
@@ -248,7 +248,7 @@ With Existing Modules</h2>
 </ul>
 <p><b>Used by:</b></p><ul>
 <li>Application IPC code (wrap payloads)</li>
-<li>Future <code>sapi_vital_channel_t</code> (transparent CRC)</li>
+<li>Future <code>sapi_channel_t</code> (transparent CRC)</li>
 <li>Service unit diagnostics (monitor stats)</li>
 </ul>
 <hr  />
@@ -290,7 +290,7 @@ SIL 1-2 (Single System)</h2>
 <div class="line"><span class="keywordflow">if</span> (result.match == 0) {</div>
 <div class="line">    log_corruption_and_retry();</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__CHECKSUM_html_ga6deb640b83f4fab5c6ebd2e819d1b4e7"><div class="ttname"><a href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum_crc64_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_crc64_verify(const uint8_t *data, size_t size, sapi_crc64_t expected_crc, sapi_checksum_result_t *result_out)</div><div class="ttdoc">Verify CRC-64 of data against stored value.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00453">sapi_checksum.c:453</a></div></div>
+<div class="ttc" id="agroup__CHECKSUM_html_ga6deb640b83f4fab5c6ebd2e819d1b4e7"><div class="ttname"><a href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum_crc64_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_crc64_verify(const uint8_t *data, size_t size, sapi_crc64_t expected_crc, sapi_checksum_result_t *result_out)</div><div class="ttdoc">Verify CRC-64 of data against stored value.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00460">sapi_checksum.c:460</a></div></div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md117"></a>
 SIL 3-4 (Redundant Systems)</h2>
 <p>CRC-64 <b>mandatory</b> for vital channel communication: </p><div class="fragment"><div class="line"><span class="comment">// Vital message with CRC</span></div>
@@ -302,9 +302,9 @@ SIL 3-4 (Redundant Systems)</h2>
 <div class="line"><span class="keywordflow">if</span> (status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>) {</div>
 <div class="line">    sapi_safestate_trigger(REASON_DATA_CORRUPTION);</div>
 <div class="line">}</div>
-<div class="ttc" id="agroup__CHECKSUM_html_ga4d3e819e10b61191323f59a86a786be3"><div class="ttname"><a href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum_vital_message_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_verify(const sapi_vital_message_t *msg, uint32_t expected_sequence, uint8_t *payload_out, size_t payload_max_size, uint8_t *payload_size_out)</div><div class="ttdoc">Verify vital channel message and extract payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00552">sapi_checksum.c:552</a></div></div>
-<div class="ttc" id="agroup__CHECKSUM_html_gae57cce5bad25c20ca5beeefec3fb769b"><div class="ttname"><a href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_create(sapi_vital_message_t *msg_out, uint32_t sender_id, uint32_t sequence, const uint8_t *payload, size_t payload_size)</div><div class="ttdoc">Create vital channel message with CRC.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00497">sapi_checksum.c:497</a></div></div>
-<div class="ttc" id="agroup__IPC_html_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00046">sapi_ipc.c:46</a></div></div>
+<div class="ttc" id="agroup__CHECKSUM_html_ga4d3e819e10b61191323f59a86a786be3"><div class="ttname"><a href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum_vital_message_verify</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_verify(const sapi_vital_message_t *msg, uint32_t expected_sequence, uint8_t *payload_out, size_t payload_max_size, uint8_t *payload_size_out)</div><div class="ttdoc">Verify vital channel message and extract payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00556">sapi_checksum.c:556</a></div></div>
+<div class="ttc" id="agroup__CHECKSUM_html_gae57cce5bad25c20ca5beeefec3fb769b"><div class="ttname"><a href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_create(sapi_vital_message_t *msg_out, uint32_t sender_id, uint32_t sequence, const uint8_t *payload, size_t payload_size)</div><div class="ttdoc">Create vital channel message with CRC.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00502">sapi_checksum.c:502</a></div></div>
+<div class="ttc" id="agroup__IPC_html_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00057">sapi_ipc.c:57</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
 </div><!-- fragment --><hr  />
 <h1><a class="anchor" id="autotoc_md119"></a>
@@ -321,7 +321,7 @@ Phase 1: Core API (v0.3.0)</h2>
 <h2><a class="anchor" id="autotoc_md121"></a>
 Phase 2: Integration (v0.4.0)</h2>
 <ul>
-<li>[ ] Integrate with <code>sapi_vital_channel_t</code> (when redundancy implemented)</li>
+<li>[ ] Integrate with <code>sapi_channel_t</code> (when redundancy implemented)</li>
 <li>[ ] Transparent CRC for vital channels</li>
 <li>[ ] Performance benchmarks</li>
 <li>[ ] Production deployment support</li>

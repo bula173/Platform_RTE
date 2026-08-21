@@ -103,7 +103,7 @@ Quick Start: 2oo2 Dual-Redundant CPU</h1>
 <div class="line">*</div>
 <div class="line">* // 2. Create vital channel that wraps both with 2oo2 voting</div>
 <div class="line">* sapi_buffer_t channels[2] = {channel_a_buf, channel_b_buf};</div>
-<div class="line">* sapi_vital_channel_config_t config = {</div>
+<div class="line">* sapi_channel_config_t config = {</div>
 <div class="line">*     .name = &quot;dual_redundant_signal&quot;,</div>
 <div class="line">*     .strategy = SAPI_VOTING_2OO2,</div>
 <div class="line">*     .channels = channels,</div>
@@ -112,7 +112,7 @@ Quick Start: 2oo2 Dual-Redundant CPU</h1>
 <div class="line">*     .timeout_ms = 100</div>
 <div class="line">* };</div>
 <div class="line">* </div>
-<div class="line">* sapi_vital_channel_t vital_ch;</div>
+<div class="line">* sapi_channel_t vital_ch;</div>
 <div class="line">* sapi_vital_channel_create(&amp;vital_ch, &amp;config);</div>
 <div class="line">*</div>
 <div class="line">* // 3. Send command to both CPUs</div>
