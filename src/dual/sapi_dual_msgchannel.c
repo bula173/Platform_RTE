@@ -5,6 +5,18 @@
  */
 #include "safeapi/dual/sapi_dual_msgchannel.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_dual_msgchannel_init(sapi_dual_msgchannel_t *channel,
                                          const sapi_dual_msgchannel_config_t *config)
 {

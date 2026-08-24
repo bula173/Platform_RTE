@@ -6,6 +6,18 @@
  */
 #include "safeapi/dual/sapi_dual_types.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 const char *sapi_dual_state_to_string(sapi_dual_state_t state)
 {
     const char *result;

@@ -216,7 +216,10 @@ if(SAFEAPI_ENABLE_CHECKSUM)
     list(APPEND _safeapi_channels_sources src/checksum/sapi_checksum.c)
 endif()
 if(SAFEAPI_ENABLE_CHANNEL_LINK)
-    list(APPEND _safeapi_channels_sources src/channel_link/sapi_channel.c)
+    list(APPEND _safeapi_channels_sources
+        src/channel_link/sapi_channel.c
+        src/channel_service/sapi_channel_service.c
+    )
 endif()
 if(SAFEAPI_ENABLE_VOTER)
     list(APPEND _safeapi_channels_sources src/voter/sapi_voter.c)

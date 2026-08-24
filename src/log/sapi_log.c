@@ -18,9 +18,42 @@
 #include "safeapi/string/sapi_string.h"
 #include "safeapi/timer/sapi_timer.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_log_backend_t *s_backend = NULL;
 
+/** Global variables declarations */
+
+/** Local function declarations */
+/**
+ * @brief Appends " Key=Value" to *line (a leading space, then key, "=",
+ *        then value or "" if value is NULL) - the Key=Value pair
+ *        convention sapi_log_write_event() uses for every field.
+ *        Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from any concat
+ *        is silently accepted (line is left truncated at whatever fit) -
+ *        REQ-OAL-LOG-001, this must never fail the caller's control
+ *        flow, so there is nothing to report here.
+ * @param line   Line being built. Must not be NULL.
+ * @param key    Field key/label (e.g. "Cycle"). Must not be NULL.
+ * @param value  Field value to append; NULL is treated as an empty value.
+ */
+static void sapi_log_append_event_field(sapi_string_t *line, const char *key, const char *value);
+/**
+ * @brief Formats value in base 10 and appends it as "Key=value" via
+ *        sapi_log_append_event_field(). Uses a small local
+ *        sapi_string_t/buffer, independent of *line's own storage.
+ * @param line   Line being built. Must not be NULL.
+ * @param key    Field key/label. Must not be NULL.
+ * @param value  Value to format.
+ */
+static void sapi_log_append_event_field_u32(sapi_string_t *line, const char *key, uint32_t value);
+
+
+/** Global functions */
 sapi_status_t sapi_log_register_backend(const sapi_log_backend_t *backend)
 {
     sapi_status_t lifecycle_status;
@@ -87,46 +120,6 @@ const char *sapi_log_level_to_string(sapi_log_level_t level)
     return result;
 }
 
-/**
- * @brief Appends " Key=Value" to *line (a leading space, then key, "=",
- *        then value or "" if value is NULL) - the Key=Value pair
- *        convention sapi_log_write_event() uses for every field.
- *        Best-effort: a SAPI_STATUS_RESOURCE_EXHAUSTED from any concat
- *        is silently accepted (line is left truncated at whatever fit) -
- *        REQ-OAL-LOG-001, this must never fail the caller's control
- *        flow, so there is nothing to report here.
- * @param line   Line being built. Must not be NULL.
- * @param key    Field key/label (e.g. "Cycle"). Must not be NULL.
- * @param value  Field value to append; NULL is treated as an empty value.
- */
-static void sapi_log_append_event_field(sapi_string_t *line, const char *key, const char *value)
-{
-    (void)sapi_string_concat(line, " ");
-    (void)sapi_string_concat(line, key);
-    (void)sapi_string_concat(line, "=");
-    (void)sapi_string_concat(line, (value != NULL) ? value : "");
-}
-
-/**
- * @brief Formats value in base 10 and appends it as "Key=value" via
- *        sapi_log_append_event_field(). Uses a small local
- *        sapi_string_t/buffer, independent of *line's own storage.
- * @param line   Line being built. Must not be NULL.
- * @param key    Field key/label. Must not be NULL.
- * @param value  Value to format.
- */
-static void sapi_log_append_event_field_u32(sapi_string_t *line, const char *key, uint32_t value)
-{
-    char num_storage[16];
-    sapi_string_t num;
-    const char *num_cstr = NULL;
-
-    (void)sapi_string_init(&num, num_storage, sizeof(num_storage));
-    (void)sapi_string_from_u32(&num, value);
-    (void)sapi_string_c_str(&num, &num_cstr);
-    sapi_log_append_event_field(line, key, num_cstr);
-}
-
 void sapi_log_write_event(sapi_log_level_t level,
                            const char *site,
                            uint32_t cycle,
@@ -188,4 +181,27 @@ void sapi_log_write_event(sapi_log_level_t level,
 
     (void)sapi_string_c_str(&line, &line_cstr);
     s_backend->write(level, source, (line_cstr != NULL) ? line_cstr : "");
+}
+
+
+/****Local functions ****/
+
+static void sapi_log_append_event_field(sapi_string_t *line, const char *key, const char *value)
+{
+    (void)sapi_string_concat(line, " ");
+    (void)sapi_string_concat(line, key);
+    (void)sapi_string_concat(line, "=");
+    (void)sapi_string_concat(line, (value != NULL) ? value : "");
+}
+
+static void sapi_log_append_event_field_u32(sapi_string_t *line, const char *key, uint32_t value)
+{
+    char num_storage[16];
+    sapi_string_t num;
+    const char *num_cstr = NULL;
+
+    (void)sapi_string_init(&num, num_storage, sizeof(num_storage));
+    (void)sapi_string_from_u32(&num, value);
+    (void)sapi_string_c_str(&num, &num_cstr);
+    sapi_log_append_event_field(line, key, num_cstr);
 }

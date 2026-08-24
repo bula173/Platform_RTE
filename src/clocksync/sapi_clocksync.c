@@ -7,11 +7,22 @@
 #include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
 /** Single global backend, following ADR-005's established convention
  *  (see sapi_timer/sapi_ipc). NULL until sapi_clocksync_register_backend()
  *  is called. */
 static const sapi_clocksync_backend_t *s_backend = NULL;
 
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_clocksync_register_backend(const sapi_clocksync_backend_t *backend)
 {
     sapi_status_t status = SAPI_STATUS_OK;

@@ -8,6 +8,18 @@
 #include "safeapi/channel_link/sapi_channel.h"
 #include "safeapi/lifecycle/sapi_lifecycle.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_channel_init(sapi_channel_storage_t *storage,
                                        const sapi_channel_config_t *config)
 {

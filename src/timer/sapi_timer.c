@@ -8,9 +8,20 @@
 #include "safeapi/timer/sapi_timer.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_timer_backend_t *s_backend = NULL;
 
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_timer_register_backend(const sapi_timer_backend_t *backend)
 {
     sapi_status_t lifecycle_status;

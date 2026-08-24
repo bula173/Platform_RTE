@@ -9,9 +9,20 @@
 #include "safeapi/lifecycle/sapi_lifecycle.h"
 #include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_netlink_backend_t *s_backend = NULL;
 
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_netlink_register_backend(const sapi_netlink_backend_t *backend)
 {
     sapi_status_t lifecycle_status;

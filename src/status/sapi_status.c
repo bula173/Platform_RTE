@@ -5,6 +5,18 @@
  */
 #include "safeapi/status/sapi_status.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 /**
  * @brief Convert a status code to a short, human-readable string.
  * @param status Status code to describe.

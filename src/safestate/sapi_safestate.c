@@ -6,9 +6,17 @@
 #include "safeapi/safestate/sapi_safestate.h"
 #include "safeapi/lifecycle/sapi_lifecycle.h"
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
 /** One handler slot per sapi_safestate_level_t value; no dynamic allocation. */
 static sapi_safestate_handler_t s_handlers[3] = { NULL, NULL, NULL };
 
+/** Global variables declarations */
+
+/** Local function declarations */
 /**
  * @brief Maps a level enumerator to its handler-array index.
  * @param level      Level to map.
@@ -16,31 +24,10 @@ static sapi_safestate_handler_t s_handlers[3] = { NULL, NULL, NULL };
  * @return true and sets *out_index if level is a known value; false
  *         (index left unset) otherwise.
  */
-static bool sapi_safestate_level_to_index(sapi_safestate_level_t level, size_t *out_index)
-{
-    bool found;
+static bool sapi_safestate_level_to_index(sapi_safestate_level_t level, size_t *out_index);
 
-    switch (level)
-    {
-        case SAPI_SAFESTATE_LEVEL_DEGRADED:
-            *out_index = 0U;
-            found = true;
-            break;
-        case SAPI_SAFESTATE_LEVEL_SAFE:
-            *out_index = 1U;
-            found = true;
-            break;
-        case SAPI_SAFESTATE_LEVEL_REBOOT:
-            *out_index = 2U;
-            found = true;
-            break;
-        default:
-            found = false;
-            break;
-    }
-    return found;
-}
 
+/** Global functions */
 sapi_status_t sapi_safestate_register_handler(sapi_safestate_level_t level,
                                                sapi_safestate_handler_t handler)
 {
@@ -101,4 +88,32 @@ void sapi_safestate_enter(sapi_safestate_level_t level,
             /* Defensive halt: intentionally never returns. */
         }
     }
+}
+
+
+/****Local functions ****/
+
+static bool sapi_safestate_level_to_index(sapi_safestate_level_t level, size_t *out_index)
+{
+    bool found;
+
+    switch (level)
+    {
+        case SAPI_SAFESTATE_LEVEL_DEGRADED:
+            *out_index = 0U;
+            found = true;
+            break;
+        case SAPI_SAFESTATE_LEVEL_SAFE:
+            *out_index = 1U;
+            found = true;
+            break;
+        case SAPI_SAFESTATE_LEVEL_REBOOT:
+            *out_index = 2U;
+            found = true;
+            break;
+        default:
+            found = false;
+            break;
+    }
+    return found;
 }

@@ -10,6 +10,18 @@
 
 /* Implementation stubs - actual implementation would use base IPC layer */
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out,
                                             const sapi_ipc_pubsub_topic_config_t *config)
 {

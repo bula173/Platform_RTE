@@ -10,6 +10,18 @@
 
 /* Implementation stubs - actual implementation would use base IPC layer */
 
+/** Local makros */
+
+/** Local types declarations */
+
+/** Local variables declarations */
+
+/** Global variables declarations */
+
+/** Local function declarations */
+
+
+/** Global functions */
 sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out,
                                          const sapi_ipc_rr_server_config_t *config)
 {
