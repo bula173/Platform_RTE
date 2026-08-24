@@ -298,8 +298,26 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
+# Documentation: Doxygen with Mermaid and PlantUML
+# ---------------------------------------------------------------------------
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    add_custom_target(doc
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMENT "Generating API documentation with Doxygen (HTML, Mermaid, PlantUML)..."
+        VERBATIM
+    )
+    message(STATUS "Doxygen found: ${DOXYGEN_EXECUTABLE}")
+    message(STATUS "  Run 'cmake --build build --target doc' to generate documentation")
+else()
+    message(STATUS "Doxygen not found - documentation generation disabled")
+endif()
+
+# ---------------------------------------------------------------------------
 # Package and export configuration (for downstream projects)
 # ---------------------------------------------------------------------------
+
 # Only meaningful - and only run - when safeAPIFramework is the top-level
 # project being configured directly. A downstream project that pulls this
 # in via add_subdirectory() (e.g. safeAPIRBC2oo2) shares this same build

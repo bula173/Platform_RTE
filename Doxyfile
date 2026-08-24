@@ -1,5 +1,5 @@
 PROJECT_NAME           = "Safe API Framework"
-PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference)"
+PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)"
 OUTPUT_DIRECTORY       = docs/api
 INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.md docs/requirements
 FILE_PATTERNS          = *.h *.c *.md
@@ -24,16 +24,15 @@ TYPEDEF_HIDES_STRUCT    = YES
 SORT_MEMBER_DOCS        = NO
 SOURCE_BROWSER          = YES
 
-# Requirement-ID traceability tags (REQ-OAL-*, REQ-COMMON-*) are plain text
-# inside doxygen comments today; ALIASES below let them render as a
-# distinct highlighted note if a future pass wants @req{ID} instead of the
-# current inline "REQ-...:" convention. Not used yet - kept here as the
-# natural place to add it.
-# ALIASES               = "req{1}=\par Requirement:\n\1"
+# Custom HTML Header & Mermaid.js support
+HTML_HEADER            = docs/doxygen_header.html
+HTML_EXTRA_FILES       = docs/doxygen_mermaid.js
 
-# @safety is used throughout the headers as a one-line safety-critical
-# assumption/guarantee note (e.g. "@safety No dynamic memory allocation;
-# all storage pre-allocated.") - it is not a built-in Doxygen command, so
-# without this alias every use produced a "Found unknown command '@safety'"
-# warning and the text was silently dropped from the generated docs.
+# Graphviz Dot & PlantUML diagram support
+HAVE_DOT               = YES
+DOT_IMAGE_FORMAT       = svg
+INTERACTIVE_SVG        = YES
+PLANTUML_JAR_PATH      = $(PLANTUML_JAR_PATH)
+
 ALIASES                += "safety=\par Safety:^^"
+ALIASES                += "req{1}=\par Requirement:\n\1"
