@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/clocksync/sapi_clocksync.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -121,8 +137,8 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">#endif </span><span class="comment">/* SAPI_CLOCKSYNC_H */</span><span class="preprocessor"></span></div>
 <div class="ttc" id="agroup__CLOCKSYNC_html_gaaa5c09cfbaf2f186b8b3d84940f92483"><div class="ttname"><a href="group__CLOCKSYNC.html#gaaa5c09cfbaf2f186b8b3d84940f92483">sapi_clocksync_quality_t</a></div><div class="ttdeci">sapi_clocksync_quality_t</div><div class="ttdoc">Coarse quality/confidence of the current clock synchronization.</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8h_source.html#l00059">sapi_clocksync.h:60</a></div></div>
-<div class="ttc" id="agroup__CLOCKSYNC_html_gacb7e052e70c3db3b3213fb278ad14fdc"><div class="ttname"><a href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a></div><div class="ttdeci">sapi_status_t sapi_clocksync_get_offset_ms(int64_t *out_offset_ms)</div><div class="ttdoc">Reports this node's estimated clock offset (diagnostic/timeout- sizing only - see the file-level note...</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8c_source.html#l00037">sapi_clocksync.c:37</a></div></div>
-<div class="ttc" id="agroup__CLOCKSYNC_html_gae9b4c712e4f011a517d6d3af1e5b8285"><div class="ttname"><a href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync_get_quality</a></div><div class="ttdeci">sapi_status_t sapi_clocksync_get_quality(sapi_clocksync_quality_t *out_quality)</div><div class="ttdoc">Reports the backend's current confidence in the clock offset.</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8c_source.html#l00061">sapi_clocksync.c:61</a></div></div>
+<div class="ttc" id="agroup__CLOCKSYNC_html_gacb7e052e70c3db3b3213fb278ad14fdc"><div class="ttname"><a href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync_get_offset_ms</a></div><div class="ttdeci">sapi_status_t sapi_clocksync_get_offset_ms(int64_t *out_offset_ms)</div><div class="ttdoc">Reports this node's estimated clock offset (diagnostic/timeout- sizing only - see the file-level note...</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8c_source.html#l00048">sapi_clocksync.c:48</a></div></div>
+<div class="ttc" id="agroup__CLOCKSYNC_html_gae9b4c712e4f011a517d6d3af1e5b8285"><div class="ttname"><a href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync_get_quality</a></div><div class="ttdeci">sapi_status_t sapi_clocksync_get_quality(sapi_clocksync_quality_t *out_quality)</div><div class="ttdoc">Reports the backend's current confidence in the clock offset.</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8c_source.html#l00072">sapi_clocksync.c:72</a></div></div>
 <div class="ttc" id="agroup__CLOCKSYNC_html_ggaaa5c09cfbaf2f186b8b3d84940f92483a41e356c081e7a6759f58cfa5eba9403a"><div class="ttname"><a href="group__CLOCKSYNC.html#ggaaa5c09cfbaf2f186b8b3d84940f92483a41e356c081e7a6759f58cfa5eba9403a">SAPI_CLOCKSYNC_SYNCHRONIZED</a></div><div class="ttdeci">@ SAPI_CLOCKSYNC_SYNCHRONIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8h_source.html#l00071">sapi_clocksync.h:70</a></div></div>
 <div class="ttc" id="agroup__CLOCKSYNC_html_ggaaa5c09cfbaf2f186b8b3d84940f92483a6e0355a599a5e82c3c7536a8838e7f0c"><div class="ttname"><a href="group__CLOCKSYNC.html#ggaaa5c09cfbaf2f186b8b3d84940f92483a6e0355a599a5e82c3c7536a8838e7f0c">SAPI_CLOCKSYNC_UNSYNCHRONIZED</a></div><div class="ttdeci">@ SAPI_CLOCKSYNC_UNSYNCHRONIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8h_source.html#l00064">sapi_clocksync.h:64</a></div></div>
 <div class="ttc" id="agroup__CLOCKSYNC_html_ggaaa5c09cfbaf2f186b8b3d84940f92483ae6203a762c8394b6df6cff0cfc472e1c"><div class="ttname"><a href="group__CLOCKSYNC.html#ggaaa5c09cfbaf2f186b8b3d84940f92483ae6203a762c8394b6df6cff0cfc472e1c">SAPI_CLOCKSYNC_DEGRADED</a></div><div class="ttdeci">@ SAPI_CLOCKSYNC_DEGRADED</div><div class="ttdef"><b>Definition</b> <a href="sapi__clocksync_8h_source.html#l00067">sapi_clocksync.h:67</a></div></div>

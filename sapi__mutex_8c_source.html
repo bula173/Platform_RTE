@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/mutex/sapi_mutex.c Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -87,131 +103,131 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__mutex_8h.html">safeapi/mutex/sapi_mutex.h</a>&quot;</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__mutex__backend_8h.html">safeapi_backend/mutex/sapi_mutex_backend.h</a>&quot;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">   12</a></span><span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structsapi__mutex__backend__t.html">sapi_mutex_backend_t</a> *<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> = NULL;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="foldopen" id="foldopen00014" data-start="{" data-end="}">
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">   14</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">sapi_mutex_register_backend</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structsapi__mutex__backend__t.html">sapi_mutex_backend_t</a> *backend)</div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>{</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> lifecycle_status;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (backend == NULL)</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    {</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    }</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <span class="comment">/* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">     * action - refuse once the application&#39;s setup phase has been locked. */</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    lifecycle_status = <a class="code hl_function" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a>();</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (lifecycle_status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>)</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    {</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="keywordflow">return</span> lifecycle_status;</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> = backend;</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>;</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>}</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">   17</a></span><span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structsapi__mutex__backend__t.html">sapi_mutex_backend_t</a> *<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> = NULL;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="}">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">   25</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">sapi_mutex_register_backend</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structsapi__mutex__backend__t.html">sapi_mutex_backend_t</a> *backend)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>{</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> lifecycle_status;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="keywordflow">if</span> (backend == NULL)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    }</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">/* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="comment">     * action - refuse once the application&#39;s setup phase has been locked. */</span></div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    lifecycle_status = <a class="code hl_function" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a>();</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (lifecycle_status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">return</span> lifecycle_status;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> = backend;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
 </div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
-<div class="foldopen" id="foldopen00033" data-start="{" data-end="}">
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">   33</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">sapi_mutex_create</a>(sapi_mutex_storage_t *storage, <a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> *out_handle)</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>{</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">if</span> ((storage == NULL) || (out_handle == NULL))</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    {</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    *out_handle = NULL;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="comment">/* REQ-LIFECYCLE-001 (ADR-026): a mutex is a setup-only resource - refuse</span></div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="comment">     * once the application&#39;s setup phase has been locked (sapi_appmanager_run(),</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="comment">     * after ops-&gt;init() succeeds) - same posture as sapi_timer_create()/</span></div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="comment">     * sapi_task_create(). */</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> lifecycle_status = <a class="code hl_function" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a>();</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">if</span> (lifecycle_status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>)</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        {</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">return</span> lifecycle_status;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        }</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a40ae09c5a26bfeee9c0d07d5dd524d7a">create</a> == NULL)</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    {</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a40ae09c5a26bfeee9c0d07d5dd524d7a">create</a>(storage, out_handle);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">   44</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">sapi_mutex_create</a>(sapi_mutex_storage_t *storage, <a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> *out_handle)</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>{</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> ((storage == NULL) || (out_handle == NULL))</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    *out_handle = NULL;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">/* REQ-LIFECYCLE-001 (ADR-026): a mutex is a setup-only resource - refuse</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="comment">     * once the application&#39;s setup phase has been locked (sapi_appmanager_run(),</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="comment">     * after ops-&gt;init() succeeds) - same posture as sapi_timer_create()/</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="comment">     * sapi_task_create(). */</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> lifecycle_status = <a class="code hl_function" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a>();</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (lifecycle_status != <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a>)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> lifecycle_status;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a40ae09c5a26bfeee9c0d07d5dd524d7a">create</a> == NULL)</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a40ae09c5a26bfeee9c0d07d5dd524d7a">create</a>(storage, out_handle);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>}</div>
 </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">   63</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">sapi_mutex_lock</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    {</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    }</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a709235adc04750f73f6ee2f3e7a86ae6">lock</a> == NULL)</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    }</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a709235adc04750f73f6ee2f3e7a86ae6">lock</a>(handle);</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">   74</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">sapi_mutex_lock</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>{</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a709235adc04750f73f6ee2f3e7a86ae6">lock</a> == NULL)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    {</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#a709235adc04750f73f6ee2f3e7a86ae6">lock</a>(handle);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
 </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">   80</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">sapi_mutex_unlock</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>{</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    {</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ab18ce186594f66d30a8a79c30ce6e27e">unlock</a> == NULL)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    }</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ab18ce186594f66d30a8a79c30ce6e27e">unlock</a>(handle);</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="foldopen" id="foldopen00091" data-start="{" data-end="}">
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">   91</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">sapi_mutex_unlock</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>{</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    }</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ab18ce186594f66d30a8a79c30ce6e27e">unlock</a> == NULL)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ab18ce186594f66d30a8a79c30ce6e27e">unlock</a>(handle);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>}</div>
 </div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">   97</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">sapi_mutex_destroy</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>{</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    {</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ae213a96d0769a8af46931ae7606f570d">destroy</a> == NULL)</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    {</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ae213a96d0769a8af46931ae7606f570d">destroy</a>(handle);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>}</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="foldopen" id="foldopen00108" data-start="{" data-end="}">
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">  108</a></span><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">sapi_mutex_destroy</a>(<a class="code hl_typedef" href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a> handle)</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>{</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (handle == NULL)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a> == NULL)</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    {</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ae213a96d0769a8af46931ae7606f570d">destroy</a> == NULL)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> <a class="code hl_enumvalue" href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a>-&gt;<a class="code hl_variable" href="structsapi__mutex__backend__t.html#ae213a96d0769a8af46931ae7606f570d">destroy</a>(handle);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
 </div>
-<div class="ttc" id="agroup__LIFECYCLE_html_ga5e18e5edf28983f151a3d58d6edfb791"><div class="ttname"><a href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a></div><div class="ttdeci">sapi_status_t sapi_lifecycle_check_setup_allowed(void)</div><div class="ttdoc">Convenience check for a setup-only constructor: call this as one of the first checks in any function ...</div><div class="ttdef"><b>Definition</b> <a href="sapi__lifecycle_8c_source.html#l00029">sapi_lifecycle.c:29</a></div></div>
-<div class="ttc" id="agroup__MUTEX__BACKEND_html_gacc4438af5b5cee0ea7536d213999a8e3"><div class="ttname"><a href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">sapi_mutex_register_backend</a></div><div class="ttdeci">sapi_status_t sapi_mutex_register_backend(const sapi_mutex_backend_t *backend)</div><div class="ttdoc">Registers the backend implementation used by every sapi_mutex_* call. This is how an integrator suppl...</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00014">sapi_mutex.c:14</a></div></div>
+<div class="ttc" id="agroup__LIFECYCLE_html_ga5e18e5edf28983f151a3d58d6edfb791"><div class="ttname"><a href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a></div><div class="ttdeci">sapi_status_t sapi_lifecycle_check_setup_allowed(void)</div><div class="ttdoc">Convenience check for a setup-only constructor: call this as one of the first checks in any function ...</div><div class="ttdef"><b>Definition</b> <a href="sapi__lifecycle_8c_source.html#l00040">sapi_lifecycle.c:40</a></div></div>
+<div class="ttc" id="agroup__MUTEX__BACKEND_html_gacc4438af5b5cee0ea7536d213999a8e3"><div class="ttname"><a href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3">sapi_mutex_register_backend</a></div><div class="ttdeci">sapi_status_t sapi_mutex_register_backend(const sapi_mutex_backend_t *backend)</div><div class="ttdoc">Registers the backend implementation used by every sapi_mutex_* call. This is how an integrator suppl...</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00025">sapi_mutex.c:25</a></div></div>
 <div class="ttc" id="agroup__MUTEX_html_ga183247cbf7e423dc09a28f557543ba86"><div class="ttname"><a href="group__MUTEX.html#ga183247cbf7e423dc09a28f557543ba86">sapi_mutex_handle_t</a></div><div class="ttdeci">struct sapi_mutex_impl_s * sapi_mutex_handle_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8h_source.html#l00044">sapi_mutex.h:44</a></div></div>
-<div class="ttc" id="agroup__MUTEX_html_ga3c4ce780a867690c294352ecadaa8cbb"><div class="ttname"><a href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">sapi_mutex_destroy</a></div><div class="ttdeci">sapi_status_t sapi_mutex_destroy(sapi_mutex_handle_t handle)</div><div class="ttdoc">Destroys a mutex, releasing any backend resources bound to it. Must not be called while any task hold...</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00097">sapi_mutex.c:97</a></div></div>
-<div class="ttc" id="agroup__MUTEX_html_ga6377da4a8fda89711bc10c0942f1a06a"><div class="ttname"><a href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">sapi_mutex_unlock</a></div><div class="ttdeci">sapi_status_t sapi_mutex_unlock(sapi_mutex_handle_t handle)</div><div class="ttdoc">Releases a mutex previously locked by the calling task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00080">sapi_mutex.c:80</a></div></div>
-<div class="ttc" id="agroup__MUTEX_html_ga7cad1f0014d9b6c751bc836b89e469a6"><div class="ttname"><a href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">sapi_mutex_create</a></div><div class="ttdeci">sapi_status_t sapi_mutex_create(sapi_mutex_storage_t *storage, sapi_mutex_handle_t *out_handle)</div><div class="ttdoc">Creates (and initializes, unlocked) a mutex bound to caller-owned storage.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00033">sapi_mutex.c:33</a></div></div>
-<div class="ttc" id="agroup__MUTEX_html_gaf450b8c87fb3b64355137037006ed24b"><div class="ttname"><a href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">sapi_mutex_lock</a></div><div class="ttdeci">sapi_status_t sapi_mutex_lock(sapi_mutex_handle_t handle)</div><div class="ttdoc">Blocks the calling task until it holds the mutex.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00063">sapi_mutex.c:63</a></div></div>
+<div class="ttc" id="agroup__MUTEX_html_ga3c4ce780a867690c294352ecadaa8cbb"><div class="ttname"><a href="group__MUTEX.html#ga3c4ce780a867690c294352ecadaa8cbb">sapi_mutex_destroy</a></div><div class="ttdeci">sapi_status_t sapi_mutex_destroy(sapi_mutex_handle_t handle)</div><div class="ttdoc">Destroys a mutex, releasing any backend resources bound to it. Must not be called while any task hold...</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00108">sapi_mutex.c:108</a></div></div>
+<div class="ttc" id="agroup__MUTEX_html_ga6377da4a8fda89711bc10c0942f1a06a"><div class="ttname"><a href="group__MUTEX.html#ga6377da4a8fda89711bc10c0942f1a06a">sapi_mutex_unlock</a></div><div class="ttdeci">sapi_status_t sapi_mutex_unlock(sapi_mutex_handle_t handle)</div><div class="ttdoc">Releases a mutex previously locked by the calling task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00091">sapi_mutex.c:91</a></div></div>
+<div class="ttc" id="agroup__MUTEX_html_ga7cad1f0014d9b6c751bc836b89e469a6"><div class="ttname"><a href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6">sapi_mutex_create</a></div><div class="ttdeci">sapi_status_t sapi_mutex_create(sapi_mutex_storage_t *storage, sapi_mutex_handle_t *out_handle)</div><div class="ttdoc">Creates (and initializes, unlocked) a mutex bound to caller-owned storage.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00044">sapi_mutex.c:44</a></div></div>
+<div class="ttc" id="agroup__MUTEX_html_gaf450b8c87fb3b64355137037006ed24b"><div class="ttname"><a href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b">sapi_mutex_lock</a></div><div class="ttdeci">sapi_status_t sapi_mutex_lock(sapi_mutex_handle_t handle)</div><div class="ttdoc">Blocks the calling task until it holds the mutex.</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00074">sapi_mutex.c:74</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a8e0680a1b375facdc36864a8b8211122">SAPI_STATUS_NOT_SUPPORTED</a></div><div class="ttdeci">@ SAPI_STATUS_NOT_SUPPORTED</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00034">sapi_status.h:34</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a9ac1a5efd3bd8a57e8ad500bbb9bd6a0">SAPI_STATUS_INVALID_PARAM</a></div><div class="ttdeci">@ SAPI_STATUS_INVALID_PARAM</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00029">sapi_status.h:29</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a></div><div class="ttdeci">@ SAPI_STATUS_NOT_INITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00030">sapi_status.h:30</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
 <div class="ttc" id="asapi__lifecycle_8h_html"><div class="ttname"><a href="sapi__lifecycle_8h.html">sapi_lifecycle.h</a></div><div class="ttdoc">Process-wide application setup-phase lock (ADR-026).</div></div>
-<div class="ttc" id="asapi__mutex_8c_html_ada1aaaf216e60ed05bcfc026070f42c7"><div class="ttname"><a href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a></div><div class="ttdeci">static const sapi_mutex_backend_t * s_backend</div><div class="ttdoc">Currently registered backend, or NULL if none (ADR-033).</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00012">sapi_mutex.c:12</a></div></div>
+<div class="ttc" id="asapi__mutex_8c_html_ada1aaaf216e60ed05bcfc026070f42c7"><div class="ttname"><a href="sapi__mutex_8c.html#ada1aaaf216e60ed05bcfc026070f42c7">s_backend</a></div><div class="ttdeci">static const sapi_mutex_backend_t * s_backend</div><div class="ttdoc">Currently registered backend, or NULL if none (ADR-033).</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex_8c_source.html#l00017">sapi_mutex.c:17</a></div></div>
 <div class="ttc" id="asapi__mutex_8h_html"><div class="ttname"><a href="sapi__mutex_8h.html">sapi_mutex.h</a></div><div class="ttdoc">OS Abstraction Layer - Mutual exclusion service.</div></div>
 <div class="ttc" id="asapi__mutex__backend_8h_html"><div class="ttname"><a href="sapi__mutex__backend_8h.html">sapi_mutex_backend.h</a></div><div class="ttdoc">OS-backend adaptation surface for the Mutex service (ADR-033, ADR-021).</div></div>
 <div class="ttc" id="astructsapi__mutex__backend__t_html"><div class="ttname"><a href="structsapi__mutex__backend__t.html">sapi_mutex_backend_t</a></div><div class="ttdoc">Backend vtable: an integrator's implementation of the mutex service for a specific OS/RTOS/BSP target...</div><div class="ttdef"><b>Definition</b> <a href="sapi__mutex__backend_8h_source.html#l00034">sapi_mutex_backend.h:35</a></div></div>

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/task/sapi_task.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -134,12 +150,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#endif </span><span class="comment">/* SAFEAPI_OS_TASK_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
  <span class="comment">/* TASK */</span><div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
-<div class="ttc" id="agroup__TASK_html_ga1cfcfe1ef4315d82a28f7050a94d6709"><div class="ttname"><a href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709">sapi_task_create</a></div><div class="ttdeci">sapi_status_t sapi_task_create(sapi_task_storage_t *storage, const sapi_task_config_t *config, sapi_task_handle_t *out_handle)</div><div class="ttdoc">Creates a task in the suspended state.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00033">sapi_task.c:33</a></div></div>
-<div class="ttc" id="agroup__TASK_html_ga389dce24bc562446331c89f58844e0e7"><div class="ttname"><a href="group__TASK.html#ga389dce24bc562446331c89f58844e0e7">sapi_task_start</a></div><div class="ttdeci">sapi_status_t sapi_task_start(sapi_task_handle_t handle)</div><div class="ttdoc">Starts a created task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00057">sapi_task.c:57</a></div></div>
+<div class="ttc" id="agroup__TASK_html_ga1cfcfe1ef4315d82a28f7050a94d6709"><div class="ttname"><a href="group__TASK.html#ga1cfcfe1ef4315d82a28f7050a94d6709">sapi_task_create</a></div><div class="ttdeci">sapi_status_t sapi_task_create(sapi_task_storage_t *storage, const sapi_task_config_t *config, sapi_task_handle_t *out_handle)</div><div class="ttdoc">Creates a task in the suspended state.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00044">sapi_task.c:44</a></div></div>
+<div class="ttc" id="agroup__TASK_html_ga389dce24bc562446331c89f58844e0e7"><div class="ttname"><a href="group__TASK.html#ga389dce24bc562446331c89f58844e0e7">sapi_task_start</a></div><div class="ttdeci">sapi_status_t sapi_task_start(sapi_task_handle_t handle)</div><div class="ttdoc">Starts a created task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00068">sapi_task.c:68</a></div></div>
 <div class="ttc" id="agroup__TASK_html_ga39c7e2204129ffc3f8f171f7c1babb59"><div class="ttname"><a href="group__TASK.html#ga39c7e2204129ffc3f8f171f7c1babb59">sapi_task_entry_t</a></div><div class="ttdeci">void(* sapi_task_entry_t)(void *user_ctx)</div><div class="ttdoc">Task entry point, invoked cyclically at the configured period.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8h_source.html#l00035">sapi_task.h:35</a></div></div>
 <div class="ttc" id="agroup__TASK_html_ga56905dc212511186e7a0934c5f1f569b"><div class="ttname"><a href="group__TASK.html#ga56905dc212511186e7a0934c5f1f569b">sapi_task_handle_t</a></div><div class="ttdeci">struct sapi_task_impl_s * sapi_task_handle_t</div><div class="ttdoc">Opaque handle to a created task, returned by sapi_task_create().</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8h_source.html#l00032">sapi_task.h:32</a></div></div>
-<div class="ttc" id="agroup__TASK_html_ga6e1a985b12190d6c94792e31716b9e3e"><div class="ttname"><a href="group__TASK.html#ga6e1a985b12190d6c94792e31716b9e3e">sapi_task_suspend</a></div><div class="ttdeci">sapi_status_t sapi_task_suspend(sapi_task_handle_t handle)</div><div class="ttdoc">Suspends a running task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00074">sapi_task.c:74</a></div></div>
-<div class="ttc" id="agroup__TASK_html_ga9420b4f76a7ad6c8c076dba4c8b20785"><div class="ttname"><a href="group__TASK.html#ga9420b4f76a7ad6c8c076dba4c8b20785">sapi_task_destroy</a></div><div class="ttdeci">sapi_status_t sapi_task_destroy(sapi_task_handle_t handle)</div><div class="ttdoc">Terminates and destroys a task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00091">sapi_task.c:91</a></div></div>
+<div class="ttc" id="agroup__TASK_html_ga6e1a985b12190d6c94792e31716b9e3e"><div class="ttname"><a href="group__TASK.html#ga6e1a985b12190d6c94792e31716b9e3e">sapi_task_suspend</a></div><div class="ttdeci">sapi_status_t sapi_task_suspend(sapi_task_handle_t handle)</div><div class="ttdoc">Suspends a running task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00085">sapi_task.c:85</a></div></div>
+<div class="ttc" id="agroup__TASK_html_ga9420b4f76a7ad6c8c076dba4c8b20785"><div class="ttname"><a href="group__TASK.html#ga9420b4f76a7ad6c8c076dba4c8b20785">sapi_task_destroy</a></div><div class="ttdeci">sapi_status_t sapi_task_destroy(sapi_task_handle_t handle)</div><div class="ttdoc">Terminates and destroys a task.</div><div class="ttdef"><b>Definition</b> <a href="sapi__task_8c_source.html#l00102">sapi_task.c:102</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6767bbc7f5130018466fe6d26bf63359"><div class="ttname"><a href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></div><div class="ttdeci">uint32_t sapi_duration_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00027">sapi_types.h:27</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga7f4d306f969d83948098fac099a5abbf"><div class="ttname"><a href="group__TYPES.html#ga7f4d306f969d83948098fac099a5abbf">SAFEAPI_DECLARE_STORAGE</a></div><div class="ttdeci">#define SAFEAPI_DECLARE_STORAGE(type_name, byte_size)</div><div class="ttdoc">Declares an opaque, fixed-size, aligned storage type for a service's handle. The real internal layout...</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00069">sapi_types.h:69</a></div></div>
 <div class="ttc" id="asapi__status_8h_html"><div class="ttname"><a href="sapi__status_8h.html">sapi_status.h</a></div><div class="ttdoc">Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac...</div></div>

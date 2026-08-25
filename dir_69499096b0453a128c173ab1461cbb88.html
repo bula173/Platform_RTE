@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual Directory Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -80,23 +96,7 @@ $(function() {
 <div class="dynheader">
 Directory dependency graph for dual:</div>
 <div class="dyncontent">
-<div class="center"><img src="dir_69499096b0453a128c173ab1461cbb88_dep.png" border="0" usemap="#adir__69499096b0453a128c173ab1461cbb88__dep" alt="include/safeapi/dual"/></div>
-<map name="adir__69499096b0453a128c173ab1461cbb88__dep" id="adir__69499096b0453a128c173ab1461cbb88__dep">
-<area shape="rect" href="dir_134435be4830ca65a1b9227caadc4d5e.html" title="netlink" alt="" coords="27,125,93,151"/>
-<area shape="rect" href="dir_13808ec281fa056a38ba5c93dfe1957a.html" title="checksum" alt="" coords="117,125,205,151"/>
-<area shape="rect" href="dir_9448e30670b912be75c4f55872cecda0.html" title="status" alt="" coords="230,125,293,151"/>
-<area shape="rect" href="dir_eba407248dc69bd3ba503ba67be6dd78.html" title="types" alt="" coords="317,125,376,151"/>
-<area shape="rect" href="dir_69499096b0453a128c173ab1461cbb88.html" title="dual" alt="" coords="185,52,236,77"/>
-<area shape="poly" href="dir_000020_000037.html" alt="" coords="188,80,98,122,96,117,185,75"/>
-<area shape="rect" href="dir_000020_000037.html" title="2" alt="" coords="100,118,109,132"/>
-<area shape="poly" href="dir_000020_000011.html" alt="" coords="205,79,179,116,175,113,200,76"/>
-<area shape="rect" href="dir_000020_000011.html" title="1" alt="" coords="182,108,191,123"/>
-<area shape="poly" href="dir_000020_000055.html" alt="" coords="221,76,247,113,243,116,217,79"/>
-<area shape="rect" href="dir_000020_000055.html" title="3" alt="" coords="245,98,254,113"/>
-<area shape="poly" href="dir_000020_000065.html" alt="" coords="234,75,314,117,311,121,231,80"/>
-<area shape="rect" href="dir_000020_000065.html" title="3" alt="" coords="308,102,317,117"/>
-<area shape="rect" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html" title="safeapi" alt="" coords="16,16,387,161"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="dir_69499096b0453a128c173ab1461cbb88_dep.svg" width="403" height="178"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="files" name="files"></a>

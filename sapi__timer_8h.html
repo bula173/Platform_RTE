@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/timer/sapi_timer.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -90,47 +106,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_timer.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__timer_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2timer_2sapi__timer_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2timer_2sapi__timer_8h" id="ainclude_2safeapi_2timer_2sapi__timer_8h">
-<area shape="rect" title="OS Abstraction Layer &#45; Timer service." alt="" coords="82,5,242,45"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,93,151,133"/>
-<area shape="poly" title=" " alt="" coords="145,47,108,85,104,82,141,44"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,93,317,133"/>
-<area shape="poly" title=" " alt="" coords="183,44,220,82,216,85,179,47"/>
-<area shape="rect" title=" " alt="" coords="102,181,185,207"/>
-<area shape="poly" title=" " alt="" coords="223,136,171,175,168,171,220,131"/>
-<area shape="rect" title=" " alt="" coords="209,181,283,207"/>
-<area shape="poly" title=" " alt="" coords="249,134,249,167,243,167,243,134"/>
-<area shape="rect" title=" " alt="" coords="308,181,379,207"/>
-<area shape="poly" title=" " alt="" coords="271,131,320,170,317,175,268,136"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__timer_8h__incl.svg" width="384" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__timer_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2timer_2sapi__timer_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2timer_2sapi__timer_8hdep" id="ainclude_2safeapi_2timer_2sapi__timer_8hdep">
-<area shape="rect" title="OS Abstraction Layer &#45; Timer service." alt="" coords="675,5,835,45"/>
-<area shape="rect" href="sapi__timer__backend_8h.html" title="OS&#45;backend adaptation surface for the Timer service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,212,133"/>
-<area shape="poly" title=" " alt="" coords="662,41,232,96,213,99,212,93,231,91,661,35"/>
-<area shape="rect" href="sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="98,181,261,207"/>
-<area shape="poly" title=" " alt="" coords="662,35,449,56,348,74,308,84,278,96,249,115,224,139,189,183,185,179,220,135,246,111,275,91,306,79,347,69,448,51,661,30"/>
-<area shape="rect" href="sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="288,93,447,133"/>
-<area shape="poly" title=" " alt="" coords="662,50,448,97,446,92,661,45"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="471,93,618,133"/>
-<area shape="poly" title=" " alt="" coords="698,53,592,96,590,91,696,48"/>
-<area shape="rect" href="sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="642,101,869,126"/>
-<area shape="poly" title=" " alt="" coords="758,59,758,100,753,100,753,59"/>
-<area shape="rect" href="sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="893,93,1031,133"/>
-<area shape="poly" title=" " alt="" coords="814,48,918,91,916,96,812,53"/>
-<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1055,93,1194,133"/>
-<area shape="poly" title=" " alt="" coords="849,46,1056,93,1055,99,848,51"/>
-<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="1219,101,1353,126"/>
-<area shape="poly" title=" " alt="" coords="849,36,1016,59,1206,91,1241,98,1239,103,1206,96,1015,64,849,41"/>
-<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="1377,101,1597,126"/>
-<area shape="poly" title=" " alt="" coords="849,33,1084,57,1366,91,1417,98,1416,103,1366,96,1084,63,849,38"/>
-<area shape="poly" title=" " alt="" coords="137,142,171,179,167,183,133,145"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__timer_8h__dep__incl.svg" width="100%" height="459"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__timer_8h_source.html">Go to the source code of this file.</a></p>

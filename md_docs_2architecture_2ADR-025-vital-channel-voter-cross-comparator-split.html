@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: ADR-025: Split &lt;tt&gt;sapi_vital_channel&lt;/tt&gt; into &lt;tt&gt;sapi_channel&lt;/tt&gt; + &lt;tt&gt;sapi_voter&lt;/tt&gt; + &lt;tt&gt;sapi_cross_comparator&lt;/tt&gt;</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -108,12 +124,12 @@ channels," and it would misbehave on every 2oo3/NMR(&gt;2) deployment where the 
 <div class="line"><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a>(<a class="code hl_struct" href="structsapi__channel__storage__t.html">sapi_channel_t</a> *handle, <span class="keywordtype">bool</span> is_healthy);</div>
 <div class="line"><a class="code hl_enumeration" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> <a class="code hl_function" href="group__channel__link.html#ga619a0f285b37214103f8342bb05269af">sapi_channel_destroy</a>(<a class="code hl_struct" href="structsapi__channel__storage__t.html">sapi_channel_t</a> *handle);</div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga2ae7274dce915ff92b132f88a7676cc9"><div class="ttname"><a href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9">sapi_channel_get_health</a></div><div class="ttdeci">sapi_status_t sapi_channel_get_health(const sapi_channel_t *handle, sapi_channel_health_t *out_health)</div><div class="ttdoc">Queries this channel's health statistics.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00101">sapi_channel.c:101</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga590548924653a0a40936bbdde77a35c0"><div class="ttname"><a href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a></div><div class="ttdeci">sapi_status_t sapi_channel_set_healthy(sapi_channel_t *handle, bool is_healthy)</div><div class="ttdoc">Marks this channel healthy/unhealthy.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00112">sapi_channel.c:112</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga619a0f285b37214103f8342bb05269af"><div class="ttname"><a href="group__channel__link.html#ga619a0f285b37214103f8342bb05269af">sapi_channel_destroy</a></div><div class="ttdeci">sapi_status_t sapi_channel_destroy(sapi_channel_t *handle)</div><div class="ttdoc">Destroys a vital channel instance.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00123">sapi_channel.c:123</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga75fd92400c60979baf8aff1396841c1e"><div class="ttname"><a href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e">sapi_channel_send</a></div><div class="ttdeci">sapi_status_t sapi_channel_send(sapi_channel_t *handle, const void *data, size_t data_size)</div><div class="ttdoc">Sends data on this channel via its backend send callback.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00044">sapi_channel.c:44</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga81dd83683d1802758b2d32ab8f4e62f6"><div class="ttname"><a href="group__channel__link.html#ga81dd83683d1802758b2d32ab8f4e62f6">sapi_channel_receive</a></div><div class="ttdeci">sapi_status_t sapi_channel_receive(sapi_channel_t *handle, void *data, size_t data_size, uint32_t timeout_ms)</div><div class="ttdoc">Receives data on this channel via its backend receive callback.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00072">sapi_channel.c:72</a></div></div>
-<div class="ttc" id="agroup__channel__link_html_ga8972fa352eba4f25f1b0af7712d227cc"><div class="ttname"><a href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc">sapi_channel_init</a></div><div class="ttdeci">sapi_status_t sapi_channel_init(sapi_channel_storage_t *storage, const sapi_channel_config_t *config)</div><div class="ttdoc">Initializes one vital channel over a caller-supplied transport.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00011">sapi_channel.c:11</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga2ae7274dce915ff92b132f88a7676cc9"><div class="ttname"><a href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9">sapi_channel_get_health</a></div><div class="ttdeci">sapi_status_t sapi_channel_get_health(const sapi_channel_t *handle, sapi_channel_health_t *out_health)</div><div class="ttdoc">Queries this channel's health statistics.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00113">sapi_channel.c:113</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga590548924653a0a40936bbdde77a35c0"><div class="ttname"><a href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a></div><div class="ttdeci">sapi_status_t sapi_channel_set_healthy(sapi_channel_t *handle, bool is_healthy)</div><div class="ttdoc">Marks this channel healthy/unhealthy.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00124">sapi_channel.c:124</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga619a0f285b37214103f8342bb05269af"><div class="ttname"><a href="group__channel__link.html#ga619a0f285b37214103f8342bb05269af">sapi_channel_destroy</a></div><div class="ttdeci">sapi_status_t sapi_channel_destroy(sapi_channel_t *handle)</div><div class="ttdoc">Destroys a vital channel instance.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00135">sapi_channel.c:135</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga75fd92400c60979baf8aff1396841c1e"><div class="ttname"><a href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e">sapi_channel_send</a></div><div class="ttdeci">sapi_status_t sapi_channel_send(sapi_channel_t *handle, const void *data, size_t data_size)</div><div class="ttdoc">Sends data on this channel via its backend send callback.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00056">sapi_channel.c:56</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga81dd83683d1802758b2d32ab8f4e62f6"><div class="ttname"><a href="group__channel__link.html#ga81dd83683d1802758b2d32ab8f4e62f6">sapi_channel_receive</a></div><div class="ttdeci">sapi_status_t sapi_channel_receive(sapi_channel_t *handle, void *data, size_t data_size, uint32_t timeout_ms)</div><div class="ttdoc">Receives data on this channel via its backend receive callback.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00084">sapi_channel.c:84</a></div></div>
+<div class="ttc" id="agroup__channel__link_html_ga8972fa352eba4f25f1b0af7712d227cc"><div class="ttname"><a href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc">sapi_channel_init</a></div><div class="ttdeci">sapi_status_t sapi_channel_init(sapi_channel_storage_t *storage, const sapi_channel_config_t *config)</div><div class="ttdoc">Initializes one vital channel over a caller-supplied transport.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8c_source.html#l00023">sapi_channel.c:23</a></div></div>
 <div class="ttc" id="astructsapi__channel__config__t_html"><div class="ttname"><a href="structsapi__channel__config__t.html">sapi_channel_config_t</a></div><div class="ttdoc">Configuration for sapi_channel_init().</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8h_source.html#l00090">sapi_channel.h:90</a></div></div>
 <div class="ttc" id="astructsapi__channel__health__t_html"><div class="ttname"><a href="structsapi__channel__health__t.html">sapi_channel_health_t</a></div><div class="ttdoc">Health statistics for one vital channel.</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8h_source.html#l00039">sapi_channel.h:39</a></div></div>
 <div class="ttc" id="astructsapi__channel__storage__t_html"><div class="ttname"><a href="structsapi__channel__storage__t.html">sapi_channel_storage_t</a></div><div class="ttdoc">Storage for one vital channel instance (opaque to caller).</div><div class="ttdef"><b>Definition</b> <a href="sapi__channel_8h_source.html#l00107">sapi_channel.h:107</a></div></div>

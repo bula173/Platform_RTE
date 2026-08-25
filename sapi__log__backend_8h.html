@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi_backend/log/sapi_log_backend.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -88,33 +104,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_log_backend.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__log__backend_8h__incl.png" border="0" usemap="#ainclude_2safeapi__backend_2log_2sapi__log__backend_8h" alt=""/></div>
-<map name="ainclude_2safeapi__backend_2log_2sapi__log__backend_8h" id="ainclude_2safeapi__backend_2log_2sapi__log__backend_8h">
-<area shape="rect" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="47,5,229,45"/>
-<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="116,93,280,119"/>
-<area shape="poly" title=" " alt="" coords="155,44,183,81,179,84,150,47"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" title=" " alt="" coords="129,47,106,94,88,154,82,153,101,92,124,44"/>
-<area shape="poly" title=" " alt="" coords="182,121,120,161,117,157,179,117"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" title=" " alt="" coords="207,117,230,154,225,156,203,120"/>
-<area shape="rect" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__log__backend_8h__incl.svg" width="384" height="286"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__log__backend_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi__backend_2log_2sapi__log__backend_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi__backend_2log_2sapi__log__backend_8hdep" id="ainclude_2safeapi__backend_2log_2sapi__log__backend_8hdep">
-<area shape="rect" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,5,188,45"/>
-<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="29,93,164,119"/>
-<area shape="poly" title=" " alt="" coords="99,59,99,93,94,93,94,59"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__log__backend_8h__dep__incl.svg" width="194" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__log__backend_8h_source.html">Go to the source code of this file.</a></p>

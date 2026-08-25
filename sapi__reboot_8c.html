@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/reboot/sapi_reboot.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -89,30 +105,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_reboot.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__reboot_8c__incl.png" border="0" usemap="#asrc_2reboot_2sapi__reboot_8c" alt=""/></div>
-<map name="asrc_2reboot_2sapi__reboot_8c" id="asrc_2reboot_2sapi__reboot_8c">
-<area shape="rect" title="Reboot service: dispatches to the backend registered via sapi_reboot_register_backend() (ADR&#45;005)." alt="" coords="119,5,297,31"/>
-<area shape="rect" href="sapi__reboot_8h.html" title="OS Abstraction Layer &#45; Controlled reboot service (ADR&#45;004 section 3)." alt="" coords="252,167,399,207"/>
-<area shape="poly" title=" " alt="" coords="244,28,280,47,297,61,312,77,321,95,327,115,330,153,325,153,321,116,316,97,307,80,294,65,277,52,241,33"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
-<area shape="poly" title=" " alt="" coords="175,33,140,52,123,65,109,80,99,97,93,116,88,153,82,152,88,115,95,95,104,77,119,61,137,47,173,28"/>
-<area shape="rect" href="sapi__reboot__backend_8h.html" title="OS&#45;backend adaptation surface for the Controlled Reboot service (ADR&#45;004 section 3,..." alt="" coords="119,79,297,119"/>
-<area shape="poly" title=" " alt="" coords="211,31,211,65,205,65,205,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
-<area shape="poly" title=" " alt="" coords="298,209,238,249,235,245,295,205"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
-<area shape="poly" title=" " alt="" coords="336,206,352,241,348,243,331,208"/>
-<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
-<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
-<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
-<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
-<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
-<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
-<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
-<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
-<area shape="poly" title=" " alt="" coords="236,117,290,156,287,161,232,121"/>
-<area shape="poly" title=" " alt="" coords="209,119,201,241,196,241,204,119"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__reboot_8c__incl.svg" width="455" height="374"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__reboot_8c_source.html">Go to the source code of this file.</a></p>
@@ -158,8 +151,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
+<p>Local makros Local types declarations Local variables declarations </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__reboot_8c_source.html#l00017">17</a> of file <a class="el" href="sapi__reboot_8c_source.html">sapi_reboot.c</a>.</p>
 
 </div>
 </div>

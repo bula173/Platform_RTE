@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/ipc/sapi_ipc_pubsub.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -149,14 +165,14 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6767bbc7f5130018466fe6d26bf63359"><div class="ttname"><a href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></div><div class="ttdeci">uint32_t sapi_duration_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00027">sapi_types.h:27</a></div></div>
 <div class="ttc" id="asapi__ipc_8h_html"><div class="ttname"><a href="sapi__ipc_8h.html">sapi_ipc.h</a></div><div class="ttdoc">OS Abstraction Layer - Inter-process/inter-task communication service.</div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a0603de784275db40f7e444954c39d650"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a0603de784275db40f7e444954c39d650">sapi_ipc_pubsub_subscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_subscribe(sapi_ipc_pubsub_subscriber_t *subscriber_out, const sapi_ipc_pubsub_subscriber_config_t *config)</div><div class="ttdoc">Subscribe to a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00065">sapi_ipc_pubsub.c:65</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a41a40054c6835cd52a3266898b8ebf22"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a41a40054c6835cd52a3266898b8ebf22">sapi_ipc_pubsub_topic_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out, const sapi_ipc_pubsub_topic_config_t *config)</div><div class="ttdoc">Create a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00013">sapi_ipc_pubsub.c:13</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_a6330aac8cc489abbbf5b62cd2dc6824e"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a6330aac8cc489abbbf5b62cd2dc6824e">sapi_ipc_pubsub_receive</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_receive(sapi_ipc_pubsub_subscriber_t subscriber, void *message_out, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a message from subscribed topic (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00083">sapi_ipc_pubsub.c:83</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_aa43c1f43b358f63024ffcfa18539412a"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aa43c1f43b358f63024ffcfa18539412a">sapi_ipc_pubsub_unsubscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_unsubscribe(sapi_ipc_pubsub_subscriber_t subscriber)</div><div class="ttdoc">Unsubscribe from a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00096">sapi_ipc_pubsub.c:96</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a0603de784275db40f7e444954c39d650"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a0603de784275db40f7e444954c39d650">sapi_ipc_pubsub_subscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_subscribe(sapi_ipc_pubsub_subscriber_t *subscriber_out, const sapi_ipc_pubsub_subscriber_config_t *config)</div><div class="ttdoc">Subscribe to a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00077">sapi_ipc_pubsub.c:77</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a41a40054c6835cd52a3266898b8ebf22"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a41a40054c6835cd52a3266898b8ebf22">sapi_ipc_pubsub_topic_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_create(sapi_ipc_pubsub_topic_t *topic_out, const sapi_ipc_pubsub_topic_config_t *config)</div><div class="ttdoc">Create a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00025">sapi_ipc_pubsub.c:25</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_a6330aac8cc489abbbf5b62cd2dc6824e"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#a6330aac8cc489abbbf5b62cd2dc6824e">sapi_ipc_pubsub_receive</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_receive(sapi_ipc_pubsub_subscriber_t subscriber, void *message_out, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a message from subscribed topic (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00095">sapi_ipc_pubsub.c:95</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_aa43c1f43b358f63024ffcfa18539412a"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aa43c1f43b358f63024ffcfa18539412a">sapi_ipc_pubsub_unsubscribe</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_unsubscribe(sapi_ipc_pubsub_subscriber_t subscriber)</div><div class="ttdoc">Unsubscribe from a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00108">sapi_ipc_pubsub.c:108</a></div></div>
 <div class="ttc" id="asapi__ipc__pubsub_8h_html_aadca09966165b45631c9ad712d05710b"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aadca09966165b45631c9ad712d05710b">sapi_ipc_pubsub_subscriber_t</a></div><div class="ttdeci">struct sapi_ipc_pubsub_subscriber_s * sapi_ipc_pubsub_subscriber_t</div><div class="ttdoc">Subscriber handle for receiving from a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00142">sapi_ipc_pubsub.h:142</a></div></div>
 <div class="ttc" id="asapi__ipc__pubsub_8h_html_ae21b975b760ff3e1ec1b5a1c7c0d661c"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#ae21b975b760ff3e1ec1b5a1c7c0d661c">sapi_ipc_pubsub_topic_t</a></div><div class="ttdeci">struct sapi_ipc_pubsub_topic_s * sapi_ipc_pubsub_topic_t</div><div class="ttdoc">Publish-subscribe topic handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00065">sapi_ipc_pubsub.h:65</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_aee0d2dfef844e48d0915dda3d3019eee"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aee0d2dfef844e48d0915dda3d3019eee">sapi_ipc_pubsub_topic_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_destroy(sapi_ipc_pubsub_topic_t topic)</div><div class="ttdoc">Destroy a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00055">sapi_ipc_pubsub.c:55</a></div></div>
-<div class="ttc" id="asapi__ipc__pubsub_8h_html_af94ddad686f00005f2c9f49962f68fcb"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#af94ddad686f00005f2c9f49962f68fcb">sapi_ipc_pubsub_publish</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_publish(sapi_ipc_pubsub_topic_t topic, const void *message, size_t message_size)</div><div class="ttdoc">Publish a message to all subscribers on a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00041">sapi_ipc_pubsub.c:41</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_aee0d2dfef844e48d0915dda3d3019eee"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#aee0d2dfef844e48d0915dda3d3019eee">sapi_ipc_pubsub_topic_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_topic_destroy(sapi_ipc_pubsub_topic_t topic)</div><div class="ttdoc">Destroy a publish-subscribe topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00067">sapi_ipc_pubsub.c:67</a></div></div>
+<div class="ttc" id="asapi__ipc__pubsub_8h_html_af94ddad686f00005f2c9f49962f68fcb"><div class="ttname"><a href="sapi__ipc__pubsub_8h.html#af94ddad686f00005f2c9f49962f68fcb">sapi_ipc_pubsub_publish</a></div><div class="ttdeci">sapi_status_t sapi_ipc_pubsub_publish(sapi_ipc_pubsub_topic_t topic, const void *message, size_t message_size)</div><div class="ttdoc">Publish a message to all subscribers on a topic.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8c_source.html#l00053">sapi_ipc_pubsub.c:53</a></div></div>
 <div class="ttc" id="asapi__status_8h_html"><div class="ttname"><a href="sapi__status_8h.html">sapi_status.h</a></div><div class="ttdoc">Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac...</div></div>
 <div class="ttc" id="asapi__types_8h_html"><div class="ttname"><a href="sapi__types_8h.html">sapi_types.h</a></div><div class="ttdoc">Common fixed-width types and the caller-owned-storage handle pattern used by every OAL service (see A...</div></div>
 <div class="ttc" id="astructsapi__ipc__pubsub__subscriber__config__t_html"><div class="ttname"><a href="structsapi__ipc__pubsub__subscriber__config__t.html">sapi_ipc_pubsub_subscriber_config_t</a></div><div class="ttdoc">Configuration for a subscriber.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__pubsub_8h_source.html#l00147">sapi_ipc_pubsub.h:147</a></div></div>

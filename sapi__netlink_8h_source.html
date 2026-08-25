@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/netlink/sapi_netlink.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -145,12 +161,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="preprocessor">#endif </span><span class="comment">/* SAFEAPI_OS_NETLINK_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
- <span class="comment">/* NETLINK */</span><div class="ttc" id="agroup__NETLINK_html_ga0e5b33034707e37de73131a00bf098df"><div class="ttname"><a href="group__NETLINK.html#ga0e5b33034707e37de73131a00bf098df">sapi_netlink_close</a></div><div class="ttdeci">sapi_status_t sapi_netlink_close(sapi_netlink_handle_t handle)</div><div class="ttdoc">Closes a link.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00102">sapi_netlink.c:102</a></div></div>
-<div class="ttc" id="agroup__NETLINK_html_ga1820f4806751d395bee004d78edeba31"><div class="ttname"><a href="group__NETLINK.html#ga1820f4806751d395bee004d78edeba31">sapi_netlink_send</a></div><div class="ttdeci">sapi_status_t sapi_netlink_send(sapi_netlink_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one fixed-size message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00062">sapi_netlink.c:62</a></div></div>
+ <span class="comment">/* NETLINK */</span><div class="ttc" id="agroup__NETLINK_html_ga0e5b33034707e37de73131a00bf098df"><div class="ttname"><a href="group__NETLINK.html#ga0e5b33034707e37de73131a00bf098df">sapi_netlink_close</a></div><div class="ttdeci">sapi_status_t sapi_netlink_close(sapi_netlink_handle_t handle)</div><div class="ttdoc">Closes a link.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00113">sapi_netlink.c:113</a></div></div>
+<div class="ttc" id="agroup__NETLINK_html_ga1820f4806751d395bee004d78edeba31"><div class="ttname"><a href="group__NETLINK.html#ga1820f4806751d395bee004d78edeba31">sapi_netlink_send</a></div><div class="ttdeci">sapi_status_t sapi_netlink_send(sapi_netlink_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one fixed-size message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00073">sapi_netlink.c:73</a></div></div>
 <div class="ttc" id="agroup__NETLINK_html_ga47c9f147df1a6c21b093e7c173adc64d"><div class="ttname"><a href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a></div><div class="ttdeci">struct sapi_netlink_impl_s * sapi_netlink_handle_t</div><div class="ttdoc">Opaque handle to an established link, returned by sapi_netlink_open().</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8h_source.html#l00055">sapi_netlink.h:55</a></div></div>
-<div class="ttc" id="agroup__NETLINK_html_ga4c86e3cbba235b624c0a4bac55c19cbb"><div class="ttname"><a href="group__NETLINK.html#ga4c86e3cbba235b624c0a4bac55c19cbb">sapi_netlink_receive</a></div><div class="ttdeci">sapi_status_t sapi_netlink_receive(sapi_netlink_handle_t handle, void *out_message, size_t buffer_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receives one fixed-size message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00082">sapi_netlink.c:82</a></div></div>
+<div class="ttc" id="agroup__NETLINK_html_ga4c86e3cbba235b624c0a4bac55c19cbb"><div class="ttname"><a href="group__NETLINK.html#ga4c86e3cbba235b624c0a4bac55c19cbb">sapi_netlink_receive</a></div><div class="ttdeci">sapi_status_t sapi_netlink_receive(sapi_netlink_handle_t handle, void *out_message, size_t buffer_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receives one fixed-size message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00093">sapi_netlink.c:93</a></div></div>
 <div class="ttc" id="agroup__NETLINK_html_ga660caa7b256d8c40c283b6b08f2d2603"><div class="ttname"><a href="group__NETLINK.html#ga660caa7b256d8c40c283b6b08f2d2603">sapi_netlink_role_t</a></div><div class="ttdeci">sapi_netlink_role_t</div><div class="ttdoc">Which side of the connection this link instance plays.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8h_source.html#l00066">sapi_netlink.h:67</a></div></div>
-<div class="ttc" id="agroup__NETLINK_html_gac7df60f4ae08e2e08056fde96c3240d4"><div class="ttname"><a href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4">sapi_netlink_open</a></div><div class="ttdeci">sapi_status_t sapi_netlink_open(sapi_netlink_storage_t *storage, const sapi_netlink_config_t *config, sapi_netlink_handle_t *out_handle)</div><div class="ttdoc">Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00034">sapi_netlink.c:34</a></div></div>
+<div class="ttc" id="agroup__NETLINK_html_gac7df60f4ae08e2e08056fde96c3240d4"><div class="ttname"><a href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4">sapi_netlink_open</a></div><div class="ttdeci">sapi_status_t sapi_netlink_open(sapi_netlink_storage_t *storage, const sapi_netlink_config_t *config, sapi_netlink_handle_t *out_handle)</div><div class="ttdoc">Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8c_source.html#l00045">sapi_netlink.c:45</a></div></div>
 <div class="ttc" id="agroup__NETLINK_html_gga660caa7b256d8c40c283b6b08f2d2603a36422dcbe73caf3e1e8ed215b4f66774"><div class="ttname"><a href="group__NETLINK.html#gga660caa7b256d8c40c283b6b08f2d2603a36422dcbe73caf3e1e8ed215b4f66774">SAPI_NETLINK_ROLE_CONNECT</a></div><div class="ttdeci">@ SAPI_NETLINK_ROLE_CONNECT</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8h_source.html#l00070">sapi_netlink.h:69</a></div></div>
 <div class="ttc" id="agroup__NETLINK_html_gga660caa7b256d8c40c283b6b08f2d2603a442e3581552da0b89619fdeefc1a57ad"><div class="ttname"><a href="group__NETLINK.html#gga660caa7b256d8c40c283b6b08f2d2603a442e3581552da0b89619fdeefc1a57ad">SAPI_NETLINK_ROLE_LISTEN</a></div><div class="ttdeci">@ SAPI_NETLINK_ROLE_LISTEN</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8h_source.html#l00068">sapi_netlink.h:68</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>

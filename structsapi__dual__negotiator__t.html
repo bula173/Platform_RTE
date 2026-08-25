@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: sapi_dual_negotiator_t Struct Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -83,18 +99,7 @@ $(function() {
 <div class="dynheader">
 Collaboration diagram for sapi_dual_negotiator_t:</div>
 <div class="dyncontent">
-<div class="center"><img src="structsapi__dual__negotiator__t__coll__graph.png" border="0" usemap="#asapi__dual__negotiator__t_coll__map" alt="Collaboration graph"/></div>
-<map name="asapi__dual__negotiator__t_coll__map" id="asapi__dual__negotiator__t_coll__map">
-<area shape="rect" title="One sapi_dual_negotiator_t instance&#39;s state. Caller&#45;owned storage; every field is private &#45; reach it ..." alt="" coords="79,269,250,295"/>
-<area shape="rect" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller&#45;owned storage; every field is private &#45; reach it onl..." alt="" coords="87,181,242,207"/>
-<area shape="poly" title=" " alt="" coords="167,221,167,269,162,269,162,221"/>
-<area shape="rect" href="structsapi__dual__msgchannel__t.html" title="One sapi_dual_msgchannel_t instance&#39;s state. Caller&#45;owned storage (REQ&#45;DUAL&#45;MSGCHANNEL&#45;001); opaque i..." alt="" coords="5,93,188,119"/>
-<area shape="poly" title=" " alt="" coords="117,128,157,179,153,182,112,131"/>
-<area shape="rect" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload &#45; sapi_dual_negotiator_t&#39;s own periodic beacon." alt="" coords="212,93,395,119"/>
-<area shape="poly" title=" " alt="" coords="274,128,185,183,182,179,272,124"/>
-<area shape="rect" href="structsapi__dual__frame__header__t.html" title="Common 4&#45;byte header prefixing every Layer&#45;2 frame; kept a fixed 4 bytes (not just 1) so the fields t..." alt="" coords="206,5,401,31"/>
-<area shape="poly" title=" " alt="" coords="306,45,306,93,301,93,301,45"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structsapi__dual__negotiator__t__coll__graph.svg" width="407" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>

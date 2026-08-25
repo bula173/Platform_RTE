@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual/sapi_dual_channel.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -96,63 +112,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_channel.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__channel_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__channel_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__channel_8h" id="ainclude_2safeapi_2dual_2sapi__dual__channel_8h">
-<area shape="rect" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="418,5,576,45"/>
-<area shape="rect" title=" " alt="" coords="167,357,238,383"/>
-<area shape="poly" title=" " alt="" coords="417,30,317,34,207,45,155,53,109,64,72,78,47,95,26,121,14,147,9,174,10,201,18,228,32,255,74,307,92,323,112,336,155,354,153,359,110,340,88,327,70,311,27,258,13,230,5,202,3,174,9,146,22,118,43,91,69,73,107,59,154,48,206,39,317,29,417,25"/>
-<area shape="rect" title=" " alt="" coords="656,357,738,383"/>
-<area shape="poly" title=" " alt="" coords="577,31,622,38,670,50,718,68,762,91,789,110,808,128,822,150,834,181,841,219,833,251,814,280,787,311,761,334,734,353,731,348,758,330,783,307,810,277,829,249,836,219,829,182,817,153,804,131,786,114,760,96,715,72,668,55,620,44,576,36"/>
-<area shape="rect" href="sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="57,93,225,133"/>
-<area shape="poly" title=" " alt="" coords="419,48,233,93,231,88,418,43"/>
-<area shape="rect" href="sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="57,181,225,221"/>
-<area shape="poly" title=" " alt="" coords="451,48,342,96,187,177,185,172,340,91,449,43"/>
-<area shape="rect" href="sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="353,93,521,133"/>
-<area shape="poly" title=" " alt="" coords="486,47,460,84,456,81,481,44"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="627,269,772,309"/>
-<area shape="poly" title=" " alt="" coords="577,39,638,57,704,85,735,104,765,126,791,151,813,180,820,201,813,223,793,247,767,265,764,261,789,243,808,220,814,201,808,183,787,154,761,130,732,108,701,90,637,62,576,44"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="437,269,578,309"/>
-<area shape="poly" title=" " alt="" coords="513,44,526,67,536,93,541,137,539,181,531,223,522,257,516,255,526,221,533,181,536,137,530,94,521,69,508,47"/>
-<area shape="rect" href="sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="647,181,798,221"/>
-<area shape="poly" title=" " alt="" coords="523,43,688,171,685,175,520,48"/>
-<area shape="poly" title=" " alt="" coords="98,136,70,155,47,183,42,201,47,220,72,261,104,297,139,326,171,348,168,352,136,330,101,300,68,264,42,222,37,201,43,180,66,152,95,131"/>
-<area shape="poly" title=" " alt="" coords="144,134,144,167,138,167,138,134"/>
-<area shape="poly" title=" " alt="" coords="150,221,196,343,191,345,145,223"/>
-<area shape="poly" title=" " alt="" coords="370,136,327,155,289,183,259,222,236,266,220,309,210,345,205,343,215,308,231,264,254,219,286,179,325,151,368,131"/>
-<area shape="rect" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="300,181,470,221"/>
-<area shape="poly" title=" " alt="" coords="428,135,406,171,401,168,423,132"/>
-<area shape="poly" title=" " alt="" coords="467,131,661,259,658,264,464,136"/>
-<area shape="poly" title=" " alt="" coords="455,132,470,154,485,180,498,219,506,255,500,256,493,220,480,182,466,157,450,135"/>
-<area shape="poly" title=" " alt="" coords="500,131,647,175,646,180,499,136"/>
-<area shape="poly" title=" " alt="" coords="370,223,331,265,283,311,232,351,228,347,279,307,327,261,366,220"/>
-<area shape="rect" title=" " alt="" coords="361,357,436,383"/>
-<area shape="poly" title=" " alt="" coords="389,221,399,344,394,344,384,222"/>
-<area shape="poly" title=" " alt="" coords="455,219,618,263,617,268,453,224"/>
-<area shape="poly" title=" " alt="" coords="414,219,471,259,468,264,411,224"/>
-<area shape="poly" title=" " alt="" coords="437,311,252,359,250,354,436,306"/>
-<area shape="poly" title=" " alt="" coords="554,307,657,349,655,354,552,312"/>
-<area shape="poly" title=" " alt="" coords="483,312,427,351,424,347,480,307"/>
-<area shape="poly" title=" " alt="" coords="720,222,711,257,705,256,715,221"/>
-<area shape="poly" title=" " alt="" coords="676,224,568,267,566,262,674,219"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__dual__channel_8h__incl.svg" width="100%" height="591"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__channel_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__channel_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__channel_8hdep" id="ainclude_2safeapi_2dual_2sapi__dual__channel_8hdep">
-<area shape="rect" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,5,385,45"/>
-<area shape="rect" href="sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,93,179,133"/>
-<area shape="poly" title=" " alt="" coords="247,53,140,96,138,91,245,48"/>
-<area shape="rect" href="sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,93,407,133"/>
-<area shape="poly" title=" " alt="" coords="308,59,308,93,303,93,303,59"/>
-<area shape="rect" href="sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,93,571,133"/>
-<area shape="poly" title=" " alt="" coords="362,48,459,91,457,96,360,53"/>
-<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,181,161,221"/>
-<area shape="poly" title=" " alt="" coords="95,147,95,181,89,181,89,147"/>
-<area shape="rect" href="sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="228,181,383,221"/>
-<area shape="poly" title=" " alt="" coords="308,147,308,181,303,181,303,147"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__channel_8h__dep__incl.svg" width="576" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__dual__channel_8h_source.html">Go to the source code of this file.</a></p>

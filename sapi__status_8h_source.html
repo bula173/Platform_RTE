@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/status/sapi_status.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -118,7 +134,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="preprocessor">#endif </span><span class="comment">/* SAFEAPI_COMMON_STATUS_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
  <span class="comment">/* STATUS */</span><div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
-<div class="ttc" id="agroup__STATUS_html_gae33bf09c513f285687ec246a4f1806ad"><div class="ttname"><a href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad">sapi_status_to_string</a></div><div class="ttdeci">const char * sapi_status_to_string(sapi_status_t status)</div><div class="ttdoc">Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8c_source.html#l00015">sapi_status.c:15</a></div></div>
+<div class="ttc" id="agroup__STATUS_html_gae33bf09c513f285687ec246a4f1806ad"><div class="ttname"><a href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad">sapi_status_to_string</a></div><div class="ttdeci">const char * sapi_status_to_string(sapi_status_t status)</div><div class="ttdoc">Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8c_source.html#l00027">sapi_status.c:27</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a0219bfbe250d0bb0f1d64fb2d43f83af">SAPI_STATUS_ALREADY_INITIALIZED</a></div><div class="ttdeci">@ SAPI_STATUS_ALREADY_INITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00031">sapi_status.h:31</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a102d80dabc0eb4f646623dd20c9a484b">SAPI_STATUS_HARDWARE_FAULT</a></div><div class="ttdeci">@ SAPI_STATUS_HARDWARE_FAULT</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00036">sapi_status.h:36</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83a1aa6956dacfce267580d60a93e862d0b"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83a1aa6956dacfce267580d60a93e862d0b">SAPI_STATUS_INVALID_STATE</a></div><div class="ttdeci">@ SAPI_STATUS_INVALID_STATE</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00044">sapi_status.h:40</a></div></div>

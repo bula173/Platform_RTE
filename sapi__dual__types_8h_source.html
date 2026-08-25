@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual/sapi_dual_types.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -123,9 +139,9 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span><span class="preprocessor">#endif </span><span class="comment">/* SAPI_DUAL_TYPES_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
  <span class="comment">/* DUAL */</span><div class="ttc" id="agroup__DUAL_html_ga6360ab57a6109447b0067c630ff4e271"><div class="ttname"><a href="group__DUAL.html#ga6360ab57a6109447b0067c630ff4e271">sapi_dual_state_t</a></div><div class="ttdeci">sapi_dual_state_t</div><div class="ttdoc">State of one instance in a dual (two-redundant-instance) relationship, as decided by sapi_dual_negoti...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8h_source.html#l00037">sapi_dual_types.h:38</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_ga8f99957bd2bd04338cf52c5e319075a8"><div class="ttname"><a href="group__DUAL.html#ga8f99957bd2bd04338cf52c5e319075a8">sapi_dual_state_to_string</a></div><div class="ttdeci">const char * sapi_dual_state_to_string(sapi_dual_state_t state)</div><div class="ttdoc">Returns a short, static, human-readable string for a sapi_dual_state_t. Intended for diagnostics/logg...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8c_source.html#l00009">sapi_dual_types.c:9</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_ga8f99957bd2bd04338cf52c5e319075a8"><div class="ttname"><a href="group__DUAL.html#ga8f99957bd2bd04338cf52c5e319075a8">sapi_dual_state_to_string</a></div><div class="ttdeci">const char * sapi_dual_state_to_string(sapi_dual_state_t state)</div><div class="ttdoc">Returns a short, static, human-readable string for a sapi_dual_state_t. Intended for diagnostics/logg...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8c_source.html#l00021">sapi_dual_types.c:21</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_gaa122ed88dc14d333e686d8b3f4772e9a"><div class="ttname"><a href="group__DUAL.html#gaa122ed88dc14d333e686d8b3f4772e9a">sapi_dual_channel_status_t</a></div><div class="ttdeci">sapi_dual_channel_status_t</div><div class="ttdoc">Aggregate connection status of a sapi_dual_channel_t across all of its configured redundant links (AD...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8h_source.html#l00065">sapi_dual_types.h:66</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_gac845977f5ff35886467da840a10b555e"><div class="ttname"><a href="group__DUAL.html#gac845977f5ff35886467da840a10b555e">sapi_dual_channel_status_to_string</a></div><div class="ttdeci">const char * sapi_dual_channel_status_to_string(sapi_dual_channel_status_t status)</div><div class="ttdoc">Returns a short, static, human-readable string for a sapi_dual_channel_status_t. Same diagnostics-onl...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8c_source.html#l00038">sapi_dual_types.c:38</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_gac845977f5ff35886467da840a10b555e"><div class="ttname"><a href="group__DUAL.html#gac845977f5ff35886467da840a10b555e">sapi_dual_channel_status_to_string</a></div><div class="ttdeci">const char * sapi_dual_channel_status_to_string(sapi_dual_channel_status_t status)</div><div class="ttdoc">Returns a short, static, human-readable string for a sapi_dual_channel_status_t. Same diagnostics-onl...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8c_source.html#l00050">sapi_dual_types.c:50</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_gga6360ab57a6109447b0067c630ff4e271a5a4d8a20a90d5e7a91feab1116731d65"><div class="ttname"><a href="group__DUAL.html#gga6360ab57a6109447b0067c630ff4e271a5a4d8a20a90d5e7a91feab1116731d65">SAPI_DUAL_STATE_IDLE</a></div><div class="ttdeci">@ SAPI_DUAL_STATE_IDLE</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8h_source.html#l00041">sapi_dual_types.h:41</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_gga6360ab57a6109447b0067c630ff4e271a621ffb5e58772ef3d6d6c3687218206f"><div class="ttname"><a href="group__DUAL.html#gga6360ab57a6109447b0067c630ff4e271a621ffb5e58772ef3d6d6c3687218206f">SAPI_DUAL_STATE_ONLINE</a></div><div class="ttdeci">@ SAPI_DUAL_STATE_ONLINE</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8h_source.html#l00048">sapi_dual_types.h:48</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_gga6360ab57a6109447b0067c630ff4e271a75a04a660c7775baee66bb56ac996207"><div class="ttname"><a href="group__DUAL.html#gga6360ab57a6109447b0067c630ff4e271a75a04a660c7775baee66bb56ac996207">SAPI_DUAL_STATE_COLDSTANDBY</a></div><div class="ttdeci">@ SAPI_DUAL_STATE_COLDSTANDBY</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__types_8h_source.html#l00055">sapi_dual_types.h:54</a></div></div>

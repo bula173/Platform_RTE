@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/buffer/sapi_buffer.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -87,24 +103,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_buffer.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__buffer_8c__incl.png" border="0" usemap="#asrc_2buffer_2sapi__buffer_8c" alt=""/></div>
-<map name="asrc_2buffer_2sapi__buffer_8c" id="asrc_2buffer_2sapi__buffer_8c">
-<area shape="rect" title="Implementation of the cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="143,5,312,31"/>
-<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="91,79,233,119"/>
-<area shape="poly" title=" " alt="" coords="220,33,189,70,184,66,216,29"/>
-<area shape="rect" title=" " alt="" coords="257,86,328,111"/>
-<area shape="poly" title=" " alt="" coords="239,29,276,73,272,77,235,33"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" title=" " alt="" coords="145,121,108,159,104,155,141,117"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" title=" " alt="" coords="183,117,220,155,216,159,179,121"/>
-<area shape="rect" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__buffer_8c__incl.svg" width="384" height="286"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__buffer_8c_source.html">Go to the source code of this file.</a></p>

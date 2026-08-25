@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/channel_link/sapi_channel.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -91,51 +107,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_channel.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__channel_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2channel__link_2sapi__channel_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2channel__link_2sapi__channel_8h" id="ainclude_2safeapi_2channel__link_2sapi__channel_8h">
-<area shape="rect" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="105,5,281,45"/>
-<area shape="rect" title=" " alt="" coords="5,101,76,126"/>
-<area shape="poly" title=" " alt="" coords="161,48,74,96,72,92,158,43"/>
-<area shape="rect" title=" " alt="" coords="101,101,183,126"/>
-<area shape="poly" title=" " alt="" coords="184,47,158,90,154,87,179,44"/>
-<area shape="rect" title=" " alt="" coords="207,101,282,126"/>
-<area shape="poly" title=" " alt="" coords="206,44,233,87,228,90,202,47"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="307,93,452,133"/>
-<area shape="poly" title=" " alt="" coords="235,43,327,85,325,90,233,48"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__incl.svg" width="458" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__channel_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2channel__link_2sapi__channel_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2channel__link_2sapi__channel_8hdep" id="ainclude_2safeapi_2channel__link_2sapi__channel_8hdep">
-<area shape="rect" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="284,5,460,45"/>
-<area shape="rect" href="sapi__cross__comparator_8h.html" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="11,181,187,236"/>
-<area shape="poly" title=" " alt="" coords="333,56,140,183,137,179,330,51"/>
-<area shape="rect" href="sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="211,189,415,229"/>
-<area shape="poly" title=" " alt="" coords="357,59,341,94,327,145,319,189,313,188,322,144,336,92,352,56"/>
-<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="351,93,510,133"/>
-<area shape="poly" title=" " alt="" coords="395,55,420,92,415,95,390,58"/>
-<area shape="rect" href="sapi__channel_8c.html" title="One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks,..." alt="" coords="534,93,693,133"/>
-<area shape="poly" title=" " alt="" coords="439,47,561,91,560,96,437,52"/>
-<area shape="rect" href="sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="5,284,192,324"/>
-<area shape="poly" title=" " alt="" coords="101,250,101,284,96,284,96,250"/>
-<area shape="rect" href="sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="236,284,391,324"/>
-<area shape="poly" title=" " alt="" coords="316,242,316,284,311,284,311,242"/>
-<area shape="poly" title=" " alt="" coords="351,140,188,185,186,180,350,134"/>
-<area shape="poly" title=" " alt="" coords="398,144,339,191,335,187,395,140"/>
-<area shape="rect" href="sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="439,189,646,229"/>
-<area shape="poly" title=" " alt="" coords="466,140,522,187,518,191,462,144"/>
-<area shape="rect" href="sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="670,189,866,229"/>
-<area shape="poly" title=" " alt="" coords="513,134,701,186,699,191,511,140"/>
-<area shape="rect" href="sapi__voter_8c.html" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="890,196,1051,221"/>
-<area shape="poly" title=" " alt="" coords="524,131,625,145,704,153,781,162,879,179,935,193,934,198,878,184,781,167,703,158,624,150,523,136"/>
-<area shape="rect" href="sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="487,284,646,324"/>
-<area shape="poly" title=" " alt="" coords="554,241,564,283,559,285,548,243"/>
-<area shape="poly" title=" " alt="" coords="716,237,608,286,606,282,714,232"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="695,284,841,324"/>
-<area shape="poly" title=" " alt="" coords="771,242,771,284,765,284,765,242"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__dep__incl.svg" width="100%" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__channel_8h_source.html">Go to the source code of this file.</a></p>

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/voter/sapi_voter.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -90,44 +106,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_voter.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__voter_8c__incl.png" border="0" usemap="#asrc_2voter_2sapi__voter_8c" alt=""/></div>
-<map name="asrc_2voter_2sapi__voter_8c" id="asrc_2voter_2sapi__voter_8c">
-<area shape="rect" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="325,5,486,31"/>
-<area shape="rect" title=" " alt="" coords="134,86,205,111"/>
-<area shape="poly" title=" " alt="" coords="367,33,218,81,212,84,210,79,217,76,366,28"/>
-<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="229,79,368,119"/>
-<area shape="poly" title=" " alt="" coords="391,33,337,73,334,68,388,29"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="485,167,645,207"/>
-<area shape="poly" title=" " alt="" coords="408,31,413,72,420,96,433,117,459,141,490,159,487,163,456,145,429,120,415,98,408,73,403,31"/>
-<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="443,86,607,111"/>
-<area shape="poly" title=" " alt="" coords="425,29,497,76,494,80,422,33"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="631,79,798,119"/>
-<area shape="poly" title=" " alt="" coords="451,28,628,73,627,78,450,33"/>
-<area shape="rect" title=" " alt="" coords="23,262,94,287"/>
-<area shape="poly" title=" " alt="" coords="230,118,15,169,8,188,13,209,24,231,39,250,35,253,20,234,8,211,3,187,12,165,228,113"/>
-<area shape="rect" title=" " alt="" coords="297,262,380,287"/>
-<area shape="poly" title=" " alt="" coords="331,117,354,138,373,166,378,188,375,211,357,251,352,249,370,210,373,188,368,168,350,142,327,121"/>
-<area shape="rect" title=" " alt="" coords="119,262,193,287"/>
-<area shape="poly" title=" " alt="" coords="230,118,99,149,27,169,20,186,28,205,40,217,61,230,114,254,111,259,59,235,37,222,23,208,15,186,24,165,98,144,228,113"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="493,255,638,295"/>
-<area shape="poly" title=" " alt="" coords="329,117,527,245,524,249,326,121"/>
-<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="203,167,359,207"/>
-<area shape="poly" title=" " alt="" coords="297,119,291,154,285,153,292,118"/>
-<area shape="poly" title=" " alt="" coords="233,209,108,257,102,259,100,254,106,252,231,204"/>
-<area shape="poly" title=" " alt="" coords="296,205,325,249,321,252,292,208"/>
-<area shape="poly" title=" " alt="" coords="255,209,186,256,183,252,252,205"/>
-<area shape="poly" title=" " alt="" coords="344,204,491,248,489,253,343,209"/>
-<area shape="poly" title=" " alt="" coords="517,209,383,260,381,255,515,204"/>
-<area shape="poly" title=" " alt="" coords="568,207,568,241,563,241,563,207"/>
-<area shape="poly" title=" " alt="" coords="577,109,622,130,643,145,660,165,667,186,660,208,643,231,620,249,617,245,639,227,655,205,661,186,655,168,639,149,620,134,575,114"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="37,167,179,207"/>
-<area shape="poly" title=" " alt="" coords="467,114,193,169,192,164,465,109"/>
-<area shape="poly" title=" " alt="" coords="99,208,75,251,70,248,95,206"/>
-<area shape="poly" title=" " alt="" coords="160,204,296,255,294,260,158,209"/>
-<area shape="poly" title=" " alt="" coords="121,206,145,249,140,251,116,208"/>
-<area shape="poly" title=" " alt="" coords="715,120,705,162,695,186,681,208,655,232,627,251,624,246,652,228,677,205,690,184,700,161,710,118"/>
-<area shape="poly" title=" " alt="" coords="631,119,619,121,501,136,407,144,313,153,192,169,192,164,312,147,407,139,500,131,618,116,631,114"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__voter_8c__incl.svg" width="100%" height="525"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__voter_8c_source.html">Go to the source code of this file.</a></p>

@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi_backend Directory Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -80,42 +96,7 @@ $(function() {
 <div class="dynheader">
 Directory dependency graph for safeapi_backend:</div>
 <div class="dyncontent">
-<div class="center"><img src="dir_b654fa57ef70d8d960f5e7b8792fe84f_dep.png" border="0" usemap="#adir__b654fa57ef70d8d960f5e7b8792fe84f__dep" alt="include/safeapi_backend"/></div>
-<map name="adir__b654fa57ef70d8d960f5e7b8792fe84f__dep" id="adir__b654fa57ef70d8d960f5e7b8792fe84f__dep">
-<area shape="rect" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html" title="safeapi" alt="" coords="399,136,470,161"/>
-<area shape="rect" href="dir_865c20dbcfaec73215d2e127782f997c.html" title="clocksync" alt="" coords="770,63,857,88"/>
-<area shape="poly" href="dir_000014_000048.html" alt="" coords="789,91,759,101,685,118,610,131,484,146,484,141,609,126,684,113,758,96,787,86"/>
-<area shape="rect" href="dir_000014_000048.html" title="2" alt="" coords="484,144,494,159"/>
-<area shape="rect" href="dir_98e4abf6cd4520053977241562bb9c34.html" title="ipc" alt="" coords="705,63,746,88"/>
-<area shape="poly" href="dir_000024_000048.html" alt="" coords="712,91,693,101,638,119,582,133,484,147,483,141,581,127,637,114,691,96,709,86"/>
-<area shape="rect" href="dir_000024_000048.html" title="2" alt="" coords="484,145,494,159"/>
-<area shape="rect" href="dir_18b4084d69ed9753d313b9f2f4e85a64.html" title="log" alt="" coords="637,63,680,88"/>
-<area shape="poly" href="dir_000029_000048.html" alt="" coords="645,90,626,101,553,127,484,142,483,137,551,121,624,96,642,86"/>
-<area shape="rect" href="dir_000029_000048.html" title="2" alt="" coords="485,140,494,154"/>
-<area shape="rect" href="dir_5e853914eea43dff2692eece255496d3.html" title="memory" alt="" coords="536,63,613,88"/>
-<area shape="poly" href="dir_000032_000048.html" alt="" coords="553,90,471,132,468,127,551,86"/>
-<area shape="rect" href="dir_000032_000048.html" title="2" alt="" coords="473,128,482,142"/>
-<area shape="rect" href="dir_a03059025cf19b3eee7893b539bdcbe4.html" title="mutex" alt="" coords="448,63,512,88"/>
-<area shape="poly" href="dir_000035_000048.html" alt="" coords="475,90,452,126,447,123,470,87"/>
-<area shape="rect" href="dir_000035_000048.html" title="2" alt="" coords="454,118,464,133"/>
-<area shape="rect" href="dir_ba1d731b3aedba4127da0d46b25c1c45.html" title="netlink" alt="" coords="357,63,424,88"/>
-<area shape="poly" href="dir_000038_000048.html" alt="" coords="400,87,423,123,418,126,396,90"/>
-<area shape="rect" href="dir_000038_000048.html" title="2" alt="" coords="420,109,430,123"/>
-<area shape="rect" href="dir_9dad60cc7393ef79c0bb43bf2c5bbb98.html" title="nvm" alt="" coords="283,63,333,88"/>
-<area shape="poly" href="dir_000042_000048.html" alt="" coords="329,86,347,96,403,127,400,132,344,101,326,91"/>
-<area shape="rect" href="dir_000042_000048.html" title="2" alt="" coords="397,113,406,127"/>
-<area shape="rect" href="dir_9d39373a9cf1bc75ccab483020924401.html" title="reboot" alt="" coords="195,63,259,88"/>
-<area shape="poly" href="dir_000045_000048.html" alt="" coords="249,86,272,96,331,117,387,133,385,138,329,122,270,101,247,91"/>
-<area shape="rect" href="dir_000045_000048.html" title="2" alt="" coords="379,119,388,133"/>
-<area shape="rect" href="dir_364d0a78bdcd4c93216c32f6e1919172.html" title="task" alt="" coords="120,63,171,88"/>
-<area shape="poly" href="dir_000060_000048.html" alt="" coords="163,86,184,96,236,113,290,126,386,140,385,145,289,131,235,118,182,101,161,90"/>
-<area shape="rect" href="dir_000060_000048.html" title="2" alt="" coords="377,127,387,141"/>
-<area shape="rect" href="dir_40ff47bf1ca89cee1edc3dc38d244124.html" title="timer" alt="" coords="38,63,95,88"/>
-<area shape="poly" href="dir_000063_000048.html" alt="" coords="86,86,109,96,183,116,258,130,386,143,385,148,258,135,182,121,107,101,84,91"/>
-<area shape="rect" href="dir_000063_000048.html" title="2" alt="" coords="377,129,386,144"/>
-<area shape="rect" href="dir_b654fa57ef70d8d960f5e7b8792fe84f.html" alt="" coords="27,52,1023,99"/>
-<area shape="rect" href="dir_d44c64559bbebec7f509842c48db8b23.html" title="include" alt="" coords="16,16,1033,172"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="dir_b654fa57ef70d8d960f5e7b8792fe84f_dep.svg" width="100%" height="441"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="subdirs" name="subdirs"></a>

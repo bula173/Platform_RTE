@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/clocksync/sapi_clocksync.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -89,32 +105,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_clocksync.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__clocksync_8c__incl.png" border="0" usemap="#asrc_2clocksync_2sapi__clocksync_8c" alt=""/></div>
-<map name="asrc_2clocksync_2sapi__clocksync_8c" id="asrc_2clocksync_2sapi__clocksync_8c">
-<area shape="rect" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="215,5,355,45"/>
-<area shape="rect" href="sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="64,181,233,221"/>
-<area shape="poly" title=" " alt="" coords="287,46,281,89,274,113,261,135,238,159,211,177,208,173,235,155,257,132,269,111,276,88,282,45"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="309,181,469,221"/>
-<area shape="poly" title=" " alt="" coords="298,44,373,168,368,171,294,47"/>
-<area shape="rect" href="sapi__clocksync__backend_8h.html" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="49,93,248,133"/>
-<area shape="poly" title=" " alt="" coords="256,48,192,88,189,84,253,43"/>
-<area shape="rect" title=" " alt="" coords="5,357,76,383"/>
-<area shape="poly" title=" " alt="" coords="118,223,91,244,68,271,52,308,45,344,40,343,47,306,64,268,88,240,115,219"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="244,269,389,309"/>
-<area shape="poly" title=" " alt="" coords="187,219,269,261,267,266,184,224"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="78,269,219,309"/>
-<area shape="poly" title=" " alt="" coords="151,222,151,255,146,255,146,222"/>
-<area shape="poly" title=" " alt="" coords="124,312,70,351,67,347,121,307"/>
-<area shape="rect" title=" " alt="" coords="298,357,381,383"/>
-<area shape="poly" title=" " alt="" coords="195,307,300,350,298,355,193,312"/>
-<area shape="rect" title=" " alt="" coords="111,357,186,383"/>
-<area shape="poly" title=" " alt="" coords="151,310,151,343,146,343,146,310"/>
-<area shape="poly" title=" " alt="" coords="375,223,343,261,339,257,371,220"/>
-<area shape="poly" title=" " alt="" coords="399,221,410,263,410,287,404,310,390,333,371,351,367,347,386,330,400,308,405,286,404,263,394,222"/>
-<area shape="poly" title=" " alt="" coords="151,134,151,167,146,167,146,134"/>
-<area shape="poly" title=" " alt="" coords="107,136,77,156,54,183,38,224,32,268,34,309,38,343,33,344,28,310,27,267,33,222,49,180,74,152,104,131"/>
-<area shape="poly" title=" " alt="" coords="184,131,216,153,248,179,279,217,303,255,298,258,274,221,244,183,213,157,181,136"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__clocksync_8c__incl.svg" width="475" height="388"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__clocksync_8c_source.html">Go to the source code of this file.</a></p>
@@ -160,9 +151,9 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Single global backend, following ADR-005's established convention (see sapi_timer/sapi_ipc). NULL until <a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760" title="Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global...">sapi_clocksync_register_backend()</a> is called. </p>
+<p>Local makros Local types declarations Local variables declarations Single global backend, following ADR-005's established convention (see sapi_timer/sapi_ipc). NULL until <a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760" title="Registers the backend implementation used by every sapi_clocksync_* call (ADR-005-style single global...">sapi_clocksync_register_backend()</a> is called. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__clocksync_8c_source.html#l00018">18</a> of file <a class="el" href="sapi__clocksync_8c_source.html">sapi_clocksync.c</a>.</p>
 
 </div>
 </div>

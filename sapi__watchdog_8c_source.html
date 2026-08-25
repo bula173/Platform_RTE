@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/watchdog/sapi_watchdog.c Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -460,12 +476,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    }</div>
 <div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>}</div>
 </div>
-<div class="ttc" id="agroup__LIFECYCLE_html_ga5e18e5edf28983f151a3d58d6edfb791"><div class="ttname"><a href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a></div><div class="ttdeci">sapi_status_t sapi_lifecycle_check_setup_allowed(void)</div><div class="ttdoc">Convenience check for a setup-only constructor: call this as one of the first checks in any function ...</div><div class="ttdef"><b>Definition</b> <a href="sapi__lifecycle_8c_source.html#l00029">sapi_lifecycle.c:29</a></div></div>
-<div class="ttc" id="agroup__LOG_html_gae503764e3fb83a2ee19e57d3f6b057a1"><div class="ttname"><a href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a></div><div class="ttdeci">void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message)</div><div class="ttdoc">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dro...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00052">sapi_log.c:52</a></div></div>
+<div class="ttc" id="agroup__LIFECYCLE_html_ga5e18e5edf28983f151a3d58d6edfb791"><div class="ttname"><a href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791">sapi_lifecycle_check_setup_allowed</a></div><div class="ttdeci">sapi_status_t sapi_lifecycle_check_setup_allowed(void)</div><div class="ttdoc">Convenience check for a setup-only constructor: call this as one of the first checks in any function ...</div><div class="ttdef"><b>Definition</b> <a href="sapi__lifecycle_8c_source.html#l00040">sapi_lifecycle.c:40</a></div></div>
+<div class="ttc" id="agroup__LOG_html_gae503764e3fb83a2ee19e57d3f6b057a1"><div class="ttname"><a href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a></div><div class="ttdeci">void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message)</div><div class="ttdoc">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dro...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00085">sapi_log.c:85</a></div></div>
 <div class="ttc" id="agroup__LOG_html_gga1f07b7615e7ca6517936e596d2c9652ba53ea1a406953b16823a3813aa0734070"><div class="ttname"><a href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba53ea1a406953b16823a3813aa0734070">SAPI_LOG_LEVEL_ERROR</a></div><div class="ttdeci">@ SAPI_LOG_LEVEL_ERROR</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00036">sapi_log.h:35</a></div></div>
 <div class="ttc" id="agroup__LOG_html_gga1f07b7615e7ca6517936e596d2c9652ba856c8ecd50bbd12124aab6a7f852510c"><div class="ttname"><a href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba856c8ecd50bbd12124aab6a7f852510c">SAPI_LOG_LEVEL_INFO</a></div><div class="ttdeci">@ SAPI_LOG_LEVEL_INFO</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00033">sapi_log.h:33</a></div></div>
 <div class="ttc" id="agroup__SAFESTATE_html_gab250fbc6eb6cd3804869abf01273d916"><div class="ttname"><a href="group__SAFESTATE.html#gab250fbc6eb6cd3804869abf01273d916">SAPI_SAFESTATE_REASON_UNSPECIFIED</a></div><div class="ttdeci">#define SAPI_SAFESTATE_REASON_UNSPECIFIED</div><div class="ttdef"><b>Definition</b> <a href="sapi__safestate_8h_source.html#l00066">sapi_safestate.h:66</a></div></div>
-<div class="ttc" id="agroup__SAFESTATE_html_gaca60cf2b3d730a9997a5887c415ed129"><div class="ttname"><a href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129">sapi_safestate_enter</a></div><div class="ttdeci">void sapi_safestate_enter(sapi_safestate_level_t level, sapi_safestate_reason_t reason, const char *file, int32_t line, const char *message)</div><div class="ttdoc">Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...</div><div class="ttdef"><b>Definition</b> <a href="sapi__safestate_8c_source.html#l00065">sapi_safestate.c:65</a></div></div>
+<div class="ttc" id="agroup__SAFESTATE_html_gaca60cf2b3d730a9997a5887c415ed129"><div class="ttname"><a href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129">sapi_safestate_enter</a></div><div class="ttdeci">void sapi_safestate_enter(sapi_safestate_level_t level, sapi_safestate_reason_t reason, const char *file, int32_t line, const char *message)</div><div class="ttdoc">Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...</div><div class="ttdef"><b>Definition</b> <a href="sapi__safestate_8c_source.html#l00052">sapi_safestate.c:52</a></div></div>
 <div class="ttc" id="agroup__SAFESTATE_html_ggaa98095895e91c2a6a22f189070ef6eb7a5913b9ab7bb4d072427e75ee2229f583"><div class="ttname"><a href="group__SAFESTATE.html#ggaa98095895e91c2a6a22f189070ef6eb7a5913b9ab7bb4d072427e75ee2229f583">SAPI_SAFESTATE_LEVEL_REBOOT</a></div><div class="ttdeci">@ SAPI_SAFESTATE_LEVEL_REBOOT</div><div class="ttdef"><b>Definition</b> <a href="sapi__safestate_8h_source.html#l00054">sapi_safestate.h:53</a></div></div>
 <div class="ttc" id="agroup__SAFESTATE_html_ggaa98095895e91c2a6a22f189070ef6eb7ab0758ecda2458f760f30e743adb06f68"><div class="ttname"><a href="group__SAFESTATE.html#ggaa98095895e91c2a6a22f189070ef6eb7ab0758ecda2458f760f30e743adb06f68">SAPI_SAFESTATE_LEVEL_SAFE</a></div><div class="ttdeci">@ SAPI_SAFESTATE_LEVEL_SAFE</div><div class="ttdef"><b>Definition</b> <a href="sapi__safestate_8h_source.html#l00049">sapi_safestate.h:49</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
@@ -474,7 +490,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83ae8062be11b311e9dec3a08f6cf0a95c4">SAPI_STATUS_RESOURCE_EXHAUSTED</a></div><div class="ttdeci">@ SAPI_STATUS_RESOURCE_EXHAUSTED</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00033">sapi_status.h:33</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83af320056099ecb66f2835b020ef749978">SAPI_STATUS_NOT_INITIALIZED</a></div><div class="ttdeci">@ SAPI_STATUS_NOT_INITIALIZED</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00030">sapi_status.h:30</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30"><div class="ttname"><a href="group__STATUS.html#ggacaa927d6005081fd4daff3d99df9ed83afdf3a062cbac40bba153f4f9c0462a30">SAPI_STATUS_OK</a></div><div class="ttdeci">@ SAPI_STATUS_OK</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00028">sapi_status.h:28</a></div></div>
-<div class="ttc" id="agroup__TIMER_html_ga5bf111759c24ea6e7f8f1a7ff84786ed"><div class="ttname"><a href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed">sapi_timer_now</a></div><div class="ttdeci">sapi_status_t sapi_timer_now(sapi_timestamp_ms_t *out_now_ms)</div><div class="ttdoc">Returns the current monotonic time base used by all timers.</div><div class="ttdef"><b>Definition</b> <a href="sapi__timer_8c_source.html#l00119">sapi_timer.c:119</a></div></div>
+<div class="ttc" id="agroup__TIMER_html_ga5bf111759c24ea6e7f8f1a7ff84786ed"><div class="ttname"><a href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed">sapi_timer_now</a></div><div class="ttdeci">sapi_status_t sapi_timer_now(sapi_timestamp_ms_t *out_now_ms)</div><div class="ttdoc">Returns the current monotonic time base used by all timers.</div><div class="ttdef"><b>Definition</b> <a href="sapi__timer_8c_source.html#l00130">sapi_timer.c:130</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6767bbc7f5130018466fe6d26bf63359"><div class="ttname"><a href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></div><div class="ttdeci">uint32_t sapi_duration_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00027">sapi_types.h:27</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6ddbda091ac06ffc94a5814d14284a80"><div class="ttname"><a href="group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80">sapi_timestamp_ms_t</a></div><div class="ttdeci">uint64_t sapi_timestamp_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00030">sapi_types.h:30</a></div></div>
 <div class="ttc" id="agroup__WATCHDOG_html_ga2c14a4fa4ef999250b8be21a6d2e9323"><div class="ttname"><a href="group__WATCHDOG.html#ga2c14a4fa4ef999250b8be21a6d2e9323">sapi_watchdog_stop</a></div><div class="ttdeci">sapi_status_t sapi_watchdog_stop(sapi_watchdog_t watchdog)</div><div class="ttdoc">Stop watchdog timer.</div><div class="ttdef"><b>Definition</b> <a href="sapi__watchdog_8c_source.html#l00212">sapi_watchdog.c:212</a></div></div>

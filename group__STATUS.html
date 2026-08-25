@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: Common Status and Error Codes</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -187,7 +203,7 @@ Functions</h2></td></tr>
 <p>Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging only; never on a safety-decision path. </p>
 <p>REQ-OAL-COMMON-002</p>
 <p>Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging only; never on a safety-decision path.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Local makros Local types declarations Local variables declarations Global variables declarations Local function declarations Global functions </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">status</td><td>Status code to describe. </td></tr>
   </table>
@@ -196,7 +212,7 @@ Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>Static, non-NULL string literal naming <code>status</code> (e.g. "SAPI_STATUS_OK"); an unrecognized value yields "UNKNOWN_STATUS". </dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Never returns NULL; safe to call with any int-range value. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__status_8c_source.html#l00015">15</a> of file <a class="el" href="sapi__status_8c_source.html">sapi_status.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__status_8c_source.html#l00027">27</a> of file <a class="el" href="sapi__status_8c_source.html">sapi_status.c</a>.</p>
 
 </div>
 </div>

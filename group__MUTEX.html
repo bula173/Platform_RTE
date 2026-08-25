@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: Mutex Service</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -195,7 +211,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument; SAPI_STATUS_NOT_INITIALIZED if no backend is registered (<a class="el" href="group__MUTEX__BACKEND.html#gacc4438af5b5cee0ea7536d213999a8e3" title="Registers the backend implementation used by every sapi_mutex_* call. This is how an integrator suppl...">sapi_mutex_register_backend()</a>); SAPI_STATUS_NOT_SUPPORTED if the registered backend does not implement create; SAPI_STATUS_INVALID_STATE if the application's setup phase is already locked (ADR-026) - a mutex is a setup-only resource, same posture as <a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a>/sapi_task_create(). REQ-OAL-MUTEX-010 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00033">33</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
 
 </div>
 </div>
@@ -224,7 +240,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK, SAPI_STATUS_INVALID_PARAM, SAPI_STATUS_NOT_INITIALIZED, SAPI_STATUS_NOT_SUPPORTED (see <a class="el" href="group__MUTEX.html#ga7cad1f0014d9b6c751bc836b89e469a6" title="Creates (and initializes, unlocked) a mutex bound to caller-owned storage.">sapi_mutex_create()</a>), or SAPI_STATUS_INTERNAL_ERROR if the backend itself reports a failure (e.g. a detected deadlock). REQ-OAL-MUTEX-011 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00063">63</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00074">74</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
 
 </div>
 </div>
@@ -253,7 +269,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b" title="Blocks the calling task until it holds the mutex.">sapi_mutex_lock()</a>. REQ-OAL-MUTEX-012 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00080">80</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00091">91</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
 
 </div>
 </div>
@@ -282,7 +298,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="group__MUTEX.html#gaf450b8c87fb3b64355137037006ed24b" title="Blocks the calling task until it holds the mutex.">sapi_mutex_lock()</a>. REQ-OAL-MUTEX-013 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00097">97</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__mutex_8c_source.html#l00108">108</a> of file <a class="el" href="sapi__mutex_8c_source.html">sapi_mutex.c</a>.</p>
 
 </div>
 </div>

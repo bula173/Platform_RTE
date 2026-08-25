@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/string/sapi_string.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -89,36 +105,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_string.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__string_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2string_2sapi__string_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2string_2sapi__string_8h" id="ainclude_2safeapi_2string_2sapi__string_8h">
-<area shape="rect" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="81,5,243,45"/>
-<area shape="rect" href="sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="91,93,233,133"/>
-<area shape="poly" title=" " alt="" coords="165,46,165,79,159,79,159,46"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,151,221"/>
-<area shape="poly" title=" " alt="" coords="127,48,101,68,80,95,74,112,72,131,74,168,68,168,66,131,69,111,76,92,97,64,124,43"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="187,181,329,221"/>
-<area shape="poly" title=" " alt="" coords="198,43,225,64,247,92,260,130,263,167,257,168,255,131,242,95,221,68,194,47"/>
-<area shape="poly" title=" " alt="" coords="145,135,108,173,104,170,141,132"/>
-<area shape="poly" title=" " alt="" coords="185,132,228,170,225,174,182,136"/>
-<area shape="rect" title=" " alt="" coords="114,269,197,295"/>
-<area shape="poly" title=" " alt="" coords="235,224,183,263,180,259,232,219"/>
-<area shape="rect" title=" " alt="" coords="221,269,295,295"/>
-<area shape="poly" title=" " alt="" coords="261,222,261,255,255,255,255,222"/>
-<area shape="rect" title=" " alt="" coords="320,269,391,295"/>
-<area shape="poly" title=" " alt="" coords="283,219,332,258,329,263,280,224"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__string_8h__incl.svg" width="396" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__string_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2string_2sapi__string_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2string_2sapi__string_8hdep" id="ainclude_2safeapi_2string_2sapi__string_8hdep">
-<area shape="rect" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="79,5,242,45"/>
-<area shape="rect" href="sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="5,93,140,119"/>
-<area shape="poly" title=" " alt="" coords="131,57,88,95,84,91,127,53"/>
-<area shape="rect" href="sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="165,93,333,119"/>
-<area shape="poly" title=" " alt="" coords="194,53,237,91,234,95,191,57"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__string_8h__dep__incl.svg" width="339" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__string_8h_source.html">Go to the source code of this file.</a></p>

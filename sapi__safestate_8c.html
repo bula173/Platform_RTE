@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/safestate/sapi_safestate.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -88,26 +104,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_safestate.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__safestate_8c__incl.png" border="0" usemap="#asrc_2safestate_2sapi__safestate_8c" alt=""/></div>
-<map name="asrc_2safestate_2sapi__safestate_8c" id="asrc_2safestate_2sapi__safestate_8c">
-<area shape="rect" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="161,5,298,45"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="53,93,219,133"/>
-<area shape="poly" title=" " alt="" coords="210,48,168,86,165,82,207,44"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="244,93,404,133"/>
-<area shape="poly" title=" " alt="" coords="252,44,295,82,291,86,249,48"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="186,181,331,221"/>
-<area shape="poly" title=" " alt="" coords="165,131,222,171,219,176,162,136"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="20,181,161,221"/>
-<area shape="poly" title=" " alt="" coords="128,135,110,170,105,168,124,132"/>
-<area shape="rect" title=" " alt="" coords="264,269,347,295"/>
-<area shape="poly" title=" " alt="" coords="143,219,262,262,260,267,141,224"/>
-<area shape="rect" title=" " alt="" coords="5,269,80,295"/>
-<area shape="poly" title=" " alt="" coords="81,223,59,259,55,256,77,220"/>
-<area shape="rect" title=" " alt="" coords="105,269,175,295"/>
-<area shape="poly" title=" " alt="" coords="105,220,128,256,123,259,100,223"/>
-<area shape="poly" title=" " alt="" coords="312,135,283,172,279,169,307,132"/>
-<area shape="poly" title=" " alt="" coords="335,133,348,174,350,198,347,222,338,242,327,260,322,257,333,240,341,221,345,198,342,175,330,134"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__safestate_8c__incl.svg" width="410" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__safestate_8c_source.html">Go to the source code of this file.</a></p>
@@ -169,7 +166,7 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Maps a level enumerator to its handler-array index. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Global variables declarations Local function declarations </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">level</td><td>Level to map. </td></tr>
     <tr><td class="paramname">out_index</td><td>Receives the handler-array index. Must not be NULL. </td></tr>
@@ -178,7 +175,7 @@ Variables</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true and sets *out_index if level is a known value; false (index left unset) otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00019">19</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00096">96</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>
@@ -202,9 +199,9 @@ Variables</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>One handler slot per sapi_safestate_level_t value; no dynamic allocation. </p>
+<p>Local makros Local types declarations Local variables declarations One handler slot per sapi_safestate_level_t value; no dynamic allocation. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00010">10</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__safestate_8c_source.html#l00015">15</a> of file <a class="el" href="sapi__safestate_8c_source.html">sapi_safestate.c</a>.</p>
 
 </div>
 </div>

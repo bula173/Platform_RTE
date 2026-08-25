@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual/sapi_dual_msgchannel.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -143,10 +159,10 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
 <div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span><span class="preprocessor">#endif </span><span class="comment">/* SAPI_DUAL_MSGCHANNEL_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
-<div class="ttc" id="agroup__DUAL_html_ga1f0fd2273a55bd36c5ac6035994a071b"><div class="ttname"><a href="group__DUAL.html#ga1f0fd2273a55bd36c5ac6035994a071b">sapi_dual_msgchannel_send</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_send(sapi_dual_msgchannel_t *channel, const uint8_t *payload, uint8_t payload_size, sapi_duration_ms_t timeout_ms, uint32_t *out_sequence)</div><div class="ttdoc">Wraps payload in a sapi_vital_message_t (this channel's own sender_id and next sequence_number) and s...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00025">sapi_dual_msgchannel.c:25</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_ga6a263874b15b02cdcbbd1d6422e26375"><div class="ttname"><a href="group__DUAL.html#ga6a263874b15b02cdcbbd1d6422e26375">sapi_dual_msgchannel_init</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_init(sapi_dual_msgchannel_t *channel, const sapi_dual_msgchannel_config_t *config)</div><div class="ttdoc">Initializes a sapi_dual_msgchannel_t: starts both sequence counters at 0.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00008">sapi_dual_msgchannel.c:8</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_gac4d3eba336a260affbaa92dabd036274"><div class="ttname"><a href="group__DUAL.html#gac4d3eba336a260affbaa92dabd036274">sapi_dual_msgchannel_reset_sequence</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_reset_sequence(sapi_dual_msgchannel_t *channel)</div><div class="ttdoc">Resets both sequence counters to 0. Intended to be called by the caller (typically sapi_dual_channel_...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00123">sapi_dual_msgchannel.c:123</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_gad904e836b65a181f2a400e450f3c4178"><div class="ttname"><a href="group__DUAL.html#gad904e836b65a181f2a400e450f3c4178">sapi_dual_msgchannel_receive</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_receive(sapi_dual_msgchannel_t *channel, uint8_t *out_payload, uint8_t payload_max_size, sapi_duration_ms_t timeout_ms, uint8_t *out_payload_size, uint32_t *out_sequence)</div><div class="ttdoc">Receives one frame over config-&gt;link, blocking at most timeout_ms, verifies its CRC-64 and sequence c...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00068">sapi_dual_msgchannel.c:68</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_ga1f0fd2273a55bd36c5ac6035994a071b"><div class="ttname"><a href="group__DUAL.html#ga1f0fd2273a55bd36c5ac6035994a071b">sapi_dual_msgchannel_send</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_send(sapi_dual_msgchannel_t *channel, const uint8_t *payload, uint8_t payload_size, sapi_duration_ms_t timeout_ms, uint32_t *out_sequence)</div><div class="ttdoc">Wraps payload in a sapi_vital_message_t (this channel's own sender_id and next sequence_number) and s...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00037">sapi_dual_msgchannel.c:37</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_ga6a263874b15b02cdcbbd1d6422e26375"><div class="ttname"><a href="group__DUAL.html#ga6a263874b15b02cdcbbd1d6422e26375">sapi_dual_msgchannel_init</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_init(sapi_dual_msgchannel_t *channel, const sapi_dual_msgchannel_config_t *config)</div><div class="ttdoc">Initializes a sapi_dual_msgchannel_t: starts both sequence counters at 0.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00020">sapi_dual_msgchannel.c:20</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_gac4d3eba336a260affbaa92dabd036274"><div class="ttname"><a href="group__DUAL.html#gac4d3eba336a260affbaa92dabd036274">sapi_dual_msgchannel_reset_sequence</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_reset_sequence(sapi_dual_msgchannel_t *channel)</div><div class="ttdoc">Resets both sequence counters to 0. Intended to be called by the caller (typically sapi_dual_channel_...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00135">sapi_dual_msgchannel.c:135</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_gad904e836b65a181f2a400e450f3c4178"><div class="ttname"><a href="group__DUAL.html#gad904e836b65a181f2a400e450f3c4178">sapi_dual_msgchannel_receive</a></div><div class="ttdeci">sapi_status_t sapi_dual_msgchannel_receive(sapi_dual_msgchannel_t *channel, uint8_t *out_payload, uint8_t payload_max_size, sapi_duration_ms_t timeout_ms, uint8_t *out_payload_size, uint32_t *out_sequence)</div><div class="ttdoc">Receives one frame over config-&gt;link, blocking at most timeout_ms, verifies its CRC-64 and sequence c...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__msgchannel_8c_source.html#l00080">sapi_dual_msgchannel.c:80</a></div></div>
 <div class="ttc" id="agroup__NETLINK_html_ga47c9f147df1a6c21b093e7c173adc64d"><div class="ttname"><a href="group__NETLINK.html#ga47c9f147df1a6c21b093e7c173adc64d">sapi_netlink_handle_t</a></div><div class="ttdeci">struct sapi_netlink_impl_s * sapi_netlink_handle_t</div><div class="ttdoc">Opaque handle to an established link, returned by sapi_netlink_open().</div><div class="ttdef"><b>Definition</b> <a href="sapi__netlink_8h_source.html#l00055">sapi_netlink.h:55</a></div></div>
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6767bbc7f5130018466fe6d26bf63359"><div class="ttname"><a href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></div><div class="ttdeci">uint32_t sapi_duration_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00027">sapi_types.h:27</a></div></div>

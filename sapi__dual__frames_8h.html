@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual/sapi_dual_frames.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -88,35 +104,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_frames.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__frames_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__frames_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__frames_8h" id="ainclude_2safeapi_2dual_2sapi__dual__frames_8h">
-<area shape="rect" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="5,5,159,45"/>
-<area shape="rect" title=" " alt="" coords="47,181,117,207"/>
-<area shape="poly" title=" " alt="" coords="71,47,59,69,50,94,47,113,50,133,67,169,63,171,45,134,41,113,45,93,54,67,67,44"/>
-<area shape="rect" href="sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="59,93,227,133"/>
-<area shape="poly" title=" " alt="" coords="98,44,124,81,120,84,93,47"/>
-<area shape="poly" title=" " alt="" coords="131,135,102,172,97,169,126,132"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__incl.svg" width="234" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__frames_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__frames_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__frames_8hdep" id="ainclude_2safeapi_2dual_2sapi__dual__frames_8hdep">
-<area shape="rect" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="229,5,382,45"/>
-<area shape="rect" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,93,385,133"/>
-<area shape="poly" title=" " alt="" coords="308,59,308,93,303,93,303,59"/>
-<area shape="rect" href="sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,181,179,221"/>
-<area shape="poly" title=" " alt="" coords="247,141,140,184,138,179,245,136"/>
-<area shape="rect" href="sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,181,407,221"/>
-<area shape="poly" title=" " alt="" coords="308,147,308,181,303,181,303,147"/>
-<area shape="rect" href="sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,181,571,221"/>
-<area shape="poly" title=" " alt="" coords="362,136,459,179,457,184,360,141"/>
-<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,269,161,309"/>
-<area shape="poly" title=" " alt="" coords="95,235,95,269,89,269,89,235"/>
-<area shape="rect" href="sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="228,269,383,309"/>
-<area shape="poly" title=" " alt="" coords="308,235,308,269,303,269,303,235"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__dep__incl.svg" width="576" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__dual__frames_8h_source.html">Go to the source code of this file.</a></p>

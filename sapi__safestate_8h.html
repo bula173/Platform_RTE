@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/safestate/sapi_safestate.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -90,38 +106,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_safestate.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__safestate_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2safestate_2sapi__safestate_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2safestate_2sapi__safestate_8h" id="ainclude_2safeapi_2safestate_2sapi__safestate_8h">
-<area shape="rect" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="69,5,255,45"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,93,151,133"/>
-<area shape="poly" title=" " alt="" coords="145,47,108,85,104,82,141,44"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,93,317,133"/>
-<area shape="poly" title=" " alt="" coords="183,44,220,82,216,85,179,47"/>
-<area shape="rect" title=" " alt="" coords="102,181,185,207"/>
-<area shape="poly" title=" " alt="" coords="223,136,171,175,168,171,220,131"/>
-<area shape="rect" title=" " alt="" coords="209,181,283,207"/>
-<area shape="poly" title=" " alt="" coords="249,134,249,167,243,167,243,134"/>
-<area shape="rect" title=" " alt="" coords="308,181,379,207"/>
-<area shape="poly" title=" " alt="" coords="271,131,320,170,317,175,268,136"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__safestate_8h__incl.svg" width="384" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__safestate_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2safestate_2sapi__safestate_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2safestate_2sapi__safestate_8hdep" id="ainclude_2safeapi_2safestate_2sapi__safestate_8hdep">
-<area shape="rect" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="363,5,549,45"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="5,93,152,133"/>
-<area shape="poly" title=" " alt="" coords="361,51,153,98,152,93,360,46"/>
-<area shape="rect" href="sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="176,93,363,133"/>
-<area shape="poly" title=" " alt="" coords="404,53,311,96,309,91,402,49"/>
-<area shape="rect" href="sapi__safestate_8c.html" title="Implementation of the safe&#45;state transition facility (ADR&#45;004)." alt="" coords="387,93,525,133"/>
-<area shape="poly" title=" " alt="" coords="459,59,459,93,453,93,453,59"/>
-<area shape="rect" href="sapi__voter_8c.html" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="549,101,710,126"/>
-<area shape="poly" title=" " alt="" coords="507,49,607,98,605,103,505,54"/>
-<area shape="rect" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="734,101,954,126"/>
-<area shape="poly" title=" " alt="" coords="555,46,793,98,792,103,554,51"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__safestate_8h__dep__incl.svg" width="100%" height="404"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__safestate_8h_source.html">Go to the source code of this file.</a></p>

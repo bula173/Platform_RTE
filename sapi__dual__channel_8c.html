@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/dual/sapi_dual_channel.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -90,53 +106,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_channel.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__channel_8c__incl.png" border="0" usemap="#asrc_2dual_2sapi__dual__channel_8c" alt=""/></div>
-<map name="asrc_2dual_2sapi__dual__channel_8c" id="asrc_2dual_2sapi__dual__channel_8c">
-<area shape="rect" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="1083,5,1221,45"/>
-<area shape="rect" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="516,93,684,133"/>
-<area shape="poly" title=" " alt="" coords="1083,40,698,100,697,94,1082,35"/>
-<area shape="rect" title=" " alt="" coords="1190,101,1261,126"/>
-<area shape="poly" title=" " alt="" coords="1170,44,1208,88,1204,91,1166,47"/>
-<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="923,269,1063,309"/>
-<area shape="poly" title=" " alt="" coords="1143,47,1014,259,1010,256,1138,44"/>
-<area shape="rect" title=" " alt="" coords="251,445,322,471"/>
-<area shape="poly" title=" " alt="" coords="517,131,456,150,426,165,399,183,359,222,336,260,321,303,304,358,295,396,291,431,285,431,290,395,299,357,316,301,331,257,355,219,396,179,423,160,454,145,515,125"/>
-<area shape="rect" title=" " alt="" coords="811,445,893,471"/>
-<area shape="poly" title=" " alt="" coords="684,112,780,120,834,130,889,145,943,165,994,191,1040,225,1078,268,1087,283,1091,298,1087,326,1069,352,1042,375,1009,397,972,415,903,443,901,438,970,410,1006,392,1039,371,1065,348,1082,324,1085,298,1082,285,1074,271,1036,229,991,196,941,170,887,150,832,135,779,126,684,117"/>
-<area shape="rect" href="sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="5,181,173,221"/>
-<area shape="poly" title=" " alt="" coords="516,131,192,184,187,185,186,180,192,179,515,125"/>
-<area shape="rect" href="sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="56,269,224,309"/>
-<area shape="poly" title=" " alt="" coords="516,119,454,124,383,136,312,155,244,184,220,200,198,219,162,260,158,256,194,216,216,196,241,179,310,150,382,130,453,119,516,113"/>
-<area shape="rect" href="sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="516,181,684,221"/>
-<area shape="poly" title=" " alt="" coords="603,134,603,167,597,167,597,134"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="762,357,907,397"/>
-<area shape="poly" title=" " alt="" coords="660,131,708,152,759,181,805,219,824,242,840,268,846,287,849,307,846,344,840,344,843,307,841,288,835,270,820,246,801,223,755,185,706,156,658,136"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="533,357,675,397"/>
-<area shape="poly" title=" " alt="" coords="550,136,484,166,450,186,420,207,396,231,381,256,378,281,390,308,416,333,449,352,484,364,520,371,519,376,483,369,447,357,413,338,386,311,373,282,376,254,392,227,417,203,448,181,482,161,548,131"/>
-<area shape="rect" href="sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="646,269,797,309"/>
-<area shape="poly" title=" " alt="" coords="641,131,672,152,698,180,715,217,722,255,717,256,710,219,694,183,668,156,638,136"/>
-<area shape="poly" title=" " alt="" coords="73,223,59,242,47,263,41,286,46,308,64,334,85,357,136,394,190,422,239,441,237,446,188,427,133,399,82,361,60,337,42,310,36,286,42,262,54,239,69,220"/>
-<area shape="poly" title=" " alt="" coords="103,220,124,256,120,259,98,223"/>
-<area shape="poly" title=" " alt="" coords="159,308,269,433,265,437,155,311"/>
-<area shape="poly" title=" " alt="" coords="517,216,451,236,419,252,390,271,355,309,328,353,308,397,296,433,291,431,303,395,323,351,351,306,386,267,416,247,449,231,515,211"/>
-<area shape="rect" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="400,269,571,309"/>
-<area shape="poly" title=" " alt="" coords="576,224,523,263,520,259,573,219"/>
-<area shape="poly" title=" " alt="" coords="685,207,718,215,752,227,784,244,811,268,823,285,831,305,838,343,832,344,826,306,819,287,807,271,781,249,750,232,717,220,684,213"/>
-<area shape="poly" title=" " alt="" coords="603,221,606,344,601,344,598,222"/>
-<area shape="poly" title=" " alt="" coords="628,219,685,259,682,264,625,224"/>
-<area shape="poly" title=" " alt="" coords="465,311,312,439,309,435,461,307"/>
-<area shape="rect" title=" " alt="" coords="457,445,532,471"/>
-<area shape="poly" title=" " alt="" coords="489,310,496,432,491,432,484,310"/>
-<area shape="poly" title=" " alt="" coords="563,307,749,352,748,358,561,312"/>
-<area shape="poly" title=" " alt="" coords="513,307,568,347,565,351,510,312"/>
-<area shape="poly" title=" " alt="" coords="534,399,336,447,335,442,533,393"/>
-<area shape="poly" title=" " alt="" coords="664,395,804,439,802,444,663,400"/>
-<area shape="poly" title=" " alt="" coords="579,400,523,439,520,435,576,395"/>
-<area shape="poly" title=" " alt="" coords="748,307,800,347,797,351,745,312"/>
-<area shape="poly" title=" " alt="" coords="697,312,643,351,639,347,694,307"/>
-<area shape="poly" title=" " alt="" coords="960,312,883,353,880,349,957,307"/>
-<area shape="poly" title=" " alt="" coords="924,309,689,360,687,355,923,303"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__dual__channel_8c__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__dual__channel_8c_source.html">Go to the source code of this file.</a></p>

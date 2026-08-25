@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: Globals</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -201,19 +217,20 @@ $(function() {
 <li>sapi_channel_recv_fn&#160;:&#160;<a class="el" href="group__channel__link.html#ga7f988a72b7bafc17841aa6ee4501cf6f">sapi_channel.h</a></li>
 <li>sapi_channel_send()&#160;:&#160;<a class="el" href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e">sapi_channel.h</a>, <a class="el" href="group__channel__link.html#ga75fd92400c60979baf8aff1396841c1e">sapi_channel.c</a></li>
 <li>sapi_channel_send_fn&#160;:&#160;<a class="el" href="group__channel__link.html#ga6b8bc957c94bb0553bf9dc929a69ed1c">sapi_channel.h</a></li>
-<li>sapi_channel_set_healthy()&#160;:&#160;<a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel.c</a>, <a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel.h</a></li>
+<li>sapi_channel_service_t&#160;:&#160;<a class="el" href="sapi__channel__service_8h.html#a3310a52f8c005aef2646785bf602ab65">sapi_channel_service.h</a></li>
+<li>sapi_channel_set_healthy()&#160;:&#160;<a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel.h</a>, <a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel.c</a></li>
 <li>sapi_channel_t&#160;:&#160;<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel.h</a></li>
 <li>SAPI_CHECKPOINT_SENDER_ID&#160;:&#160;<a class="el" href="sapi__checkpoint_8c.html#aa6260e1306711acc25ee6de2c47e0654">sapi_checkpoint.c</a></li>
-<li>sapi_checksum_crc64()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#ga6678d1314f011e8b393936e6b1bf8202">sapi_checksum.c</a>, <a class="el" href="group__CHECKSUM.html#ga6678d1314f011e8b393936e6b1bf8202">sapi_checksum.h</a></li>
+<li>sapi_checksum_crc64()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#ga6678d1314f011e8b393936e6b1bf8202">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#ga6678d1314f011e8b393936e6b1bf8202">sapi_checksum.c</a></li>
 <li>sapi_checksum_crc64_get_polynomial()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#ga4c83abf3a7d92d5d59c56422cdc01de7">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#ga4c83abf3a7d92d5d59c56422cdc01de7">sapi_checksum.c</a></li>
 <li>sapi_checksum_crc64_init()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#gad088af4aedef9f5a25ea77209bb54e08">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#gad088af4aedef9f5a25ea77209bb54e08">sapi_checksum.c</a></li>
 <li>sapi_checksum_crc64_verify()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#ga6deb640b83f4fab5c6ebd2e819d1b4e7">sapi_checksum.c</a></li>
-<li>sapi_checksum_get_stats()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#gabcccb5e3265f857e8e6b3183d6126652">sapi_checksum.c</a>, <a class="el" href="group__CHECKSUM.html#gabcccb5e3265f857e8e6b3183d6126652">sapi_checksum.h</a></li>
+<li>sapi_checksum_get_stats()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#gabcccb5e3265f857e8e6b3183d6126652">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#gabcccb5e3265f857e8e6b3183d6126652">sapi_checksum.c</a></li>
 <li>sapi_checksum_reset_stats()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#gafd3b9f56acdec5ef81cca1a4c849b325">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#gafd3b9f56acdec5ef81cca1a4c849b325">sapi_checksum.c</a></li>
 <li>sapi_checksum_vital_message_create()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum.c</a></li>
 <li>sapi_checksum_vital_message_verify()&#160;:&#160;<a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum.h</a>, <a class="el" href="group__CHECKSUM.html#ga4d3e819e10b61191323f59a86a786be3">sapi_checksum.c</a></li>
 <li>SAPI_CLOCKSYNC_DEGRADED&#160;:&#160;<a class="el" href="group__CLOCKSYNC.html#ggaaa5c09cfbaf2f186b8b3d84940f92483ae6203a762c8394b6df6cff0cfc472e1c">sapi_clocksync.h</a></li>
-<li>sapi_clocksync_get_offset_ms()&#160;:&#160;<a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync.h</a>, <a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync.c</a></li>
+<li>sapi_clocksync_get_offset_ms()&#160;:&#160;<a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync.c</a>, <a class="el" href="group__CLOCKSYNC.html#gacb7e052e70c3db3b3213fb278ad14fdc">sapi_clocksync.h</a></li>
 <li>sapi_clocksync_get_quality()&#160;:&#160;<a class="el" href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync.h</a>, <a class="el" href="group__CLOCKSYNC.html#gae9b4c712e4f011a517d6d3af1e5b8285">sapi_clocksync.c</a></li>
 <li>sapi_clocksync_quality_t&#160;:&#160;<a class="el" href="group__CLOCKSYNC.html#gaaa5c09cfbaf2f186b8b3d84940f92483">sapi_clocksync.h</a></li>
 <li>sapi_clocksync_register_backend()&#160;:&#160;<a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync_backend.h</a>, <a class="el" href="group__CLOCKSYNC__BACKEND.html#ga5be8c579111936b9c6918b1c46d6c760">sapi_clocksync.c</a></li>

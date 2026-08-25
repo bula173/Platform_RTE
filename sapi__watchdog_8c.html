@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/watchdog/sapi_watchdog.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -95,41 +111,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_watchdog.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__watchdog_8c__incl.png" border="0" usemap="#asrc_2watchdog_2sapi__watchdog_8c" alt=""/></div>
-<map name="asrc_2watchdog_2sapi__watchdog_8c" id="asrc_2watchdog_2sapi__watchdog_8c">
-<area shape="rect" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="524,5,744,31"/>
-<area shape="rect" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="170,79,338,119"/>
-<area shape="poly" title=" " alt="" coords="579,33,352,80,351,75,578,28"/>
-<area shape="rect" title=" " alt="" coords="781,255,863,280"/>
-<area shape="poly" title=" " alt="" coords="745,26,847,44,889,58,916,77,928,99,930,122,925,146,914,170,882,213,848,247,844,243,878,210,909,167,920,144,925,122,923,100,912,80,887,63,846,49,744,31"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="742,79,902,119"/>
-<area shape="poly" title=" " alt="" coords="662,28,765,71,763,76,660,33"/>
-<area shape="rect" href="sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="363,86,527,111"/>
-<area shape="poly" title=" " alt="" coords="607,33,486,83,484,78,605,28"/>
-<area shape="rect" href="sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="551,79,717,119"/>
-<area shape="poly" title=" " alt="" coords="637,31,637,65,631,65,631,31"/>
-<area shape="rect" href="sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="5,79,145,119"/>
-<area shape="poly" title=" " alt="" coords="524,33,357,52,159,81,158,76,356,47,524,27"/>
-<area shape="rect" title=" " alt="" coords="977,86,1048,111"/>
-<area shape="poly" title=" " alt="" coords="715,28,831,48,959,76,969,79,968,84,957,81,830,53,714,33"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="456,167,601,207"/>
-<area shape="poly" title=" " alt="" coords="315,116,456,160,454,165,313,121"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="290,167,431,207"/>
-<area shape="poly" title=" " alt="" coords="279,117,328,156,325,160,276,121"/>
-<area shape="poly" title=" " alt="" coords="432,201,445,204,621,234,767,256,767,261,621,239,444,209,431,207"/>
-<area shape="rect" title=" " alt="" coords="373,255,447,280"/>
-<area shape="poly" title=" " alt="" coords="375,205,398,242,393,244,370,208"/>
-<area shape="rect" title=" " alt="" coords="277,255,348,280"/>
-<area shape="poly" title=" " alt="" coords="351,208,329,244,325,241,347,205"/>
-<area shape="poly" title=" " alt="" coords="758,121,607,165,605,160,757,116"/>
-<area shape="poly" title=" " alt="" coords="825,119,825,241,819,241,819,119"/>
-<area shape="poly" title=" " alt="" coords="458,110,502,155,498,158,454,113"/>
-<area shape="poly" title=" " alt="" coords="435,113,391,158,387,155,431,110"/>
-<area shape="poly" title=" " alt="" coords="612,121,564,160,561,156,609,117"/>
-<area shape="poly" title=" " alt="" coords="575,121,435,165,433,160,573,116"/>
-<area shape="poly" title=" " alt="" coords="146,114,158,116,299,140,443,164,442,169,298,145,158,121,145,119"/>
-<area shape="poly" title=" " alt="" coords="139,116,286,160,284,165,137,121"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__watchdog_8c__incl.svg" width="100%" height="514"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__watchdog_8c_source.html">Go to the source code of this file.</a></p>

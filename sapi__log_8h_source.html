@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/log/sapi_log.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -132,11 +148,11 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#endif </span><span class="comment">/* SAFEAPI_OS_LOG_H */</span><span class="preprocessor"></span></div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
- <span class="comment">/* LOG */</span><div class="ttc" id="agroup__LOG_html_ga004ab3c470ffcbce6c4c5470a3e93c48"><div class="ttname"><a href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48">sapi_log_write_event</a></div><div class="ttdeci">void sapi_log_write_event(sapi_log_level_t level, const char *site, uint32_t cycle, const char *source, const char *destination, const char *type, const char *info, const char *extra_fields)</div><div class="ttdoc">Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00130">sapi_log.c:130</a></div></div>
-<div class="ttc" id="agroup__LOG_html_ga039f92d06b19a508fc70d476bd715e4d"><div class="ttname"><a href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d">sapi_log_level_to_string</a></div><div class="ttdeci">const char * sapi_log_level_to_string(sapi_log_level_t level)</div><div class="ttdoc">Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00064">sapi_log.c:64</a></div></div>
+ <span class="comment">/* LOG */</span><div class="ttc" id="agroup__LOG_html_ga004ab3c470ffcbce6c4c5470a3e93c48"><div class="ttname"><a href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48">sapi_log_write_event</a></div><div class="ttdeci">void sapi_log_write_event(sapi_log_level_t level, const char *site, uint32_t cycle, const char *source, const char *destination, const char *type, const char *info, const char *extra_fields)</div><div class="ttdoc">Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00123">sapi_log.c:123</a></div></div>
+<div class="ttc" id="agroup__LOG_html_ga039f92d06b19a508fc70d476bd715e4d"><div class="ttname"><a href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d">sapi_log_level_to_string</a></div><div class="ttdeci">const char * sapi_log_level_to_string(sapi_log_level_t level)</div><div class="ttdoc">Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00097">sapi_log.c:97</a></div></div>
 <div class="ttc" id="agroup__LOG_html_ga1f07b7615e7ca6517936e596d2c9652b"><div class="ttname"><a href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a></div><div class="ttdeci">sapi_log_level_t</div><div class="ttdoc">Log message severity, passed to sapi_log_write().</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00030">sapi_log.h:31</a></div></div>
-<div class="ttc" id="agroup__LOG_html_gacdd734b3bf37ecb5856b1498f6776c40"><div class="ttname"><a href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40">sapi_log_init</a></div><div class="ttdeci">sapi_status_t sapi_log_init(void)</div><div class="ttdoc">Initializes the logging backend. Safe to call once at startup.</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00043">sapi_log.c:43</a></div></div>
-<div class="ttc" id="agroup__LOG_html_gae503764e3fb83a2ee19e57d3f6b057a1"><div class="ttname"><a href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a></div><div class="ttdeci">void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message)</div><div class="ttdoc">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dro...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00052">sapi_log.c:52</a></div></div>
+<div class="ttc" id="agroup__LOG_html_gacdd734b3bf37ecb5856b1498f6776c40"><div class="ttname"><a href="group__LOG.html#gacdd734b3bf37ecb5856b1498f6776c40">sapi_log_init</a></div><div class="ttdeci">sapi_status_t sapi_log_init(void)</div><div class="ttdoc">Initializes the logging backend. Safe to call once at startup.</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00076">sapi_log.c:76</a></div></div>
+<div class="ttc" id="agroup__LOG_html_gae503764e3fb83a2ee19e57d3f6b057a1"><div class="ttname"><a href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1">sapi_log_write</a></div><div class="ttdeci">void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message)</div><div class="ttdoc">Emits one log message. Non-blocking; never fails the caller's control flow even if the message is dro...</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8c_source.html#l00085">sapi_log.c:85</a></div></div>
 <div class="ttc" id="agroup__LOG_html_gga1f07b7615e7ca6517936e596d2c9652ba3660503e98dae0027ed6c87aec42546f"><div class="ttname"><a href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba3660503e98dae0027ed6c87aec42546f">SAPI_LOG_LEVEL_DEBUG</a></div><div class="ttdeci">@ SAPI_LOG_LEVEL_DEBUG</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00032">sapi_log.h:32</a></div></div>
 <div class="ttc" id="agroup__LOG_html_gga1f07b7615e7ca6517936e596d2c9652ba53ea1a406953b16823a3813aa0734070"><div class="ttname"><a href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba53ea1a406953b16823a3813aa0734070">SAPI_LOG_LEVEL_ERROR</a></div><div class="ttdeci">@ SAPI_LOG_LEVEL_ERROR</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00036">sapi_log.h:35</a></div></div>
 <div class="ttc" id="agroup__LOG_html_gga1f07b7615e7ca6517936e596d2c9652ba856c8ecd50bbd12124aab6a7f852510c"><div class="ttname"><a href="group__LOG.html#gga1f07b7615e7ca6517936e596d2c9652ba856c8ecd50bbd12124aab6a7f852510c">SAPI_LOG_LEVEL_INFO</a></div><div class="ttdeci">@ SAPI_LOG_LEVEL_INFO</div><div class="ttdef"><b>Definition</b> <a href="sapi__log_8h_source.html#l00033">sapi_log.h:33</a></div></div>

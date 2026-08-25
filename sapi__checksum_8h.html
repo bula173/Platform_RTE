@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/checksum/sapi_checksum.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -92,51 +108,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_checksum.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__checksum_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2checksum_2sapi__checksum_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2checksum_2sapi__checksum_8h" id="ainclude_2safeapi_2checksum_2sapi__checksum_8h">
-<area shape="rect" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="103,5,293,45"/>
-<area shape="rect" title=" " alt="" coords="5,181,76,207"/>
-<area shape="poly" title=" " alt="" coords="133,48,95,67,64,95,54,112,48,130,43,167,38,167,43,129,49,110,60,92,92,63,130,43"/>
-<area shape="rect" title=" " alt="" coords="213,181,287,207"/>
-<area shape="poly" title=" " alt="" coords="210,45,230,92,248,167,243,168,225,94,205,47"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="291,93,436,133"/>
-<area shape="poly" title=" " alt="" coords="236,43,316,85,314,89,233,48"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="74,93,215,133"/>
-<area shape="poly" title=" " alt="" coords="188,47,166,83,161,80,184,44"/>
-<area shape="poly" title=" " alt="" coords="121,136,69,175,65,171,118,131"/>
-<area shape="poly" title=" " alt="" coords="172,131,225,171,222,175,169,136"/>
-<area shape="rect" title=" " alt="" coords="103,181,186,207"/>
-<area shape="poly" title=" " alt="" coords="147,134,147,167,142,167,142,134"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__checksum_8h__incl.svg" width="442" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__checksum_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2checksum_2sapi__checksum_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2checksum_2sapi__checksum_8hdep" id="ainclude_2safeapi_2checksum_2sapi__checksum_8hdep">
-<area shape="rect" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="567,5,758,45"/>
-<area shape="rect" href="sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="384,93,571,133"/>
-<area shape="poly" title=" " alt="" coords="611,54,519,96,517,91,608,49"/>
-<area shape="rect" href="sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="379,357,533,397"/>
-<area shape="poly" title=" " alt="" coords="650,59,636,94,627,127,623,156,622,207,614,257,603,283,585,311,553,340,517,359,514,355,550,335,581,308,599,280,609,255,616,207,618,155,622,126,631,92,645,57"/>
-<area shape="rect" href="sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="645,93,792,133"/>
-<area shape="poly" title=" " alt="" coords="685,56,709,92,704,95,680,58"/>
-<area shape="rect" href="sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="816,101,1043,126"/>
-<area shape="poly" title=" " alt="" coords="735,47,895,98,893,103,733,52"/>
-<area shape="rect" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,181,385,221"/>
-<area shape="poly" title=" " alt="" coords="428,142,344,184,342,179,426,137"/>
-<area shape="rect" href="sapi__dual__msgchannel_8c.html" title="&quot;Channel&quot; layer of ADR&#45;020 &#45; see sapi_dual_msgchannel.h." alt="" coords="409,181,548,221"/>
-<area shape="poly" title=" " alt="" coords="481,147,481,181,476,181,475,147"/>
-<area shape="rect" href="sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,269,179,309"/>
-<area shape="poly" title=" " alt="" coords="247,229,140,272,138,267,245,224"/>
-<area shape="rect" href="sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,269,407,309"/>
-<area shape="poly" title=" " alt="" coords="308,235,308,269,303,269,303,235"/>
-<area shape="rect" href="sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,269,571,309"/>
-<area shape="poly" title=" " alt="" coords="362,224,459,267,457,272,360,229"/>
-<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,357,161,397"/>
-<area shape="poly" title=" " alt="" coords="95,323,95,357,89,357,89,323"/>
-<area shape="poly" title=" " alt="" coords="351,314,424,355,422,360,349,318"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__checksum_8h__dep__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__checksum_8h_source.html">Go to the source code of this file.</a></p>

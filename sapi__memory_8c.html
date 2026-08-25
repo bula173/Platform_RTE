@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src/memory/sapi_memory.c File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -89,30 +105,7 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_memory.c:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__memory_8c__incl.png" border="0" usemap="#asrc_2memory_2sapi__memory_8c" alt=""/></div>
-<map name="asrc_2memory_2sapi__memory_8c" id="asrc_2memory_2sapi__memory_8c">
-<area shape="rect" title="Memory pool service: validates parameters, then dispatches to the backend registered via sapi_mem_poo..." alt="" coords="109,5,312,31"/>
-<area shape="rect" href="sapi__memory_8h.html" title="OS Abstraction Layer &#45; Static memory reservation service." alt="" coords="253,167,413,207"/>
-<area shape="poly" title=" " alt="" coords="251,28,288,47,306,61,321,77,330,95,336,115,339,153,334,153,330,116,325,97,316,80,303,64,286,52,249,33"/>
-<area shape="rect" href="sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,165,207"/>
-<area shape="poly" title=" " alt="" coords="173,33,136,52,119,64,105,80,96,97,90,116,86,153,81,153,85,115,91,95,100,77,115,61,133,47,171,28"/>
-<area shape="rect" href="sapi__memory__backend_8h.html" title="OS&#45;backend adaptation surface for the static memory pool service (ADR&#45;005, ADR&#45;021)." alt="" coords="115,79,306,119"/>
-<area shape="poly" title=" " alt="" coords="213,31,213,65,208,65,208,31"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="123,255,269,295"/>
-<area shape="poly" title=" " alt="" coords="305,209,239,250,237,245,302,204"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="293,255,435,295"/>
-<area shape="poly" title=" " alt="" coords="343,206,355,241,350,242,338,208"/>
-<area shape="rect" title=" " alt="" coords="132,343,215,368"/>
-<area shape="poly" title=" " alt="" coords="319,297,215,340,213,335,317,292"/>
-<area shape="rect" title=" " alt="" coords="375,343,449,368"/>
-<area shape="poly" title=" " alt="" coords="378,293,400,329,395,332,373,296"/>
-<area shape="rect" title=" " alt="" coords="279,343,350,368"/>
-<area shape="poly" title=" " alt="" coords="354,296,331,332,327,330,350,293"/>
-<area shape="poly" title=" " alt="" coords="112,205,162,244,159,248,108,209"/>
-<area shape="poly" title=" " alt="" coords="89,206,96,248,113,293,129,314,147,332,144,336,125,318,108,296,91,249,84,207"/>
-<area shape="poly" title=" " alt="" coords="239,117,297,157,294,161,236,121"/>
-<area shape="poly" title=" " alt="" coords="212,119,201,241,196,241,206,119"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__memory_8c__incl.svg" width="455" height="374"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__memory_8c_source.html">Go to the source code of this file.</a></p>
@@ -167,8 +160,9 @@ Variables</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Currently registered backend, or NULL if none (ADR-005). </p>
+<p>Local makros Local types declarations Local variables declarations </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00012">12</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__memory_8c_source.html#l00017">17</a> of file <a class="el" href="sapi__memory_8c_source.html">sapi_memory.c</a>.</p>
 
 </div>
 </div>

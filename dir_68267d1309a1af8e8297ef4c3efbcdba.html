@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: src Directory Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -80,86 +96,7 @@ $(function() {
 <div class="dynheader">
 Directory dependency graph for src:</div>
 <div class="dyncontent">
-<div class="center"><img src="dir_68267d1309a1af8e8297ef4c3efbcdba_dep.png" border="0" usemap="#adir__68267d1309a1af8e8297ef4c3efbcdba__dep" alt="src"/></div>
-<map name="adir__68267d1309a1af8e8297ef4c3efbcdba__dep" id="adir__68267d1309a1af8e8297ef4c3efbcdba__dep">
-<area shape="rect" href="dir_746b97f81c0458571b23daa2ddb8ef77.html" title="appmanager" alt="" coords="2319,27,2423,52"/>
-<area shape="rect" href="dir_d44c64559bbebec7f509842c48db8b23.html" title="include" alt="" coords="1121,100,1191,125"/>
-<area shape="poly" href="dir_000001_000022.html" alt="" coords="2344,55,2307,65,2205,79,2070,90,1746,104,1427,112,1205,114,1205,108,1427,106,1746,99,2070,85,2205,74,2306,60,2342,50"/>
-<area shape="rect" href="dir_000001_000022.html" title="4" alt="" coords="1205,112,1214,127"/>
-<area shape="rect" href="dir_bb677b0aa0cb8f6cf37e5f61e8bc8b6d.html" title="buffer" alt="" coords="2234,27,2294,52"/>
-<area shape="poly" href="dir_000004_000022.html" alt="" coords="2248,55,2223,65,2159,75,2050,84,1750,98,1205,113,1205,108,1750,92,2049,78,2158,70,2222,60,2246,50"/>
-<area shape="rect" href="dir_000004_000022.html" title="1" alt="" coords="1205,111,1214,126"/>
-<area shape="rect" href="dir_73e0f6c9aa98f201105c19e20989aef2.html" title="cast" alt="" coords="2161,27,2210,52"/>
-<area shape="poly" href="dir_000006_000022.html" alt="" coords="2171,55,2149,65,2089,75,1989,84,1712,98,1205,113,1204,108,1712,92,1988,78,2089,70,2147,60,2169,50"/>
-<area shape="rect" href="dir_000006_000022.html" title="1" alt="" coords="1205,111,1214,126"/>
-<area shape="rect" href="dir_76edae3c51beddcef54f03079a8671a3.html" title="channel_link" alt="" coords="2032,27,2136,52"/>
-<area shape="poly" href="dir_000008_000022.html" alt="" coords="2057,55,2021,65,1946,76,1848,85,1612,100,1204,113,1204,108,1612,94,1848,80,1946,71,2019,60,2056,49"/>
-<area shape="rect" href="dir_000008_000022.html" title="2" alt="" coords="1205,111,1214,126"/>
-<area shape="rect" href="dir_f8a23b4b6ee8630a1187b0b1add2ade0.html" title="checkpoint" alt="" coords="1915,27,2008,52"/>
-<area shape="poly" href="dir_000010_000022.html" alt="" coords="1936,55,1903,65,1840,75,1757,84,1557,98,1204,113,1204,107,1557,93,1757,79,1840,70,1902,60,1935,50"/>
-<area shape="rect" href="dir_000010_000022.html" title="5" alt="" coords="1205,111,1214,126"/>
-<area shape="rect" href="dir_6b3196bdf3f485a11a190486a5644c9a.html" title="checksum" alt="" coords="1803,27,1891,52"/>
-<area shape="poly" href="dir_000012_000022.html" alt="" coords="1823,55,1791,65,1670,83,1504,96,1204,112,1204,107,1503,91,1670,77,1790,60,1821,50"/>
-<area shape="rect" href="dir_000012_000022.html" title="2" alt="" coords="1204,110,1214,125"/>
-<area shape="rect" href="dir_427a6bf1af6647bab8c28fc45d54af6a.html" title="clocksync" alt="" coords="1691,27,1778,52"/>
-<area shape="poly" href="dir_000015_000022.html" alt="" coords="1711,55,1679,65,1546,90,1412,105,1294,112,1204,114,1204,109,1293,106,1412,99,1545,85,1678,60,1709,50"/>
-<area shape="rect" href="dir_000015_000022.html" title="3" alt="" coords="1204,112,1214,127"/>
-<area shape="rect" href="dir_7b26d07e9321af65809e65d841c1ff83.html" title="cross_comparator" alt="" coords="1528,27,1667,52"/>
-<area shape="poly" href="dir_000017_000022.html" alt="" coords="1560,55,1517,65,1345,93,1205,109,1204,104,1344,88,1515,60,1558,50"/>
-<area shape="rect" href="dir_000017_000022.html" title="4" alt="" coords="1205,107,1215,122"/>
-<area shape="rect" href="dir_3b9004f1b760a7c4577da9fc4d44e550.html" title="dual" alt="" coords="1453,27,1504,52"/>
-<area shape="poly" href="dir_000021_000022.html" alt="" coords="1463,54,1442,65,1379,84,1315,97,1205,111,1204,106,1314,92,1378,79,1440,60,1461,50"/>
-<area shape="rect" href="dir_000021_000022.html" title="6" alt="" coords="1205,109,1214,124"/>
-<area shape="rect" href="dir_b94456e2763cc4ff61641ee1fd517631.html" title="ipc" alt="" coords="1387,27,1429,52"/>
-<area shape="poly" href="dir_000025_000022.html" alt="" coords="1394,55,1376,65,1332,81,1286,93,1205,108,1204,103,1285,88,1330,76,1374,60,1392,50"/>
-<area shape="rect" href="dir_000025_000022.html" title="7" alt="" coords="1205,106,1215,121"/>
-<area shape="rect" href="dir_f3575fa25b2b22fbdfea7569bfde75df.html" title="lifecycle" alt="" coords="1285,27,1363,52"/>
-<area shape="poly" href="dir_000027_000022.html" alt="" coords="1299,55,1274,65,1198,97,1196,92,1272,60,1297,50"/>
-<area shape="rect" href="dir_000027_000022.html" title="1" alt="" coords="1199,93,1209,108"/>
-<area shape="rect" href="dir_2241064965c8d9ca993f08b926076f7d.html" title="log" alt="" coords="1219,27,1261,52"/>
-<area shape="poly" href="dir_000030_000022.html" alt="" coords="1228,54,1182,93,1179,89,1225,50"/>
-<area shape="rect" href="dir_000030_000022.html" title="5" alt="" coords="1184,87,1194,102"/>
-<area shape="rect" href="dir_94d7edf6f8f3d9af5fd63c44172da41c.html" title="memory" alt="" coords="1117,27,1195,52"/>
-<area shape="poly" href="dir_000033_000022.html" alt="" coords="1159,52,1159,86,1153,86,1153,52"/>
-<area shape="rect" href="dir_000033_000022.html" title="3" alt="" coords="1160,74,1169,89"/>
-<area shape="rect" href="dir_5b7f8725d4f972ca8245f6a979e7a433.html" title="mutex" alt="" coords="1029,27,1093,52"/>
-<area shape="poly" href="dir_000036_000022.html" alt="" coords="1078,50,1131,89,1128,94,1075,54"/>
-<area shape="rect" href="dir_000036_000022.html" title="3" alt="" coords="1126,75,1136,89"/>
-<area shape="rect" href="dir_e914183137b5a4eeb9f70fd34ac458d3.html" title="netlink" alt="" coords="939,27,1005,52"/>
-<area shape="poly" href="dir_000039_000022.html" alt="" coords="995,50,1018,60,1109,93,1107,98,1016,65,993,55"/>
-<area shape="rect" href="dir_000039_000022.html" title="3" alt="" coords="1102,79,1111,94"/>
-<area shape="rect" href="dir_cb7917a37e91aa9d241c06364fc5b355.html" title="nvm" alt="" coords="864,27,915,52"/>
-<area shape="poly" href="dir_000043_000022.html" alt="" coords="907,50,928,60,974,76,1022,88,1108,103,1107,108,1021,93,973,81,926,65,905,55"/>
-<area shape="rect" href="dir_000043_000022.html" title="3" alt="" coords="1100,89,1109,104"/>
-<area shape="rect" href="dir_be9b2de7fa5957f3bcc688e2ef8c2b4c.html" title="reboot" alt="" coords="776,27,840,52"/>
-<area shape="poly" href="dir_000046_000022.html" alt="" coords="829,50,853,60,921,78,990,91,1108,106,1107,111,989,97,920,84,851,65,827,55"/>
-<area shape="rect" href="dir_000046_000022.html" title="3" alt="" coords="1099,92,1108,107"/>
-<area shape="rect" href="dir_8f706964713f6de60313d5d73c2163bf.html" title="safechannel" alt="" coords="651,27,752,52"/>
-<area shape="poly" href="dir_000051_000022.html" alt="" coords="730,50,765,60,859,79,954,92,1108,106,1107,111,953,97,858,84,763,65,729,55"/>
-<area shape="rect" href="dir_000051_000022.html" title="2" alt="" coords="1099,93,1108,107"/>
-<area shape="rect" href="dir_a29c94d6f26eb40db48c05dd84914222.html" title="safestate" alt="" coords="544,27,627,52"/>
-<area shape="poly" href="dir_000053_000022.html" alt="" coords="610,50,639,60,770,85,901,100,1018,107,1107,109,1107,114,1018,112,901,105,769,90,638,65,608,55"/>
-<area shape="rect" href="dir_000053_000022.html" title="2" alt="" coords="1098,96,1107,110"/>
-<area shape="rect" href="dir_3b5a16ca9d597ec3bd11cf60fc07b716.html" title="status" alt="" coords="457,27,519,52"/>
-<area shape="poly" href="dir_000056_000022.html" alt="" coords="508,50,533,60,583,71,650,80,813,93,1108,107,1107,113,813,99,649,85,582,76,531,65,506,55"/>
-<area shape="rect" href="dir_000056_000022.html" title="1" alt="" coords="1098,94,1108,109"/>
-<area shape="rect" href="dir_6cc8961f7f77054fb84f95c9f23f5ca0.html" title="string" alt="" coords="373,27,432,52"/>
-<area shape="poly" href="dir_000058_000022.html" alt="" coords="422,50,446,60,504,72,582,82,771,96,1108,108,1108,113,771,101,582,87,504,77,445,65,420,54"/>
-<area shape="rect" href="dir_000058_000022.html" title="2" alt="" coords="1098,95,1108,109"/>
-<area shape="rect" href="dir_2446a0d63b267fbc56c08872bbbb5182.html" title="task" alt="" coords="299,27,349,52"/>
-<area shape="poly" href="dir_000061_000022.html" alt="" coords="341,50,362,60,428,74,516,86,731,100,947,107,1107,109,1107,114,947,112,731,106,516,91,427,80,360,65,338,54"/>
-<area shape="rect" href="dir_000061_000022.html" title="3" alt="" coords="1098,96,1108,110"/>
-<area shape="rect" href="dir_8c35c1873c2690b478a9950d0638d637.html" title="timer" alt="" coords="217,27,274,52"/>
-<area shape="poly" href="dir_000064_000022.html" alt="" coords="264,50,287,60,361,75,459,86,696,101,934,107,1108,109,1108,114,934,112,696,106,458,91,360,80,286,65,262,55"/>
-<area shape="rect" href="dir_000064_000022.html" title="3" alt="" coords="1098,96,1108,110"/>
-<area shape="rect" href="dir_674c55300b9c983d6f26ba487035090d.html" title="voter" alt="" coords="136,27,192,52"/>
-<area shape="poly" href="dir_000067_000022.html" alt="" coords="182,50,206,60,287,76,395,88,658,103,919,108,1107,109,1107,114,919,114,657,108,395,93,286,81,205,65,180,55"/>
-<area shape="rect" href="dir_000067_000022.html" title="4" alt="" coords="1098,96,1108,111"/>
-<area shape="rect" href="dir_bd2272761df480c73b23f9c9808b4e6d.html" title="watchdog" alt="" coords="27,27,112,52"/>
-<area shape="poly" href="dir_000069_000022.html" alt="" coords="94,50,125,60,214,74,333,85,621,100,906,106,1107,109,1107,114,906,112,621,105,333,90,213,79,123,65,92,55"/>
-<area shape="rect" href="dir_000069_000022.html" title="5" alt="" coords="1098,95,1107,110"/>
-<area shape="rect" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html" alt="" coords="16,16,2500,63"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="dir_68267d1309a1af8e8297ef4c3efbcdba_dep.svg" width="100%" height="400"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="subdirs" name="subdirs"></a>
@@ -171,6 +108,8 @@ Directories</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_73e0f6c9aa98f201105c19e20989aef2.html">cast</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_76edae3c51beddcef54f03079a8671a3.html">channel_link</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_318e8a744bd8c72e47ddcb824abd643d.html">channel_service</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top"><span class="iconfclosed"></span>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="dir_f8a23b4b6ee8630a1187b0b1add2ade0.html">checkpoint</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>

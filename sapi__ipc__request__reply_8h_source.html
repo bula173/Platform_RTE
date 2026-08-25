@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/ipc/sapi_ipc_request_reply.h Source File</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -165,15 +181,15 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="agroup__STATUS_html_gacaa927d6005081fd4daff3d99df9ed83"><div class="ttname"><a href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a></div><div class="ttdeci">sapi_status_t</div><div class="ttdoc">Common result/status codes.</div><div class="ttdef"><b>Definition</b> <a href="sapi__status_8h_source.html#l00026">sapi_status.h:27</a></div></div>
 <div class="ttc" id="agroup__TYPES_html_ga6767bbc7f5130018466fe6d26bf63359"><div class="ttname"><a href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a></div><div class="ttdeci">uint32_t sapi_duration_ms_t</div><div class="ttdef"><b>Definition</b> <a href="sapi__types_8h_source.html#l00027">sapi_types.h:27</a></div></div>
 <div class="ttc" id="asapi__ipc_8h_html"><div class="ttname"><a href="sapi__ipc_8h.html">sapi_ipc.h</a></div><div class="ttdoc">OS Abstraction Layer - Inter-process/inter-task communication service.</div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_a24dbb4ce30d156f00894c97563ee5fd5"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a24dbb4ce30d156f00894c97563ee5fd5">sapi_ipc_rr_receive_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_receive_request(sapi_ipc_rr_server_t server, sapi_ipc_rr_request_t *request_out, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a request (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00038">sapi_ipc_request_reply.c:38</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_a3311cfef5b8d8892750e9aee5a88c28f"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a3311cfef5b8d8892750e9aee5a88c28f">sapi_ipc_rr_client_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_destroy(sapi_ipc_rr_client_t client)</div><div class="ttdoc">Destroy request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00116">sapi_ipc_request_reply.c:116</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_a24dbb4ce30d156f00894c97563ee5fd5"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a24dbb4ce30d156f00894c97563ee5fd5">sapi_ipc_rr_receive_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_receive_request(sapi_ipc_rr_server_t server, sapi_ipc_rr_request_t *request_out, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Receive a request (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00050">sapi_ipc_request_reply.c:50</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_a3311cfef5b8d8892750e9aee5a88c28f"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a3311cfef5b8d8892750e9aee5a88c28f">sapi_ipc_rr_client_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_destroy(sapi_ipc_rr_client_t client)</div><div class="ttdoc">Destroy request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00128">sapi_ipc_request_reply.c:128</a></div></div>
 <div class="ttc" id="asapi__ipc__request__reply_8h_html_a3825db006f8d116a1448cca6b76b7730"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a3825db006f8d116a1448cca6b76b7730">sapi_ipc_rr_client_t</a></div><div class="ttdeci">struct sapi_ipc_rr_client_s * sapi_ipc_rr_client_t</div><div class="ttdoc">Request-reply client handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00149">sapi_ipc_request_reply.h:149</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_a96fd7a0a6bb864ea18fab5b1fa36c522"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a96fd7a0a6bb864ea18fab5b1fa36c522">sapi_ipc_rr_client_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_create(sapi_ipc_rr_client_t *handle_out, const sapi_ipc_rr_client_config_t *config)</div><div class="ttdoc">Create a request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00075">sapi_ipc_request_reply.c:75</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_a96fd7a0a6bb864ea18fab5b1fa36c522"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a96fd7a0a6bb864ea18fab5b1fa36c522">sapi_ipc_rr_client_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_client_create(sapi_ipc_rr_client_t *handle_out, const sapi_ipc_rr_client_config_t *config)</div><div class="ttdoc">Create a request-reply client connection.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00087">sapi_ipc_request_reply.c:87</a></div></div>
 <div class="ttc" id="asapi__ipc__request__reply_8h_html_a9fc9c3bdb03d5824df76b9b4673a5210"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#a9fc9c3bdb03d5824df76b9b4673a5210">sapi_ipc_rr_server_t</a></div><div class="ttdeci">struct sapi_ipc_rr_server_s * sapi_ipc_rr_server_t</div><div class="ttdoc">Request-Reply server channel handle.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00042">sapi_ipc_request_reply.h:42</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_ab72dd38034995dbc736585792e395279"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ab72dd38034995dbc736585792e395279">sapi_ipc_rr_send_reply</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_send_reply(sapi_ipc_rr_server_t server, uint32_t request_id, const void *reply_data, size_t reply_size)</div><div class="ttdoc">Send reply to a request.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00050">sapi_ipc_request_reply.c:50</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_abd696bc5ec9ca239e83600a7779e69bd"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#abd696bc5ec9ca239e83600a7779e69bd">sapi_ipc_rr_server_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_destroy(sapi_ipc_rr_server_t server)</div><div class="ttdoc">Destroy request-reply server.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00065">sapi_ipc_request_reply.c:65</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_ac05dac28fa825e2d2cdc1dbcb995a4e9"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ac05dac28fa825e2d2cdc1dbcb995a4e9">sapi_ipc_rr_server_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out, const sapi_ipc_rr_server_config_t *config)</div><div class="ttdoc">Create a request-reply server channel.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00013">sapi_ipc_request_reply.c:13</a></div></div>
-<div class="ttc" id="asapi__ipc__request__reply_8h_html_afa30694cd24cc49703147df7b4fb536b"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#afa30694cd24cc49703147df7b4fb536b">sapi_ipc_rr_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_request(sapi_ipc_rr_client_t client, const void *request_data, size_t request_size, void *reply_out, size_t reply_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Send request and wait for reply (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00098">sapi_ipc_request_reply.c:98</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_ab72dd38034995dbc736585792e395279"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ab72dd38034995dbc736585792e395279">sapi_ipc_rr_send_reply</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_send_reply(sapi_ipc_rr_server_t server, uint32_t request_id, const void *reply_data, size_t reply_size)</div><div class="ttdoc">Send reply to a request.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00062">sapi_ipc_request_reply.c:62</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_abd696bc5ec9ca239e83600a7779e69bd"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#abd696bc5ec9ca239e83600a7779e69bd">sapi_ipc_rr_server_destroy</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_destroy(sapi_ipc_rr_server_t server)</div><div class="ttdoc">Destroy request-reply server.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00077">sapi_ipc_request_reply.c:77</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_ac05dac28fa825e2d2cdc1dbcb995a4e9"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#ac05dac28fa825e2d2cdc1dbcb995a4e9">sapi_ipc_rr_server_create</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_server_create(sapi_ipc_rr_server_t *handle_out, const sapi_ipc_rr_server_config_t *config)</div><div class="ttdoc">Create a request-reply server channel.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00025">sapi_ipc_request_reply.c:25</a></div></div>
+<div class="ttc" id="asapi__ipc__request__reply_8h_html_afa30694cd24cc49703147df7b4fb536b"><div class="ttname"><a href="sapi__ipc__request__reply_8h.html#afa30694cd24cc49703147df7b4fb536b">sapi_ipc_rr_request</a></div><div class="ttdeci">sapi_status_t sapi_ipc_rr_request(sapi_ipc_rr_client_t client, const void *request_data, size_t request_size, void *reply_out, size_t reply_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Send request and wait for reply (blocking with timeout)</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8c_source.html#l00110">sapi_ipc_request_reply.c:110</a></div></div>
 <div class="ttc" id="asapi__status_8h_html"><div class="ttname"><a href="sapi__status_8h.html">sapi_status.h</a></div><div class="ttdoc">Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac...</div></div>
 <div class="ttc" id="asapi__types_8h_html"><div class="ttname"><a href="sapi__types_8h.html">sapi_types.h</a></div><div class="ttdoc">Common fixed-width types and the caller-owned-storage handle pattern used by every OAL service (see A...</div></div>
 <div class="ttc" id="astructsapi__ipc__rr__client__config__t_html"><div class="ttname"><a href="structsapi__ipc__rr__client__config__t.html">sapi_ipc_rr_client_config_t</a></div><div class="ttdoc">Configuration for request-reply client.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc__request__reply_8h_source.html#l00154">sapi_ipc_request_reply.h:154</a></div></div>

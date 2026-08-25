@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/cross_comparator/sapi_cross_comparator.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -94,41 +110,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_cross_comparator.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__cross__comparator_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8h" id="ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8h">
-<area shape="rect" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="125,5,301,60"/>
-<area shape="rect" title=" " alt="" coords="5,291,76,317"/>
-<area shape="poly" title=" " alt="" coords="151,63,118,83,89,110,65,151,51,197,44,241,43,278,37,278,39,241,46,196,60,149,85,106,115,79,148,58"/>
-<area shape="rect" title=" " alt="" coords="115,291,198,317"/>
-<area shape="poly" title=" " alt="" coords="179,62,149,87,118,119,90,156,68,197,63,216,68,235,90,262,119,283,116,287,87,266,64,237,58,216,64,195,85,153,114,116,146,84,175,58"/>
-<area shape="rect" title=" " alt="" coords="254,291,329,317"/>
-<area shape="poly" title=" " alt="" coords="297,58,329,78,354,107,363,129,366,153,363,178,356,202,335,247,312,282,307,279,330,244,351,200,358,177,360,153,358,131,349,109,325,82,294,62"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="353,284,499,324"/>
-<area shape="poly" title=" " alt="" coords="302,55,343,76,379,106,403,146,418,190,426,233,429,270,423,270,421,234,413,191,398,148,375,110,340,80,300,60"/>
-<area shape="rect" href="sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="79,196,235,236"/>
-<area shape="poly" title=" " alt="" coords="207,61,191,109,169,184,163,182,186,107,201,60"/>
-<area shape="rect" href="sapi__voter_8h.html" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="201,108,339,148"/>
-<area shape="poly" title=" " alt="" coords="231,59,254,95,249,98,227,62"/>
-<area shape="poly" title=" " alt="" coords="133,238,69,285,66,281,129,234"/>
-<area shape="poly" title=" " alt="" coords="159,236,159,277,154,277,154,236"/>
-<area shape="poly" title=" " alt="" coords="188,234,263,282,260,286,185,239"/>
-<area shape="poly" title=" " alt="" coords="217,234,355,277,353,282,215,239"/>
-<area shape="poly" title=" " alt="" coords="201,138,166,145,131,157,97,174,68,198,56,216,48,237,43,278,37,277,43,235,51,214,64,194,94,169,129,152,165,140,200,132"/>
-<area shape="poly" title=" " alt="" coords="272,149,267,191,259,215,248,238,223,266,194,287,190,282,219,262,244,234,254,213,261,190,267,148"/>
-<area shape="poly" title=" " alt="" coords="280,147,294,196,297,239,296,277,291,277,292,239,289,196,275,149"/>
-<area shape="poly" title=" " alt="" coords="289,146,402,272,398,275,285,150"/>
-<area shape="poly" title=" " alt="" coords="246,150,194,190,191,186,243,146"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__cross__comparator_8h__incl.svg" width="504" height="330"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__cross__comparator_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8hdep" id="ainclude_2safeapi_2cross__comparator_2sapi__cross__comparator_8hdep">
-<area shape="rect" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="11,5,187,60"/>
-<area shape="rect" href="sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="5,108,192,148"/>
-<area shape="poly" title=" " alt="" coords="101,74,101,108,96,108,96,74"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__cross__comparator_8h__dep__incl.svg" width="198" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__cross__comparator_8h_source.html">Go to the source code of this file.</a></p>

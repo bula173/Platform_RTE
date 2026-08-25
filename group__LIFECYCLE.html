@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: Application Setup-Phase Lock</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -121,9 +137,10 @@ Functions</h2></td></tr>
 
 <p>Locks the application's setup phase. </p>
 <p>After this call, <a class="el" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791" title="Convenience check for a setup-only constructor: call this as one of the first checks in any function ...">sapi_lifecycle_check_setup_allowed()</a> (and therefore every setup-only constructor that calls it) returns <code>SAPI_STATUS_INVALID_STATE</code> until the next <a class="el" href="group__LIFECYCLE.html#ga92b3779cc954d7f9a76e9f7ed6955479" title="Unlocks the application&#39;s setup phase (setup is allowed again).">sapi_lifecycle_unlock()</a>. Idempotent: locking an already-locked application is a no-op.</p>
-<p>Intended caller: <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code>, immediately after <code>ops-&gt;init()</code> returns <code>SAPI_STATUS_OK</code> - integrator application code does not call this directly under normal use. </p>
+<p>Intended caller: <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code>, immediately after <code>ops-&gt;init()</code> returns <code>SAPI_STATUS_OK</code> - integrator application code does not call this directly under normal use.</p>
+<p>Global variables declarations Local function declarations Global functions </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00014">14</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00025">25</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
 
 </div>
 </div>
@@ -147,7 +164,7 @@ Functions</h2></td></tr>
 <p>Idempotent: unlocking an already-unlocked application is a no-op.</p>
 <p>Intended caller: <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code>, at the start of every call - this is what lets this framework's own test suite (and any integrator code) call <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code> more than once, sequentially, in one process and have each call's own setup phase behave independently. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00019">19</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00030">30</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
 
 </div>
 </div>
@@ -168,7 +185,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd><code>true</code> if the application's setup phase is currently locked (see <a class="el" href="group__LIFECYCLE.html#ga0f73c8c5f44040ba8d8b5ad009830d45" title="Locks the application&#39;s setup phase.">sapi_lifecycle_lock()</a>), <code>false</code> otherwise. Intended for diagnostics; prefer <a class="el" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791" title="Convenience check for a setup-only constructor: call this as one of the first checks in any function ...">sapi_lifecycle_check_setup_allowed()</a> at an actual constructor's own call site. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00024">24</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00035">35</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
 
 </div>
 </div>
@@ -191,7 +208,7 @@ Functions</h2></td></tr>
 <p>Convenience check for a setup-only constructor: call this as one of the first checks in any function that creates/registers a new long-lived resource (a timer, channel, voter, cross-comparator, or watchdog - see this file's own header for the excluded netlink/dual exceptions). </p>
 <dl class="section return"><dt>Returns</dt><dd><code>SAPI_STATUS_INVALID_STATE</code> if the application's setup phase is currently locked; <code>SAPI_STATUS_OK</code> otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00029">29</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__lifecycle_8c_source.html#l00040">40</a> of file <a class="el" href="sapi__lifecycle_8c_source.html">sapi_lifecycle.c</a>.</p>
 
 </div>
 </div>

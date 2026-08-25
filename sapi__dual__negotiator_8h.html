@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: include/safeapi/dual/sapi_dual_negotiator.h File Reference</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -93,62 +109,12 @@ $(function() {
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_negotiator.h:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__negotiator_8h__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__negotiator_8h" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__negotiator_8h" id="ainclude_2safeapi_2dual_2sapi__dual__negotiator_8h">
-<area shape="rect" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="633,5,807,45"/>
-<area shape="rect" title=" " alt="" coords="15,445,97,471"/>
-<area shape="poly" title=" " alt="" coords="633,32,455,45,351,56,248,73,155,95,78,123,48,140,26,158,13,178,8,200,8,291,12,330,21,369,46,432,41,434,16,370,7,331,3,291,3,200,8,176,23,155,45,135,76,118,153,90,247,67,350,51,454,39,633,27"/>
-<area shape="rect" title=" " alt="" coords="797,445,867,471"/>
-<area shape="poly" title=" " alt="" coords="807,24,907,34,961,45,1012,62,1057,84,1094,114,1108,132,1119,152,1126,175,1128,200,1128,291,1121,330,1101,363,1072,389,1036,410,996,427,955,439,882,454,881,449,954,434,994,422,1033,406,1068,385,1097,359,1116,328,1123,290,1123,200,1120,176,1114,154,1104,135,1090,118,1055,89,1010,67,959,51,907,40,807,30"/>
-<area shape="rect" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="576,93,744,133"/>
-<area shape="poly" title=" " alt="" coords="709,47,683,84,679,81,705,44"/>
-<area shape="rect" href="sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="920,269,1088,309"/>
-<area shape="poly" title=" " alt="" coords="808,42,866,61,926,89,982,128,1006,153,1026,180,1033,199,1034,220,1023,258,1018,256,1029,219,1028,200,1022,183,1002,156,979,133,924,94,864,66,806,47"/>
-<area shape="rect" href="sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="649,357,794,397"/>
-<area shape="poly" title=" " alt="" coords="736,44,749,67,759,93,765,127,767,163,762,233,749,296,735,345,730,344,744,295,757,232,762,163,760,128,753,94,744,69,731,47"/>
-<area shape="rect" href="sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="232,357,373,397"/>
-<area shape="poly" title=" " alt="" coords="634,42,547,60,446,89,342,129,291,155,244,184,206,211,176,240,167,255,163,271,164,289,173,308,194,332,222,349,219,354,191,336,168,311,159,290,157,271,162,253,172,237,202,207,241,179,289,150,340,124,445,84,546,55,633,37"/>
-<area shape="poly" title=" " alt="" coords="576,124,391,145,304,162,269,173,244,184,209,209,177,239,149,273,125,309,89,379,67,433,62,431,84,377,121,306,145,270,173,235,205,204,241,179,268,167,303,157,390,140,575,118"/>
-<area shape="poly" title=" " alt="" coords="676,132,740,226,777,289,809,356,822,395,830,431,825,432,817,397,804,358,772,292,735,228,672,135"/>
-<area shape="rect" href="sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="819,181,987,221"/>
-<area shape="poly" title=" " alt="" coords="714,131,838,174,836,179,712,136"/>
-<area shape="poly" title=" " alt="" coords="744,117,817,124,893,136,959,154,983,166,1001,180,1011,197,1016,217,1015,256,1009,256,1011,218,1006,199,997,183,981,170,957,159,892,142,817,130,744,122"/>
-<area shape="rect" href="sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="449,181,617,221"/>
-<area shape="poly" title=" " alt="" coords="633,136,574,176,571,171,630,131"/>
-<area shape="poly" title=" " alt="" coords="667,133,716,343,711,345,662,134"/>
-<area shape="poly" title=" " alt="" coords="576,131,468,153,349,185,294,204,245,224,208,247,185,271,178,289,185,308,205,331,231,349,228,353,201,335,180,311,173,289,180,268,205,243,243,220,292,199,347,180,467,148,575,126"/>
-<area shape="rect" href="sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="195,269,346,309"/>
-<area shape="poly" title=" " alt="" coords="578,136,509,156,438,184,367,223,308,263,305,259,365,218,436,179,507,151,577,131"/>
-<area shape="poly" title=" " alt="" coords="900,222,853,398,843,433,838,431,848,397,895,221"/>
-<area shape="poly" title=" " alt="" coords="927,220,973,258,969,262,923,224"/>
-<area shape="poly" title=" " alt="" coords="989,312,903,399,858,439,855,435,899,395,985,308"/>
-<area shape="poly" title=" " alt="" coords="562,220,585,241,606,268,615,287,619,304,619,336,622,366,628,380,639,395,671,420,709,437,747,447,783,452,783,457,746,452,707,442,669,425,635,399,623,383,617,367,614,337,613,305,610,288,602,271,581,245,558,223"/>
-<area shape="rect" href="sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="421,269,592,309"/>
-<area shape="poly" title=" " alt="" coords="530,222,519,257,514,255,525,221"/>
-<area shape="poly" title=" " alt="" coords="577,219,614,240,650,267,683,305,707,344,703,347,678,309,646,271,611,245,574,224"/>
-<area shape="poly" title=" " alt="" coords="493,224,452,245,411,271,367,310,330,348,326,345,363,306,408,267,449,240,490,219"/>
-<area shape="poly" title=" " alt="" coords="477,224,342,268,340,263,475,219"/>
-<area shape="poly" title=" " alt="" coords="519,308,549,353,569,376,593,395,640,419,691,435,740,445,783,451,783,456,739,451,690,440,638,424,591,400,566,380,544,356,514,311"/>
-<area shape="rect" title=" " alt="" coords="351,445,425,471"/>
-<area shape="poly" title=" " alt="" coords="495,311,406,436,402,433,491,308"/>
-<area shape="poly" title=" " alt="" coords="555,307,663,350,661,355,553,312"/>
-<area shape="poly" title=" " alt="" coords="463,312,361,355,359,350,461,307"/>
-<area shape="poly" title=" " alt="" coords="244,400,106,444,104,439,243,395"/>
-<area shape="poly" title=" " alt="" coords="374,386,783,447,783,452,373,392"/>
-<area shape="poly" title=" " alt="" coords="325,396,367,434,363,438,322,400"/>
-<area shape="poly" title=" " alt="" coords="347,302,636,357,635,362,346,308"/>
-<area shape="poly" title=" " alt="" coords="280,309,293,344,288,346,275,311"/>
-</map>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__dual__negotiator_8h__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><img src="sapi__dual__negotiator_8h__dep__incl.png" border="0" usemap="#ainclude_2safeapi_2dual_2sapi__dual__negotiator_8hdep" alt=""/></div>
-<map name="ainclude_2safeapi_2dual_2sapi__dual__negotiator_8hdep" id="ainclude_2safeapi_2dual_2sapi__dual__negotiator_8hdep">
-<area shape="rect" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,5,179,45"/>
-<area shape="rect" href="sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,93,161,133"/>
-<area shape="poly" title=" " alt="" coords="95,59,95,93,89,93,89,59"/>
-</map>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__negotiator_8h__dep__incl.svg" width="184" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__dual__negotiator_8h_source.html">Go to the source code of this file.</a></p>

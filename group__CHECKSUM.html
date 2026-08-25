@@ -1,3 +1,4 @@
+<!-- HTML header for doxygen 1.14+ with Mermaid & PlantUML support -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
 <head>
@@ -6,12 +7,27 @@
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Safe API Framework: Checksum &amp; CRC Utilities</title>
+<!--BEGIN PROJECT_ICON-->
+<link rel="icon" href="$projecticon" type="image/x-icon" />
+<!--END PROJECT_ICON-->
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="jquery.js"></script>
+<!--BEGIN HTML_DYNAMIC_SECTIONS-->
 <script type="text/javascript" src="dynsections.js"></script>
+<!--END HTML_DYNAMIC_SECTIONS-->
+<!--BEGIN HTML_CODE_FOLDING-->
+<script type="text/javascript" src="codefolding.js"></script>
+<!--END HTML_CODE_FOLDING-->
+<!--BEGIN COPY_CLIPBOARD-->
+<script type="text/javascript" src="clipboard.js"></script>
+<!--END COPY_CLIPBOARD-->
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  window.mermaid = mermaid;
+</script>
+<script type="text/javascript" src="doxygen_mermaid.js"></script>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
@@ -23,7 +39,7 @@
   <td id="projectalign">
    <div id="projectname">Safe API Framework
    </div>
-   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference)</div>
+   <div id="projectbrief">Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)</div>
   </td>
  </tr>
  </tbody>
@@ -459,7 +475,7 @@ Functions</h2></td></tr>
 <div class="line"><span class="comment">// Send msg over network</span></div>
 <div class="line"><a class="code hl_function" href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a>(channel, &amp;msg, <span class="keyword">sizeof</span>(msg), timeout_ms);</div>
 <div class="ttc" id="agroup__CHECKSUM_html_gae57cce5bad25c20ca5beeefec3fb769b"><div class="ttname"><a href="group__CHECKSUM.html#gae57cce5bad25c20ca5beeefec3fb769b">sapi_checksum_vital_message_create</a></div><div class="ttdeci">sapi_status_t sapi_checksum_vital_message_create(sapi_vital_message_t *msg_out, uint32_t sender_id, uint32_t sequence, const uint8_t *payload, size_t payload_size)</div><div class="ttdoc">Create vital channel message with CRC.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8c_source.html#l00502">sapi_checksum.c:502</a></div></div>
-<div class="ttc" id="agroup__IPC_html_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00057">sapi_ipc.c:57</a></div></div>
+<div class="ttc" id="agroup__IPC_html_gaf9ccd5efd6adc4c9c4c252c700a5da0f"><div class="ttname"><a href="group__IPC.html#gaf9ccd5efd6adc4c9c4c252c700a5da0f">sapi_ipc_send</a></div><div class="ttdeci">sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *message, size_t message_size, sapi_duration_ms_t timeout_ms)</div><div class="ttdoc">Sends one message, blocking at most timeout_ms.</div><div class="ttdef"><b>Definition</b> <a href="sapi__ipc_8c_source.html#l00068">sapi_ipc.c:68</a></div></div>
 <div class="ttc" id="astructsapi__vital__message__t_html"><div class="ttname"><a href="structsapi__vital__message__t.html">sapi_vital_message_t</a></div><div class="ttdoc">Vital channel message with integrated CRC-64.</div><div class="ttdef"><b>Definition</b> <a href="sapi__checksum_8h_source.html#l00233">sapi_checksum.h:233</a></div></div>
 </div><!-- fragment --> 
 <p class="definition">Definition at line <a class="el" href="sapi__checksum_8c_source.html#l00502">502</a> of file <a class="el" href="sapi__checksum_8c_source.html">sapi_checksum.c</a>.</p>
