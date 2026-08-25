@@ -112,11 +112,11 @@ project(my_rbc_app C)
 find_package(safeAPIFramework REQUIRED)
 
 add_executable(my_app main.c)
-target_link_libraries(my_app 
-    safeapi::status 
-    safeapi::timer 
-    safeapi::task 
-    safeapi::log
+target_link_libraries(my_app
+    safeapi::core
+    safeapi::oal
+    safeapi::channels
+    safeapi::appmanager
     pthread
 )
 
@@ -130,6 +130,40 @@ cmake -S . -B build
 cmake --build build
 ./build/my_app
 ```
+
+---
+
+### Multi-Architecture Docker Builds (SAPI example app layer)
+
+`cmake/Toolchain-Linux.cmake`'s own `LINUX_CROSS_COMPILE` variable (above) is for a real host
+cross-compiler toolchain (e.g. `aarch64-linux-gnu-gcc` installed on a Linux build machine or CI
+runner) - it has not been exercised end to end against a real one anywhere this framework has
+actually been built and tested; the mappings it sets up are reviewed-correct, not proven.
+
+The genuinely working, verified multi-architecture path today is different, and lives one level
+up in the workspace, in the safeAPIExample app that consumes this framework: **Docker buildx with
+QEMU emulation**. Every Dockerfile in `safeAPIExample/` (the RBC app and the three Python sims)
+installs its own toolchain via plain `apt-get`/`pip` with no arch-specific package names or
+triplets - under `docker buildx build --platform <target>`, that just installs the *target*
+arch's own native compiler/interpreter inside an emulated container and compiles there. No cross-
+compiler is involved at all; it is genuinely native compilation, just running under emulation.
+
+```bash
+cd safeAPIExample/safeAPITestEnv
+etc/scripts/build_multiarch.sh -i rbc2oo2 -p linux/arm64,linux/386
+docker run --rm --entrypoint uname safeapi-rbc2oo2:latest-386 -m   # -> i686/i386
+```
+
+Supports `linux/amd64`, `linux/arm64`, `linux/386`, `linux/arm/v7` (Docker Desktop's own
+`desktop-linux` buildx builder already has QEMU emulators registered for all four - check with
+`docker buildx ls`). `docker buildx build --load` only loads one platform's image locally per
+invocation (a real multi-platform manifest needs a registry push, not configured for this
+project), so the script builds one `{image, platform}` pair at a time, tagging each with its own
+arch suffix (`:latest-arm64`, `:latest-386`, ...) so they coexist in `docker images`.
+
+This path proves the *application layer* (safeAPIExample, built via this framework's POSIX OAL
+backend) runs correctly on ARM64/x86/32-bit/64-bit Linux - it does not exercise
+`Toolchain-Linux.cmake`'s own cross-compile branch above, since buildx never cross-compiles.
 
 ---
 
@@ -218,11 +252,10 @@ find_package(safeAPIFramework REQUIRED)
 
 add_executable(my_rbc_app main.c)
 target_link_libraries(my_rbc_app
-    safeapi::status
-    safeapi::timer
-    safeapi::task
-    safeapi::log
-    safeapi::ipc
+    safeapi::core
+    safeapi::oal
+    safeapi::channels
+    safeapi::appmanager
 )
 
 # QNX requires certain libraries

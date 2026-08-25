@@ -7,6 +7,21 @@
 
 ---
 
+> **Implementation status (2026-08-25):** This document is aspirational/design-reference only.
+> Despite the "Status: APPROVED" label above and the "Phase 1 ... DONE" claim below, none of the
+> toolchain files, `backends/` tree, or `SAFEAPI_ARCH_*`/`SAFEAPI_LITTLE_ENDIAN`/
+> `SAFEAPI_BIG_ENDIAN`/`SAFEAPI_STRICT_ALIGNMENT` macros named in this document exist in the repo
+> today - only `cmake/Toolchain-Linux.cmake` and `cmake/Toolchain-QNX.cmake` do, under different
+> names and without the macros this document proposes (checked directly: no real source file in
+> `include/` or `src/` reads or would benefit from those macros - endianness is already handled
+> per-call via `sapi_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
+> genuinely working, verified multi-architecture story today is Docker buildx/QEMU for the
+> safeAPIExample app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
+> Builds" section and `safeAPIExample/safeAPITestEnv/etc/scripts/build_multiarch.sh`. Treat
+> everything below this notice as a forward-looking design reference, not a status report.
+
+---
+
 ## 1. Overview
 
 safeAPIFramework supports multiple **combinations** of:
