@@ -154,6 +154,23 @@ static sapi_status_t dual_channel_poll_link_once(sapi_dual_channel_t *channel, u
             out_result->kind    = SAPI_DUAL_FRAME_KIND_STATE;
             break;
         }
+        case SAPI_DUAL_FRAME_KIND_HEARTBEAT:
+        {
+            sapi_dual_ack_frame_t ack;
+
+            /* Auto-ACK, best-effort/fire-and-forget: acknowledges heartbeat */
+            ack.header.kind        = (uint8_t)SAPI_DUAL_FRAME_KIND_ACK;
+            ack.header.reserved[0] = 0U;
+            ack.header.reserved[1] = 0U;
+            ack.header.reserved[2] = 0U;
+            ack.acked_sequence     = sequence;
+            (void)sapi_dual_msgchannel_send(&channel->links[link_index], (const uint8_t *)&ack, (uint8_t)sizeof(ack),
+                                             channel->ack_timeout_ms, NULL);
+
+            out_result->matched = true;
+            out_result->kind    = SAPI_DUAL_FRAME_KIND_HEARTBEAT;
+            break;
+        }
         default:
             /* Unrecognized kind - defensive only (not reachable through
              * a conforming sender), ignore rather than fail. */
@@ -452,6 +469,114 @@ sapi_status_t sapi_dual_channel_receive(sapi_dual_channel_t *channel, uint8_t *o
     channel->pending_data_valid = false;
 
     return SAPI_STATUS_OK;
+}
+
+sapi_status_t sapi_dual_channel_send_heartbeat(sapi_dual_channel_t *channel, uint32_t *out_ack_link_count)
+{
+    sapi_dual_heartbeat_frame_t frame;
+    uint32_t i;
+    uint32_t ack_count = 0U;
+    bool saw_hard_fault = false;
+    sapi_status_t hard_fault_status = SAPI_STATUS_OK;
+    sapi_timestamp_ms_t now_ms = 0U;
+
+    if (channel == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    (void)sapi_timer_now(&now_ms);
+    frame.header.kind        = (uint8_t)SAPI_DUAL_FRAME_KIND_HEARTBEAT;
+    frame.header.reserved[0] = 0U;
+    frame.header.reserved[1] = 0U;
+    frame.header.reserved[2] = 0U;
+    frame.timestamp_ms       = (uint64_t)now_ms;
+
+    for (i = 0U; i < channel->link_count; i++)
+    {
+        uint32_t sent_sequence = 0U;
+        sapi_status_t send_status;
+        bool link_now_up = false;
+
+        send_status = sapi_dual_msgchannel_send(&channel->links[i], (const uint8_t *)&frame,
+                                                 (uint8_t)sizeof(frame), channel->ack_timeout_ms,
+                                                 &sent_sequence);
+        if ((send_status == SAPI_STATUS_HARDWARE_FAULT) && (!saw_hard_fault))
+        {
+            saw_hard_fault = true;
+            hard_fault_status = send_status;
+        }
+        if (send_status == SAPI_STATUS_OK)
+        {
+            sapi_duration_ms_t remaining = channel->ack_timeout_ms;
+            sapi_timestamp_ms_t start_ms = 0U;
+            uint32_t stall_polls = 0U;
+
+            (void)sapi_timer_now(&start_ms);
+
+            while ((remaining > 0U) && (stall_polls < SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT))
+            {
+                dual_poll_result_t result;
+                sapi_status_t poll_status;
+                sapi_timestamp_ms_t poll_now_ms = 0U;
+
+                poll_status = dual_channel_poll_link_once(channel, i, remaining, &result);
+                if ((poll_status == SAPI_STATUS_OK) && result.matched && (result.kind == SAPI_DUAL_FRAME_KIND_ACK)
+                    && (result.ack_sequence == sent_sequence))
+                {
+                    link_now_up = true;
+                    break;
+                }
+                if (poll_status == SAPI_STATUS_HARDWARE_FAULT)
+                {
+                    if (!saw_hard_fault)
+                    {
+                        saw_hard_fault = true;
+                        hard_fault_status = poll_status;
+                    }
+                    break;
+                }
+
+                (void)sapi_timer_now(&poll_now_ms);
+                if (poll_now_ms > start_ms)
+                {
+                    sapi_timestamp_ms_t elapsed = poll_now_ms - start_ms;
+                    if (elapsed >= (sapi_timestamp_ms_t)channel->ack_timeout_ms)
+                    {
+                        remaining = 0U;
+                    }
+                    else
+                    {
+                        remaining = channel->ack_timeout_ms - (sapi_duration_ms_t)elapsed;
+                    }
+                    stall_polls = 0U;
+                }
+                else
+                {
+                    stall_polls++;
+                }
+            }
+        }
+
+        channel->link_up[i] = link_now_up;
+        if (link_now_up)
+        {
+            ack_count++;
+        }
+    }
+
+    if (out_ack_link_count != NULL)
+    {
+        *out_ack_link_count = ack_count;
+    }
+
+    dual_channel_update_status(channel);
+
+    if (ack_count > 0U)
+    {
+        return SAPI_STATUS_OK;
+    }
+    return saw_hard_fault ? hard_fault_status : SAPI_STATUS_TIMEOUT;
 }
 
 sapi_status_t sapi_dual_channel_send_state_frame(sapi_dual_channel_t *channel, sapi_dual_state_t state,

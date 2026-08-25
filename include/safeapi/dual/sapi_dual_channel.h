@@ -227,6 +227,18 @@ sapi_status_t sapi_dual_channel_receive(sapi_dual_channel_t *channel,
  *         link; SAPI_STATUS_TIMEOUT if every link's send failed/timed
  *         out; SAPI_STATUS_INVALID_PARAM if channel is NULL.
  */
+/**
+ * @brief Transmits a connection maintenance heartbeat frame across every
+ *        configured link and waits up to ack_timeout_ms for an ACK on each.
+ * @param channel        Initialized channel. Must not be NULL.
+ * @param out_ack_count  Optional; receives the number of links that ACKed.
+ * @return SAPI_STATUS_OK if at least one link acknowledged;
+ *         SAPI_STATUS_TIMEOUT if no link acknowledged within timeout;
+ *         SAPI_STATUS_HARDWARE_FAULT if every link encountered a hard fault;
+ *         SAPI_STATUS_INVALID_PARAM for a bad argument.
+ */
+sapi_status_t sapi_dual_channel_send_heartbeat(sapi_dual_channel_t *channel, uint32_t *out_ack_count);
+
 sapi_status_t sapi_dual_channel_send_state_frame(sapi_dual_channel_t *channel, sapi_dual_state_t state,
                                                    bool channel_degraded, uint64_t timestamp_ms);
 

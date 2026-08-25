@@ -686,6 +686,30 @@ static void test_send_ack_wait_handles_stalled_clock(void)
     g_freeze_clock_calls_remaining = 0;
 }
 
+static void test_send_heartbeat(void)
+{
+    fixture_t            fx;
+    sapi_dual_channel_t   channel_a;
+    uint32_t              ack_count = 0U;
+
+    fixture_init(&fx);
+    init_channel_a(&fx, &channel_a, NULL);
+
+    assert(sapi_dual_channel_send_heartbeat(NULL, &ack_count) == SAPI_STATUS_INVALID_PARAM);
+
+    /* Both links timeout when nothing seeded */
+    assert(sapi_dual_channel_send_heartbeat(&channel_a, &ack_count) == SAPI_STATUS_TIMEOUT);
+    assert(ack_count == 0U);
+    assert(sapi_dual_channel_get_status(&channel_a) == SAPI_DUAL_CHANNEL_STATUS_DOWN);
+
+    /* Seed ACK on link 0 and link 1 for next sequence (1U) */
+    seed_ack(&fx.b_link0, 1U);
+    seed_ack(&fx.b_link1, 1U);
+    assert(sapi_dual_channel_send_heartbeat(&channel_a, &ack_count) == SAPI_STATUS_OK);
+    assert(ack_count == 2U);
+    assert(sapi_dual_channel_get_status(&channel_a) == SAPI_DUAL_CHANNEL_STATUS_FULL);
+}
+
 int main(void)
 {
     assert(sapi_checksum_crc64_init(SAPI_CRC64_ERTMS) == SAPI_STATUS_OK);
@@ -709,5 +733,6 @@ int main(void)
     test_receive_rejects_malformed_and_unknown_frames();
     test_send_ack_wait_observes_timer_progress();
     test_send_ack_wait_handles_stalled_clock();
+    test_send_heartbeat();
     return 0;
 }

@@ -49,7 +49,10 @@ typedef enum sapi_dual_frame_kind_e
     SAPI_DUAL_FRAME_KIND_ACK = 1,
     /** sapi_dual_negotiator_t's own state beacon - fire-and-forget,
      *  periodic, no ACK expected (unlike DATA). */
-    SAPI_DUAL_FRAME_KIND_STATE = 2
+    SAPI_DUAL_FRAME_KIND_STATE = 2,
+    /** Liveness heartbeat frame - sent periodically to maintain connection,
+     *  expects a SAPI_DUAL_FRAME_KIND_ACK frame back. */
+    SAPI_DUAL_FRAME_KIND_HEARTBEAT = 3
 } sapi_dual_frame_kind_t;
 
 /** @brief Common 4-byte header prefixing every Layer-2 frame; kept a
@@ -105,6 +108,14 @@ typedef struct sapi_dual_state_frame_s
      *  assume zero jitter). */
     uint64_t timestamp_ms;
 } sapi_dual_state_frame_t;
+
+/** @brief SAPI_DUAL_FRAME_KIND_HEARTBEAT payload - connection maintenance heartbeat. */
+typedef struct sapi_dual_heartbeat_frame_s
+{
+    sapi_dual_frame_header_t header;
+    /** Monotonic sender timestamp */
+    uint64_t timestamp_ms;
+} sapi_dual_heartbeat_frame_t;
 
 #ifdef __cplusplus
 }
