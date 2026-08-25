@@ -19,6 +19,41 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
 
+# ---------------------------------------------------------------------------
+# Version (physically compiled into libsafeapi_core.a - see
+# sapi_core_get_version(), include/safeapi/core/sapi_core_version.h.in)
+# ---------------------------------------------------------------------------
+# scripts/compute_version.sh appends the git commit (+dirty flag) to
+# PROJECT_VERSION, real SemVer 2.0 build-metadata syntax - falls back to
+# "+unknown" outside a git checkout (e.g. a Docker build stage, where
+# .git isn't in the build context - see .dockerignore). Computed once
+# here, not re-run per target, so every consumer of this one configure
+# sees the same version string.
+execute_process(
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/scripts/compute_version.sh" "${PROJECT_VERSION}"
+    OUTPUT_VARIABLE _safeapi_framework_version_computed
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+# CACHE (not a plain variable) so a consumer that reaches this project via
+# add_subdirectory() - safeAPIRBC2oo2's own default path - can still read
+# it after the subdirectory call returns (plain variables set inside
+# add_subdirectory() don't propagate to the parent scope; CACHE variables
+# do). FORCE: always recompute fresh each configure, never stick with a
+# stale value left over from an earlier configure's git state.
+set(SAFEAPI_FRAMEWORK_VERSION "${_safeapi_framework_version_computed}" CACHE STRING
+    "This build's version: <static-version>+<git-shortsha>[.dirty] - see scripts/compute_version.sh" FORCE)
+message(STATUS "safeAPIFramework version: ${SAFEAPI_FRAMEWORK_VERSION}")
+
+# Generated into the BUILD dir, not the source tree, so this configure's
+# own version doesn't get committed/shared across the several parallel
+# build-toolchain-*/ directories this workspace's own build scripts create
+# (see build_toolchains.sh) - each gets its own generated copy.
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi/core/sapi_core_version.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/generated_include/safeapi/core/sapi_core_version.h"
+    @ONLY
+)
+
 # Required for the cppcheck/MISRA target below (--project=compile_commands.json):
 # without this, compile_commands.json is never generated, that target's
 # cppcheck invocation fails at the "open project file" step, and the
@@ -145,9 +180,11 @@ add_library(safeapi_core STATIC
     src/safestate/sapi_safestate.c
     src/string/sapi_string.c
     src/lifecycle/sapi_lifecycle.c
+    src/core/sapi_core_version.c
 )
 target_include_directories(safeapi_core PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated_include>
     $<INSTALL_INTERFACE:include>
 )
 safeapi_set_warnings(safeapi_core)
@@ -267,6 +304,24 @@ if(SAFEAPI_ENABLE_APPMANAGER AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/appmana
     add_subdirectory(src/appmanager)
 endif()
 
+# Host-side build tool (not part of the shipped safety library) - see
+# tools/sapi_crc64_tool.c's own header for why it exists. Needs
+# sapi_checksum.c, which only exists in safeapi_channels when
+# SAFEAPI_ENABLE_CHECKSUM is ON. Also needs a HOSTED C runtime (file I/O,
+# exit(), etc.) - skip it for bare-metal/no-OS targets
+# (CMAKE_SYSTEM_NAME "Generic" is CMake's own convention for exactly this,
+# set by FreeRTOSToolchain/cmake/Toolchain-FreeRTOS.cmake). Found via a
+# real link failure, not assumed: newlib's syscall stubs (_exit/_write/
+# _read/_open/_close/_sbrk/_lseek/_isatty/_fstat/_kill/_getpid) are
+# undefined for arm-none-eabi-gcc without a real board support package
+# providing them - this tool never needed to run ON the target anyway, it
+# runs on the BUILD HOST to compute/verify artifact checksums.
+if(SAFEAPI_ENABLE_CHECKSUM AND NOT CMAKE_SYSTEM_NAME STREQUAL "Generic")
+    add_executable(sapi_crc64_tool tools/sapi_crc64_tool.c)
+    target_link_libraries(sapi_crc64_tool PRIVATE safeapi::channels safeapi::core)
+    safeapi_set_warnings(sapi_crc64_tool)
+endif()
+
 if(SAFEAPI_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
@@ -368,13 +423,38 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         string(APPEND SAFEAPI_DIST_SUBPATH "/${SAPI_CHANNEL_BUILD_ID}")
     endif()
 
+    # Same nesting-subdirectory pattern as SAPI_CHANNEL_BUILD_ID above, an
+    # independent optional axis: -DSAPI_LIBC_VARIANT=musl (used with a
+    # LinuxMacOSToolchain/bin/<arch>/alpine/ musl cross-compiler) adds one
+    # more directory level so a glibc and a musl build for the SAME
+    # CMAKE_SYSTEM_PROCESSOR (Toolchain-Linux.cmake's LINUX_CROSS_COMPILE
+    # table has no musl entries, so musl builds must pass
+    # -DCMAKE_SYSTEM_PROCESSOR explicitly - see LinuxMacOSToolchain/CLAUDE.md)
+    # don't collide under the same dist/<platform>/ path. Unset = today's
+    # behavior (implicitly glibc/native), unchanged.
+    if(DEFINED SAPI_LIBC_VARIANT)
+        if(NOT SAPI_LIBC_VARIANT STREQUAL "musl")
+            message(FATAL_ERROR "SAPI_LIBC_VARIANT only recognizes 'musl' (got '${SAPI_LIBC_VARIANT}') - leave unset for glibc/native")
+        endif()
+        string(APPEND SAFEAPI_DIST_SUBPATH "/${SAPI_LIBC_VARIANT}")
+    endif()
+
     set(INCLUDE_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/include)
     set(LIB_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/lib)
     set(CMAKE_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/lib/cmake/safeAPIFramework)
 
-    # Install public (consumer-facing) headers.
+    # Install public (consumer-facing) headers. sapi_core_version.h.in is
+    # the TEMPLATE, not the real header (that would install the literal
+    # "@SAFEAPI_FRAMEWORK_VERSION@" placeholder, not this build's actual
+    # version string) - excluded here, the real generated copy is
+    # installed separately right below.
     install(DIRECTORY include/safeapi
         DESTINATION ${INCLUDE_INSTALL_DIR}
+        COMPONENT development
+        PATTERN "*.h.in" EXCLUDE
+    )
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/generated_include/safeapi/core/sapi_core_version.h"
+        DESTINATION ${INCLUDE_INSTALL_DIR}/safeapi/core
         COMPONENT development
     )
 

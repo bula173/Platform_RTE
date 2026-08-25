@@ -13,8 +13,8 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-BUILD_DIR="$PROJECT_ROOT/build-coverage"
-REPORT_DIR="$BUILD_DIR/coverage"
+BUILD_DIR="$PROJECT_ROOT/build/coverage"
+REPORT_DIR="$BUILD_DIR/report"
 
 echo "=== safeAPIFramework: coverage build (gcov + gcovr) ==="
 

@@ -61,8 +61,29 @@ class SafeAPIFrameworkConan(ConanFile):
         "cmake/*",
         "include/*",
         "src/*",
+        "tools/*",
         "LICENSE.md",
     )
+
+    def _dist_platform_dir(self):
+        # Mirrors SAFEAPI_DIST_PLATFORM_DIR (CMAKE_SYSTEM_NAME-CMAKE_SYSTEM_PROCESSOR,
+        # see CMakeLists.txt and root CLAUDE.md's "dist/" convention) - Conan's
+        # own os/arch settings use different vocabulary (Macos/armv8 vs CMake's
+        # Darwin/arm64), and CMAKE_SYSTEM_PROCESSOR for the same CPU family
+        # differs BY OS too (arm64 on Darwin, aarch64 on Linux) - this table
+        # covers exactly the platforms this workspace's own toolchain projects
+        # enumerate (LinuxMacOSToolchain's Toolchain-Linux.cmake, SAPIMacOSToolchain).
+        # Duplicated per-project rather than shared, same convention
+        # compute_version.sh already uses (every project here is independently
+        # clonable).
+        os_map = {"Macos": "Darwin", "Linux": "Linux"}
+        arch_map = {
+            "Darwin": {"armv8": "arm64", "x86_64": "x86_64"},
+            "Linux": {"armv8": "aarch64", "armv7": "arm", "x86_64": "x86_64", "x86": "i686"},
+        }
+        cmake_os = os_map.get(str(self.settings.os), str(self.settings.os))
+        cmake_arch = arch_map.get(cmake_os, {}).get(str(self.settings.arch), str(self.settings.arch))
+        return f"{cmake_os}-{cmake_arch}"
 
     def config_options(self):
         if self.settings.os == "Windows":
@@ -106,26 +127,30 @@ class SafeAPIFrameworkConan(ConanFile):
         # dist/lib/cmake/safeAPIFramework/safeAPIFrameworkConfig.cmake.
         self.cpp_info.set_property("cmake_file_name", "safeAPIFramework")
 
+        plat = self._dist_platform_dir()
+        includedir = f"dist/{plat}/include"
+        libdir = f"dist/{plat}/lib"
+
         self.cpp_info.components["core"].set_property("cmake_target_name", "safeapi::core")
         self.cpp_info.components["core"].libs = ["safeapi_core"]
-        self.cpp_info.components["core"].includedirs = ["dist/include"]
-        self.cpp_info.components["core"].libdirs = ["dist/lib"]
+        self.cpp_info.components["core"].includedirs = [includedir]
+        self.cpp_info.components["core"].libdirs = [libdir]
 
         self.cpp_info.components["oal"].set_property("cmake_target_name", "safeapi::oal")
         self.cpp_info.components["oal"].libs = ["safeapi_oal"]
-        self.cpp_info.components["oal"].includedirs = ["dist/include"]
-        self.cpp_info.components["oal"].libdirs = ["dist/lib"]
+        self.cpp_info.components["oal"].includedirs = [includedir]
+        self.cpp_info.components["oal"].libdirs = [libdir]
         self.cpp_info.components["oal"].requires = ["core"]
 
         self.cpp_info.components["channels"].set_property("cmake_target_name", "safeapi::channels")
         self.cpp_info.components["channels"].libs = ["safeapi_channels"]
-        self.cpp_info.components["channels"].includedirs = ["dist/include"]
-        self.cpp_info.components["channels"].libdirs = ["dist/lib"]
+        self.cpp_info.components["channels"].includedirs = [includedir]
+        self.cpp_info.components["channels"].libdirs = [libdir]
         self.cpp_info.components["channels"].requires = ["core", "oal"]
 
         if self.options.with_appmanager:
             self.cpp_info.components["appmanager"].set_property("cmake_target_name", "safeapi::appmanager")
             self.cpp_info.components["appmanager"].libs = ["safeapi_appmanager"]
-            self.cpp_info.components["appmanager"].includedirs = ["dist/include"]
-            self.cpp_info.components["appmanager"].libdirs = ["dist/lib"]
+            self.cpp_info.components["appmanager"].includedirs = [includedir]
+            self.cpp_info.components["appmanager"].libdirs = [libdir]
             self.cpp_info.components["appmanager"].requires = ["core", "oal", "channels"]

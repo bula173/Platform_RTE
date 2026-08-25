@@ -19,8 +19,8 @@
 # this project's own CI/dev verification today (no aarch64-linux-gnu-gcc/
 # arm-linux-gnueabihf-gcc/etc. toolchain is installed anywhere this has been
 # tested) - they are reviewed-correct, not independently proven. The
-# genuinely verified multi-architecture path is safeAPIExample's own Docker
-# buildx/QEMU build (safeAPIExample/safeAPITestEnv/etc/scripts/build_multiarch.sh),
+# genuinely verified multi-architecture path is safeAPIRBC2oo2TestEnv's own
+# Docker buildx/QEMU build (safeAPIRBC2oo2TestEnv/etc/scripts/build_multiarch.sh),
 # which compiles natively inside an emulated container per target arch
 # instead of cross-compiling from this toolchain file - see
 # docs/CROSS_COMPILATION.md's own "Multi-Architecture Docker Builds" section.

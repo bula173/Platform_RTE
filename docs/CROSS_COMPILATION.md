@@ -140,16 +140,17 @@ cross-compiler toolchain (e.g. `aarch64-linux-gnu-gcc` installed on a Linux buil
 runner) - it has not been exercised end to end against a real one anywhere this framework has
 actually been built and tested; the mappings it sets up are reviewed-correct, not proven.
 
-The genuinely working, verified multi-architecture path today is different, and lives one level
-up in the workspace, in the safeAPIExample app that consumes this framework: **Docker buildx with
-QEMU emulation**. Every Dockerfile in `safeAPIExample/` (the RBC app and the three Python sims)
-installs its own toolchain via plain `apt-get`/`pip` with no arch-specific package names or
-triplets - under `docker buildx build --platform <target>`, that just installs the *target*
-arch's own native compiler/interpreter inside an emulated container and compiles there. No cross-
-compiler is involved at all; it is genuinely native compilation, just running under emulation.
+The genuinely working, verified multi-architecture path today is different, and lives among this
+framework's sibling projects in the workspace (`safeAPIRBC2oo2` and the three Python sims, direct
+SAPI-root siblings - see root `CLAUDE.md`): **Docker buildx with QEMU emulation**. Every one of
+those Dockerfiles installs its own toolchain via plain `apt-get`/`pip` with no arch-specific
+package names or triplets - under `docker buildx build --platform <target>`, that just installs
+the *target* arch's own native compiler/interpreter inside an emulated container and compiles
+there. No cross-compiler is involved at all; it is genuinely native compilation, just running
+under emulation.
 
 ```bash
-cd safeAPIExample/safeAPITestEnv
+cd safeAPIRBC2oo2TestEnv
 etc/scripts/build_multiarch.sh -i rbc2oo2 -p linux/arm64,linux/386
 docker run --rm --entrypoint uname safeapi-rbc2oo2:latest-386 -m   # -> i686/i386
 ```
@@ -161,7 +162,7 @@ invocation (a real multi-platform manifest needs a registry push, not configured
 project), so the script builds one `{image, platform}` pair at a time, tagging each with its own
 arch suffix (`:latest-arm64`, `:latest-386`, ...) so they coexist in `docker images`.
 
-This path proves the *application layer* (safeAPIExample, built via this framework's POSIX OAL
+This path proves the *application layer* (`safeAPIRBC2oo2`, built via this framework's POSIX OAL
 backend) runs correctly on ARM64/x86/32-bit/64-bit Linux - it does not exercise
 `Toolchain-Linux.cmake`'s own cross-compile branch above, since buildx never cross-compiles.
 

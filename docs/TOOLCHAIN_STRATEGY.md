@@ -16,8 +16,8 @@
 > `include/` or `src/` reads or would benefit from those macros - endianness is already handled
 > per-call via `sapi_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
 > genuinely working, verified multi-architecture story today is Docker buildx/QEMU for the
-> safeAPIExample app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
-> Builds" section and `safeAPIExample/safeAPITestEnv/etc/scripts/build_multiarch.sh`. Treat
+> safeAPIRBC2oo2 app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
+> Builds" section and `safeAPIRBC2oo2TestEnv/etc/scripts/build_multiarch.sh`. Treat
 > everything below this notice as a forward-looking design reference, not a status report.
 
 ---
