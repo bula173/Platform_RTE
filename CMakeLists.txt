@@ -330,16 +330,47 @@ endif()
 # PROJECT_NAME is this CMakeLists.txt's own project() name - they're only
 # equal when this file is the one that was configured directly.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    # Define install paths. Everything lands under dist/ (install with
-    # `cmake --install build --prefix .` from the repo root) so that
-    # "what this project hands to another SAPI project" is always
-    # <project>/dist/ - the same convention safeAPIRBC2oo2's own
-    # install(TARGETS ... RUNTIME DESTINATION dist/bin) already uses.
-    # A downstream consumer points CMAKE_PREFIX_PATH/find_package at
-    # this dist/ tree (see cmake/safeAPIFrameworkConfig.cmake.in).
-    set(INCLUDE_INSTALL_DIR dist/include)
-    set(LIB_INSTALL_DIR dist/lib)
-    set(CMAKE_INSTALL_DIR dist/lib/cmake/safeAPIFramework)
+    # Define install paths. Everything lands under dist/<platform>/ (install
+    # with `cmake --install build --prefix .` from the repo root) - one
+    # cross/multi-arch build's own output never overwrites another's, now
+    # that this project genuinely gets built for more than one
+    # CMAKE_SYSTEM_NAME/_PROCESSOR combination in the same checkout (Docker
+    # buildx multi-platform builds, cmake/Toolchain-Linux.cmake cross-
+    # compiles, QNX). <platform> is CMAKE_SYSTEM_NAME-CMAKE_SYSTEM_PROCESSOR
+    # (e.g. Linux-aarch64, Linux-x86_64, Darwin-arm64, QNX-x86_64) - both
+    # values are already known at this point (set by the toolchain file, or
+    # by CMake itself from uname for a native build) and together uniquely
+    # identify one build's own output. safeAPIRBC2oo2's own
+    # install(TARGETS ... RUNTIME DESTINATION dist/...) uses this exact
+    # same SAFEAPI_DIST_PLATFORM_DIR convention - keep both in sync. A
+    # downstream consumer points CMAKE_PREFIX_PATH/find_package at this
+    # dist/<platform>/ tree (see cmake/safeAPIFrameworkConfig.cmake.in,
+    # which bakes its own platform subdir into the generated config file so
+    # it doesn't need to re-detect it at find_package() time).
+    set(SAFEAPI_DIST_PLATFORM_DIR "${CMAKE_SYSTEM_NAME}-${CMAKE_SYSTEM_PROCESSOR}")
+
+    # ADR-008 dual-channel build diversity: -DSAPI_CHANNEL_BUILD_ID=A|B (used
+    # together with cmake/toolchain-channel-a.cmake / -b.cmake) rebuilds this
+    # framework under a distinct compiler/flags per RBC channel. Rather than
+    # suffixing SAFEAPI_DIST_PLATFORM_DIR itself, a channel build adds ONE
+    # extra directory level below it - dist/<platform>/A/, dist/<platform>/B/
+    # - so it nests under the same dist/<platform>/ root a default build
+    # uses. safeAPIRBC2oo2's own SAFEAPI_APP_ROLE_SUBDIR/SAPI_FRAMEWORK_DIST_DIR
+    # reconstruct this exact same path to find this channel's framework dist/
+    # tree - keep both in sync. A build with no SAPI_CHANNEL_BUILD_ID uses no
+    # extra level - dist/<platform>/ directly, unchanged from before this
+    # feature existed.
+    set(SAFEAPI_DIST_SUBPATH "${SAFEAPI_DIST_PLATFORM_DIR}")
+    if(DEFINED SAPI_CHANNEL_BUILD_ID)
+        if(NOT SAPI_CHANNEL_BUILD_ID MATCHES "^[AB]$")
+            message(FATAL_ERROR "SAPI_CHANNEL_BUILD_ID must be 'A' or 'B' (got '${SAPI_CHANNEL_BUILD_ID}')")
+        endif()
+        string(APPEND SAFEAPI_DIST_SUBPATH "/${SAPI_CHANNEL_BUILD_ID}")
+    endif()
+
+    set(INCLUDE_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/include)
+    set(LIB_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/lib)
+    set(CMAKE_INSTALL_DIR dist/${SAFEAPI_DIST_SUBPATH}/lib/cmake/safeAPIFramework)
 
     # Install public (consumer-facing) headers.
     install(DIRECTORY include/safeapi
@@ -368,6 +399,23 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         DESTINATION ${CMAKE_INSTALL_DIR}
         COMPONENT development
     )
+
+    # The generated config file installs to
+    # <prefix>/dist/${SAFEAPI_DIST_SUBPATH}/lib/cmake/safeAPIFramework/ - it
+    # needs to know how many '..' get back to <prefix> to resolve
+    # safeAPIFramework_INCLUDE_DIR/_LIB_DIR (see that file's own comments).
+    # That depth isn't fixed any more: a default build's SAFEAPI_DIST_SUBPATH
+    # is one segment (e.g. "Darwin-arm64"), a channel build's is two (e.g.
+    # "Darwin-arm64/A") - compute it here instead of hardcoding a literal
+    # that would only be correct for one of the two cases.
+    string(REPLACE "/" ";" _safeapi_dist_subpath_segments "${SAFEAPI_DIST_SUBPATH}")
+    list(LENGTH _safeapi_dist_subpath_segments _safeapi_dist_subpath_depth)
+    math(EXPR _safeapi_config_relpath_depth "${_safeapi_dist_subpath_depth} + 4") # dist/ + lib/cmake/safeAPIFramework (3 levels)
+    set(_safeapi_config_relpath_parts "")
+    foreach(_safeapi_i RANGE 1 ${_safeapi_config_relpath_depth})
+        list(APPEND _safeapi_config_relpath_parts "..")
+    endforeach()
+    list(JOIN _safeapi_config_relpath_parts "/" SAFEAPI_CONFIG_PREFIX_RELPATH)
 
     # Generate and install config files
     configure_file(
