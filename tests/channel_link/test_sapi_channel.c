@@ -5,8 +5,8 @@
  * to contain has moved to sapi_voter - see tests/voter/test_sapi_voter.c. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/channel_link/sapi_channel.h"
-#include "safeapi/lifecycle/sapi_lifecycle.h"
+#include "safeapi/redundancy/channel_link/sapi_channel.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
 
 static int g_send_calls;
 static int g_recv_calls;

@@ -1,7 +1,7 @@
 /* Tests for the sapi_nvm validate-then-dispatch API (ADR-005): see
  * test_sapi_timer.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/nvm/sapi_nvm.h"
+#include "safeapi/oal/nvm/sapi_nvm.h"
 #include "safeapi_backend/nvm/sapi_nvm_backend.h"
 
 static int g_mock_open_calls = 0;

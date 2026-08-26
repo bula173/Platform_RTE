@@ -62,6 +62,16 @@ every ordered pair among `int8_t`/`int16_t`/`int32_t`/`int64_t`/
 the full type matrix; not enumerated as 72 separate IDs since all 72
 satisfy the same three requirements by construction.
 
+| REQ-COMMON-CAST-004 | `sapi_cast_checked_add_u32()`/`_sub_u32()`/`_mul_u32()` and the `size_t` equivalents shall detect overflow/underflow and yield `SAPI_STATUS_VALUE_OUT_OF_RANGE` instead of wrapping silently; `*out` is left untouched on failure (REQ-COMMON-CAST-001). |
+| REQ-COMMON-CAST-005 | `sapi_cast_bounds_check(index, count)` shall return `SAPI_STATUS_OK` if `index < count`, else `SAPI_STATUS_VALUE_OUT_OF_RANGE` - a checked helper standardizing the array/index-bounds check pattern already hand-rolled ad hoc across this codebase's consumers. |
+
+Added during the framework module reorg (module directories nested under
+`common`/`oal`/`redundancy`/`app` tiers - see this session's own commit
+history/`CLAUDE.md` for the reorg itself, unrelated to these two new
+requirements): overflow-checked arithmetic and a bounds-check helper, the
+two "extra MISRA-safety helpers" requested alongside the safe-pointer
+wrapper (2.3 below) and the already-existing `SAPI_ASSERT()` (1.5 below).
+
 ### 1.5 Safe-state transitions — `sapi_safestate.h` (ADR-004)
 
 | ID | Requirement |
@@ -76,6 +86,33 @@ satisfy the same three requirements by construction.
 `sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_ASSERT_FAILED, ...)`
 — this behavior is a consequence of REQ-COMMON-SAFESTATE-002/011 applied
 to the `SAFE` level and is not tracked as a separate requirement ID.
+
+#### 1.5.1 Safety-primitive violation notification — `sapi_safety_violation.h`
+
+| ID | Requirement |
+|---|---|
+| REQ-COMMON-SAFETYVIOLATION-001 | Handler storage shall be a single fixed slot (no dynamic allocation) — a lower-frequency, broader-scope hook than `sapi_safestate`'s own per-level slots, since one registered handler covers all three instrumented primitive families (safe pointer, checked cast arithmetic, bounds check). |
+| REQ-COMMON-SAFETYVIOLATION-002 | `sapi_safety_violation_report()` shall be a no-op when no handler is registered — reporting a violation shall never itself become a new failure mode. |
+
+Deliberately a separate, opt-in mechanism from `sapi_safestate` (1.5
+above): unlike a checkpoint timeout or voter disagreement (always
+genuine faults, escalated unconditionally through
+`sapi_safestate_enter()`), the three primitives this module instruments
+are also invoked during ordinary, expected control flow (e.g.
+`sapi_cast_bounds_check()` used to ask "is this the last valid index" is
+not itself a fault) — forcing every failure through
+`sapi_safestate_enter()` would trigger REQ-COMMON-SAFESTATE-002's
+permanent halt on entirely normal code paths. Instrumented call sites:
+`sapi_safe_ptr_get()`/`_offset()` (REQ-OAL-SAFEPTR-001/002, kind
+`SAPI_SAFETY_VIOLATION_CORRUPTION`/`_OUT_OF_RANGE`),
+`sapi_cast_checked_add_u32()`/`_sub_u32()`/`_mul_u32()`/`_add_size()`/
+`_sub_size()`/`_mul_size()` (REQ-COMMON-CAST-004, kind
+`SAPI_SAFETY_VIOLATION_OVERFLOW`), and `sapi_cast_bounds_check()`
+(REQ-COMMON-CAST-005, kind `SAPI_SAFETY_VIOLATION_OUT_OF_RANGE`). The
+reported `file`/`line` is the detection site inside this framework's own
+implementation, not the ultimate caller's site — these three primitives
+are ordinary functions, not macros, so they cannot capture the caller's
+`__FILE__`/`__LINE__` the way `SAPI_ASSERT`/`SAPI_SAFESTATE` do.
 
 ### 1.6 Bounded string manipulation — `sapi_string.h` (ADR-006)
 
@@ -161,6 +198,18 @@ caveat in section 4); the behavior they describe is what each per-service
 | REQ-OAL-MEM-012 | `sapi_mem_pool_release()` shall return a previously acquired block to its pool. |
 | REQ-OAL-MEM-013 | `sapi_mem_pool_stats()` shall report current free/used block counts. |
 | REQ-OAL-MEM-014 | `sapi_mem_pool_register_backend()` per REQ-OAL-BACKEND-001. |
+
+#### 2.3.1 Safe pointer wrapper — `sapi_safe_ptr.h`
+
+Bounds + NULL + corruption-canary checked access to a raw memory region a
+caller already owns (a static buffer, a `sapi_mem_pool_acquire()`
+block, ...) - `sapi_safe_ptr_t` never allocates anything itself.
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-SAFEPTR-001 | Every access function (`sapi_safe_ptr_get()`/`_offset()`) shall verify the canary first; a corrupted wrapper yields `SAPI_STATUS_DATA_CORRUPTION` before any other check runs. |
+| REQ-OAL-SAFEPTR-002 | `sapi_safe_ptr_offset()` shall verify `offset + length <= size` (using overflow-checked addition - REQ-COMMON-CAST-004) before computing the resulting pointer, never raw `ptr + offset` at the call site. |
+| REQ-OAL-SAFEPTR-003 | `sapi_safe_ptr_invalidate()` shall clear both the wrapped pointer and the canary, so a subsequent access on the same wrapper fails `SAPI_STATUS_DATA_CORRUPTION` rather than silently succeeding against a logically-released region. |
 
 ### 2.4 Task/thread scheduling — `sapi_task.h` (ADR-001 §4)
 
@@ -258,6 +307,15 @@ the two modules added by ADR-017.
 | REQ-CHECKPOINT-002 | A checkpoint-arrival reply that fails CRC verification or carries a different `checkpoint_id` shall not count toward `expected_node_count`. |
 | REQ-CHECKPOINT-003 | If fewer than `expected_node_count` valid replies arrive within `max_delay_ms`, `sapi_channel_checkpoint()` shall call `sapi_safestate_enter()` at `SAPI_SAFESTATE_LEVEL_SAFE` with `SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT` before returning `SAPI_STATUS_TIMEOUT`. |
 
+**ADR-034 note (does not change the three requirements above):** `sapi_channel_checkpoint()`
+itself is unchanged — still exact `checkpoint_id` equality plus CRC verification, still the
+same bounded-retry-loop/watchdog-kick behavior. What changed is upstream, in
+`sapi_appmanager_run()`'s built-in checkpoint integration (3c below): `checkpoint_id` is no
+longer a bare per-cycle counter, it is computed by folding `SAPI_CHECKPOINT_MARK()` calls into
+a running signature (REQ-APPMANAGER-014). A `safeAPIRBC2oo2` caller **not** going through
+`sapi_appmanager`'s built-in integration still owns `checkpoint_id` entirely itself and these
+three requirements are the complete contract it needs.
+
 ### 3a.2 Clock synchronization (diagnostic only) — `sapi_clocksync.h` (ADR-017 §2.3)
 
 | ID | Requirement |
@@ -278,23 +336,51 @@ found the action a documented dead stub.
 | REQ-WATCHDOG-001 | `sapi_watchdog_create()` shall return `SAPI_STATUS_INVALID_PARAM` if `config->action` is `SAPI_WATCHDOG_ACTION_FAILOVER` and `config->custom_action` is `NULL` (same requirement already in force for `SAPI_WATCHDOG_ACTION_CUSTOM`). |
 | REQ-WATCHDOG-002 | On timeout, a watchdog configured with `SAPI_WATCHDOG_ACTION_FAILOVER` shall invoke `config->custom_action(config->context)` — identical dispatch to `SAPI_WATCHDOG_ACTION_CUSTOM` — and shall not itself decide what the timeout means; that decision belongs to the integrator's `custom_action`. |
 
-## 3c. Application lifecycle hooks and cycle checkpoint — `sapi_appmanager.h` (ADR-019)
+## 3c. Application lifecycle hooks and cycle checkpoint — `sapi_appmanager.h` (ADR-019/ADR-034)
 
 `sapi_appmanager` was one of the modules 3a flagged as not yet backfilled;
-this section starts that backfill with the four `REQ-APPMANAGER-*` IDs
-introduced or already present in the header as of ADR-019, not a full
-retroactive pass over every pre-existing behavior of the module.
+this section starts that backfill with the `REQ-APPMANAGER-*` IDs
+introduced or already present in the header as of ADR-019/ADR-034, not a
+full retroactive pass over every pre-existing behavior of the module.
+
+**ADR-034 (checkpoint-signature marks, stage reorder):** found live in
+`safeAPIRBC2oo2GP` (A/WEST and B/WEST cycling reboots roughly every 40s,
+never stabilizing): `checkpoint_id` used to be `iteration_count`, a
+process-local counter that resets to 0 on every reboot — two
+independently-rebooting channels' counters have no reason to ever
+coincide again after either one reboots alone, so REQ-CHECKPOINT-002
+correctly (but uselessly) kept rejecting every reply as "wrong
+checkpoint_id" until, by chance, both channels next rebooted together.
+Fixed by having application code call `SAPI_CHECKPOINT_MARK()` (or the
+labelled variant) at meaningful decision/preparation points during
+`pre_execute()`/`execute()`/`post_execute()`; each call folds a CRC64
+hash of its call site into a running per-cycle signature (see
+REQ-APPMANAGER-014), which becomes `checkpoint_id` — naturally equal on
+both sides whenever they actually took the same program path this cycle,
+regardless of either side's reboot history. This also moved the
+checkpoint stage from first (before `pre_execute()`) to last (after
+`post_execute()`, REQ-APPMANAGER-012), since marks made during a cycle
+can only be compared once that cycle's own stages have run — which in
+turn made REQ-APPMANAGER-008's pacing workaround unnecessary (see that
+entry's own note) and enabled a genuine safety improvement,
+stage-then-commit output (REQ-APPMANAGER-013): an application can queue
+output during the cycle and defer actually transmitting it until the
+checkpoint confirms both channels agree, so a diverged cycle's output is
+never sent at all, instead of only being noticed after the fact.
 
 | ID | Requirement |
 |---|---|
 | REQ-APPMANAGER-001 | Applications shall use the Application Manager (`sapi_appmanager_run()`) for controlled initialization, execution, and shutdown lifecycle. |
-| REQ-APPMANAGER-002 | Applications shall implement all mandatory operations in `sapi_appmanager_operations_t` (`init`, `execute`, `shutdown`, `get_name`, `get_version`); `pre_execute` and `post_execute` are optional and may be left `NULL`. |
+| REQ-APPMANAGER-002 | Applications shall implement all mandatory operations in `sapi_appmanager_operations_t` (`init`, `execute`, `shutdown`, `get_name`, `get_version`); `pre_execute`, `post_execute`, and `on_checkpoint_result` are optional and may be left `NULL`. |
 | REQ-APPMANAGER-006 | `sapi_appmanager_run()` shall treat a `NULL` `pre_execute` or `post_execute` as "skip this stage", not an error, and shall not call it. |
-| REQ-APPMANAGER-007 | `sapi_appmanager_run()` shall handle a checkpoint-stage result identically to `pre_execute`/`execute`/`post_execute`: on non-`SAPI_STATUS_OK`, log it, increment `error_count`, and check `error_threshold` — no separate reaction path for a checkpoint failure/timeout. |
-| REQ-APPMANAGER-008 | A GENUINE checkpoint-stage failure (the rendezvous itself did not confirm in time, `config->checkpoint->voter` non-`NULL`) shall not be retried faster than `config->checkpoint->max_delay_ms` (measured from immediately before the failing `sapi_channel_checkpoint()` call), when a timer backend is registered. Originally written to also cover `voter == NULL` (see REQ-APPMANAGER-011, which supersedes that part of this requirement's own history) — found via a `safeAPIRBC2oo2` failover test: the checkpoint stage runs *before* `pre_execute()` every cycle (REQ-APPMANAGER-007's own ordering) so a desynced peer is caught before either channel acts on that cycle's data — but `pre_execute()` is the only place any consumer's own cycle pacing lives (`sapi_appmanager_run()` owns no timer itself, ADR-001 §4), so a checkpoint stage that failed immediately used to spin the whole loop as fast as the CPU allowed, one failed attempt and one log line at a time (observed: ~90000 iterations/second, 1.8M log lines in ~20s). Fixed by flooring the retry interval at the checkpoint's own configured `max_delay_ms` via a bounded `sapi_timer_now()` poll — see `sapi_appmanager_pace_failed_checkpoint()` in `sapi_appmanager.c`. No-op (degrades to the old, unpaced behavior) if no timer backend is registered or `max_delay_ms` is 0 — neither can be paced without fabricating a wait nobody configured. |
+| REQ-APPMANAGER-007 | `sapi_appmanager_run()` shall handle the checkpoint stage's result identically to `pre_execute`/`execute`/`post_execute`: on non-`SAPI_STATUS_OK`, log it, increment `error_count`, and check `error_threshold` — no separate reaction path for a checkpoint failure/timeout. (ADR-034: the checkpoint stage is now the LAST stage of a cycle — REQ-APPMANAGER-012 — so this is the last opportunity for a cycle to be counted as an error, not the first.) |
+| REQ-APPMANAGER-008 | **Superseded by ADR-034, kept for history.** Originally: a genuine checkpoint-stage failure shall not be retried faster than `max_delay_ms`, via `sapi_appmanager_pace_failed_checkpoint()` — needed because the checkpoint stage used to run *before* `pre_execute()`, the only place a consumer's own cycle pacing lived, so a fast-failing checkpoint could spin the loop at ~90000 iterations/second. ADR-034 moved the checkpoint stage to run LAST (REQ-APPMANAGER-012): `pre_execute()` now always runs before checkpoint even has a chance to fail, so it already paces every cycle regardless of that cycle's own checkpoint outcome — the starvation this requirement guarded against can no longer occur by construction. `sapi_appmanager_pace_failed_checkpoint()` was removed accordingly. |
 | REQ-APPMANAGER-009 | `sapi_appmanager_run()` is the single entry point for an application's lifecycle (REQ-APPMANAGER-001) and shall refuse re-entry: a call arriving while a previous call is still mid-lifecycle (`SAPI_APP_STATE_INITIALIZING`/`_RUNNING`/`_SHUTTING_DOWN`) shall return `EXIT_FAILURE` immediately, without altering any state belonging to the call already in progress. A new call made only after a previous one has fully returned (state `SAPI_APP_STATE_SHUTDOWN`/`_ERROR`) is unaffected — this framework's own test suite relies on exactly that sequential-call pattern (ADR-026). |
 | REQ-APPMANAGER-010 | The moment `ops->init()` returns `SAPI_STATUS_OK`, `sapi_appmanager_run()` shall lock the application's setup phase (`sapi_lifecycle_lock()`) for the remainder of that run, and shall unlock it (`sapi_lifecycle_unlock()`) both at the start of every call and the moment that call's own execution phase ends — see ADR-026 and REQ-LIFECYCLE-001. |
-| REQ-APPMANAGER-011 | `sapi_appmanager_run()` shall treat `config->checkpoint->voter == NULL` identically to `config->checkpoint == NULL`: skip the checkpoint stage entirely for that cycle (no `sapi_channel_checkpoint()` call, no pacing, no error counted) and proceed to `pre_execute()`/`execute()`/`post_execute()` normally — never as a failed stage (superseding REQ-APPMANAGER-008's original scope for this specific case). Found live (ADR-027 Phase 3, `safeAPIRBC2oo2`): before this fix, a caller-paused checkpoint (`voter` toggled to `NULL` while its own underlying link is known down — a normal, documented pattern, not rare) was fed to `sapi_channel_checkpoint()`, got back `SAPI_STATUS_INVALID_PARAM`, and had that treated as a failed stage — paced (REQ-APPMANAGER-008) and `continue`d, which skips *every later stage* for as long as `voter` stays `NULL`. This silently starved every one of a consumer's own per-cycle safety checks too, including `sapi_watchdog_timer_tick()` (this framework's own single-threaded, timestamp-comparison watchdog design — REQ-WATCHDOG-*, no watchdog has an independent timer/thread of its own) — so a watchdog-driven fault reaction (e.g. `safeAPIRBC2oo2`'s own REBOOT-on-negotiation-link-loss) could never fire during exactly the sustained-outage scenario it exists for, because the cyclic executive never reached the code that ticks it. Confirmed fixed live: the same fault scenario that previously spun at ~100% CPU with the watchdog silently never firing now reboots correctly within its own configured timeout. |
+| REQ-APPMANAGER-011 | `sapi_appmanager_run()` shall treat `config->checkpoint->voter == NULL` identically to `config->checkpoint == NULL`: skip the `sapi_channel_checkpoint()` call entirely for that cycle (no pacing, no error counted) — never as a failed stage. (ADR-034: since the checkpoint stage now runs LAST — REQ-APPMANAGER-012 — `pre_execute()`/`execute()`/`post_execute()` already ran unconditionally before this check, so a paused checkpoint can no longer starve them by construction; this requirement's original "...and proceed to pre_execute()/execute()/post_execute() normally" clause is now vacuous, kept here only as historical context for why the check exists at all.) Found live (ADR-027 Phase 3, `safeAPIRBC2oo2`): before this fix, a caller-paused checkpoint (`voter` toggled to `NULL` while its own underlying link is known down — a normal, documented pattern, not rare) was fed to `sapi_channel_checkpoint()`, got back `SAPI_STATUS_INVALID_PARAM`, and had that treated as a failed stage — paced (REQ-APPMANAGER-008) and `continue`d, which (under the pre-ADR-034 stage order) skipped every later stage for as long as `voter` stayed `NULL`, silently starving every one of a consumer's own per-cycle safety checks too, including `sapi_watchdog_timer_tick()`. |
+| REQ-APPMANAGER-012 | (ADR-034) `sapi_appmanager_run()` shall run the checkpoint stage, if configured, as the LAST stage of a cycle — after `pre_execute()`/`execute()`/`post_execute()` have all had the opportunity to run — using the signature accumulated by `SAPI_CHECKPOINT_MARK()` calls made during those stages THIS cycle (REQ-APPMANAGER-014) as `checkpoint_id`, not the previous stage order's `iteration_count`. |
+| REQ-APPMANAGER-013 | (ADR-034) If `ops->on_checkpoint_result` is non-`NULL`, `sapi_appmanager_run()` shall call it exactly once per cycle, immediately after the checkpoint stage, with `committed = true` when `config->checkpoint` is `NULL`, `config->checkpoint->voter` is `NULL` (paused), or the checkpoint rendezvous succeeded, and `committed = false` only when `sapi_channel_checkpoint()` itself returned non-`SAPI_STATUS_OK` (REQ-CHECKPOINT-003 has already driven `sapi_safestate_enter()` by that point). Its own non-`SAPI_STATUS_OK` return is handled identically to every other stage (REQ-APPMANAGER-007). |
+| REQ-APPMANAGER-014 | (ADR-034) `sapi_appmanager_checkpoint_mark(file, line, label)` — normally invoked via `SAPI_CHECKPOINT_MARK()`/`SAPI_CHECKPOINT_MARK_LABEL()` — shall, when called during an active `sapi_appmanager_run()` cycle, fold a CRC64 hash of `label` (if non-`NULL`) or `file:line` into that cycle's running signature via `signature = crc64(encode_le(signature) \|\| encode_le(mark_hash))`, and shall be a documented no-op (the signature untouched) when called outside an active cycle (before the loop starts, or after it ends, including from `init()`/`shutdown()`). The signature shall reset to the fixed seed `SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED` at the start of every cycle, before `pre_execute()` runs. `sapi_appmanager_checkpoint_fold_signature(uint64_t)` shall be a pure function (no reference to any in-progress cycle) computing the same 64-to-32-bit fold `sapi_appmanager_run()` uses internally, so a caller can independently compute the expected `checkpoint_id` for a known signature value (e.g. a no-marks cycle always folds to `0`, since the seed's own two 32-bit halves are equal). |
 
 ## 3c-bis. Application setup-phase lock — `sapi_lifecycle.h` (ADR-026)
 
@@ -328,6 +414,7 @@ with `1 <= quorum_size <= channel_count`.
 | REQ-CHANNEL-002 | `sapi_channel_init()` shall return `SAPI_STATUS_INVALID_PARAM` if `config->send` or `config->recv` is `NULL` — a channel with no way to move data is a construction-time error, not a deferred one. |
 | REQ-CHANNEL-003 | `sapi_channel_send()`/`_receive()` shall dispatch to `config->send`/`config->recv` and update `health.send_count`/`health.receive_count` (or the matching `_error_count`, plus `health.last_error`) on every call, regardless of outcome. |
 | REQ-CHANNEL-004 | `is_healthy` shall default to `true` at `sapi_channel_init()` and shall never be cleared automatically by a send/receive failure — only an explicit `sapi_channel_set_healthy(handle, false)` call by the channel's owner (e.g. `sapi_voter`, `sapi_cross_comparator`) may mark it unhealthy. A single transient I/O failure alone does not condemn a link; that judgment belongs to whichever component is tracking the pattern of failures across calls. |
+| REQ-CHANNEL-005 | `sapi_channel_config_t::name` (e.g. `"ChannelAtoB"`) is optional (may be `NULL`) and is not copied - same caller-owned-pointer convention as `sapi_watchdog_config_t::name` - so it must outlive the channel. `sapi_channel_get_name()` shall return it verbatim (`NULL` if `handle` is `NULL` or no name was configured). |
 
 ### 3d.2 N-way voter — `sapi_voter.h` (ADR-025 §2.2)
 
@@ -338,6 +425,7 @@ with `1 <= quorum_size <= channel_count`.
 | REQ-VOTER-003 | `sapi_voter_send()`/`_receive()` shall return `SAPI_STATUS_INVALID_PARAM` unless the number of currently registered channels matches the configured strategy's required count (`SAPI_VOTING_2OO2` = exactly 2, `SAPI_VOTING_2OO3` = exactly 3, `SAPI_VOTING_NMR` = at least `quorum_size`). |
 | REQ-VOTER-004 | `sapi_voter_receive()` shall group every successfully-received, per-channel payload into equality classes (via `config->compare` if registered, otherwise `memcmp`) and select the *largest* class, reporting `SAPI_VOTING_AGREED` with that class's data if its size meets the strategy's required quorum (`voter_required_quorum()`), or `SAPI_VOTING_DISAGREED` otherwise. This is a majority vote across all registered channels, not a pairwise comparison against a single reference channel — see ADR-025 §1 for the bug this replaced. |
 | REQ-VOTER-005 | On `SAPI_VOTING_DISAGREED`, `sapi_voter_receive()` shall call `sapi_safestate_enter()` at `SAPI_SAFESTATE_LEVEL_SAFE` when `config->trigger_safestate_on_disagreement` is `true` (the default), and shall always invoke `config->on_disagreement` (if registered) regardless of that flag. |
+| REQ-VOTER-006 | `sapi_voter_get_channel_by_name(voter, name)` shall return the first registered channel whose own `sapi_channel_get_name()` exactly (`strcmp()`) matches `name`, or `NULL` if `voter`/`name` is `NULL` or no registered channel's name matches (including a channel whose own name is itself `NULL` - never matched by any lookup, REQ-CHANNEL-005). |
 
 ### 3d.3 2-way cross-comparator — `sapi_cross_comparator.h` (ADR-025 §2.3)
 

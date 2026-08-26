@@ -1,6 +1,228 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-18 (see "update 16" note below)
+Date: 2026-08-26 (see "update 20" note below)
+
+**2026-08-26, update 20 (dynamic analysis tooling added to the build:
+`SAFEAPI_ENABLE_ASAN`/`SAFEAPI_ENABLE_UBSAN` CMake options + a Valgrind
+`ctest -T memcheck` target - see `.claude/skills/run-safeAPIFreamwork/SKILL.md`'s
+new "Sanitizers (ASan/UBSan) and Valgrind" section):** this update is
+about *dynamic* analysis (real execution under instrumentation), not
+`cppcheck`'s static MISRA pass - the total static finding count above
+still moved (1228 -> 1229, +1) purely from the one-line `memset()` fix
+below, not from anything sanitizer-related. Full ctest suite run under
+all three tools:
+
+- **AddressSanitizer + LeakSanitizer** (`-DSAFEAPI_ENABLE_ASAN=ON`):
+  29/29 clean *after* two fixes, both real, both pre-existing (not
+  introduced by this session's other work):
+  - `tests/voter/test_sapi_voter.c`: `g_mock[8]` was one element too
+    small - `test_register_channel()` legitimately needs 9 mock channel
+    backends (`channels[9]`, indices 0-8) to exercise the
+    `SAPI_STATUS_RESOURCE_EXHAUSTED` path one past `SAPI_VOTER_MAX_CHANNELS`
+    (8). `reset_mocks(9)` was writing `g_mock[8]` out of bounds into
+    whatever global happened to follow it in memory
+    (`g_handler_calls`) - a real global-buffer-overflow, silent under a
+    plain build, caught immediately by ASan's global redzones. Fixed:
+    `g_mock[9]`.
+  - `tests/checkpoint/test_sapi_checkpoint.c`:
+    `test_correct_sequence_wrong_payload_does_not_count()` deterministically
+    crashes on its own epilogue under ASan (confirmed via `lldb`: `lr`
+    correctly points back into this same function's `setjmp()` call
+    site - the expected post-`longjmp()` state, not a corrupted return
+    address elsewhere) - a documented AddressSanitizer/`setjmp`+`longjmp`
+    limitation (ASan's per-function stack-redzone epilogue bookkeeping
+    doesn't replay correctly across a `longjmp()`-restored frame), not a
+    memory-safety defect in `sapi_checkpoint.c` itself: production code
+    never calls `setjmp`/`longjmp` (REQ-COMMON-SAFESTATE-002's real
+    handler never returns at all - this is test-only diversion tooling).
+    The other three `setjmp`/`longjmp` tests in the same file, same
+    pattern, don't trigger it. Fixed with a scoped
+    `__attribute__((no_sanitize("address")))` on just that one function,
+    with the full reasoning recorded in the file's own header comment
+    for anyone who hits it again.
+- **UndefinedBehaviorSanitizer** (`-DSAFEAPI_ENABLE_UBSAN=ON`,
+  `-fno-sanitize-recover=undefined` so a detected UB aborts the offending
+  test rather than reporting and continuing): 29/29 clean, no fix
+  needed.
+- **Valgrind memcheck** (`ctest -T memcheck`, verified in a Linux
+  container - Valgrind does not support macOS/arm64, the primary dev
+  platform here, but Linux is this project's actual deployment target
+  per every `dist/<platform>` Docker/toolchain path elsewhere in this
+  workspace): found one real, genuine "Use of uninitialised value of
+  size 8" inside `sapi_checksum_crc64()`, reached from
+  `sapi_dual_channel_send_heartbeat()`. Root cause:
+  `sapi_dual_heartbeat_frame_t` has a compiler-inserted 4-byte alignment
+  gap between its 4-byte `header` and its 8-byte-aligned `timestamp_ms`
+  - unlike every other frame type in `sapi_dual_frames.h`, whose fields
+  happen to sum to an already-8-aligned offset before their own trailing
+  `uint64_t`. The function set every *named* field but never the struct
+  as a whole, so that 4-byte gap stayed indeterminate stack content -
+  and `sapi_dual_msgchannel_send()` hashes/transmits `sizeof(frame)` raw
+  bytes, not just the named fields, so the indeterminate gap was read by
+  `sapi_checksum_crc64()` and folded into a live, on-wire checksum. A
+  real "no uninitialized variables" violation (CLAUDE.md), not merely a
+  Valgrind nag - fixed with a `memset(&frame, 0, sizeof(frame))` before
+  the field assignments in `sapi_dual_channel_send_heartbeat()`
+  (`src/redundancy/dual/sapi_dual_channel.c`). Re-ran the full
+  `ctest -T memcheck` suite after the fix: 0 defects across all 29
+  tests, confirmed in the same Linux container. Along with the ASan fix
+  above (both are runtime findings, not static ones), this changes the
+  static `cppcheck` total below by nothing beyond the memset line
+  itself - see the "Total MISRA findings" delta immediately below.
+- Every fix above is a test-file or production-`.c` change already
+  covered by this repo's own existing `ctest` entries (no new test was
+  needed to exercise `sapi_dual_channel_send_heartbeat()` - the existing
+  `test_send_heartbeat` already called it; Valgrind is what made the
+  latent bug visible, not new test coverage).
+- Total MISRA findings: **1229** (up from update 19's 1228, +1) - the
+  single `memset()` call added to
+  `src/redundancy/dual/sapi_dual_channel.c` above. Manual review: this
+  is a defensive, whole-struct zero-init immediately followed by the
+  same explicit per-field assignments the file already used everywhere
+  else - no deviation, no new finding type.
+- Verified separately (not `cppcheck`): full `cmake --build build/native`
+  and `ctest --test-dir build/native` on macOS - **29/29**, unchanged, and
+  a full downstream rebuild of `safeAPIRBC2oo2GP` (pulls in
+  `safeAPIBackendPosix`/`safeAPIRBC2oo2GA`/`safeAPIRBC2oo2SA`
+  transitively) confirming no regression from the `sapi_dual_channel.c`
+  fix.
+
+**2026-08-26, update 19 (channel-by-name lookup, plus the new opt-in
+safety-violation notification handler - see `docs/requirements/SRS.md`
+sections 1.5.1/3d.1/3d.2):** automated checker run performed (`cppcheck`,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
+unchanged):
+
+- Total MISRA findings: **1228** (`build/native/cppcheck-report.txt`) - up
+  from update 18's **1211** (+17). Two source changes landed in this
+  repo since update 18's snapshot, neither of which had been through
+  `cppcheck` yet:
+  - **Channel-by-name lookup** (`sapi_channel_config_t::name` +
+    `sapi_channel_get_name()` in `sapi_channel.c`;
+    `sapi_voter_get_channel_by_name()` in `sapi_voter.c`, linear
+    `strcmp()` scan). Confirmed by line-level correlation against the
+    report: both new functions land exactly one 15.5 (single point of
+    exit, the trailing `return NULL;`/`return handle->config.name;`) and
+    one 17.7 apiece - the same two-finding-per-function shape every
+    other function in these two files already carries (visually
+    confirmed against the surrounding functions' own finding lines) -
+    not a new finding *type* introduced by this code.
+  - **`sapi_safety_violation` module** (new
+    `include/safeapi/utils/safestate/sapi_safety_violation.h` +
+    `src/utils/safestate/sapi_safety_violation.c` - single fixed handler
+    slot, REQ-COMMON-SAFETYVIOLATION-001/002) plus instrumenting the
+    three existing primitive families with
+    `sapi_safety_violation_report()` calls at their pre-existing failure
+    branches: `sapi_safe_ptr_get()`/`_offset()` (`sapi_safe_ptr.c`, 3
+    call sites) and all six `sapi_cast_checked_*` functions plus
+    `sapi_cast_bounds_check()` (`sapi_cast.c`, 7 call sites). The new
+    module itself contributes exactly 2 findings (15.5, on its own two
+    early-return guard clauses); the instrumentation calls add no new
+    findings of their own, since each call sits *before* a `return`
+    statement that already existed (and was already counted) prior to
+    this change - the branch structure of `sapi_cast.c`/`sapi_safe_ptr.c`
+    is unchanged, only a function call was inserted into already-existing
+    branches.
+- Manual review: both changes match this codebase's already-documented
+  15.5 deviation (consistent guard-clause/single-early-return style, not
+  new); the new module has no dynamic allocation, fixed-width types
+  throughout, a single static handler slot, and full Doxygen with
+  `REQ-COMMON-SAFETYVIOLATION-001/002` citations. No deviation notes
+  needed.
+- Verified separately from `cppcheck` (build-system/test-count concerns,
+  not MISRA-rule content): full rebuild + `ctest` - **29/29** (up from
+  update 18's 28 - one new binary, `test_sapi_safety_violation`, covering
+  no-handler-is-a-no-op (REQ-COMMON-SAFETYVIOLATION-002), NULL-handler
+  rejection, correct dispatch of kind/file/line/message, and
+  re-registration replacing rather than stacking). Downstream repos
+  (`safeAPIBackendPosix`/GP/GA/SA) and Docker were not rebuilt for this
+  specific update - the safety-violation module's default (no handler
+  registered) behavior is provably unchanged from the three primitives'
+  existing return-code contracts, so no downstream consumer is affected
+  until one opts in by calling `sapi_safety_violation_register_handler()`,
+  which nothing yet does.
+
+**2026-08-26, update 18 (module reorg into `common`/`utils`/`oal`/`redundancy`/`app`
+tiers, plus three new MISRA-safety primitives - see `docs/requirements/SRS.md`
+sections 1.4/2.3.1):** automated checker run performed (`cppcheck`,
+`cmake --build build --target cppcheck`, `.cppcheck-suppressions` unchanged):
+
+- Total MISRA findings: **1211** (`build/cppcheck-report.txt`) - up from update
+  17's **1183** (+28). This delta is fully attributable to the three new
+  primitives' new code (`sapi_safe_ptr.h`/`.c`, and the six new
+  `sapi_cast_checked_*`/`sapi_cast_bounds_check` functions added to
+  `sapi_cast.c`) - the module reorg itself moved existing files into deeper
+  directories without changing a single line of their content, so it
+  contributed zero findings on its own (directory depth is not
+  MISRA-relevant).
+- Manual review of the new code: no dynamic allocation
+  (`sapi_safe_ptr_t` wraps caller-owned memory, never allocates); fixed-width
+  types throughout; explicit, checked overflow detection in every
+  `sapi_cast_checked_*` function (widen-then-compare for the `u32` variants,
+  `SIZE_MAX`-relative checks for the `size_t` variants, a zero-operand guard
+  before the multiplication overflow check's own division); single point of
+  exit preserved; full Doxygen blocks with `REQ-COMMON-CAST-004/005` and
+  `REQ-OAL-SAFEPTR-001/002/003` citations. No deviation notes needed.
+- The reorg's own mechanical correctness (every `#include`/build-system path
+  updated, nothing left pointing at a pre-move location) was verified
+  separately, not by `cppcheck`: a full rebuild + `ctest` (28/28, up from 27 -
+  the two new test binaries) of this repo, then of every downstream consumer
+  (`safeAPIBackendPosix`, `safeAPIRBC2oo2SA`, `safeAPIRBC2oo2GA`,
+  `safeAPIRBC2oo2GP`, confirming `safeAPIRBC2oo2GA`'s `.so` still has zero
+  unresolved symbols referencing GP), then a live Docker redeploy of the full
+  11-container stack (all 6 RBC roles reaching real cycle-390 cross-compare
+  AGREE/checkpoint traffic, zero reboots over a 3-minute observation window)
+  - a build-system/path change like this has no MISRA-rule content of its
+    own to check; the real regression risk was "does it still link and run,"
+    not "does it still comply."
+
+**2026-08-26, update 17 (ADR-034: checkpoint-signature marks, stage
+reorder, stage-then-commit output - see `docs/requirements/SRS.md`
+section 3c and this file's own root-cause context in the session that
+wrote it):** automated checker run performed (`cppcheck` available this
+session, `cmake --build build --target cppcheck`,
+`.cppcheck-suppressions` unchanged):
+
+- Total MISRA findings: **1183** (`build/cppcheck-report.txt`) - up from
+  update 16's **1108** (+75). `src/appmanager/sapi_appmanager.c` alone now
+  accounts for 70 findings in this run. This session does not have a
+  precise pre-change, per-file baseline for that file (only the prior
+  session's repo-wide total, 1108) to separate "genuinely new violation
+  from this session's code" from "a pre-existing violation on unchanged
+  code that simply moved line numbers" (this file grew by ~150 lines:
+  the mark API, the signature reset/fold helpers, the reordered cycle
+  loop, and the `on_checkpoint_result` stage). Spot-checked several: the
+  finding at the `while (!g_shutdown_requested && ...)` loop condition
+  (misra-c2012-10.4/12.1) is on unchanged, pre-existing code that shifted
+  down from an earlier line - not new. The dominant rule IDs in this
+  file (17.7 unused return value, 21.6 stdio.h, 10.4/12.1 arithmetic
+  type/precedence, 15.5 multiple return points) are the same widespread,
+  already-accepted style-level patterns present throughout this codebase
+  before this session (e.g. `src/cast/sapi_cast.c` alone carries 150 of
+  the repo's 1183 findings, `src/string/sapi_string.c` 68 - neither
+  touched this session) - not a new category this change introduced.
+- Manual review of the actual new code (not just the checker's
+  style-level output) for the conventions this project cares about most:
+  no dynamic allocation (the checkpoint-mark encode buffer
+  (`fold_buf[16]`), the mark text buffer (`text[128]`), and
+  `safeAPIRBC2oo2GP`'s new staged-send queue
+  (`ab_gp_staged_send_t[AB_GP_MAX_STAGED_SENDS_PER_CYCLE]`) are all
+  fixed-size, sized generously, checked with `SAPI_STATUS_RESOURCE_EXHAUSTED`
+  rather than silently overflowing); fixed-width types throughout
+  (`uint64_t` signature, `uint32_t` folded `checkpoint_id`); explicit,
+  checked casts for the 64-to-32-bit signature fold
+  (`sapi_appmanager_checkpoint_fold_signature()` - an XOR of the two
+  32-bit halves, not an implicit truncating assignment, per this
+  project's own CLAUDE.md rule); single point of exit preserved in the
+  new/changed functions; full Doxygen blocks with ADR-034 citations on
+  every new public function/type/macro in `sapi_appmanager.h`/
+  `ga_interface.h`/`ab_gp_channel_stage.h`. No deviation notes needed for
+  the new code itself.
+- `safeAPIRBC2oo2GP`'s/`safeAPIRBC2oo2GA`'s own changes (the stage-then-
+  commit queue, `SAPI_CHECKPOINT_MARK()` call sites, the `ga_interface.h`
+  `checkpoint_mark` field) are out of this repo's `cppcheck` scan scope
+  per ADR-018's own established convention (3a's/15's own entries) -
+  manual review only, same conventions confirmed above.
 
 **2026-08-18, update 16 (ADR-029: RBC Train/IL/CTC scenario - real
 multi-train protocol, session-table cross-compare/failover-transfer
@@ -690,7 +912,7 @@ retrofitted, and are verified here by direct search of the shipped source:
 | Explicit status codes, no invented enum values | `sapi_checksum.c` fix | The pre-fix file referenced `SAPI_STATUS_ERROR`/`SAPI_STATUS_INVALID`, neither a member of `sapi_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `SAPI_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `SAPI_STATUS_INVALID_PARAM` for bad arguments, `SAPI_STATUS_ALREADY_INITIALIZED` for double-init. |
 
 **Update (2026-08-20): new module, `include/safeapi/notify/sapi_notify.h`
-(ADR-030).** Header-only, no `src/` file to run the normal cppcheck pass
+(ADR-034).** Header-only, no `src/` file to run the normal cppcheck pass
 against - reviewed manually instead. Rule 11.1 (function-pointer/other-type
 conversion) is the rule this module exists specifically to avoid violating:
 `SAFEAPI_DECLARE_CALLBACK_LIST` declares only a `{callback_fn_type fn; void

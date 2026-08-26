@@ -16,8 +16,8 @@
 #ifndef SAFEAPI_OS_MEMORY_BACKEND_H
 #define SAFEAPI_OS_MEMORY_BACKEND_H
 
-#include "safeapi/memory/sapi_memory.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/memory/sapi_memory.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -4,9 +4,9 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "safeapi/cross_comparator/sapi_cross_comparator.h"
-#include "safeapi/lifecycle/sapi_lifecycle.h"
-#include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/redundancy/cross_comparator/sapi_cross_comparator.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
 
 typedef struct
 {

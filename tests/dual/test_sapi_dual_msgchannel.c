@@ -6,8 +6,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/dual/sapi_dual_msgchannel.h"
+#include "safeapi/redundancy/checksum/sapi_checksum.h"
+#include "safeapi/redundancy/dual/sapi_dual_msgchannel.h"
 #include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 /* --- mock netlink backend: two single-slot mailboxes, wired A<->B --- */

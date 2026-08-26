@@ -1,7 +1,7 @@
 /* Tests for the sapi_mem_pool validate-then-dispatch API (ADR-005): see
  * tests/nvm/test_sapi_nvm.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/memory/sapi_memory.h"
+#include "safeapi/oal/memory/sapi_memory.h"
 #include "safeapi_backend/memory/sapi_memory_backend.h"
 
 static unsigned char g_block[8];

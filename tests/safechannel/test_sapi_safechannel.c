@@ -11,7 +11,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/safechannel/sapi_safechannel.h"
+#include "safeapi/redundancy/safechannel/sapi_safechannel.h"
 #include "safeapi_backend/netlink/sapi_netlink_backend.h"
 
 typedef struct

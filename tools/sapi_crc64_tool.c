@@ -20,8 +20,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/redundancy/checksum/sapi_checksum.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 /* Static, not malloc'd (this project's own no-dynamic-memory rule applies
  * workspace-wide, not just to the shipped library - see CLAUDE.md) - large

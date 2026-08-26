@@ -74,6 +74,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile_commands.json 
 option(SAFEAPI_BUILD_TESTS "Build unit tests" ON)
 option(SAFEAPI_WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 option(SAFEAPI_ENABLE_COVERAGE "Build with gcov/gcovr coverage instrumentation (see scripts/coverage.sh)" OFF)
+option(SAFEAPI_ENABLE_ASAN "Build with AddressSanitizer + LeakSanitizer instrumentation" OFF)
+option(SAFEAPI_ENABLE_UBSAN "Build with UndefinedBehaviorSanitizer instrumentation" OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(CompilerWarnings)
@@ -89,6 +91,33 @@ if(SAFEAPI_ENABLE_COVERAGE)
     # instrumented identically - see scripts/coverage.sh.
     add_compile_options(--coverage -O0)
     add_link_options(--coverage)
+endif()
+
+if(SAFEAPI_ENABLE_ASAN)
+    if(NOT CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        message(FATAL_ERROR "SAFEAPI_ENABLE_ASAN requires GCC or Clang (found ${CMAKE_C_COMPILER_ID})")
+    endif()
+    # -fno-omit-frame-pointer: ASan's leak/error reports need real stack
+    # traces, not the shorter but frame-pointer-less traces the optimizer
+    # would otherwise produce. Applies build-tree-wide, same rationale as
+    # SAFEAPI_ENABLE_COVERAGE above - the instrumented libraries and the
+    # test binaries linking them must agree on ABI/runtime.
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+    add_link_options(-fsanitize=address)
+endif()
+
+if(SAFEAPI_ENABLE_UBSAN)
+    if(NOT CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        message(FATAL_ERROR "SAFEAPI_ENABLE_UBSAN requires GCC or Clang (found ${CMAKE_C_COMPILER_ID})")
+    endif()
+    # -fno-sanitize-recover=undefined: a detected UB (e.g. signed overflow,
+    # misaligned access) aborts immediately instead of printing a
+    # diagnostic and continuing - matches this codebase's own
+    # fail-fast/never-silently-continue posture (CLAUDE.md) rather than
+    # UBSan's default "report and keep going" behavior, which would let a
+    # real defect slide past a test that doesn't check its own output.
+    add_compile_options(-fsanitize=undefined -fno-sanitize-recover=undefined -g)
+    add_link_options(-fsanitize=undefined)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -153,7 +182,7 @@ endforeach()
 # ADR-023: the 21 per-feature CMake targets ADR-007 originally created
 # (one static library per src/<feature>/ directory) are consolidated into
 # 3 grouped libraries here, plus appmanager as a 4th (its own
-# src/appmanager/CMakeLists.txt, added separately below since it depends
+# src/app/appmanager/CMakeLists.txt, added separately below since it depends
 # on all three). This is a pure build-target regrouping - no file moved,
 # no #include path changed, no public API changed; every feature's
 # source still lives at exactly src/<feature>/sapi_<feature>.c per
@@ -174,12 +203,13 @@ endforeach()
 # library's own PUBLIC include directory below, same as every other
 # feature's header.
 add_library(safeapi_core STATIC
-    src/status/sapi_status.c
-    src/buffer/sapi_buffer.c
-    src/cast/sapi_cast.c
-    src/safestate/sapi_safestate.c
-    src/string/sapi_string.c
-    src/lifecycle/sapi_lifecycle.c
+    src/utils/status/sapi_status.c
+    src/utils/buffer/sapi_buffer.c
+    src/utils/cast/sapi_cast.c
+    src/utils/safestate/sapi_safestate.c
+    src/utils/safestate/sapi_safety_violation.c
+    src/utils/string/sapi_string.c
+    src/utils/lifecycle/sapi_lifecycle.c
     src/core/sapi_core_version.c
 )
 target_include_directories(safeapi_core PUBLIC
@@ -193,40 +223,43 @@ add_library(safeapi::core ALIAS safeapi_core)
 
 # --- safeapi_oal: OS Abstraction Layer, ADR-001/ADR-005 backend-dispatch
 # services. Source list is gated per-module by the SAFEAPI_ENABLE_* options
-# above (ADR-024). Deliberately never includes src/ipc/sapi_ipc_pubsub.c or
+# above (ADR-024). Deliberately never includes src/oal/ipc/sapi_ipc_pubsub.c or
 # sapi_ipc_request_reply.c regardless of SAFEAPI_ENABLE_IPC - those
 # pre-existing stub files are TODO-only (see their own headers) and were
 # never wired into any target; only the base sapi_ipc.c queue API is real. ---
 set(_safeapi_oal_sources "")
 if(SAFEAPI_ENABLE_TIMER)
-    list(APPEND _safeapi_oal_sources src/timer/sapi_timer.c)
+    list(APPEND _safeapi_oal_sources src/oal/timer/sapi_timer.c)
 endif()
 if(SAFEAPI_ENABLE_MUTEX)
-    list(APPEND _safeapi_oal_sources src/mutex/sapi_mutex.c)
+    list(APPEND _safeapi_oal_sources src/oal/mutex/sapi_mutex.c)
 endif()
 if(SAFEAPI_ENABLE_NVM)
-    list(APPEND _safeapi_oal_sources src/nvm/sapi_nvm.c)
+    list(APPEND _safeapi_oal_sources src/oal/nvm/sapi_nvm.c)
 endif()
 if(SAFEAPI_ENABLE_MEMORY)
-    list(APPEND _safeapi_oal_sources src/memory/sapi_memory.c)
+    list(APPEND _safeapi_oal_sources
+        src/oal/memory/sapi_memory.c
+        src/oal/memory/sapi_safe_ptr.c
+    )
 endif()
 if(SAFEAPI_ENABLE_TASK)
-    list(APPEND _safeapi_oal_sources src/task/sapi_task.c)
+    list(APPEND _safeapi_oal_sources src/oal/task/sapi_task.c)
 endif()
 if(SAFEAPI_ENABLE_IPC)
-    list(APPEND _safeapi_oal_sources src/ipc/sapi_ipc.c)
+    list(APPEND _safeapi_oal_sources src/oal/ipc/sapi_ipc.c)
 endif()
 if(SAFEAPI_ENABLE_NETLINK)
-    list(APPEND _safeapi_oal_sources src/netlink/sapi_netlink.c)
+    list(APPEND _safeapi_oal_sources src/oal/netlink/sapi_netlink.c)
 endif()
 if(SAFEAPI_ENABLE_LOG)
-    list(APPEND _safeapi_oal_sources src/log/sapi_log.c)
+    list(APPEND _safeapi_oal_sources src/oal/log/sapi_log.c)
 endif()
 if(SAFEAPI_ENABLE_REBOOT)
-    list(APPEND _safeapi_oal_sources src/reboot/sapi_reboot.c)
+    list(APPEND _safeapi_oal_sources src/oal/reboot/sapi_reboot.c)
 endif()
 if(SAFEAPI_ENABLE_WATCHDOG)
-    list(APPEND _safeapi_oal_sources src/watchdog/sapi_watchdog.c)
+    list(APPEND _safeapi_oal_sources src/redundancy/watchdog/sapi_watchdog.c)
 endif()
 if(NOT _safeapi_oal_sources)
     message(FATAL_ERROR "safeAPIFramework: every SAFEAPI_ENABLE_<oal-feature> option "
@@ -250,36 +283,36 @@ add_library(safeapi::oal ALIAS safeapi_oal)
 # Reaches into both core and oal, so links both. ---
 set(_safeapi_channels_sources "")
 if(SAFEAPI_ENABLE_CHECKSUM)
-    list(APPEND _safeapi_channels_sources src/checksum/sapi_checksum.c)
+    list(APPEND _safeapi_channels_sources src/redundancy/checksum/sapi_checksum.c)
 endif()
 if(SAFEAPI_ENABLE_CHANNEL_LINK)
     list(APPEND _safeapi_channels_sources
-        src/channel_link/sapi_channel.c
-        src/channel_service/sapi_channel_service.c
+        src/redundancy/channel_link/sapi_channel.c
+        src/redundancy/channel_service/sapi_channel_service.c
     )
 endif()
 if(SAFEAPI_ENABLE_VOTER)
-    list(APPEND _safeapi_channels_sources src/voter/sapi_voter.c)
+    list(APPEND _safeapi_channels_sources src/redundancy/voter/sapi_voter.c)
 endif()
 if(SAFEAPI_ENABLE_CROSS_COMPARATOR)
-    list(APPEND _safeapi_channels_sources src/cross_comparator/sapi_cross_comparator.c)
+    list(APPEND _safeapi_channels_sources src/redundancy/cross_comparator/sapi_cross_comparator.c)
 endif()
 if(SAFEAPI_ENABLE_CLOCKSYNC)
-    list(APPEND _safeapi_channels_sources src/clocksync/sapi_clocksync.c)
+    list(APPEND _safeapi_channels_sources src/oal/clocksync/sapi_clocksync.c)
 endif()
 if(SAFEAPI_ENABLE_CHECKPOINT)
-    list(APPEND _safeapi_channels_sources src/checkpoint/sapi_checkpoint.c)
+    list(APPEND _safeapi_channels_sources src/redundancy/checkpoint/sapi_checkpoint.c)
 endif()
 if(SAFEAPI_ENABLE_DUAL)
     list(APPEND _safeapi_channels_sources
-        src/dual/sapi_dual_types.c
-        src/dual/sapi_dual_msgchannel.c
-        src/dual/sapi_dual_channel.c
-        src/dual/sapi_dual_negotiator.c
+        src/redundancy/dual/sapi_dual_types.c
+        src/redundancy/dual/sapi_dual_msgchannel.c
+        src/redundancy/dual/sapi_dual_channel.c
+        src/redundancy/dual/sapi_dual_negotiator.c
     )
 endif()
 if(SAFEAPI_ENABLE_SAFECHANNEL)
-    list(APPEND _safeapi_channels_sources src/safechannel/sapi_safechannel.c)
+    list(APPEND _safeapi_channels_sources src/redundancy/safechannel/sapi_safechannel.c)
 endif()
 if(NOT _safeapi_channels_sources)
     message(FATAL_ERROR "safeAPIFramework: every SAFEAPI_ENABLE_<channels-feature> option "
@@ -297,11 +330,11 @@ set_target_properties(safeapi_channels PROPERTIES EXPORT_NAME channels)
 add_library(safeapi::channels ALIAS safeapi_channels)
 
 # App manager depends on status (core), log (oal), and (ADR-019)
-# checkpoint (channels), so add it last - its own src/appmanager/CMakeLists.txt
+# checkpoint (channels), so add it last - its own src/app/appmanager/CMakeLists.txt
 # is unchanged in shape, only its target_link_libraries() line was
 # updated to the 3 new names (ADR-023).
-if(SAFEAPI_ENABLE_APPMANAGER AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/appmanager/CMakeLists.txt")
-    add_subdirectory(src/appmanager)
+if(SAFEAPI_ENABLE_APPMANAGER AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/app/appmanager/CMakeLists.txt")
+    add_subdirectory(src/app/appmanager)
 endif()
 
 # Host-side build tool (not part of the shipped safety library) - see
@@ -323,7 +356,26 @@ if(SAFEAPI_ENABLE_CHECKSUM AND NOT CMAKE_SYSTEM_NAME STREQUAL "Generic")
 endif()
 
 if(SAFEAPI_BUILD_TESTS)
-    enable_testing()
+    # include(CTest), not a bare enable_testing(): it calls enable_testing()
+    # internally *and* generates the DartConfiguration.tcl that ctest's
+    # built-in memcheck mode reads MEMORYCHECK_COMMAND/_OPTIONS from - the
+    # standard CMake mechanism for "run the test suite under Valgrind"
+    # rather than a hand-rolled wrapper script (contrast
+    # SAFEAPI_ENABLE_COVERAGE above, which has no equivalent built-in ctest
+    # mode and so does need scripts/coverage.sh). Introduces the standard
+    # BUILD_TESTING cache option (default ON) alongside this project's own
+    # SAFEAPI_BUILD_TESTS - the latter still gates add_subdirectory(tests)
+    # below, so nothing about the existing opt-out behavior changes.
+    include(CTest)
+    find_program(VALGRIND_EXECUTABLE valgrind)
+    if(VALGRIND_EXECUTABLE)
+        set(MEMORYCHECK_COMMAND "${VALGRIND_EXECUTABLE}" CACHE FILEPATH "" FORCE)
+        set(MEMORYCHECK_COMMAND_OPTIONS
+            "--leak-check=full --error-exitcode=1 --track-origins=yes"
+            CACHE STRING "" FORCE)
+        message(STATUS "Valgrind found: ${VALGRIND_EXECUTABLE}")
+        message(STATUS "  Run 'ctest -T memcheck' to run the test suite under Valgrind")
+    endif()
     add_subdirectory(tests)
 endif()
 

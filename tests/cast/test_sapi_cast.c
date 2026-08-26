@@ -12,7 +12,7 @@
  */
 #include <assert.h>
 #include <stdint.h>
-#include "safeapi/cast/sapi_cast.h"
+#include "safeapi/utils/cast/sapi_cast.h"
 
 #define SENTINEL_BYTE 0x5A
 
@@ -1740,11 +1740,65 @@ static void test_every_function_rejects_null_out(void)
     assert(sapi_cast_size_to_u64(0, NULL) == SAPI_STATUS_INVALID_PARAM);
 }
 
+static void test_checked_add_sub_mul_u32(void)
+{
+    uint32_t out;
+
+    assert(sapi_cast_checked_add_u32(2U, 3U, &out) == SAPI_STATUS_OK);
+    assert(out == 5U);
+    assert(sapi_cast_checked_add_u32(UINT32_MAX, 1U, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_checked_add_u32(1U, 1U, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_cast_checked_sub_u32(5U, 3U, &out) == SAPI_STATUS_OK);
+    assert(out == 2U);
+    assert(sapi_cast_checked_sub_u32(3U, 5U, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_checked_sub_u32(1U, 1U, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_cast_checked_mul_u32(6U, 7U, &out) == SAPI_STATUS_OK);
+    assert(out == 42U);
+    assert(sapi_cast_checked_mul_u32(UINT32_MAX, 2U, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_checked_mul_u32(1U, 1U, NULL) == SAPI_STATUS_INVALID_PARAM);
+}
+
+static void test_checked_add_sub_mul_size(void)
+{
+    size_t out;
+
+    assert(sapi_cast_checked_add_size((size_t)2, (size_t)3, &out) == SAPI_STATUS_OK);
+    assert(out == (size_t)5);
+    assert(sapi_cast_checked_add_size(SIZE_MAX, (size_t)1, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_checked_add_size((size_t)1, (size_t)1, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_cast_checked_sub_size((size_t)5, (size_t)3, &out) == SAPI_STATUS_OK);
+    assert(out == (size_t)2);
+    assert(sapi_cast_checked_sub_size((size_t)3, (size_t)5, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_checked_sub_size((size_t)1, (size_t)1, NULL) == SAPI_STATUS_INVALID_PARAM);
+
+    assert(sapi_cast_checked_mul_size((size_t)6, (size_t)7, &out) == SAPI_STATUS_OK);
+    assert(out == (size_t)42);
+    assert(sapi_cast_checked_mul_size(SIZE_MAX, (size_t)2, &out) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    /* a == 0 must not divide-by-zero in the overflow check itself. */
+    assert(sapi_cast_checked_mul_size((size_t)0, SIZE_MAX, &out) == SAPI_STATUS_OK);
+    assert(out == (size_t)0);
+    assert(sapi_cast_checked_mul_size((size_t)1, (size_t)1, NULL) == SAPI_STATUS_INVALID_PARAM);
+}
+
+static void test_bounds_check(void)
+{
+    assert(sapi_cast_bounds_check((size_t)0, (size_t)4) == SAPI_STATUS_OK);
+    assert(sapi_cast_bounds_check((size_t)3, (size_t)4) == SAPI_STATUS_OK);
+    assert(sapi_cast_bounds_check((size_t)4, (size_t)4) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+    assert(sapi_cast_bounds_check((size_t)0, (size_t)0) == SAPI_STATUS_VALUE_OUT_OF_RANGE);
+}
+
 int main(void)
 {
     test_fixed_width_pairs();
     test_size_t_pairs();
     test_null_and_ok_smoke();
     test_every_function_rejects_null_out();
+    test_checked_add_sub_mul_u32();
+    test_checked_add_sub_mul_size();
+    test_bounds_check();
     return 0;
 }

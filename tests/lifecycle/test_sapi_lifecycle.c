@@ -4,7 +4,7 @@
  * tests/appmanager/test_sapi_appmanager.c and each gated module's own
  * test file. */
 #include <assert.h>
-#include "safeapi/lifecycle/sapi_lifecycle.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
 
 int main(void)
 {

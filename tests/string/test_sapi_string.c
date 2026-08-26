@@ -1,7 +1,7 @@
 /* Tests for sapi_string (ADR-006). */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/string/sapi_string.h"
+#include "safeapi/utils/string/sapi_string.h"
 
 static void test_copy_and_cstr(void)
 {

@@ -4,8 +4,8 @@
  * is reached with the framework-validated arguments; a NULL vtable slot on
  * an otherwise-registered backend yields SAPI_STATUS_NOT_SUPPORTED. */
 #include <assert.h>
-#include "safeapi/lifecycle/sapi_lifecycle.h"
-#include "safeapi/timer/sapi_timer.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
+#include "safeapi/oal/timer/sapi_timer.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
 
 static void dummy_callback(sapi_timer_handle_t handle, void *user_ctx)

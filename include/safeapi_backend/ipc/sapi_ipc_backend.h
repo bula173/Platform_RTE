@@ -15,8 +15,8 @@
 #ifndef SAFEAPI_OS_IPC_BACKEND_H
 #define SAFEAPI_OS_IPC_BACKEND_H
 
-#include "safeapi/ipc/sapi_ipc.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/ipc/sapi_ipc.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {

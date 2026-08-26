@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include "safeapi/checksum/sapi_checksum.h"
+#include "safeapi/redundancy/checksum/sapi_checksum.h"
 
 /* Runs in a forked child: verifies pre-init behavior of
  * sapi_checksum_crc64() (REQ-CHECKSUM-002), then initializes with

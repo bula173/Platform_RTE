@@ -13,10 +13,10 @@
  */
 #include <assert.h>
 #include <setjmp.h>
-#include "safeapi/watchdog/sapi_watchdog.h"
-#include "safeapi/lifecycle/sapi_lifecycle.h"
-#include "safeapi/safestate/sapi_safestate.h"
-#include "safeapi/timer/sapi_timer.h"
+#include "safeapi/redundancy/watchdog/sapi_watchdog.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
+#include "safeapi/oal/timer/sapi_timer.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
 
 /* ---- mock timer backend: caller-controlled clock ---- */

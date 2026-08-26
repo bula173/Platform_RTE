@@ -23,13 +23,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "safeapi/appmanager/sapi_appmanager.h"
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/safestate/sapi_safestate.h"
-#include "safeapi/channel_link/sapi_channel.h"
-#include "safeapi/voter/sapi_voter.h"
-#include "safeapi/timer/sapi_timer.h"
-#include "safeapi_backend/timer/sapi_timer_backend.h"
+#include "safeapi/app/appmanager/sapi_appmanager.h"
+#include "safeapi/redundancy/checksum/sapi_checksum.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
+#include "safeapi/redundancy/channel_link/sapi_channel.h"
+#include "safeapi/redundancy/voter/sapi_voter.h"
 
 /* ---- shared call-order/count tracking for the fake application under test ---- */
 static int g_init_calls;
@@ -326,6 +324,8 @@ static char g_hook_order[TEST_HOOK_ORDER_MAX + 1];
 static int g_hook_order_len;
 static int g_pre_calls;
 static int g_post_calls;
+static int g_on_checkpoint_result_calls;
+static int g_on_checkpoint_result_committed_true_calls;
 
 static void reset_hook_tracking(void)
 {
@@ -338,6 +338,21 @@ static void reset_hook_tracking(void)
     g_hook_order_len = 0;
     g_pre_calls = 0;
     g_post_calls = 0;
+    g_on_checkpoint_result_calls = 0;
+    g_on_checkpoint_result_committed_true_calls = 0;
+}
+
+/** @brief ops->on_checkpoint_result (ADR-034) tracking hook shared by the
+ *         checkpoint-integration tests below. */
+static sapi_status_t hook_on_checkpoint_result_tracks(void *context, bool committed)
+{
+    (void)context;
+    g_on_checkpoint_result_calls++;
+    if (committed)
+    {
+        g_on_checkpoint_result_committed_true_calls++;
+    }
+    return SAPI_STATUS_OK;
 }
 
 static sapi_status_t hook_pre_ok(void *context)
@@ -613,32 +628,86 @@ static void cp_init_voter(sapi_channel_t channels[TEST_CP_CHANNEL_COUNT], sapi_v
     }
 }
 
-/* Per-iteration reply seeding: the appmanager uses iteration_count (1, 2,
- * 3, ...) as checkpoint_id (see sapi_appmanager_checkpoint_config_t's own
- * doc), so pre_execute() re-seeds both mailbox slots for the *next*
- * iteration's checkpoint_id every time it runs, keeping the checkpoint
- * succeeding across every cycle of the bounded run below. */
-static sapi_status_t cp_hook_pre_reseeds_next_checkpoint(void *context)
+/* Replicates sapi_appmanager_checkpoint_mark()'s own fold algorithm
+ * (encode_le(signature) || encode_le(mark_hash), then CRC64) so a test
+ * can compute, independently, the exact checkpoint_id a given sequence of
+ * marks will produce - verifies the real algorithm end-to-end (via the
+ * same public sapi_checksum_crc64()) rather than just trusting it.
+ * Deliberately kept in lockstep with sapi_appmanager.c's own (private)
+ * implementation: if that algorithm ever changes, this helper (and the
+ * tests using it) must change with it - exactly the point, a silent
+ * behavior change here should fail loudly, not pass by coincidence. */
+static uint64_t cp_replicate_mark_fold(uint64_t signature, const char *text)
+{
+    uint8_t buf[16];
+    sapi_crc64_t mark_hash = sapi_checksum_crc64((const uint8_t *)text, strlen(text));
+    size_t i;
+
+    for (i = 0U; i < 8U; i++)
+    {
+        buf[i] = (uint8_t)((signature >> (8U * i)) & 0xFFU);
+    }
+    for (i = 0U; i < 8U; i++)
+    {
+        buf[8U + i] = (uint8_t)(((uint64_t)mark_hash >> (8U * i)) & 0xFFU);
+    }
+    return (uint64_t)sapi_checksum_crc64(buf, sizeof(buf));
+}
+
+static void test_checkpoint_fold_signature_is_deterministic(void)
+{
+    uint32_t seed_fold_a = sapi_appmanager_checkpoint_fold_signature(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED);
+    uint32_t seed_fold_b = sapi_appmanager_checkpoint_fold_signature(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED);
+    uint32_t other_fold = sapi_appmanager_checkpoint_fold_signature(0x1234567890ABCDEFULL);
+
+    /* The seed's own two 32-bit halves are equal (0xFFFFFFFF ^ 0xFFFFFFFF),
+     * so a cycle with zero marks always computes checkpoint_id == 0 -
+     * documented (see the SEED macro's own doc), not an accident. */
+    assert(seed_fold_a == 0U);
+    assert(seed_fold_a == seed_fold_b);
+    assert(seed_fold_a != other_fold);
+}
+
+static void test_checkpoint_mark_sequence_is_order_sensitive(void)
+{
+    uint64_t after_a_then_b = cp_replicate_mark_fold(
+        cp_replicate_mark_fold(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED, "mark-a"), "mark-b");
+    uint64_t after_b_then_a = cp_replicate_mark_fold(
+        cp_replicate_mark_fold(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED, "mark-b"), "mark-a");
+    uint64_t after_a_only = cp_replicate_mark_fold(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED, "mark-a");
+
+    /* Same two marks, different ORDER -> different signature: proves the
+     * fold is sensitive to program-path order, not just to the SET of
+     * marks hit - the whole point of ADR-034 ("did A and B take the same
+     * program path", not just "the same set of code locations"). */
+    assert(sapi_appmanager_checkpoint_fold_signature(after_a_then_b)
+           != sapi_appmanager_checkpoint_fold_signature(after_b_then_a));
+    assert(sapi_appmanager_checkpoint_fold_signature(after_a_then_b)
+           != sapi_appmanager_checkpoint_fold_signature(after_a_only));
+}
+
+static sapi_status_t hook_execute_marks_a_then_b(void *context)
 {
     (void)context;
-    g_pre_calls++;
-    cp_clear_replies();
-    cp_seed_valid_reply(0, (uint32_t)(g_pre_calls + 1));
-    cp_seed_valid_reply(1, (uint32_t)(g_pre_calls + 1));
+    g_execute_calls++;
+    SAPI_CHECKPOINT_MARK_LABEL("mark-a");
+    SAPI_CHECKPOINT_MARK_LABEL("mark-b");
     return SAPI_STATUS_OK;
 }
 
-static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
+static void test_checkpoint_success_runs_after_post_execute_each_cycle(void)
 {
     sapi_channel_t vc[TEST_CP_CHANNEL_COUNT];
     sapi_voter_t voter;
     sapi_appmanager_checkpoint_config_t cp_cfg;
     sapi_appmanager_config_t config;
+    uint32_t expected_id;
 
     static const sapi_appmanager_operations_t ops = {
         .init = fake_init_ok,
-        .pre_execute = cp_hook_pre_reseeds_next_checkpoint,
-        .execute = hook_execute_ok,
+        .pre_execute = hook_pre_ok,
+        .execute = hook_execute_marks_a_then_b,
+        .on_checkpoint_result = hook_on_checkpoint_result_tracks,
         .shutdown = fake_shutdown,
         .get_name = fake_get_name,
         .get_version = fake_get_version
@@ -646,8 +715,17 @@ static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
 
     cp_init_voter(vc, &voter);
     cp_clear_replies();
-    cp_seed_valid_reply(0, 1U); /* checkpoint_id for iteration 1 = iteration_count = 1 */
-    cp_seed_valid_reply(1, 1U);
+
+    /* Every cycle makes the exact same two marks, in the same order (this
+     * ops table has no other mark call sites), so the folded checkpoint_id
+     * is the SAME constant every cycle - seed the mailbox once, not
+     * per-cycle (unlike the old iteration_count scheme this replaced,
+     * which needed re-seeding every cycle to stay in sync). */
+    expected_id = sapi_appmanager_checkpoint_fold_signature(
+        cp_replicate_mark_fold(
+            cp_replicate_mark_fold(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED, "mark-a"), "mark-b"));
+    cp_seed_valid_reply(0, expected_id);
+    cp_seed_valid_reply(1, expected_id);
 
     cp_cfg.voter = &voter;
     cp_cfg.max_delay_ms = 100U;
@@ -663,11 +741,13 @@ static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
     config.checkpoint = &cp_cfg;
 
     assert(sapi_appmanager_run(&config) == EXIT_SUCCESS);
-    /* Every cycle's checkpoint succeeded (pre_execute re-seeds the next
-     * one), so pre_execute/execute both ran all 3 times and no error was
-     * ever counted. */
+    /* Every cycle's checkpoint succeeded (same marks -> same signature
+     * every time), so pre_execute/execute both ran all 3 times and no
+     * error was ever counted. */
     assert(g_pre_calls == 3);
     assert(g_execute_calls == 3);
+    assert(g_on_checkpoint_result_calls == 3);
+    assert(g_on_checkpoint_result_committed_true_calls == 3);
 
     sapi_appmanager_state_t stats;
     assert(sapi_appmanager_get_stats(&stats) == SAPI_STATUS_OK);
@@ -687,13 +767,15 @@ static void test_checkpoint_success_runs_before_pre_execute_each_cycle(void)
  * Originally asserted that each such cycle was handled "like any other
  * recoverable stage failure" (counted as an error, execute() skipped) -
  * that assertion was itself wrong, and encoded the exact starvation bug
- * test_checkpoint_paused_skips_stage_not_starves_cycle() above now
- * covers: treating a deliberately-paused checkpoint as a FAILURE (rather
- * than simply not-applicable-this-cycle, the same as checkpoint == NULL)
- * meant execute() - and every other per-cycle safety check, including
- * sapi_watchdog_timer_tick() - never ran for as long as voter stayed
- * NULL. Updated to assert the corrected behavior: no error recorded,
- * execute() runs every cycle regardless of voter's own NULL-ness. */
+ * test_checkpoint_paused_still_calls_on_checkpoint_result_committed()
+ * below now covers: treating a deliberately-paused checkpoint as a
+ * FAILURE (rather than simply not-applicable-this-cycle, the same as
+ * checkpoint == NULL) meant execute() - and every other per-cycle safety
+ * check, including sapi_watchdog_timer_tick() - never ran for as long as
+ * voter stayed NULL. Updated to assert the corrected behavior: no error
+ * recorded, execute() runs every cycle regardless of voter's own
+ * NULL-ness, and (ADR-034) on_checkpoint_result still fires with
+ * committed=true every cycle despite checkpointing being paused. */
 static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
 {
     sapi_appmanager_checkpoint_config_t cp_cfg;
@@ -702,6 +784,7 @@ static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
     static const sapi_appmanager_operations_t ops = {
         .init = fake_init_ok,
         .execute = hook_execute_ok,
+        .on_checkpoint_result = hook_on_checkpoint_result_tracks,
         .shutdown = fake_shutdown,
         .get_name = fake_get_name,
         .get_version = fake_get_version
@@ -726,13 +809,21 @@ static void test_checkpoint_null_vital_channel_is_not_a_startup_error(void)
     /* Checkpoint being paused (voter == NULL) is not-applicable-this-
      * cycle, not a failure - execute() runs every cycle regardless. */
     assert(g_execute_calls == 3);
+    assert(g_on_checkpoint_result_calls == 3);
+    assert(g_on_checkpoint_result_committed_true_calls == 3);
 
     sapi_appmanager_state_t stats;
     assert(sapi_appmanager_get_stats(&stats) == SAPI_STATUS_OK);
     assert(stats.error_count == 0U);
 }
 
-static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
+/** ADR-034: checkpoint now runs LAST, after pre_execute()/execute()/
+ *  post_execute() have all had a chance to run and fold their own marks
+ *  into this cycle's signature - so an unconfirmed checkpoint no longer
+ *  pre-empts those stages the way it used to (the old test this replaced
+ *  was named "...before_pre_execute" and asserted the opposite: zero
+ *  pre_execute/execute calls). Renamed and rewritten accordingly. */
+static void test_checkpoint_timeout_diverts_after_cycle_runs_once(void)
 {
     sapi_channel_t vc[TEST_CP_CHANNEL_COUNT];
     sapi_voter_t voter;
@@ -743,6 +834,7 @@ static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
         .init = fake_init_ok,
         .pre_execute = hook_pre_ok,
         .execute = hook_execute_ok,
+        .post_execute = hook_post_ok,
         .shutdown = fake_shutdown,
         .get_name = fake_get_name,
         .get_version = fake_get_version
@@ -779,10 +871,12 @@ static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
         assert(g_cp_handler_calls == 1);
         assert(g_cp_captured_level == SAPI_SAFESTATE_LEVEL_SAFE);
         assert(g_cp_captured_reason == SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT);
-        /* The checkpoint runs before pre_execute/execute each cycle
-         * (ADR-019 2.2) - a failed checkpoint must pre-empt both. */
-        assert(g_pre_calls == 0);
-        assert(g_execute_calls == 0);
+        /* The checkpoint now runs LAST (ADR-034) - pre_execute/execute/
+         * post_execute all ran exactly ONCE (this cycle's own work) before
+         * the checkpoint failed and diverted control away. */
+        assert(g_pre_calls == 1);
+        assert(g_execute_calls == 1);
+        assert(g_post_calls == 1);
         /* This longjmp() is what makes this level's own never-returns
          * contract (REQ-COMMON-SAFESTATE-002) testable at all - but it
          * means sapi_appmanager_run() above never reached its own
@@ -794,54 +888,17 @@ static void test_checkpoint_timeout_enters_safestate_before_pre_execute(void)
     }
 }
 
-/* --- mock timer for test_checkpoint_paused_skips_stage_not_starves_cycle()
- *     below only: registered as this file's very last action so no
- *     earlier test's behavior (several of which currently rely on no
- *     timer backend being registered - see e.g. this file's own
- *     checkpoint tests above, which all pass today with checkpoint's own
- *     internal timing degrading gracefully with no backend at all) is
- *     affected. Advances by a fixed step every call - deterministic, and
- *     lets sapi_appmanager_pace_failed_checkpoint()'s own poll-until-
- *     floor loop be exercised directly by counting how many calls it
- *     took to reach the configured max_delay_ms floor. --- */
-static uint32_t g_mock_timer_calls;
-
-static sapi_status_t mock_timer_now_for_pacing_test(sapi_timestamp_ms_t *out_now_ms)
-{
-    *out_now_ms = (sapi_timestamp_ms_t)(g_mock_timer_calls * 5U); /* 5ms per call */
-    g_mock_timer_calls++;
-    return SAPI_STATUS_OK;
-}
-
-static const sapi_timer_backend_t g_mock_timer_backend_for_pacing_test = { NULL, NULL, NULL, NULL,
-                                                                            mock_timer_now_for_pacing_test };
-
-/** Regression test for a starvation bug found live: a checkpoint stage
- *  with voter == NULL (a normal, documented way to pause checkpointing
- *  while its own underlying transport is known down - not a rare
- *  condition) used to be fed through sapi_channel_checkpoint(), get back
- *  SAPI_STATUS_INVALID_PARAM, and have that treated as a FAILED stage -
- *  paced via sapi_appmanager_pace_failed_checkpoint() and then continue,
- *  skipping pre_execute()/execute()/post_execute() entirely for as long
- *  as voter stayed NULL. Found live: this silently starved every one of
- *  a consumer's own per-cycle safety checks too - including
- *  sapi_watchdog_timer_tick(), so a watchdog-driven REBOOT-on-link-loss
- *  reaction could never fire during exactly the sustained-outage
- *  scenario it exists for, because the cyclic executive never reached
- *  the code that ticks it.
- *
- *  Fixed by treating checkpoint->voter == NULL the same as
- *  checkpoint == NULL: skip the stage outright (no
- *  sapi_channel_checkpoint() call, no pacing, no timer poll at all) and
- *  let every later stage run normally, every cycle - this is what this
- *  test now verifies, in two parts: (1) pre_execute() actually runs once
- *  per iteration despite voter staying NULL the whole time (the real
- *  regression check - this is the starvation this fix closes), and (2)
- *  the mock timer sees ZERO calls (not just "fewer than an unpaced
- *  spin would produce" - the stage is skipped outright, so nothing
- *  calls sapi_timer_now() for it at all, unlike the old paced-retry
- *  behavior this replaces). */
-static void test_checkpoint_paused_skips_stage_not_starves_cycle(void)
+/** ADR-034 replaces the old starvation-regression test this covered
+ *  ("test_checkpoint_paused_skips_stage_not_starves_cycle", and the
+ *  sapi_appmanager_pace_failed_checkpoint() mechanism it exercised) - that
+ *  bug can no longer occur BY CONSTRUCTION now that checkpoint always
+ *  runs LAST: pre_execute()/execute()/post_execute() already ran before
+ *  checkpoint could ever pace or skip anything, paused or not. What's
+ *  left to verify here is the ADR-034 contract itself: a paused (voter ==
+ *  NULL) checkpoint still calls ops->on_checkpoint_result() every cycle,
+ *  always with committed=true (see that field's own doc - "does not have
+ *  to special-case whether checkpointing happened to be active"). */
+static void test_checkpoint_paused_still_calls_on_checkpoint_result_committed(void)
 {
     sapi_appmanager_checkpoint_config_t cp_cfg;
     sapi_appmanager_config_t config;
@@ -850,13 +907,12 @@ static void test_checkpoint_paused_skips_stage_not_starves_cycle(void)
         .init = fake_init_ok,
         .pre_execute = hook_pre_ok,
         .execute = hook_execute_ok,
+        .post_execute = hook_post_ok,
+        .on_checkpoint_result = hook_on_checkpoint_result_tracks,
         .shutdown = fake_shutdown,
         .get_name = fake_get_name,
         .get_version = fake_get_version
     };
-
-    assert(sapi_timer_register_backend(&g_mock_timer_backend_for_pacing_test) == SAPI_STATUS_OK);
-    g_mock_timer_calls = 0U;
 
     cp_cfg.voter = NULL; /* paused - must be skipped outright, not fed to sapi_channel_checkpoint() */
     cp_cfg.max_delay_ms = 20U;
@@ -873,15 +929,11 @@ static void test_checkpoint_paused_skips_stage_not_starves_cycle(void)
 
     assert(sapi_appmanager_run(&config) == EXIT_SUCCESS);
 
-    /* The real regression check: pre_execute() (and, by the same fix,
-     * execute()) ran once per iteration - proving the cyclic executive
-     * was NOT starved by the paused checkpoint stage. */
     assert(g_pre_calls == 3);
     assert(g_execute_calls == 3);
-    /* Skipped outright, not paced: zero timer calls for the checkpoint
-     * stage itself (contrast the old behavior this replaces, which polled
-     * the timer repeatedly per iteration to floor the retry interval). */
-    assert(g_mock_timer_calls == 0U);
+    assert(g_post_calls == 3);
+    assert(g_on_checkpoint_result_calls == 3);
+    assert(g_on_checkpoint_result_committed_true_calls == 3);
 }
 
 int main(void)
@@ -909,9 +961,11 @@ int main(void)
     test_hooks_left_null_is_backward_compatible();
     test_pre_execute_failure_skips_execute_and_post();
     test_execute_failure_skips_post_execute();
-    test_checkpoint_success_runs_before_pre_execute_each_cycle();
+    test_checkpoint_fold_signature_is_deterministic();
+    test_checkpoint_mark_sequence_is_order_sensitive();
+    test_checkpoint_success_runs_after_post_execute_each_cycle();
     test_checkpoint_null_vital_channel_is_not_a_startup_error();
-    test_checkpoint_timeout_enters_safestate_before_pre_execute();
-    test_checkpoint_paused_skips_stage_not_starves_cycle();
+    test_checkpoint_timeout_diverts_after_cycle_runs_once();
+    test_checkpoint_paused_still_calls_on_checkpoint_result_committed();
     return 0;
 }

@@ -2,7 +2,7 @@
  * view, and defensive validity checks. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/buffer/sapi_buffer.h"
+#include "safeapi/utils/buffer/sapi_buffer.h"
 
 int main(void)
 {

@@ -16,8 +16,8 @@
 #ifndef SAFEAPI_OS_REBOOT_BACKEND_H
 #define SAFEAPI_OS_REBOOT_BACKEND_H
 
-#include "safeapi/reboot/sapi_reboot.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/reboot/sapi_reboot.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {

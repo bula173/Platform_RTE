@@ -1,6 +1,6 @@
 /* Tests for sapi_clocksync (ADR-017). */
 #include <assert.h>
-#include "safeapi/clocksync/sapi_clocksync.h"
+#include "safeapi/oal/clocksync/sapi_clocksync.h"
 #include "safeapi_backend/clocksync/sapi_clocksync_backend.h"
 
 static int64_t g_mock_offset_ms;

@@ -9,7 +9,7 @@
  */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/dual/sapi_dual_types.h"
+#include "safeapi/redundancy/dual/sapi_dual_types.h"
 
 int main(void)
 {

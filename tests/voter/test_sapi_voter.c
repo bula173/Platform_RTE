@@ -4,9 +4,9 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "safeapi/voter/sapi_voter.h"
-#include "safeapi/lifecycle/sapi_lifecycle.h"
-#include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/redundancy/voter/sapi_voter.h"
+#include "safeapi/utils/lifecycle/sapi_lifecycle.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
 
 /* --- Mock channel backend, mirroring tests/vital_channel's pattern --- */
 
@@ -19,7 +19,13 @@ typedef struct
     uint32_t recv_calls;
 } mock_channel_t;
 
-static mock_channel_t g_mock[8];
+/* 9, not SAPI_VOTER_MAX_CHANNELS (8): test_register_channel() needs one
+ * extra mock backend beyond the max to exercise the
+ * SAPI_STATUS_RESOURCE_EXHAUSTED path at the 9th registration attempt
+ * (channels[8]/g_mock[8]) - an 8-element array here was a real
+ * out-of-bounds write, only caught once ASan instrumentation
+ * (SAFEAPI_ENABLE_ASAN) was added to the build. */
+static mock_channel_t g_mock[9];
 
 static sapi_status_t mock_send(void *channel_handle, const void *data, size_t data_size)
 {
@@ -513,10 +519,58 @@ static void test_destroy(void)
     assert(sapi_voter_destroy(&storage) == SAPI_STATUS_OK);
 }
 
+static void test_get_channel_by_name(void)
+{
+    sapi_voter_storage_t storage;
+    sapi_voter_config_t cfg;
+    sapi_channel_storage_t channels[3];
+    sapi_channel_config_t chan_cfg;
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.voting_strategy = SAPI_VOTING_NMR;
+    cfg.quorum_size = 1U;
+    assert(sapi_voter_init(&storage, &cfg) == SAPI_STATUS_OK);
+
+    reset_mocks(3);
+
+    memset(&chan_cfg, 0, sizeof(chan_cfg));
+    chan_cfg.channel_handle = &g_mock[0];
+    chan_cfg.send = mock_send;
+    chan_cfg.recv = mock_recv;
+    chan_cfg.name = "ChannelAtoB";
+    assert(sapi_channel_init(&channels[0], &chan_cfg) == SAPI_STATUS_OK);
+
+    chan_cfg.channel_handle = &g_mock[1];
+    chan_cfg.name = "ChannelAtoC";
+    assert(sapi_channel_init(&channels[1], &chan_cfg) == SAPI_STATUS_OK);
+
+    /* Deliberately unnamed - must never match any name lookup. */
+    chan_cfg.channel_handle = &g_mock[2];
+    chan_cfg.name = NULL;
+    assert(sapi_channel_init(&channels[2], &chan_cfg) == SAPI_STATUS_OK);
+
+    assert(sapi_voter_register_channel(&storage, &channels[0]) == SAPI_STATUS_OK);
+    assert(sapi_voter_register_channel(&storage, &channels[1]) == SAPI_STATUS_OK);
+    assert(sapi_voter_register_channel(&storage, &channels[2]) == SAPI_STATUS_OK);
+
+    assert(sapi_channel_get_name(&channels[0]) != NULL);
+    assert(strcmp(sapi_channel_get_name(&channels[0]), "ChannelAtoB") == 0);
+    assert(sapi_channel_get_name(&channels[2]) == NULL);
+
+    assert(sapi_voter_get_channel_by_name(&storage, "ChannelAtoB") == &channels[0]);
+    assert(sapi_voter_get_channel_by_name(&storage, "ChannelAtoC") == &channels[1]);
+    /* Unknown name, NULL voter/name, and the deliberately-unnamed channel
+     * (searched by its own NULL name) must all miss. */
+    assert(sapi_voter_get_channel_by_name(&storage, "ChannelAtoZ") == NULL);
+    assert(sapi_voter_get_channel_by_name(NULL, "ChannelAtoB") == NULL);
+    assert(sapi_voter_get_channel_by_name(&storage, NULL) == NULL);
+}
+
 int main(void)
 {
     test_init_validation();
     test_register_channel();
+    test_get_channel_by_name();
     test_send_2oo2();
     test_receive_2oo2_agreement();
     test_receive_majority_vote_fix();

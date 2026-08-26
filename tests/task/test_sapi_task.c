@@ -1,7 +1,7 @@
 /* Tests for the sapi_task validate-then-dispatch API (ADR-005): see
  * tests/nvm/test_sapi_nvm.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/task/sapi_task.h"
+#include "safeapi/oal/task/sapi_task.h"
 #include "safeapi_backend/task/sapi_task_backend.h"
 
 static void mock_entry(void *user_ctx)

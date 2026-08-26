@@ -17,8 +17,8 @@
 #ifndef SAFEAPI_OS_TIMER_BACKEND_H
 #define SAFEAPI_OS_TIMER_BACKEND_H
 
-#include "safeapi/status/sapi_status.h"
-#include "safeapi/timer/sapi_timer.h"
+#include "safeapi/utils/status/sapi_status.h"
+#include "safeapi/oal/timer/sapi_timer.h"
 
 #ifdef __cplusplus
 extern "C" {

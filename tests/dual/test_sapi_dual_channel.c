@@ -19,9 +19,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/dual/sapi_dual_channel.h"
-#include "safeapi/timer/sapi_timer.h"
+#include "safeapi/redundancy/checksum/sapi_checksum.h"
+#include "safeapi/redundancy/dual/sapi_dual_channel.h"
+#include "safeapi/oal/timer/sapi_timer.h"
 #include "safeapi_backend/netlink/sapi_netlink_backend.h"
 #include "safeapi_backend/timer/sapi_timer_backend.h"
 

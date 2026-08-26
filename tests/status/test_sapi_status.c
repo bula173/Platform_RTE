@@ -1,7 +1,7 @@
 /* Verifies every status code maps to a non-null, non-"UNKNOWN" string. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 int main(void)
 {

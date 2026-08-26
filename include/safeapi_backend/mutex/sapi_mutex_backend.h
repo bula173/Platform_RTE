@@ -17,8 +17,8 @@
 #ifndef SAFEAPI_OS_MUTEX_BACKEND_H
 #define SAFEAPI_OS_MUTEX_BACKEND_H
 
-#include "safeapi/status/sapi_status.h"
-#include "safeapi/mutex/sapi_mutex.h"
+#include "safeapi/utils/status/sapi_status.h"
+#include "safeapi/oal/mutex/sapi_mutex.h"
 
 #ifdef __cplusplus
 extern "C" {

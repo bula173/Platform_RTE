@@ -15,8 +15,8 @@
 #ifndef SAFEAPI_OS_LOG_BACKEND_H
 #define SAFEAPI_OS_LOG_BACKEND_H
 
-#include "safeapi/log/sapi_log.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/log/sapi_log.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {

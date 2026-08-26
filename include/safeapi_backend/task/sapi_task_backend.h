@@ -15,8 +15,8 @@
 #ifndef SAFEAPI_OS_TASK_BACKEND_H
 #define SAFEAPI_OS_TASK_BACKEND_H
 
-#include "safeapi/task/sapi_task.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/task/sapi_task.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {

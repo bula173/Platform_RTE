@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 
-#include "safeapi/clocksync/sapi_clocksync.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/oal/clocksync/sapi_clocksync.h"
+#include "safeapi/utils/status/sapi_status.h"
 
 #ifdef __cplusplus
 extern "C" {
