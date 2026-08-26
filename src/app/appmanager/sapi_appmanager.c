@@ -238,7 +238,7 @@ int sapi_appmanager_run(const sapi_appmanager_config_t *config)
     if ((g_app_state.state == SAPI_APP_STATE_INITIALIZING) ||
         (g_app_state.state == SAPI_APP_STATE_RUNNING) ||
         (g_app_state.state == SAPI_APP_STATE_SHUTTING_DOWN)) {
-        char msg[128];
+        char msg[256];
 
         (void)snprintf(msg, sizeof(msg),
                         "sapi_appmanager_run() called while an application is already running "
