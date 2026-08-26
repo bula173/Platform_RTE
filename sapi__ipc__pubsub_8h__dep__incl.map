@@ -1,5 +1,5 @@
-<map id="include/safeapi/ipc/sapi_ipc_pubsub.h" name="include/safeapi/ipc/sapi_ipc_pubsub.h">
-<area shape="rect" id="Node000001" title="IPC Publish&#45;Subscribe Pattern (one&#45;to&#45;many broadcasting)" alt="" coords="26,5,171,45"/>
-<area shape="rect" id="Node000002" href="$sapi__ipc__pubsub_8c.html" title="IPC Publish&#45;Subscribe implementation." alt="" coords="5,93,192,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,59,101,93,96,93,96,59"/>
+<map id="include/safeapi/oal/ipc/sapi_ipc_pubsub.h" name="include/safeapi/oal/ipc/sapi_ipc_pubsub.h">
+<area shape="rect" id="Node000001" title="IPC Publish&#45;Subscribe Pattern (one&#45;to&#45;many broadcasting)" alt="" coords="5,5,173,45"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc__pubsub_8c.html" title="IPC Publish&#45;Subscribe implementation." alt="" coords="17,93,162,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,59,92,93,87,93,87,59"/>
 </map>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/channel_link/sapi_channel.h File Reference</title>
+<title>Safe API Framework: include/safeapi/redundancy/channel_link/sapi_channel.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_3904d5ba6177d6220e34ee123f0a961a.html">channel_link</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_325bf3023343e32c1d0c109810956f12.html">channel_link</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -103,16 +103,16 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_channel.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__incl.svg" width="458" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__incl.svg" width="459" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__dep__incl.svg" width="100%" height="547"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__channel_8h__dep__incl.svg" width="100%" height="558"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__channel_8h_source.html">Go to the source code of this file.</a></p>
@@ -155,6 +155,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2ae7274dce915ff92b132f88a7676cc9" id="r_ga2ae7274dce915ff92b132f88a7676cc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9">sapi_channel_get_health</a> (const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, <a class="el" href="structsapi__channel__health__t.html">sapi_channel_health_t</a> *out_health)</td></tr>
 <tr class="memdesc:ga2ae7274dce915ff92b132f88a7676cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries this channel's health statistics.  <br /></td></tr>
 <tr class="separator:ga2ae7274dce915ff92b132f88a7676cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga476e85a04158e94c2d00f5f541c3e7b8" id="r_ga476e85a04158e94c2d00f5f541c3e7b8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga476e85a04158e94c2d00f5f541c3e7b8">sapi_channel_get_name</a> (const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle)</td></tr>
+<tr class="memdesc:ga476e85a04158e94c2d00f5f541c3e7b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this channel's name, as given in <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time.  <br /></td></tr>
+<tr class="separator:ga476e85a04158e94c2d00f5f541c3e7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga590548924653a0a40936bbdde77a35c0" id="r_ga590548924653a0a40936bbdde77a35c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, bool is_healthy)</td></tr>
 <tr class="memdesc:ga590548924653a0a40936bbdde77a35c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this channel healthy/unhealthy.  <br /></td></tr>
 <tr class="separator:ga590548924653a0a40936bbdde77a35c0"><td class="memSeparator" colspan="2">&#160;</td></tr>

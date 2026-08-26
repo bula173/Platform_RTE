@@ -320,6 +320,27 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8564e6358dac157f4ee725b321c03595" id="r_ga8564e6358dac157f4ee725b321c03595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga8564e6358dac157f4ee725b321c03595">sapi_cast_size_to_u64</a> (size_t in, uint64_t *out)</td></tr>
 <tr class="memdesc:ga8564e6358dac157f4ee725b321c03595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked cast from size_t to uint64_t.  <br /></td></tr>
 <tr class="separator:ga8564e6358dac157f4ee725b321c03595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc09d52b236ce0b370574fb9f6a80839" id="r_gadc09d52b236ce0b370574fb9f6a80839"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gadc09d52b236ce0b370574fb9f6a80839">sapi_cast_checked_add_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:gadc09d52b236ce0b370574fb9f6a80839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked addition: *out = a + b, only if the result fits uint32_t.  <br /></td></tr>
+<tr class="separator:gadc09d52b236ce0b370574fb9f6a80839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28708523df01ff9c17ee9c03f7210caa" id="r_ga28708523df01ff9c17ee9c03f7210caa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga28708523df01ff9c17ee9c03f7210caa">sapi_cast_checked_sub_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:ga28708523df01ff9c17ee9c03f7210caa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked subtraction: *out = a - b, only if b &lt;= a (no underflow).  <br /></td></tr>
+<tr class="separator:ga28708523df01ff9c17ee9c03f7210caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae04105144da08197fe92c832a60bbdbb" id="r_gae04105144da08197fe92c832a60bbdbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gae04105144da08197fe92c832a60bbdbb">sapi_cast_checked_mul_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:gae04105144da08197fe92c832a60bbdbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked multiplication: *out = a * b, only if the result fits uint32_t.  <br /></td></tr>
+<tr class="separator:gae04105144da08197fe92c832a60bbdbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9bba6bafed0eb12abed0f8452530ae72" id="r_ga9bba6bafed0eb12abed0f8452530ae72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga9bba6bafed0eb12abed0f8452530ae72">sapi_cast_checked_add_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:ga9bba6bafed0eb12abed0f8452530ae72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked addition: *out = a + b, only if the result fits size_t.  <br /></td></tr>
+<tr class="separator:ga9bba6bafed0eb12abed0f8452530ae72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe063328f297248137992b05dc80994a" id="r_gafe063328f297248137992b05dc80994a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gafe063328f297248137992b05dc80994a">sapi_cast_checked_sub_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:gafe063328f297248137992b05dc80994a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked subtraction: *out = a - b, only if b &lt;= a (no underflow).  <br /></td></tr>
+<tr class="separator:gafe063328f297248137992b05dc80994a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga32a48bee790d9a338e3b9183966e9c83" id="r_ga32a48bee790d9a338e3b9183966e9c83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga32a48bee790d9a338e3b9183966e9c83">sapi_cast_checked_mul_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:ga32a48bee790d9a338e3b9183966e9c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked multiplication: *out = a * b, only if the result fits size_t.  <br /></td></tr>
+<tr class="separator:ga32a48bee790d9a338e3b9183966e9c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4b3365e11016587540d9bf3dad205969" id="r_ga4b3365e11016587540d9bf3dad205969"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga4b3365e11016587540d9bf3dad205969">sapi_cast_bounds_check</a> (size_t index, size_t count)</td></tr>
+<tr class="memdesc:ga4b3365e11016587540d9bf3dad205969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked array/index bounds check: is index a valid index into an array of count elements?  <br /></td></tr>
+<tr class="separator:ga4b3365e11016587540d9bf3dad205969"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Bounds-checked conversion between fixed-width types (ADR-003) </p>
@@ -360,7 +381,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00011">11</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00013">13</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -400,7 +421,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00021">21</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00023">23</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -440,7 +461,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00031">31</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00033">33</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -480,7 +501,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00041">41</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00043">43</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -520,7 +541,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00056">56</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00058">58</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -560,7 +581,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00071">71</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00073">73</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -600,7 +621,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00086">86</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00088">88</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -640,7 +661,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00101">101</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00103">103</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -680,7 +701,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00122">122</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00124">124</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -720,7 +741,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00141">141</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00143">143</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -760,7 +781,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00151">151</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00153">153</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -800,7 +821,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00161">161</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00163">163</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -840,7 +861,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00180">180</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00182">182</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -880,7 +901,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00195">195</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00197">197</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -920,7 +941,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00210">210</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00212">212</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -960,7 +981,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00225">225</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00227">227</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1021,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00246">246</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00248">248</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1040,7 +1061,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00265">265</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00267">267</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1080,7 +1101,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00284">284</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00286">286</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1120,7 +1141,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00294">294</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00296">296</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1160,7 +1181,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00313">313</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00315">315</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1200,7 +1221,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00332">332</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00334">334</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1240,7 +1261,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00347">347</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00349">349</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1280,7 +1301,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00362">362</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00364">364</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1320,7 +1341,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00383">383</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00385">385</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1360,7 +1381,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00402">402</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00404">404</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1400,7 +1421,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00421">421</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00423">423</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1440,7 +1461,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00440">440</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00442">442</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1480,7 +1501,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00459">459</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00461">461</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1520,7 +1541,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00478">478</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00480">480</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1560,7 +1581,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00497">497</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00499">499</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1600,7 +1621,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00512">512</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00514">514</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1640,7 +1661,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00533">533</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00535">535</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1680,7 +1701,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00548">548</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00550">550</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1741,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00558">558</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00560">560</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1760,7 +1781,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00568">568</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00570">570</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1800,7 +1821,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00578">578</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00580">580</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1840,7 +1861,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00588">588</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00590">590</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1880,7 +1901,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00598">598</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00600">600</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1920,7 +1941,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00608">608</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00610">610</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -1960,7 +1981,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00627">627</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00629">629</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2000,7 +2021,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00642">642</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00644">644</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2040,7 +2061,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00657">657</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00659">659</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2080,7 +2101,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00667">667</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00669">669</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2120,7 +2141,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00677">677</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00679">679</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2160,7 +2181,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00692">692</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00694">694</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2200,7 +2221,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00702">702</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00704">704</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2240,7 +2261,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00712">712</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00714">714</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2280,7 +2301,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00731">731</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00733">733</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2320,7 +2341,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00746">746</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00748">748</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2360,7 +2381,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00761">761</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00763">763</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2400,7 +2421,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00776">776</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00778">778</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2440,7 +2461,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00786">786</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00788">788</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2480,7 +2501,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00801">801</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00803">803</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2520,7 +2541,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00816">816</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00818">818</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2560,7 +2581,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00826">826</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00828">828</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2600,7 +2621,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00845">845</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00847">847</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2640,7 +2661,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00860">860</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00862">862</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2680,7 +2701,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00875">875</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00877">877</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2720,7 +2741,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00890">890</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00892">892</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2760,7 +2781,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00905">905</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00907">907</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2800,7 +2821,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00920">920</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00922">922</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2840,7 +2861,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00935">935</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00937">937</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2880,7 +2901,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit size_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00950">950</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00952">952</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2920,7 +2941,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00969">969</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00971">971</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -2960,7 +2981,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00985">985</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l00987">987</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3000,7 +3021,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01001">1001</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01003">1003</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3040,7 +3061,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit int64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01017">1017</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01019">1019</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3080,7 +3101,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint8_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01033">1033</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01035">1035</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3120,7 +3141,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint16_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01049">1049</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01051">1051</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3160,7 +3181,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint32_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01065">1065</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01067">1067</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>
@@ -3200,7 +3221,323 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL (REQ-COMMON-CAST-002); SAPI_STATUS_VALUE_OUT_OF_RANGE if in does not fit uint64_t (REQ-COMMON-CAST-003). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01081">1081</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01083">1083</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="gadc09d52b236ce0b370574fb9f6a80839" name="gadc09d52b236ce0b370574fb9f6a80839"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadc09d52b236ce0b370574fb9f6a80839">&#9670;&#160;</a></span>sapi_cast_checked_add_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_add_u32 </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked addition: *out = a + b, only if the result fits uint32_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a + b on success; left untouched on failure (REQ-COMMON-CAST-001). Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if a + b overflows uint32_t (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01094">1094</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="ga28708523df01ff9c17ee9c03f7210caa" name="ga28708523df01ff9c17ee9c03f7210caa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga28708523df01ff9c17ee9c03f7210caa">&#9670;&#160;</a></span>sapi_cast_checked_sub_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_sub_u32 </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked subtraction: *out = a - b, only if b &lt;= a (no underflow). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a - b on success; left untouched on failure. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if b &gt; a (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01115">1115</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="gae04105144da08197fe92c832a60bbdbb" name="gae04105144da08197fe92c832a60bbdbb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae04105144da08197fe92c832a60bbdbb">&#9670;&#160;</a></span>sapi_cast_checked_mul_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_mul_u32 </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked multiplication: *out = a * b, only if the result fits uint32_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a * b on success; left untouched on failure. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if a * b overflows uint32_t (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01131">1131</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="ga9bba6bafed0eb12abed0f8452530ae72" name="ga9bba6bafed0eb12abed0f8452530ae72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9bba6bafed0eb12abed0f8452530ae72">&#9670;&#160;</a></span>sapi_cast_checked_add_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_add_size </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked addition: *out = a + b, only if the result fits size_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a + b on success; left untouched on failure. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if a + b overflows size_t (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01148">1148</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="gafe063328f297248137992b05dc80994a" name="gafe063328f297248137992b05dc80994a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafe063328f297248137992b05dc80994a">&#9670;&#160;</a></span>sapi_cast_checked_sub_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_sub_size </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked subtraction: *out = a - b, only if b &lt;= a (no underflow). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a - b on success; left untouched on failure. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if b &gt; a (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01167">1167</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="ga32a48bee790d9a338e3b9183966e9c83" name="ga32a48bee790d9a338e3b9183966e9c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga32a48bee790d9a338e3b9183966e9c83">&#9670;&#160;</a></span>sapi_cast_checked_mul_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_checked_mul_size </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>b</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked multiplication: *out = a * b, only if the result fits size_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">a,b</td><td>Operands. </td></tr>
+    <tr><td class="paramname">out</td><td>Receives a * b on success; left untouched on failure. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; SAPI_STATUS_INVALID_PARAM if out is NULL; SAPI_STATUS_VALUE_OUT_OF_RANGE if a * b overflows size_t (REQ-COMMON-CAST-004). </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01183">1183</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
+
+</div>
+</div>
+<a id="ga4b3365e11016587540d9bf3dad205969" name="ga4b3365e11016587540d9bf3dad205969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4b3365e11016587540d9bf3dad205969">&#9670;&#160;</a></span>sapi_cast_bounds_check()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_cast_bounds_check </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Checked array/index bounds check: is index a valid index into an array of count elements? </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>Candidate index. </td></tr>
+    <tr><td class="paramname">count</td><td>Number of elements in the array (a count of 0 means no index is ever valid). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if index &lt; count; SAPI_STATUS_VALUE_OUT_OF_RANGE otherwise (REQ-COMMON-CAST-005). Never SAPI_STATUS_INVALID_PARAM - both parameters are plain values, not pointers, so there is nothing to NULL-check. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__cast_8c_source.html#l01199">1199</a> of file <a class="el" href="sapi__cast_8c_source.html">sapi_cast.c</a>.</p>
 
 </div>
 </div>

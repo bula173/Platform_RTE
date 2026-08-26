@@ -1,0 +1,13 @@
+<map id="include/safeapi/utils/safestate/sapi_safety_violation.h" name="include/safeapi/utils/safestate/sapi_safety_violation.h">
+<area shape="rect" id="Node000001" title="Opt&#45;in notification hook for the three new safety primitives (safe pointer, checked integer arithmeti..." alt="" coords="79,5,246,60"/>
+<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,108,152,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,62,107,100,103,96,137,59"/>
+<area shape="rect" id="Node000003" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="177,108,319,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,59,224,96,220,100,185,62"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="104,196,187,221"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="225,150,173,190,170,185,222,146"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="211,196,285,221"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="251,148,251,182,245,182,245,148"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="310,196,381,221"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="273,146,322,185,319,189,270,150"/>
+</map>

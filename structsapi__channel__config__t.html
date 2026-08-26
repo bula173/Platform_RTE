@@ -105,6 +105,8 @@ Data Fields</h2></td></tr>
 <tr class="separator:a378c25e4537072f969ca06fd4704c9ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8cc1353520131082a4bed96d11dea6a" id="r_aa8cc1353520131082a4bed96d11dea6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__channel__link.html#ga7f988a72b7bafc17841aa6ee4501cf6f">sapi_channel_recv_fn</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__channel__config__t.html#aa8cc1353520131082a4bed96d11dea6a">recv</a></td></tr>
 <tr class="separator:aa8cc1353520131082a4bed96d11dea6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7608b60a72dd73c805cfd76e26f7a08d" id="r_a7608b60a72dd73c805cfd76e26f7a08d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">name</a></td></tr>
+<tr class="separator:a7608b60a72dd73c805cfd76e26f7a08d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Configuration for <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a>. </p>
@@ -162,8 +164,25 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a id="a7608b60a72dd73c805cfd76e26f7a08d" name="a7608b60a72dd73c805cfd76e26f7a08d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7608b60a72dd73c805cfd76e26f7a08d">&#9670;&#160;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char* sapi_channel_config_t::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optional channel name (e.g. "ChannelAtoB"), for lookup (<a class="el" href="group__voter.html#gaa3532847161357da62944188e3e94e84" title="Direct access to one registered channel, by name (e.g. &quot;ChannelAtoB&quot;) - the name each channel was giv...">sapi_voter_get_channel_by_name()</a>) and logging - same caller-owned-pointer convention as <a class="el" href="structsapi__watchdog__config__t.html#ace4926de9ceba31c6cda2ef518630322">sapi_watchdog_config_t::name</a>: not copied, so it must outlive this channel (a string literal is the common case). May be NULL, in which case this channel is never matched by <a class="el" href="group__voter.html#gaa3532847161357da62944188e3e94e84" title="Direct access to one registered channel, by name (e.g. &quot;ChannelAtoB&quot;) - the name each channel was giv...">sapi_voter_get_channel_by_name()</a>. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__channel_8h_source.html#l00105">105</a> of file <a class="el" href="sapi__channel_8h_source.html">sapi_channel.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/channel_link/<a class="el" href="sapi__channel_8h_source.html">sapi_channel.h</a></li>
+<li>include/safeapi/redundancy/channel_link/<a class="el" href="sapi__channel_8h_source.html">sapi_channel.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

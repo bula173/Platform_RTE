@@ -1,22 +1,22 @@
-<map id="include/safeapi/timer/sapi_timer.h" name="include/safeapi/timer/sapi_timer.h">
-<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Timer service." alt="" coords="675,5,835,45"/>
+<map id="include/safeapi/oal/timer/sapi_timer.h" name="include/safeapi/oal/timer/sapi_timer.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Timer service." alt="" coords="675,5,820,45"/>
 <area shape="rect" id="Node000002" href="$sapi__timer__backend_8h.html" title="OS&#45;backend adaptation surface for the Timer service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,212,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="662,41,232,96,213,99,212,93,231,91,661,35"/>
-<area shape="rect" id="Node000003" href="$sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="98,181,261,207"/>
-<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="662,35,449,56,348,74,308,84,278,96,249,115,224,139,189,183,185,179,220,135,246,111,275,91,306,79,347,69,448,51,661,30"/>
-<area shape="rect" id="Node000004" href="$sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="288,93,447,133"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="662,50,448,97,446,92,661,45"/>
-<area shape="rect" id="Node000005" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="471,93,618,133"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="698,53,592,96,590,91,696,48"/>
-<area shape="rect" id="Node000006" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="642,101,869,126"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="758,59,758,100,753,100,753,59"/>
-<area shape="rect" id="Node000007" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="893,93,1031,133"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="814,48,918,91,916,96,812,53"/>
-<area shape="rect" id="Node000008" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1055,93,1194,133"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="849,46,1056,93,1055,99,848,51"/>
-<area shape="rect" id="Node000009" href="$sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="1219,101,1353,126"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="849,36,1016,59,1206,91,1241,98,1239,103,1206,96,1015,64,849,41"/>
-<area shape="rect" id="Node000010" href="$sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="1377,101,1597,126"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="849,33,1084,57,1366,91,1417,98,1416,103,1366,96,1084,63,849,38"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="137,142,171,179,167,183,133,145"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="662,40,232,96,213,99,212,93,231,91,661,35"/>
+<area shape="rect" id="Node000003" href="$sapi__timer_8c.html" title="Timer service: validates parameters, then dispatches to the backend registered via sapi_timer_registe..." alt="" coords="112,181,247,221"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="661,34,561,43,449,55,347,73,307,84,277,96,250,114,226,138,192,183,188,180,222,134,246,110,274,91,305,79,346,68,448,50,560,37,661,29"/>
+<area shape="rect" id="Node000004" href="$sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="287,93,442,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="662,48,443,97,442,92,661,43"/>
+<area shape="rect" id="Node000005" href="$sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="467,101,625,126"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="692,53,574,103,572,98,689,48"/>
+<area shape="rect" id="Node000006" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="649,93,845,133"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="750,59,750,93,745,93,745,59"/>
+<area shape="rect" id="Node000007" href="$sapi__checksum_8c.html" title="CRC&#45;64 implementation for data integrity checking." alt="" coords="869,93,1060,133"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="809,48,918,91,916,96,807,53"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="1085,93,1242,133"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="834,42,1073,91,1085,93,1084,98,1072,96,833,47"/>
+<area shape="rect" id="Node000009" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1267,93,1439,133"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="834,34,1027,58,1254,91,1267,93,1266,98,1254,96,1026,63,834,39"/>
+<area shape="rect" id="Node000010" href="$sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="1463,93,1651,133"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="834,30,1109,53,1280,70,1452,91,1463,92,1462,98,1451,96,1280,75,1109,58,833,35"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="135,142,166,179,162,183,131,146"/>
 </map>

@@ -1,7 +1,9 @@
-<map id="include/safeapi/cast/sapi_cast.h" name="include/safeapi/cast/sapi_cast.h">
-<area shape="rect" id="Node000001" title="Checked integer casting between all fixed&#45;width types and size_t (ADR&#45;003). Every conversion in the c..." alt="" coords="94,5,246,45"/>
-<area shape="rect" id="Node000002" href="$sapi__cast_8c.html" title="Generated from ADR&#45;003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t..." alt="" coords="5,93,153,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="140,56,95,95,91,91,136,52"/>
-<area shape="rect" id="Node000003" href="$sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="178,93,346,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,52,250,91,246,95,201,56"/>
+<map id="include/safeapi/utils/cast/sapi_cast.h" name="include/safeapi/utils/cast/sapi_cast.h">
+<area shape="rect" id="Node000001" title="Checked integer casting between all fixed&#45;width types and size_t (ADR&#45;003). Every conversion in the c..." alt="" coords="175,5,329,45"/>
+<area shape="rect" id="Node000002" href="$sapi__safe__ptr_8c.html" title="See sapi_safe_ptr.h for behavior." alt="" coords="5,93,160,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,54,121,96,119,91,202,49"/>
+<area shape="rect" id="Node000003" href="$sapi__cast_8c.html" title="Generated from ADR&#45;003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t..." alt="" coords="185,93,319,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="255,59,255,93,249,93,249,59"/>
+<area shape="rect" id="Node000004" href="$sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="343,93,489,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="301,49,381,91,379,96,299,54"/>
 </map>

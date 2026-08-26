@@ -1,0 +1,9 @@
+<map id="include/safeapi/utils/safestate/sapi_safety_violation.h" name="include/safeapi/utils/safestate/sapi_safety_violation.h">
+<area shape="rect" id="Node000001" title="Opt&#45;in notification hook for the three new safety primitives (safe pointer, checked integer arithmeti..." alt="" coords="169,5,335,60"/>
+<area shape="rect" id="Node000002" href="$sapi__safe__ptr_8c.html" title="See sapi_safe_ptr.h for behavior." alt="" coords="5,108,160,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="194,69,118,110,116,106,191,64"/>
+<area shape="rect" id="Node000003" href="$sapi__cast_8c.html" title="Generated from ADR&#45;003&#39;s template; see sapi_cast.h for behavior. Every function widens its input to t..." alt="" coords="185,108,319,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="255,74,255,108,249,108,249,74"/>
+<area shape="rect" id="Node000004" href="$sapi__safety__violation_8c.html" title="See sapi_safety_violation.h for behavior." alt="" coords="344,108,520,148"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="316,64,397,105,394,110,313,69"/>
+</map>

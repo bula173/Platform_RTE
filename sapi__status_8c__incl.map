@@ -1,5 +1,5 @@
-<map id="src/status/sapi_status.c" name="src/status/sapi_status.c">
-<area shape="rect" id="Node000001" title="Implementation of sapi_status_to_string()." alt="" coords="5,5,180,31"/>
-<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="20,79,165,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,31,95,65,90,65,90,31"/>
+<map id="src/utils/status/sapi_status.c" name="src/utils/status/sapi_status.c">
+<area shape="rect" id="Node000001" title="Implementation of sapi_status_to_string()." alt="" coords="5,5,153,45"/>
+<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="6,93,153,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,46,82,79,77,79,77,46"/>
 </map>

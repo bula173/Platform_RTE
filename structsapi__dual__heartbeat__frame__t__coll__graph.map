@@ -1,0 +1,5 @@
+<map id="sapi_dual_heartbeat_frame_t" name="sapi_dual_heartbeat_frame_t">
+<area shape="rect" id="Node000001" title="SAPI_DUAL_FRAME_KIND_HEARTBEAT payload &#45; connection maintenance heartbeat." alt="" coords="25,93,180,133"/>
+<area shape="rect" id="Node000002" href="$structsapi__dual__frame__header__t.html" title="Common 4&#45;byte header prefixing every Layer&#45;2 frame; kept a fixed 4 bytes (not just 1) so the fields t..." alt="" coords="5,5,200,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,44,105,93,100,93,100,44"/>
+</map>

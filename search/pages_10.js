@@ -7,5 +7,6 @@ var searchData=
   ['only_20constructors_4',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
   ['os_20abstraction_20layer_20oal_20for_20the_20safe_20api_20framework_5',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
   ['os_20backend_20header_20separation_6',['ADR-021: Consumer / OS-Backend Header Separation',['../md_docs_2architecture_2ADR-021-consumer-backend-header-split.html',1,'']]],
-  ['overview_7',['System Architecture Overview',['../system_architecture.html',1,'']]]
+  ['output_7',['ADR-034: Checkpoint-signature marks and stage-then-commit output',['../md_docs_2architecture_2ADR-034-checkpoint-signature-marks.html',1,'']]],
+  ['overview_8',['System Architecture Overview',['../system_architecture.html',1,'']]]
 ];

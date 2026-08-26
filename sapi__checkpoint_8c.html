@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: src/checkpoint/sapi_checkpoint.c File Reference</title>
+<title>Safe API Framework: src/redundancy/checkpoint/sapi_checkpoint.c File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_f8a23b4b6ee8630a1187b0b1add2ade0.html">checkpoint</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_4907577909bdf5d5404ad4e45f232bd4.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_c9237c55bed7c14c84b1c08ee3a9ede7.html">checkpoint</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,13 +99,13 @@ $(function() {
 
 <p>Implementation of the bounded checkpoint rendezvous (ADR-017).  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__checkpoint_8h_source.html">safeapi/checkpoint/sapi_checkpoint.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__checkpoint_8h_source.html">safeapi/redundancy/checkpoint/sapi_checkpoint.h</a>&quot;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdio.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__buffer_8h_source.html">safeapi/buffer/sapi_buffer.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__checksum_8h_source.html">safeapi/checksum/sapi_checksum.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__safestate_8h_source.html">safeapi/safestate/sapi_safestate.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/timer/sapi_timer.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__buffer_8h_source.html">safeapi/utils/buffer/sapi_buffer.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__checksum_8h_source.html">safeapi/redundancy/checksum/sapi_checksum.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__safestate_8h_source.html">safeapi/utils/safestate/sapi_safestate.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__timer_8h_source.html">safeapi/oal/timer/sapi_timer.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_checkpoint.c:</div>
 <div class="dyncontent">
@@ -118,6 +118,12 @@ Include dependency graph for sapi_checkpoint.c:</div>
 Macros</h2></td></tr>
 <tr class="memitem:aa6260e1306711acc25ee6de2c47e0654" id="r_aa6260e1306711acc25ee6de2c47e0654"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__checkpoint_8c.html#aa6260e1306711acc25ee6de2c47e0654">SAPI_CHECKPOINT_SENDER_ID</a>&#160;&#160;&#160;((uint32_t)0xC4EC0001U)</td></tr>
 <tr class="separator:aa6260e1306711acc25ee6de2c47e0654"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba2bccf7264dadb0a1193b4e27bf8f31" id="r_aba2bccf7264dadb0a1193b4e27bf8f31"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__checkpoint_8c.html#aba2bccf7264dadb0a1193b4e27bf8f31">SAPI_CHECKPOINT_RETRY_ROUND_MS</a>&#160;&#160;&#160;((<a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>)250U)</td></tr>
+<tr class="separator:aba2bccf7264dadb0a1193b4e27bf8f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0520bf1551067e67c8b3ecffd855b4de" id="r_a0520bf1551067e67c8b3ecffd855b4de"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__checkpoint_8c.html#a0520bf1551067e67c8b3ecffd855b4de">SAPI_CHECKPOINT_MIN_ROUNDS_PER_BUDGET</a>&#160;&#160;&#160;((<a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>)3U)</td></tr>
+<tr class="separator:a0520bf1551067e67c8b3ecffd855b4de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace83db7a2ba453fc34d044c37acc7866" id="r_ace83db7a2ba453fc34d044c37acc7866"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="sapi__checkpoint_8c.html#ace83db7a2ba453fc34d044c37acc7866">SAPI_CHECKPOINT_MAX_ROUNDS</a>&#160;&#160;&#160;((uint32_t)64U)</td></tr>
+<tr class="separator:ace83db7a2ba453fc34d044c37acc7866"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -153,6 +159,57 @@ Functions</h2></td></tr>
 <p>Fixed sender id for checkpoint-arrival markers. sapi_checksum's verify path does not constrain this value; it only matters for diagnostics, so a single framework-reserved constant is sufficient rather than threading a real per-channel identity through this module. </p>
 
 <p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00020">20</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+
+</div>
+</div>
+<a id="aba2bccf7264dadb0a1193b4e27bf8f31" name="aba2bccf7264dadb0a1193b4e27bf8f31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba2bccf7264dadb0a1193b4e27bf8f31">&#9670;&#160;</a></span>SAPI_CHECKPOINT_RETRY_ROUND_MS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SAPI_CHECKPOINT_RETRY_ROUND_MS&#160;&#160;&#160;((<a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>)250U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Per-attempt receive sub-budget within one <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> call (see the retry loop below) - deliberately short relative to a typical config-&gt;max_delay_ms so a single call gets several independent send+receive rounds instead of committing its whole budget to one. Real bug this fixes, found via live Docker testing: a LISTEN-role backend channel can only reply once it has learned its peer's address from an inbound packet (sapi_posix_backend_channel_service.c's own has_peer_addr) - on a genuinely cold two-way start neither side has heard from the other yet, so a SINGLE round's send is a structural no-op on the listening side regardless of how long the matching receive is allowed to wait. One long blocking round-trip attempt can therefore never succeed on a cold start; it always spends the entire budget and then fails, triggering SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT on both peers - which each reboot resets, replaying the same structurally-doomed single attempt forever (a real, reproduced livelock, not a transport/network problem - confirmed via a raw UDP probe succeeding instantly against the same listening socket). Several short rounds instead give that one-time address-learning step room to complete on an early round, so a later round within the SAME call can actually exchange confirmations - still bounded by max_delay_ms in total (REQ-CHECKPOINT-001 unchanged). </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00044">44</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+
+</div>
+</div>
+<a id="a0520bf1551067e67c8b3ecffd855b4de" name="a0520bf1551067e67c8b3ecffd855b4de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0520bf1551067e67c8b3ecffd855b4de">&#9670;&#160;</a></span>SAPI_CHECKPOINT_MIN_ROUNDS_PER_BUDGET</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SAPI_CHECKPOINT_MIN_ROUNDS_PER_BUDGET&#160;&#160;&#160;((<a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a>)3U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Minimum number of retry rounds a call's own config-&gt;max_delay_ms budget is deliberately divided into, regardless of how small that budget is. SAPI_CHECKPOINT_RETRY_ROUND_MS alone only bounds a round's LENGTH from above; for a short budget (a steady-state call, not the relaxed post-reconnect window this retry loop was originally added for) that still leaves as few as one or two rounds - not enough headroom for the project's own documented real-world finding that a single round can miss under genuine container-host scheduling jitter even once a peer is already known and reachable (see SAFEAPI_EXAMPLE_AB_CHECKPOINT_RELAXED_MAX_DELAY_MS's doc in safeAPIRBC2oo2GP/src/application/AB/common/common_config.h). Confirmed live: even with the round-based retry loop below, a steady-state budget of 400ms (~1-2 rounds at the flat 250ms cap) still let a single missed round trip escalate to REQ-CHECKPOINT-003's SAFE/REBOOT often enough to keep A/WEST and B/WEST cycling reboots roughly every 40s instead of settling. Dividing max_delay_ms by this constant (applied only when that division yields something SMALLER than SAPI_CHECKPOINT_RETRY_ROUND_MS - a long relaxed budget is unaffected) trades round length for round COUNT on a short budget, without raising the budget itself. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00067">67</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+
+</div>
+</div>
+<a id="ace83db7a2ba453fc34d044c37acc7866" name="ace83db7a2ba453fc34d044c37acc7866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace83db7a2ba453fc34d044c37acc7866">&#9670;&#160;</a></span>SAPI_CHECKPOINT_MAX_ROUNDS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define SAPI_CHECKPOINT_MAX_ROUNDS&#160;&#160;&#160;((uint32_t)64U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Hard cap on retry rounds within one <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> call - a backstop independent of config-&gt;max_delay_ms (REQ-CHECKPOINT-001 stays satisfied by the time-based bound alone; this exists only to guarantee termination even if a receive callback returns near- instantly instead of genuinely blocking for its requested timeout, as this project's own mock-backed unit tests do). The largest legitimate round count in real use is the relaxed startup budget divided by the per-round sub-budget (10000ms / 250ms = 40); this leaves headroom above that without being unbounded. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00079">79</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -202,7 +259,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success; a sapi_buffer_t/sapi_checksum error status otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00040">40</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00099">99</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -251,7 +308,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if reply is a valid, current confirmation; false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00076">76</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00135">135</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>
@@ -307,7 +364,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Remaining budget in ms; 0 if the deadline has already passed. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00120">120</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00179">179</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>

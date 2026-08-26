@@ -99,12 +99,12 @@ $(function() {
 
 <p>OS-backend adaptation surface for the Logging/diagnostics service (ADR-005, ADR-021).  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__log_8h_source.html">safeapi/log/sapi_log.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__log_8h_source.html">safeapi/oal/log/sapi_log.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_log_backend.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__log__backend_8h__incl.svg" width="384" height="286"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__log__backend_8h__incl.svg" width="387" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -128,7 +128,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS-backend adaptation surface for the Logging/diagnostics service (ADR-005, ADR-021). </p>
-<p>For platform integrators implementing a <a class="el" href="structsapi__log__backend__t.html" title="Backend vtable: an integrator&#39;s implementation of the logging sink (ADR-005). Unlike every other OAL ...">sapi_log_backend_t</a> and calling <a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> - NOT part of the consumer API (<a class="el" href="sapi__log_8h.html" title="OS Abstraction Layer - Logging/diagnostics service.">safeapi/log/sapi_log.h</a>). A real application should never include this file; only the startup code that wires a concrete backend does. </p>
+<p>For platform integrators implementing a <a class="el" href="structsapi__log__backend__t.html" title="Backend vtable: an integrator&#39;s implementation of the logging sink (ADR-005). Unlike every other OAL ...">sapi_log_backend_t</a> and calling <a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a> - NOT part of the consumer API (safeapi/log/sapi_log.h). A real application should never include this file; only the startup code that wires a concrete backend does. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__log__backend_8h_source.html">sapi_log_backend.h</a>.</p>
 </div></div><!-- contents -->

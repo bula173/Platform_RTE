@@ -1,0 +1,13 @@
+<map id="include/safeapi/oal/memory/sapi_safe_ptr.h" name="include/safeapi/oal/memory/sapi_safe_ptr.h">
+<area shape="rect" id="Node000001" title="Safe&#45;pointer wrapper: bounds + NULL + corruption&#45;canary checked access to a raw memory region,..." alt="" coords="71,5,254,45"/>
+<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,93,152,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="146,47,109,85,105,82,142,44"/>
+<area shape="rect" id="Node000003" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="177,93,319,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,44,221,82,218,85,180,47"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="104,181,187,207"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="225,136,173,175,170,171,222,131"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="211,181,285,207"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="251,134,251,167,245,167,245,134"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="310,181,381,207"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="273,131,322,170,319,175,270,136"/>
+</map>

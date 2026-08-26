@@ -1,11 +1,11 @@
-<map id="include/safeapi/channel_link/sapi_channel.h" name="include/safeapi/channel_link/sapi_channel.h">
-<area shape="rect" id="Node000001" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="105,5,281,45"/>
+<map id="include/safeapi/redundancy/channel_link/sapi_channel.h" name="include/safeapi/redundancy/channel_link/sapi_channel.h">
+<area shape="rect" id="Node000001" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="88,5,297,45"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,101,76,126"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="161,48,74,96,72,92,158,43"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="101,101,183,126"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,47,158,90,154,87,179,44"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="207,101,282,126"/>
 <area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="206,44,233,87,228,90,202,47"/>
-<area shape="rect" id="Node000005" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="307,93,452,133"/>
+<area shape="rect" id="Node000005" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="306,93,453,133"/>
 <area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="235,43,327,85,325,90,233,48"/>
 </map>

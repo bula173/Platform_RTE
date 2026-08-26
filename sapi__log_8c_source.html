@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: src/log/sapi_log.c Source File</title>
+<title>Safe API Framework: src/oal/log/sapi_log.c Source File</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -91,7 +91,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2241064965c8d9ca993f08b926076f7d.html">log</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_050651ea8df62fca4296aebc978c1240.html">oal</a></li><li class="navelem"><a class="el" href="dir_cc45f22b76c0bad8491b466de89b83a9.html">log</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -99,11 +99,11 @@ $(document).ready(function() { init_codefold(0); });
 </div><!--header-->
 <div class="contents">
 <a href="sapi__log_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__log_8h.html">safeapi/log/sapi_log.h</a>&quot;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__lifecycle_8h.html">safeapi/lifecycle/sapi_lifecycle.h</a>&quot;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__log_8h.html">safeapi/oal/log/sapi_log.h</a>&quot;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__lifecycle_8h.html">safeapi/utils/lifecycle/sapi_lifecycle.h</a>&quot;</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__log__backend_8h.html">safeapi_backend/log/sapi_log_backend.h</a>&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__string_8h.html">safeapi/string/sapi_string.h</a>&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__timer_8h.html">safeapi/timer/sapi_timer.h</a>&quot;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__string_8h.html">safeapi/utils/string/sapi_string.h</a>&quot;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__timer_8h.html">safeapi/oal/timer/sapi_timer.h</a>&quot;</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="sapi__log_8c.html#ae97d049dded7146bd09328d904d1f4a7">   27</a></span><span class="keyword">static</span> <span class="keyword">const</span> <a class="code hl_struct" href="structsapi__log__backend__t.html">sapi_log_backend_t</a> *<a class="code hl_variable" href="sapi__log_8c.html#ae97d049dded7146bd09328d904d1f4a7">s_backend</a> = NULL;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span> </div>

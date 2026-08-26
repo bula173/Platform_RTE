@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/appmanager/sapi_appmanager.h File Reference</title>
+<title>Safe API Framework: include/safeapi/app/appmanager/sapi_appmanager.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,12 +86,13 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_fd890125caf466bd3959914193deee81.html">appmanager</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_2972ab381b3b094b64d623dbe969e28f.html">app</a></li><li class="navelem"><a class="el" href="dir_686aad5f9e414f6688a0e4a145f85d20.html">appmanager</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">sapi_appmanager.h File Reference</div></div>
@@ -101,19 +102,19 @@ $(function() {
 <p>Application Manager abstraction for safeAPIFramework applications.  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/types/sapi_types.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__voter_8h_source.html">safeapi/voter/sapi_voter.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__watchdog_8h_source.html">safeapi/watchdog/sapi_watchdog.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/utils/types/sapi_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__voter_8h_source.html">safeapi/redundancy/voter/sapi_voter.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__watchdog_8h_source.html">safeapi/redundancy/watchdog/sapi_watchdog.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_appmanager.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__appmanager_8h__incl.svg" width="600" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__appmanager_8h__incl.svg" width="658" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__appmanager_8h__dep__incl.svg" width="218" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__appmanager_8h__dep__incl.svg" width="250" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__appmanager_8h_source.html">Go to the source code of this file.</a></p>
@@ -124,7 +125,7 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application lifecycle operations.  <a href="structsapi__appmanager__operations__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__checkpoint__config__t.html">sapi_appmanager_checkpoint_config_t</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional built-in checkpoint rendezvous configuration (ADR-019).  <a href="structsapi__appmanager__checkpoint__config__t.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional built-in checkpoint rendezvous configuration (ADR-019/ADR-034).  <a href="structsapi__appmanager__checkpoint__config__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application manager configuration.  <a href="structsapi__appmanager__config__t.html#details">More...</a><br /></td></tr>
@@ -132,6 +133,18 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__state__t.html">sapi_appmanager_state_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application manager runtime state.  <a href="structsapi__appmanager__state__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:gad4a5656cacc1e52f1a769541edc2d9b9" id="r_gad4a5656cacc1e52f1a769541edc2d9b9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gad4a5656cacc1e52f1a769541edc2d9b9">SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED</a>&#160;&#160;&#160;((uint64_t)0xFFFFFFFFFFFFFFFFULL)</td></tr>
+<tr class="memdesc:gad4a5656cacc1e52f1a769541edc2d9b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset value of the per-cycle checkpoint signature before any marks are folded into it (ADR-034) - see <a class="el" href="group__APPMANAGER.html#gaa0bd28731c0ccf8c866928b4bd17f5af" title="Pure helper: folds a 64-bit checkpoint signature down to the uint32_t sapi_checkpoint_config_t::check...">sapi_appmanager_checkpoint_fold_signature()</a>'s own doc. A cycle in which no <a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48" title="Records a checkpoint mark for this call site (ADR-034) - see sapi_appmanager_checkpoint_mark()&#39;s own ...">SAPI_CHECKPOINT_MARK()</a> call is ever made therefore always computes checkpoint_id as <code>sapi_appmanager_checkpoint_fold_signature(SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED)</code>  <br /></td></tr>
+<tr class="separator:gad4a5656cacc1e52f1a769541edc2d9b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaee9dd382382d1aa3bfaf789d0fb5d48" id="r_gaaee9dd382382d1aa3bfaf789d0fb5d48"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48">SAPI_CHECKPOINT_MARK</a>()&#160;&#160;&#160;<a class="el" href="group__APPMANAGER.html#gaebf05cae18f80a86aea21b44919d8e9a">sapi_appmanager_checkpoint_mark</a>(__FILE__, (int32_t)__LINE__, NULL)</td></tr>
+<tr class="memdesc:gaaee9dd382382d1aa3bfaf789d0fb5d48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records a checkpoint mark for this call site (ADR-034) - see <a class="el" href="group__APPMANAGER.html#gaebf05cae18f80a86aea21b44919d8e9a" title="Folds a hash of this call site into the current cycle&#39;s checkpoint signature (ADR-034).">sapi_appmanager_checkpoint_mark()</a>'s own doc.  <br /></td></tr>
+<tr class="separator:gaaee9dd382382d1aa3bfaf789d0fb5d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad5d68f3f2bbbafc0b3f29e4f9d6dde72" id="r_gad5d68f3f2bbbafc0b3f29e4f9d6dde72"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gad5d68f3f2bbbafc0b3f29e4f9d6dde72">SAPI_CHECKPOINT_MARK_LABEL</a>(label_str)&#160;&#160;&#160;<a class="el" href="group__APPMANAGER.html#gaebf05cae18f80a86aea21b44919d8e9a">sapi_appmanager_checkpoint_mark</a>(__FILE__, (int32_t)__LINE__, (label_str))</td></tr>
+<tr class="memdesc:gad5d68f3f2bbbafc0b3f29e4f9d6dde72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Records a checkpoint mark identified by a caller-supplied label instead of this call site's <a href="file:line">file:line</a> (ADR-034) - see <a class="el" href="group__APPMANAGER.html#gaebf05cae18f80a86aea21b44919d8e9a" title="Folds a hash of this call site into the current cycle&#39;s checkpoint signature (ADR-034).">sapi_appmanager_checkpoint_mark()</a>'s own doc.  <br /></td></tr>
+<tr class="separator:gad5d68f3f2bbbafc0b3f29e4f9d6dde72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -150,6 +163,12 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:gaa0bd28731c0ccf8c866928b4bd17f5af" id="r_gaa0bd28731c0ccf8c866928b4bd17f5af"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gaa0bd28731c0ccf8c866928b4bd17f5af">sapi_appmanager_checkpoint_fold_signature</a> (uint64_t signature)</td></tr>
+<tr class="memdesc:gaa0bd28731c0ccf8c866928b4bd17f5af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure helper: folds a 64-bit checkpoint signature down to the uint32_t <a class="el" href="structsapi__checkpoint__config__t.html#a913ef1efa939a3713153a9a5761a1151">sapi_checkpoint_config_t::checkpoint_id</a> expects (ADR-034).  <br /></td></tr>
+<tr class="separator:gaa0bd28731c0ccf8c866928b4bd17f5af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaebf05cae18f80a86aea21b44919d8e9a" id="r_gaebf05cae18f80a86aea21b44919d8e9a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gaebf05cae18f80a86aea21b44919d8e9a">sapi_appmanager_checkpoint_mark</a> (const char *file, int32_t line, const char *label)</td></tr>
+<tr class="memdesc:gaebf05cae18f80a86aea21b44919d8e9a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Folds a hash of this call site into the current cycle's checkpoint signature (ADR-034).  <br /></td></tr>
+<tr class="separator:gaebf05cae18f80a86aea21b44919d8e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab9538e91ca0849775b4989d3b1c0f566" id="r_gab9538e91ca0849775b4989d3b1c0f566"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566">sapi_appmanager_run</a> (const <a class="el" href="structsapi__appmanager__config__t.html">sapi_appmanager_config_t</a> *config)</td></tr>
 <tr class="memdesc:gab9538e91ca0849775b4989d3b1c0f566"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run application with lifecycle management.  <br /></td></tr>
 <tr class="separator:gab9538e91ca0849775b4989d3b1c0f566"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,7 +198,9 @@ Functions</h2></td></tr>
 <li>post_execute() — Optional, per-cycle output/cleanup stage (may be NULL)</li>
 <li>shutdown() — Graceful cleanup</li>
 </ul>
-<p>The <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> function manages lifecycle and error handling. Per ADR-019, it can also be configured (<a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a>) to perform a bounded <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> rendezvous (ADR-017) at the start of every cycle, ahead of pre_execute/execute/post_execute, so a dual/multi-channel application does not have to hand-roll that call itself; this is opt-in and defaults to disabled (NULL).</p>
+<p>The <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> function manages lifecycle and error handling. Per ADR-019/ADR-034, it can also be configured (<a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a>) to perform a bounded <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> rendezvous (ADR-017) as the LAST stage of every cycle, after pre_execute/execute/post_execute, so a dual/multi-channel application does not have to hand-roll that call itself; this is opt-in and defaults to disabled (NULL).</p>
+<p>ADR-034: the checkpoint's own checkpoint_id is no longer a bare cycle counter (that broke across an independent reboot of just one channel - see <a class="el" href="structsapi__appmanager__checkpoint__config__t.html" title="Optional built-in checkpoint rendezvous configuration (ADR-019/ADR-034).">sapi_appmanager_checkpoint_config_t</a>'s own doc). Instead, application code calls <a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48" title="Records a checkpoint mark for this call site (ADR-034) - see sapi_appmanager_checkpoint_mark()&#39;s own ...">SAPI_CHECKPOINT_MARK()</a> (or the labelled variant, <a class="el" href="group__APPMANAGER.html#gad5d68f3f2bbbafc0b3f29e4f9d6dde72" title="Records a checkpoint mark identified by a caller-supplied label instead of this call site&#39;s file:line...">SAPI_CHECKPOINT_MARK_LABEL()</a>) at meaningful decision/preparation points during pre_execute()/execute()/post_execute(); each call folds a CRC64 hash of its call site (by default <b>FILE</b>:<b>LINE</b>, or a caller-supplied label) into a single running per-cycle signature. The checkpoint stage then rendezvous-compares THIS cycle's own folded signature with the peer's - so a match proves both channels reached the exact same sequence of marks this cycle (the same program path), not merely "both channels
+are alive." If ops-&gt;on_checkpoint_result is non-NULL, it is called exactly once per cycle with the outcome, letting an application stage (queue but not transmit) its outputs during the cycle and only commit (actually send) them once the checkpoint confirms both channels agree - see that field's own doc.</p>
 <p>REQ-APPMANAGER-001: Applications shall use the Application Manager for controlled initialization, execution, and shutdown lifecycle.</p>
 <p>ADR-026: the moment init() returns SAPI_STATUS_OK, <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> locks the application's setup phase (<a class="el" href="group__LIFECYCLE.html#ga0f73c8c5f44040ba8d8b5ad009830d45" title="Locks the application&#39;s setup phase.">sapi_lifecycle_lock()</a> - see <a class="el" href="sapi__lifecycle_8h.html" title="Process-wide application setup-phase lock (ADR-026).">sapi_lifecycle.h</a>) - every setup-only constructor this framework ships (<a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a>, <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a>, <a class="el" href="group__voter.html#gac02cb7c3021b1c4dd28125f69b5f7d54" title="Initializes a voter with zero registered channels.">sapi_voter_init()</a>/ _register_channel(), <a class="el" href="group__cross__comparator.html#ga8accab55c6bca5025c11575f7d5e7cfa" title="Initializes a cross-comparator with zero registered channels.">sapi_cross_comparator_init()</a>/_register_channel(), <a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8" title="Create a watchdog.">sapi_watchdog_create()</a>) then rejects with SAPI_STATUS_INVALID_STATE for the remainder of this run: a timer/channel/voter/cross-comparator/ watchdog an application's own init() did not already create is not one its execute()/pre_execute()/post_execute() may create either. <a class="el" href="group__NETLINK.html#gac7df60f4ae08e2e08056fde96c3240d4" title="Establishes a point-to-point link: binds+accepts (LISTEN) or dials (CONNECT), per config-&gt;role.">sapi_netlink_open()</a>/sapi_dual_channel_init()/sapi_dual_negotiator_init() are deliberately NOT gated by this lock - see <a class="el" href="sapi__lifecycle_8h.html" title="Process-wide application setup-phase lock (ADR-026).">sapi_lifecycle.h</a>'s own doc for why a link an application already owns being re-established after a drop is not the same thing this lock exists to prevent.</p>
 <dl class="section note"><dt>Note</dt><dd>Unlike the seven OAL services (sapi_timer, sapi_nvm, sapi_memory, sapi_task, sapi_ipc, sapi_log, sapi_reboot), this module is not backend-dispatched (ADR-005) - it is a direct, OS-agnostic implementation, same as sapi_safestate. <a class="el" href="group__APPMANAGER.html#gad7a9a181120aa3e9821a9479a8f55e52" title="POSIX-only convenience: installs SIGINT and SIGTERM handlers that call sapi_appmanager_request_shutdo...">sapi_appmanager_install_default_signal_handlers()</a> below is a <b>deliberate, narrow exception</b> to that OS-agnosticism: it is a POSIX-only convenience, compiled out (returns SAPI_STATUS_NOT_SUPPORTED) on any non-POSIX target. It exists because "let something external ask a long-running sapi_appmanager_run() loop

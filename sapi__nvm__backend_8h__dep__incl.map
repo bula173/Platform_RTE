@@ -1,5 +1,5 @@
 <map id="include/safeapi_backend/nvm/sapi_nvm_backend.h" name="include/safeapi_backend/nvm/sapi_nvm_backend.h">
 <area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the NVM service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,5,200,45"/>
-<area shape="rect" id="Node000002" href="$sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="27,93,179,119"/>
+<area shape="rect" id="Node000002" href="$sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="15,93,191,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,59,105,93,100,93,100,59"/>
 </map>

@@ -139,6 +139,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga2ae7274dce915ff92b132f88a7676cc9" id="r_ga2ae7274dce915ff92b132f88a7676cc9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga2ae7274dce915ff92b132f88a7676cc9">sapi_channel_get_health</a> (const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, <a class="el" href="structsapi__channel__health__t.html">sapi_channel_health_t</a> *out_health)</td></tr>
 <tr class="memdesc:ga2ae7274dce915ff92b132f88a7676cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Queries this channel's health statistics.  <br /></td></tr>
 <tr class="separator:ga2ae7274dce915ff92b132f88a7676cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga476e85a04158e94c2d00f5f541c3e7b8" id="r_ga476e85a04158e94c2d00f5f541c3e7b8"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga476e85a04158e94c2d00f5f541c3e7b8">sapi_channel_get_name</a> (const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle)</td></tr>
+<tr class="memdesc:ga476e85a04158e94c2d00f5f541c3e7b8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns this channel's name, as given in <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time.  <br /></td></tr>
+<tr class="separator:ga476e85a04158e94c2d00f5f541c3e7b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga590548924653a0a40936bbdde77a35c0" id="r_ga590548924653a0a40936bbdde77a35c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__channel__link.html#ga590548924653a0a40936bbdde77a35c0">sapi_channel_set_healthy</a> (<a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *handle, bool is_healthy)</td></tr>
 <tr class="memdesc:ga590548924653a0a40936bbdde77a35c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Marks this channel healthy/unhealthy.  <br /></td></tr>
 <tr class="separator:ga590548924653a0a40936bbdde77a35c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,7 +221,7 @@ Functions</h2></td></tr>
 <p>Opaque handle to a vital channel instance. </p>
 <p>Created by <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a>; used directly, or registered into a sapi_voter_t (N-way voting) or sapi_cross_comparator_t (2-way comparison) for the redundancy/comparison use case. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__channel_8h_source.html#l00120">120</a> of file <a class="el" href="sapi__channel_8h_source.html">sapi_channel.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__channel_8h_source.html#l00127">127</a> of file <a class="el" href="sapi__channel_8h_source.html">sapi_channel.h</a>.</p>
 
 </div>
 </div>
@@ -428,6 +431,36 @@ SAPI_STATUS_INVALID_PARAM if handle or out_health is NULL</dd></dl>
 
 </div>
 </div>
+<a id="ga476e85a04158e94c2d00f5f541c3e7b8" name="ga476e85a04158e94c2d00f5f541c3e7b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga476e85a04158e94c2d00f5f541c3e7b8">&#9670;&#160;</a></span>sapi_channel_get_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char * sapi_channel_get_name </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns this channel's name, as given in <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">handle</td><td>Vital channel handle. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The channel's name (may itself be NULL if none was configured, or if handle was never initialized); NULL if handle is NULL.</dd></dl>
+<dl class="section user"><dt>Safety:</dt><dd>Read-only; safe to call from any context. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__channel_8c_source.html#l00124">124</a> of file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
+
+</div>
+</div>
 <a id="ga590548924653a0a40936bbdde77a35c0" name="ga590548924653a0a40936bbdde77a35c0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga590548924653a0a40936bbdde77a35c0">&#9670;&#160;</a></span>sapi_channel_set_healthy()</h2>
 
@@ -468,7 +501,7 @@ SAPI_STATUS_INVALID_PARAM if handle or out_health is NULL</dd></dl>
 SAPI_STATUS_INVALID_PARAM if handle is NULL</dd></dl>
 <p>REQ-CHANNEL-004: is_healthy defaults true at init and is never cleared automatically by this module - only via this explicit call. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__channel_8c_source.html#l00124">124</a> of file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__channel_8c_source.html#l00133">133</a> of file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
 
 </div>
 </div>
@@ -499,7 +532,7 @@ SAPI_STATUS_INVALID_PARAM if handle is NULL</dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK always (including when handle is NULL).</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Idempotent; safe to call with NULL. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__channel_8c_source.html#l00135">135</a> of file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__channel_8c_source.html#l00144">144</a> of file <a class="el" href="sapi__channel_8c_source.html">sapi_channel.c</a>.</p>
 
 </div>
 </div>

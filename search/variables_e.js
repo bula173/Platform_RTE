@@ -11,5 +11,6 @@ var searchData=
   ['port_8',['port',['../structsapi__netlink__config__t.html#a57aeb391e22d0c1f768e0f387e85ac33',1,'sapi_netlink_config_t::port'],['../structsapi__safechannel__endpoint__t.html#a745afd5a34b549364c5b22325f0d33b9',1,'sapi_safechannel_endpoint_t::port']]],
   ['post_5fexecute_9',['post_execute',['../structsapi__appmanager__operations__t.html#a1b4d892d11c1e780931a308697bfb47e',1,'sapi_appmanager_operations_t']]],
   ['pre_5fexecute_10',['pre_execute',['../structsapi__appmanager__operations__t.html#a365e23c52c1e6723fc404e21a93f525d',1,'sapi_appmanager_operations_t']]],
-  ['priority_11',['priority',['../structsapi__task__config__t.html#afe7a346b07a78599030af132bc289f45',1,'sapi_task_config_t']]]
+  ['priority_11',['priority',['../structsapi__task__config__t.html#afe7a346b07a78599030af132bc289f45',1,'sapi_task_config_t']]],
+  ['ptr_12',['ptr',['../structsapi__safe__ptr__t.html#a01cc28783a4b967296bf19d52920f7ce',1,'sapi_safe_ptr_t']]]
 ];

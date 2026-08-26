@@ -89,7 +89,7 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-030: &lt;tt&gt;sapi_notify&lt;/tt&gt; - fixed-capacity registered-callback list shape</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md281"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code><a class="el" href="sapi__notify_8h.html" title="Fixed-capacity registered-callback list shape (ADR-030).">include/safeapi/notify/sapi_notify.h</a></code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.3/§5).</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md281"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/notify/sapi_notify.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.3/§5).</p>
 <h1><a class="anchor" id="autotoc_md282"></a>
 1. Context</h1>
 <p><code>safeAPIRBC2oo2</code> (downstream, separate repo) is introducing a GA/GP split inside its A/B redundant-channel application: a "GP" orchestrator module (the cyclic train-route connect sweep) needs to (a) ask its registered "GA" peers "is this proposed action OK" before proceeding - a veto gate, every registered peer must agree - and (b) separately tell its registered GA peers "this happened" once it has - a fan-out notification, no return value. Today it does neither: it <code>#include</code>s its peer module's header directly and calls its functions by name, the same tight compile-time coupling ADR-025's own §1 context flags for <code>channel_ab_crosscompare.c</code> before that ADR - "already reimplemented
@@ -128,7 +128,7 @@ pointer type, same call site, same NULL-guard" precedent <code><a class="el" hre
 <h1><a class="anchor" id="autotoc_md289"></a>
 5. Location</h1>
 <ul>
-<li><code><a class="el" href="sapi__notify_8h.html" title="Fixed-capacity registered-callback list shape (ADR-030).">include/safeapi/notify/sapi_notify.h</a></code> (new, header-only).</li>
+<li><code>include/safeapi/notify/sapi_notify.h</code> (new, header-only).</li>
 <li>No <code>src/</code>, no <code>tests/</code>, no <code>SAFEAPI_ENABLE_*</code> CMake option - see §2.3. </li>
 </ul>
 </div></div><!-- contents -->

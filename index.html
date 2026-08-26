@@ -98,9 +98,9 @@ Status</h1>
 <li>Timer, IPC (base queue API only — see note below), Memory, NVM, Task/Thread, Logging, Reboot</li>
 <li>AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String</li>
 <li>Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions</li>
-<li>Note: <code>sapi_ipc</code>'s pub/sub and request-reply variants (<code><a class="el" href="sapi__ipc__pubsub_8c.html" title="IPC Publish-Subscribe implementation.">src/ipc/sapi_ipc_pubsub.c</a></code>, <code><a class="el" href="sapi__ipc__request__reply_8c.html" title="IPC Request-Reply implementation.">sapi_ipc_request_reply.c</a></code>) are TODO-only stubs, excluded from the build (see their own file headers and <code>CMakeLists.txt</code>'s <code>SAFEAPI_ENABLE_IPC</code> comment) — only the base queue API (<code>sapi_ipc_create</code>/<code>_send</code>/<code>_receive</code>/<code>_destroy</code>) is implemented.</li>
+<li>Note: <code>sapi_ipc</code>'s pub/sub and request-reply variants (<code>src/ipc/sapi_ipc_pubsub.c</code>, <code><a class="el" href="sapi__ipc__request__reply_8c.html" title="IPC Request-Reply implementation.">sapi_ipc_request_reply.c</a></code>) are TODO-only stubs, excluded from the build (see their own file headers and <code>CMakeLists.txt</code>'s <code>SAFEAPI_ENABLE_IPC</code> comment) — only the base queue API (<code>sapi_ipc_create</code>/<code>_send</code>/<code>_receive</code>/<code>_destroy</code>) is implemented.</li>
 </ul>
-<p><b>IMPLEMENTED:</b> Watchdog (<code><a class="el" href="sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions.">include/safeapi/watchdog/sapi_watchdog.h</a></code>, <code><a class="el" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable sap...">src/watchdog/sapi_watchdog.c</a></code>)</p><ul>
+<p><b>IMPLEMENTED:</b> Watchdog (<code>include/safeapi/watchdog/sapi_watchdog.h</code>, <code>src/watchdog/sapi_watchdog.c</code>)</p><ul>
 <li>Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM) dispatched on timeout, real timer integration, full test coverage</li>
 <li>Depended on directly by <code>sapi_checkpoint</code> and <code>sapi_appmanager</code>'s optional checkpoint stage (ADR-024's dependency graph)</li>
 </ul>

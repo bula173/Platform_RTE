@@ -11,10 +11,11 @@ var searchData=
   ['sapi_5fsafechannel_5flink_5fstatus_5ft_8',['sapi_safechannel_link_status_t',['../group__SAFECHANNEL.html#gad774d89a774a0b07e5571964056ece71',1,'sapi_safechannel.h']]],
   ['sapi_5fsafechannel_5ftype_5ft_9',['sapi_safechannel_type_t',['../group__SAFECHANNEL.html#ga079ff73e377056dc0ea790fc98a45d8c',1,'sapi_safechannel.h']]],
   ['sapi_5fsafestate_5flevel_5ft_10',['sapi_safestate_level_t',['../group__SAFESTATE.html#gaa98095895e91c2a6a22f189070ef6eb7',1,'sapi_safestate.h']]],
-  ['sapi_5fstatus_5ft_11',['sapi_status_t',['../group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83',1,'sapi_status.h']]],
-  ['sapi_5ftimer_5fmode_5ft_12',['sapi_timer_mode_t',['../group__TIMER.html#gae98e16ca8c56190f325bdb1a8e2b4b8e',1,'sapi_timer.h']]],
-  ['sapi_5fvoting_5fresult_5ft_13',['sapi_voting_result_t',['../group__voter.html#ga483f250dd8a9c9d1c6a989b202ff22c7',1,'sapi_voter.h']]],
-  ['sapi_5fvoting_5fstrategy_5ft_14',['sapi_voting_strategy_t',['../group__voter.html#gaf860cc1b3c27fe07ce12cc8816ca72d5',1,'sapi_voter.h']]],
-  ['sapi_5fwatchdog_5faction_5ft_15',['sapi_watchdog_action_t',['../group__WATCHDOG.html#ga8ea2354635a9eb8b54711c1a5798b052',1,'sapi_watchdog.h']]],
-  ['sapi_5fwatchdog_5ftype_5ft_16',['sapi_watchdog_type_t',['../group__WATCHDOG.html#ga8b5df0648d1416ec8196719ae7d49c2b',1,'sapi_watchdog.h']]]
+  ['sapi_5fsafety_5fviolation_5fkind_5ft_11',['sapi_safety_violation_kind_t',['../group__SAFETYVIOLATION.html#ga533d6d3009df86c15fd47ce90047f601',1,'sapi_safety_violation.h']]],
+  ['sapi_5fstatus_5ft_12',['sapi_status_t',['../group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83',1,'sapi_status.h']]],
+  ['sapi_5ftimer_5fmode_5ft_13',['sapi_timer_mode_t',['../group__TIMER.html#gae98e16ca8c56190f325bdb1a8e2b4b8e',1,'sapi_timer.h']]],
+  ['sapi_5fvoting_5fresult_5ft_14',['sapi_voting_result_t',['../group__voter.html#ga483f250dd8a9c9d1c6a989b202ff22c7',1,'sapi_voter.h']]],
+  ['sapi_5fvoting_5fstrategy_5ft_15',['sapi_voting_strategy_t',['../group__voter.html#gaf860cc1b3c27fe07ce12cc8816ca72d5',1,'sapi_voter.h']]],
+  ['sapi_5fwatchdog_5faction_5ft_16',['sapi_watchdog_action_t',['../group__WATCHDOG.html#ga8ea2354635a9eb8b54711c1a5798b052',1,'sapi_watchdog.h']]],
+  ['sapi_5fwatchdog_5ftype_5ft_17',['sapi_watchdog_type_t',['../group__WATCHDOG.html#ga8b5df0648d1416ec8196719ae7d49c2b',1,'sapi_watchdog.h']]]
 ];

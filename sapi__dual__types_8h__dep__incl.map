@@ -1,21 +1,21 @@
-<map id="include/safeapi/dual/sapi_dual_types.h" name="include/safeapi/dual/sapi_dual_types.h">
-<area shape="rect" id="Node000001" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="349,5,503,45"/>
-<area shape="rect" id="Node000002" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="224,181,383,221"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="338,51,306,69,282,95,275,116,276,138,284,161,293,180,289,182,279,163,271,139,269,115,277,92,303,65,335,46"/>
-<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="397,269,570,309"/>
-<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="445,56,459,93,471,142,478,191,485,269,480,269,473,192,466,143,454,94,440,58"/>
-<area shape="rect" id="Node000008" href="$sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="292,93,445,133"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="408,58,384,95,379,92,403,56"/>
-<area shape="rect" id="Node000009" href="$sapi__dual__types_8c.html" title="Diagnostics&#45;only string rendering for the sapi_dual module&#39;s shared enums (ADR&#45;020)." alt="" coords="521,93,659,133"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="475,49,555,91,553,96,473,54"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="356,225,445,267,443,272,354,230"/>
-<area shape="rect" id="Node000005" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="5,269,209,309"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="249,229,151,272,149,267,247,224"/>
-<area shape="rect" id="Node000007" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="234,269,373,309"/>
-<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="306,235,306,269,301,269,301,235"/>
-<area shape="rect" id="Node000004" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="414,357,553,397"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="486,323,486,357,481,357,481,323"/>
-<area shape="rect" id="Node000006" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="30,357,185,397"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="110,323,110,357,105,357,105,323"/>
-<area shape="poly" id="edge8_Node000008_Node000002" title=" " alt="" coords="348,146,320,183,316,179,344,143"/>
+<map id="include/safeapi/redundancy/dual/sapi_dual_types.h" name="include/safeapi/redundancy/dual/sapi_dual_types.h">
+<area shape="rect" id="Node000001" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="378,5,579,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="242,181,443,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="366,47,328,66,312,79,298,95,292,116,297,138,310,160,325,179,321,183,306,163,292,140,286,116,294,92,308,75,325,62,364,42"/>
+<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="445,269,651,309"/>
+<area shape="poly" id="edge9_Node000001_Node000003" title=" " alt="" coords="505,56,525,92,539,141,547,191,551,269,546,269,541,191,534,142,520,94,500,58"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="309,93,510,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="457,58,427,95,423,91,453,55"/>
+<area shape="rect" id="Node000009" href="$sapi__dual__types_8c.html" title="Diagnostics&#45;only string rendering for the sapi_dual module&#39;s shared enums (ADR&#45;020)." alt="" coords="586,93,739,133"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="533,49,624,91,621,96,530,54"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="401,224,504,267,502,272,399,229"/>
+<area shape="rect" id="Node000005" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="5,269,240,309"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="283,229,172,272,170,267,281,224"/>
+<area shape="rect" id="Node000007" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="264,269,421,309"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="345,235,345,269,340,269,340,235"/>
+<area shape="rect" id="Node000004" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="462,357,634,397"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="551,323,551,357,545,357,545,323"/>
+<area shape="rect" id="Node000006" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="21,357,225,397"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="125,323,125,357,120,357,120,323"/>
+<area shape="poly" id="edge8_Node000008_Node000002" title=" " alt="" coords="388,146,360,183,355,179,384,143"/>
 </map>

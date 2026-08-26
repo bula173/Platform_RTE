@@ -1,5 +1,5 @@
 <map id="include/safeapi_backend/task/sapi_task_backend.h" name="include/safeapi_backend/task/sapi_task_backend.h">
 <area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the Task/thread scheduling service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,5,199,45"/>
-<area shape="rect" id="Node000002" href="$sapi__task_8c.html" title="Task service: validates parameters, then dispatches to the backend registered via sapi_task_register_..." alt="" coords="27,93,177,119"/>
+<area shape="rect" id="Node000002" href="$sapi__task_8c.html" title="Task service: validates parameters, then dispatches to the backend registered via sapi_task_register_..." alt="" coords="15,93,189,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,59,105,93,99,93,99,59"/>
 </map>

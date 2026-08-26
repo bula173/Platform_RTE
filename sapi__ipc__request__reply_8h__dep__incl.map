@@ -1,5 +1,5 @@
-<map id="include/safeapi/ipc/sapi_ipc_request_reply.h" name="include/safeapi/ipc/sapi_ipc_request_reply.h">
-<area shape="rect" id="Node000001" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="5,5,191,45"/>
-<area shape="rect" id="Node000002" href="$sapi__ipc__request__reply_8c.html" title="IPC Request&#45;Reply implementation." alt="" coords="9,93,187,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,59,101,93,95,93,95,59"/>
+<map id="include/safeapi/oal/ipc/sapi_ipc_request_reply.h" name="include/safeapi/oal/ipc/sapi_ipc_request_reply.h">
+<area shape="rect" id="Node000001" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="5,5,164,60"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc__request__reply_8c.html" title="IPC Request&#45;Reply implementation." alt="" coords="12,108,157,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,74,87,108,82,108,82,74"/>
 </map>

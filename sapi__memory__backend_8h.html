@@ -99,17 +99,17 @@ $(function() {
 
 <p>OS-backend adaptation surface for the static memory pool service (ADR-005, ADR-021).  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__memory_8h_source.html">safeapi/memory/sapi_memory.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__memory_8h_source.html">safeapi/oal/memory/sapi_memory.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_memory_backend.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__memory__backend_8h__incl.svg" width="384" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__memory__backend_8h__incl.svg" width="387" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__memory__backend_8h__dep__incl.svg" width="258" height="124"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__memory__backend_8h__dep__incl.svg" width="258" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__memory__backend_8h_source.html">Go to the source code of this file.</a></p>
@@ -128,7 +128,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>OS-backend adaptation surface for the static memory pool service (ADR-005, ADR-021). </p>
-<p>For platform integrators implementing a <a class="el" href="structsapi__mem__pool__backend__t.html" title="Backend vtable: an integrator&#39;s implementation of the memory pool service (ADR-005)....">sapi_mem_pool_backend_t</a> and calling <a class="el" href="group__MEMORY__BACKEND.html#ga3d890b9d724722c2c3aa0f5ad6b308b5" title="Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2....">sapi_mem_pool_register_backend()</a> - NOT part of the consumer API (<a class="el" href="sapi__memory_8h.html" title="OS Abstraction Layer - Static memory reservation service.">safeapi/memory/sapi_memory.h</a>). A real application should never include this file; only the startup code that wires a concrete backend does. </p>
+<p>For platform integrators implementing a <a class="el" href="structsapi__mem__pool__backend__t.html" title="Backend vtable: an integrator&#39;s implementation of the memory pool service (ADR-005)....">sapi_mem_pool_backend_t</a> and calling <a class="el" href="group__MEMORY__BACKEND.html#ga3d890b9d724722c2c3aa0f5ad6b308b5" title="Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2....">sapi_mem_pool_register_backend()</a> - NOT part of the consumer API (safeapi/memory/sapi_memory.h). A real application should never include this file; only the startup code that wires a concrete backend does. </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__memory__backend_8h_source.html">sapi_memory_backend.h</a>.</p>
 </div></div><!-- contents -->

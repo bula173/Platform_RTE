@@ -1,7 +1,7 @@
-<map id="include/safeapi/memory/sapi_mem_util.h" name="include/safeapi/memory/sapi_mem_util.h">
-<area shape="rect" id="Node000001" title="Thin, MISRA&#45;visible wrappers over the three raw memory&#45;block primitives (fill/copy/compare) every oth..." alt="" coords="5,5,185,45"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="10,93,85,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="86,47,64,83,59,80,81,44"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="109,93,180,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="110,44,132,80,128,83,105,47"/>
+<map id="include/safeapi/oal/memory/sapi_mem_util.h" name="include/safeapi/oal/memory/sapi_mem_util.h">
+<area shape="rect" id="Node000001" title="Thin, MISRA&#45;visible wrappers over the three raw memory&#45;block primitives (fill/copy/compare) every oth..." alt="" coords="5,5,199,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="17,93,91,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="93,47,71,83,66,80,88,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="116,93,187,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="116,44,139,80,135,83,112,47"/>
 </map>

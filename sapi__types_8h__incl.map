@@ -1,5 +1,5 @@
-<map id="include/safeapi/types/sapi_types.h" name="include/safeapi/types/sapi_types.h">
-<area shape="rect" id="Node000001" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="69,5,230,45"/>
+<map id="include/safeapi/utils/types/sapi_types.h" name="include/safeapi/utils/types/sapi_types.h">
+<area shape="rect" id="Node000001" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="73,5,226,45"/>
 <area shape="rect" id="Node000002" title=" " alt="" coords="5,93,88,119"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,48,74,87,71,83,123,43"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="112,93,187,119"/>

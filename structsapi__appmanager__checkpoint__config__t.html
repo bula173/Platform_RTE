@@ -92,7 +92,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Optional built-in checkpoint rendezvous configuration (ADR-019).  
+<p>Optional built-in checkpoint rendezvous configuration (ADR-019/ADR-034).  
  <a href="structsapi__appmanager__checkpoint__config__t.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>&gt;</code></p>
@@ -114,11 +114,13 @@ Data Fields</h2></td></tr>
 <tr class="separator:a8e2f62d80ad8c5bec2baa3c2b8499d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Optional built-in checkpoint rendezvous configuration (ADR-019). </p>
-<p>When attached to <a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a>, <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> calls <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> once at the start of every cycle - before pre_execute()/execute()/post_execute() - using the running <a class="el" href="structsapi__appmanager__state__t.html#a86a7eec86ed0c4ec3931073735e496d3">sapi_appmanager_state_t::iteration_count</a> as the checkpoint's checkpoint_id, so no separate per-cycle counter is needed. Leave <a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a> NULL to disable this entirely (the default); this is opt-in because <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> blocks for up to max_delay_ms, which is only wanted by applications that are actually part of a synchronized multi-channel group.</p>
+<div class="textblock"><p>Optional built-in checkpoint rendezvous configuration (ADR-019/ADR-034). </p>
+<p>When attached to <a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a>, <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> calls <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> once at the END of every cycle - after pre_execute()/execute()/post_execute() have all run - using this cycle's own folded checkpoint-mark signature (see this header's file-level ADR-034 doc and <a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48" title="Records a checkpoint mark for this call site (ADR-034) - see sapi_appmanager_checkpoint_mark()&#39;s own ...">SAPI_CHECKPOINT_MARK()</a>) as the checkpoint's checkpoint_id.</p>
+<p>ADR-034 history: this used to run FIRST, before pre_execute(), using the running <a class="el" href="structsapi__appmanager__state__t.html#a86a7eec86ed0c4ec3931073735e496d3">sapi_appmanager_state_t::iteration_count</a> as checkpoint_id, on the theory that "no separate per-cycle counter is needed." That broke in practice: iteration_count is a process-local counter that resets to 0 on every reboot, and two independently-rebooting channels' counters have no reason to ever coincide again after either one reboots alone - REQ- CHECKPOINT-002 would then correctly (but uselessly) keep rejecting every reply as "wrong checkpoint_id" until, by chance, both channels next rebooted together. The mark-signature scheme replaces the counter with a value that is naturally equal on both sides whenever they actually took the same program path this cycle, regardless of either side's reboot history.</p>
+<p>Leave <a class="el" href="structsapi__appmanager__config__t.html#a66870b9887cb1982aacab3db22c00140">sapi_appmanager_config_t::checkpoint</a> NULL to disable this entirely (the default); this is opt-in because <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> blocks for up to max_delay_ms, which is only wanted by applications that are actually part of a synchronized multi-channel group.</p>
 <dl class="section user"><dt>Safety:</dt><dd>A checkpoint timeout does not introduce a second safety reaction: <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> has already called <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> at SAPI_SAFESTATE_LEVEL_SAFE (REQ-CHECKPOINT-003) before returning SAPI_STATUS_TIMEOUT to <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>, which then folds that status into its ordinary error_count/error_threshold handling like any other failed stage (REQ-APPMANAGER-007). Note that with this framework's shipped <a class="el" href="sapi__safestate_8c.html" title="Implementation of the safe-state transition facility (ADR-004).">sapi_safestate.c</a>, entering SAPI_SAFESTATE_LEVEL_SAFE is an unconditional, permanent halt (REQ-COMMON-SAFESTATE-002), so this error_count path is a defensive fallback - correct if ever reached - rather than the expected outcome of a real timeout. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00224">224</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00293">293</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="ab70a3fceb4f2a593ca44d7eea58dd4c5" name="ab70a3fceb4f2a593ca44d7eea58dd4c5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab70a3fceb4f2a593ca44d7eea58dd4c5">&#9670;&#160;</a></span>voter</h2>
@@ -133,7 +135,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Checkpoint target: a voter with its channels already registered (ADR-025 - previously a single sapi_channel_t; that type is now one link, registered N-per-voter). May still be NULL when <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a> is first called, e.g. if an integrator's own init() is what populates it. May also be set back to NULL at runtime (e.g. from a background reconnect task) to pause checkpointing without that being treated as an error - see <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s own doc. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00225">225</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00294">294</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -150,7 +152,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Forwarded to <a class="el" href="structsapi__checkpoint__config__t.html#aa91a5f3cb397bcd4792789d057a68e78">sapi_checkpoint_config_t::max_delay_ms</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00233">233</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00302">302</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -167,7 +169,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Forwarded to <a class="el" href="structsapi__checkpoint__config__t.html#a499e6cc24cad2ce3424df0010f79a3b1">sapi_checkpoint_config_t::expected_node_count</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00234">234</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00303">303</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -184,12 +186,12 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Optional liveness watchdog kicked on success; may be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00235">235</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00304">304</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/appmanager/<a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a></li>
+<li>include/safeapi/app/appmanager/<a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

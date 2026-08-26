@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/voter/sapi_voter.h File Reference</title>
+<title>Safe API Framework: include/safeapi/redundancy/voter/sapi_voter.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_bbe25582275a91fe6fb52e3c334cb66a.html">voter</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_75c8babe864f34ebdb129e33722347cf.html">voter</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -105,17 +105,17 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stddef.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__channel_8h_source.html">safeapi/channel_link/sapi_channel.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__channel_8h_source.html">safeapi/redundancy/channel_link/sapi_channel.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_voter.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__voter_8h__incl.svg" width="458" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__voter_8h__incl.svg" width="479" height="227"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__voter_8h__dep__incl.svg" width="100%" height="481"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="sapi__voter_8h__dep__incl.svg" width="100%" height="492"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="sapi__voter_8h_source.html">Go to the source code of this file.</a></p>
@@ -186,6 +186,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga6b32b3f6842a04045edf054d4f0d43e9" id="r_ga6b32b3f6842a04045edf054d4f0d43e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#ga6b32b3f6842a04045edf054d4f0d43e9">sapi_voter_get_channel</a> (const <a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, uint32_t index)</td></tr>
 <tr class="memdesc:ga6b32b3f6842a04045edf054d4f0d43e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to one registered channel, by index.  <br /></td></tr>
 <tr class="separator:ga6b32b3f6842a04045edf054d4f0d43e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa3532847161357da62944188e3e94e84" id="r_gaa3532847161357da62944188e3e94e84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#gaa3532847161357da62944188e3e94e84">sapi_voter_get_channel_by_name</a> (const <a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, const char *name)</td></tr>
+<tr class="memdesc:gaa3532847161357da62944188e3e94e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to one registered channel, by name (e.g. "ChannelAtoB") - the name each channel was given via <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at its own <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time.  <br /></td></tr>
+<tr class="separator:gaa3532847161357da62944188e3e94e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga26a2caa51852059e3cf034ef9af10bd6" id="r_ga26a2caa51852059e3cf034ef9af10bd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#ga26a2caa51852059e3cf034ef9af10bd6">sapi_voter_destroy</a> (<a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter)</td></tr>
 <tr class="memdesc:ga26a2caa51852059e3cf034ef9af10bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a voter instance.  <br /></td></tr>
 <tr class="separator:ga26a2caa51852059e3cf034ef9af10bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>

@@ -176,14 +176,14 @@ Data Fields</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Optional SAPI_WATCHDOG_CHECKPOINT-type watchdog to kick on a successful checkpoint, for liveness monitoring across many checkpoints independent of any single checkpoint's own timeout reaction. May be NULL. </p>
+<p>Optional watchdog to kick for liveness monitoring, independent of any single checkpoint's own pass/fail outcome. Kicked once per internal retry round (see <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a>'s own doc) as well as on a fully successful checkpoint - a round that performed real send/receive I/O is genuine forward progress, not a fake kick. Intended for a caller whose own liveness watchdog is kicked once per outer cycle, AFTER this call returns: passing that same watchdog here lets it keep being kicked while this call is still legitimately retrying within its own longer max_delay_ms budget (e.g. a relaxed startup window), rather than firing out from under an in-progress-but-not-hung call. May be NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00091">91</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8h_source.html#l00098">98</a> of file <a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/checkpoint/<a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a></li>
+<li>include/safeapi/redundancy/checkpoint/<a class="el" href="sapi__checkpoint_8h_source.html">sapi_checkpoint.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

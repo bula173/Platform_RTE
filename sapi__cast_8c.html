@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: src/cast/sapi_cast.c File Reference</title>
+<title>Safe API Framework: src/utils/cast/sapi_cast.c File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_73e0f6c9aa98f201105c19e20989aef2.html">cast</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_313caf1132e152dd9b58bea13a4052ca.html">utils</a></li><li class="navelem"><a class="el" href="dir_f13c706d55dfc2b88c1421620c39d516.html">cast</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -98,11 +98,12 @@ $(function() {
 
 <p>Generated from ADR-003's template; see <a class="el" href="sapi__cast_8h.html" title="Checked integer casting between all fixed-width types and size_t (ADR-003). Every conversion in the c...">sapi_cast.h</a> for behavior. Every function widens its input to the int64_t/uint64_t matching the source's signedness, then range-checks against the destination's limit macros before performing the explicit cast.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__cast_8h_source.html">safeapi/cast/sapi_cast.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__cast_8h_source.html">safeapi/utils/cast/sapi_cast.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__safety__violation_8h_source.html">safeapi/utils/safestate/sapi_safety_violation.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_cast.c:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__cast_8c__incl.svg" width="384" height="271"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__cast_8c__incl.svg" width="390" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__cast_8c_source.html">Go to the source code of this file.</a></p>
@@ -325,6 +326,27 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8564e6358dac157f4ee725b321c03595" id="r_ga8564e6358dac157f4ee725b321c03595"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga8564e6358dac157f4ee725b321c03595">sapi_cast_size_to_u64</a> (size_t in, uint64_t *out)</td></tr>
 <tr class="memdesc:ga8564e6358dac157f4ee725b321c03595"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked cast from size_t to uint64_t.  <br /></td></tr>
 <tr class="separator:ga8564e6358dac157f4ee725b321c03595"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadc09d52b236ce0b370574fb9f6a80839" id="r_gadc09d52b236ce0b370574fb9f6a80839"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gadc09d52b236ce0b370574fb9f6a80839">sapi_cast_checked_add_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:gadc09d52b236ce0b370574fb9f6a80839"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked addition: *out = a + b, only if the result fits uint32_t.  <br /></td></tr>
+<tr class="separator:gadc09d52b236ce0b370574fb9f6a80839"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga28708523df01ff9c17ee9c03f7210caa" id="r_ga28708523df01ff9c17ee9c03f7210caa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga28708523df01ff9c17ee9c03f7210caa">sapi_cast_checked_sub_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:ga28708523df01ff9c17ee9c03f7210caa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked subtraction: *out = a - b, only if b &lt;= a (no underflow).  <br /></td></tr>
+<tr class="separator:ga28708523df01ff9c17ee9c03f7210caa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae04105144da08197fe92c832a60bbdbb" id="r_gae04105144da08197fe92c832a60bbdbb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gae04105144da08197fe92c832a60bbdbb">sapi_cast_checked_mul_u32</a> (uint32_t a, uint32_t b, uint32_t *out)</td></tr>
+<tr class="memdesc:gae04105144da08197fe92c832a60bbdbb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked multiplication: *out = a * b, only if the result fits uint32_t.  <br /></td></tr>
+<tr class="separator:gae04105144da08197fe92c832a60bbdbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9bba6bafed0eb12abed0f8452530ae72" id="r_ga9bba6bafed0eb12abed0f8452530ae72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga9bba6bafed0eb12abed0f8452530ae72">sapi_cast_checked_add_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:ga9bba6bafed0eb12abed0f8452530ae72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked addition: *out = a + b, only if the result fits size_t.  <br /></td></tr>
+<tr class="separator:ga9bba6bafed0eb12abed0f8452530ae72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe063328f297248137992b05dc80994a" id="r_gafe063328f297248137992b05dc80994a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#gafe063328f297248137992b05dc80994a">sapi_cast_checked_sub_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:gafe063328f297248137992b05dc80994a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked subtraction: *out = a - b, only if b &lt;= a (no underflow).  <br /></td></tr>
+<tr class="separator:gafe063328f297248137992b05dc80994a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga32a48bee790d9a338e3b9183966e9c83" id="r_ga32a48bee790d9a338e3b9183966e9c83"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga32a48bee790d9a338e3b9183966e9c83">sapi_cast_checked_mul_size</a> (size_t a, size_t b, size_t *out)</td></tr>
+<tr class="memdesc:ga32a48bee790d9a338e3b9183966e9c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked multiplication: *out = a * b, only if the result fits size_t.  <br /></td></tr>
+<tr class="separator:ga32a48bee790d9a338e3b9183966e9c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4b3365e11016587540d9bf3dad205969" id="r_ga4b3365e11016587540d9bf3dad205969"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CAST.html#ga4b3365e11016587540d9bf3dad205969">sapi_cast_bounds_check</a> (size_t index, size_t count)</td></tr>
+<tr class="memdesc:ga4b3365e11016587540d9bf3dad205969"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checked array/index bounds check: is index a valid index into an array of count elements?  <br /></td></tr>
+<tr class="separator:ga4b3365e11016587540d9bf3dad205969"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Generated from ADR-003's template; see <a class="el" href="sapi__cast_8h.html" title="Checked integer casting between all fixed-width types and size_t (ADR-003). Every conversion in the c...">sapi_cast.h</a> for behavior. Every function widens its input to the int64_t/uint64_t matching the source's signedness, then range-checks against the destination's limit macros before performing the explicit cast. </p>

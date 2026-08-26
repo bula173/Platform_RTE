@@ -132,6 +132,9 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SAPI_DUAL_FRAME_KIND_STATE payload - <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>'s own periodic beacon.  <a href="structsapi__dual__state__frame__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__dual__heartbeat__frame__t.html">sapi_dual_heartbeat_frame_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SAPI_DUAL_FRAME_KIND_HEARTBEAT payload - connection maintenance heartbeat.  <a href="structsapi__dual__heartbeat__frame__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__dual__msgchannel__t.html">sapi_dual_msgchannel_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One <a class="el" href="structsapi__dual__msgchannel__t.html" title="One sapi_dual_msgchannel_t instance&#39;s state. Caller-owned storage (REQ-DUAL-MSGCHANNEL-001); opaque i...">sapi_dual_msgchannel_t</a> instance's state. Caller-owned storage (REQ-DUAL-MSGCHANNEL-001); opaque in practice, exposed here (not via SAFEAPI_DECLARE_STORAGE) only because its size is already small and fixed - callers must still treat every field as private and only reach it through the functions below.  <a href="structsapi__dual__msgchannel__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -172,6 +175,7 @@ Enumerations</h2></td></tr>
 <tr class="memitem:gae9a0126aee2c6998e5ebbbeac46cb360" id="r_gae9a0126aee2c6998e5ebbbeac46cb360"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">sapi_dual_frame_kind_t</a> { <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619">SAPI_DUAL_FRAME_KIND_DATA</a> = 0
 , <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa">SAPI_DUAL_FRAME_KIND_ACK</a> = 1
 , <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a> = 2
+, <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306">SAPI_DUAL_FRAME_KIND_HEARTBEAT</a> = 3
  }</td></tr>
 <tr class="memdesc:gae9a0126aee2c6998e5ebbbeac46cb360"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which kind of Layer-2 frame a given Layer-1 payload holds. Stored as the first byte of every <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> frame so DATA, ACK, and STATE traffic sharing the same redundant links can never be misinterpreted as each other.  <a href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">More...</a><br /></td></tr>
 <tr class="separator:gae9a0126aee2c6998e5ebbbeac46cb360"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,8 +208,10 @@ Functions</h2></td></tr>
 <tr class="memitem:gac62c405c0aa64b15c3e707dc4d24f3ea" id="r_gac62c405c0aa64b15c3e707dc4d24f3ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#gac62c405c0aa64b15c3e707dc4d24f3ea">sapi_dual_channel_receive</a> (<a class="el" href="structsapi__dual__channel__t.html">sapi_dual_channel_t</a> *channel, uint8_t *out_payload, uint8_t max_size, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms, uint8_t *out_size)</td></tr>
 <tr class="memdesc:gac62c405c0aa64b15c3e707dc4d24f3ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the most recently staged inbound DATA frame, actively polling the configured links (each auto-ACked on arrival - see <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>'s own doc) if none was already staged from a previous <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a> call's own incidental polling.  <br /></td></tr>
 <tr class="separator:gac62c405c0aa64b15c3e707dc4d24f3ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafae65614b633d60d2d45db6e784d1f38" id="r_gafae65614b633d60d2d45db6e784d1f38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#gafae65614b633d60d2d45db6e784d1f38">sapi_dual_channel_send_heartbeat</a> (<a class="el" href="structsapi__dual__channel__t.html">sapi_dual_channel_t</a> *channel, uint32_t *out_ack_count)</td></tr>
+<tr class="memdesc:gafae65614b633d60d2d45db6e784d1f38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a> (<a class="el" href="sapi__dual__frames_8h.html" title="Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between sapi_dual_chan...">sapi_dual_frames.h</a>) on every configured redundant link - fire-and-forget, no ACK wait (unlike <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>'s DATA frames), matching the periodic-beacon nature of state negotiation. Intended to be called by a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>, not directly by application code - see ADR-020 section 3.  <br /></td></tr>
+<tr class="separator:gafae65614b633d60d2d45db6e784d1f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga431165112938948db36a786372a74c8e" id="r_ga431165112938948db36a786372a74c8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#ga431165112938948db36a786372a74c8e">sapi_dual_channel_send_state_frame</a> (<a class="el" href="structsapi__dual__channel__t.html">sapi_dual_channel_t</a> *channel, <a class="el" href="group__DUAL.html#ga6360ab57a6109447b0067c630ff4e271">sapi_dual_state_t</a> state, bool channel_degraded, uint64_t timestamp_ms)</td></tr>
-<tr class="memdesc:ga431165112938948db36a786372a74c8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends a <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a> (<a class="el" href="sapi__dual__frames_8h.html" title="Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between sapi_dual_chan...">sapi_dual_frames.h</a>) on every configured redundant link - fire-and-forget, no ACK wait (unlike <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>'s DATA frames), matching the periodic-beacon nature of state negotiation. Intended to be called by a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>, not directly by application code - see ADR-020 section 3.  <br /></td></tr>
 <tr class="separator:ga431165112938948db36a786372a74c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga44c7a2178b4cb615c569ae2d6d8d1e68" id="r_ga44c7a2178b4cb615c569ae2d6d8d1e68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#ga44c7a2178b4cb615c569ae2d6d8d1e68">sapi_dual_channel_receive_state_frame</a> (<a class="el" href="structsapi__dual__channel__t.html">sapi_dual_channel_t</a> *channel, <a class="el" href="group__TYPES.html#ga6767bbc7f5130018466fe6d26bf63359">sapi_duration_ms_t</a> timeout_ms, <a class="el" href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a> *out_frame)</td></tr>
 <tr class="memdesc:ga44c7a2178b4cb615c569ae2d6d8d1e68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the most recently staged inbound STATE frame, actively polling the configured links if none was already staged. Intended to be called by a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> - see ADR-020 section 3.  <br /></td></tr>
@@ -382,6 +388,8 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b" name="ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b"></a>SAPI_DUAL_FRAME_KIND_STATE&#160;</td><td class="fielddoc"><p><a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>'s own state beacon - fire-and-forget, periodic, no ACK expected (unlike DATA). </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306" name="ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306"></a>SAPI_DUAL_FRAME_KIND_HEARTBEAT&#160;</td><td class="fielddoc"><p>Liveness heartbeat frame - sent periodically to maintain connection, expects a SAPI_DUAL_FRAME_KIND_ACK frame back. </p>
+</td></tr>
 </table>
 
 <p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00041">41</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
@@ -482,7 +490,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00166">166</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00183">183</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -537,7 +545,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if at least one link ACKed; SAPI_STATUS_TIMEOUT if none did (data was still transmitted-attempted on every link; this reports delivery confirmation, not transmission attempt); SAPI_STATUS_INVALID_PARAM for a bad argument. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00215">215</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00232">232</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -598,7 +606,57 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_TIMEOUT if nothing arrived in time; SAPI_STATUS_INVALID_PARAM if a staged frame is larger than max_size (not silently truncated) or for a bad argument. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00392">392</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00409">409</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+
+</div>
+</div>
+<a id="gafae65614b633d60d2d45db6e784d1f38" name="gafae65614b633d60d2d45db6e784d1f38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gafae65614b633d60d2d45db6e784d1f38">&#9670;&#160;</a></span>sapi_dual_channel_send_heartbeat()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_dual_channel_send_heartbeat </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__dual__channel__t.html">sapi_dual_channel_t</a> *&#160;</td>
+          <td class="paramname"><em>channel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>out_ack_count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sends a <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a> (<a class="el" href="sapi__dual__frames_8h.html" title="Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between sapi_dual_chan...">sapi_dual_frames.h</a>) on every configured redundant link - fire-and-forget, no ACK wait (unlike <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>'s DATA frames), matching the periodic-beacon nature of state negotiation. Intended to be called by a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>, not directly by application code - see ADR-020 section 3. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>Initialized channel. Must not be NULL. </td></tr>
+    <tr><td class="paramname">state</td><td>This instance's own sapi_dual_state_t to advertise. </td></tr>
+    <tr><td class="paramname">channel_degraded</td><td>This instance's own current <a class="el" href="group__DUAL.html#ga72b68c8a07fe01028d0c19a0a3cacf53" title="Returns the aggregate connection status across every configured redundant link, as of the most recent...">sapi_dual_channel_get_status()</a> != FULL, as a single bit (so the peer can tell HOTSTANDBY from COLDSTANDBY for itself). </td></tr>
+    <tr><td class="paramname">timestamp_ms</td><td>Caller-supplied value for the frame's own timestamp_ms field. This function does not source it from <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> itself: a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> needs the <em>same fixed</em> value on every beacon it ever sends (captured once at its own init) for its startup tie-break to remain stable call to call - see <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a>'s own doc. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if the frame was transmitted on at least one link; SAPI_STATUS_TIMEOUT if every link's send failed/timed out; SAPI_STATUS_INVALID_PARAM if channel is NULL.</dd></dl>
+<p>Transmits a connection maintenance heartbeat frame across every configured link and waits up to ack_timeout_ms for an ACK on each. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">channel</td><td>Initialized channel. Must not be NULL. </td></tr>
+    <tr><td class="paramname">out_ack_count</td><td>Optional; receives the number of links that ACKed. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if at least one link acknowledged; SAPI_STATUS_TIMEOUT if no link acknowledged within timeout; SAPI_STATUS_HARDWARE_FAULT if every link encountered a hard fault; SAPI_STATUS_INVALID_PARAM for a bad argument. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00474">474</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -640,19 +698,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sends a <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a> (<a class="el" href="sapi__dual__frames_8h.html" title="Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between sapi_dual_chan...">sapi_dual_frames.h</a>) on every configured redundant link - fire-and-forget, no ACK wait (unlike <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>'s DATA frames), matching the periodic-beacon nature of state negotiation. Intended to be called by a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>, not directly by application code - see ADR-020 section 3. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">channel</td><td>Initialized channel. Must not be NULL. </td></tr>
-    <tr><td class="paramname">state</td><td>This instance's own sapi_dual_state_t to advertise. </td></tr>
-    <tr><td class="paramname">channel_degraded</td><td>This instance's own current <a class="el" href="group__DUAL.html#ga72b68c8a07fe01028d0c19a0a3cacf53" title="Returns the aggregate connection status across every configured redundant link, as of the most recent...">sapi_dual_channel_get_status()</a> != FULL, as a single bit (so the peer can tell HOTSTANDBY from COLDSTANDBY for itself). </td></tr>
-    <tr><td class="paramname">timestamp_ms</td><td>Caller-supplied value for the frame's own timestamp_ms field. This function does not source it from <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> itself: a <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> needs the <em>same fixed</em> value on every beacon it ever sends (captured once at its own init) for its startup tie-break to remain stable call to call - see <a class="el" href="structsapi__dual__state__frame__t.html" title="SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t&#39;s own periodic beacon.">sapi_dual_state_frame_t</a>'s own doc. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if the frame was transmitted on at least one link; SAPI_STATUS_TIMEOUT if every link's send failed/timed out; SAPI_STATUS_INVALID_PARAM if channel is NULL. </dd></dl>
-
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00457">457</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00594">594</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -699,7 +745,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_TIMEOUT if none arrived in time; SAPI_STATUS_INVALID_PARAM for a bad argument. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00491">491</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00628">628</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -728,7 +774,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The current aggregate status. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00525">525</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00662">662</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>
@@ -768,7 +814,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if that link's most recent send was ACKed in time; false if link_index is out of range or channel is NULL. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00534">534</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__channel_8c_source.html#l00671">671</a> of file <a class="el" href="sapi__dual__channel_8c_source.html">sapi_dual_channel.c</a>.</p>
 
 </div>
 </div>

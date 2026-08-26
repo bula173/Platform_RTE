@@ -1,5 +1,5 @@
 <map id="include/safeapi_backend/clocksync/sapi_clocksync_backend.h" name="include/safeapi_backend/clocksync/sapi_clocksync_backend.h">
 <area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="5,5,197,60"/>
-<area shape="rect" id="Node000002" href="$sapi__clocksync_8c.html" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="31,108,171,148"/>
+<area shape="rect" id="Node000002" href="$sapi__clocksync_8c.html" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="19,108,183,148"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,74,104,108,99,108,99,74"/>
 </map>

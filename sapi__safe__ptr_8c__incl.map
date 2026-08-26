@@ -1,0 +1,23 @@
+<map id="src/oal/memory/sapi_safe_ptr.c" name="src/oal/memory/sapi_safe_ptr.c">
+<area shape="rect" id="Node000001" title="See sapi_safe_ptr.h for behavior." alt="" coords="173,5,327,45"/>
+<area shape="rect" id="Node000002" href="$sapi__safe__ptr_8h.html" title="Safe&#45;pointer wrapper: bounds + NULL + corruption&#45;canary checked access to a raw memory region,..." alt="" coords="5,93,159,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="214,48,132,90,130,85,212,43"/>
+<area shape="rect" id="Node000008" href="$sapi__cast_8h.html" title="Checked integer casting between all fixed&#45;width types and size_t (ADR&#45;003). Every conversion in the c..." alt="" coords="183,93,317,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="253,46,253,79,247,79,247,46"/>
+<area shape="rect" id="Node000009" href="$sapi__safety__violation_8h.html" title="Opt&#45;in notification hook for the three new safety primitives (safe pointer, checked integer arithmeti..." alt="" coords="341,93,519,133"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="291,43,380,85,377,90,288,48"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="93,181,239,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="103,132,140,170,136,173,99,135"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="264,181,407,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="138,131,268,174,266,180,137,136"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="191,269,274,295"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="312,224,260,263,257,259,309,219"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="298,269,373,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="338,222,338,255,333,255,333,222"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="397,269,468,295"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="361,219,409,258,406,263,357,224"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="233,135,196,173,192,170,229,132"/>
+<area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="271,132,309,170,305,173,267,135"/>
+<area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="373,136,237,180,236,175,371,131"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="411,136,368,174,365,170,407,132"/>
+</map>

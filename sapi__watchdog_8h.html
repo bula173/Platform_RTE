@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/watchdog/sapi_watchdog.h File Reference</title>
+<title>Safe API Framework: include/safeapi/redundancy/watchdog/sapi_watchdog.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_66158b981c9ab7e2dd8dc74d52dadbee.html">watchdog</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_c27c2b454b963eaf6e53ed93ea676271.html">watchdog</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,12 +100,12 @@ $(function() {
 
 <p>Watchdog mechanism for detecting system/task hang conditions.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/types/sapi_types.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/utils/types/sapi_types.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_watchdog.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__watchdog_8h__incl.svg" width="384" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__watchdog_8h__incl.svg" width="387" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -180,7 +180,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Watchdog mechanism for detecting system/task hang conditions. </p>
-<p>Provides system-level, task-level, and channel-level watchdog timers that detect hung components and trigger recovery actions (log, safe-state, reboot, failover, or a custom callback). Implemented as a fixed-size static pool, timed via <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> - see <a class="el" href="sapi__watchdog_8c.html" title="Real watchdog implementation: a fixed-size pool of watchdog slots, timed via the already-portable sap...">src/watchdog/sapi_watchdog.c</a> and <a class="el" href="group__WATCHDOG.html#gad32b54f5e3f62b0ba4f6d2379f970f67" title="Poll all active watchdogs for expiry (call periodically)">sapi_watchdog_timer_tick()</a>'s own doc for how expiry is detected (poll-driven, not an OS-specific interrupt of its own). </p>
+<p>Provides system-level, task-level, and channel-level watchdog timers that detect hung components and trigger recovery actions (log, safe-state, reboot, failover, or a custom callback). Implemented as a fixed-size static pool, timed via <a class="el" href="group__TIMER.html#ga5bf111759c24ea6e7f8f1a7ff84786ed" title="Returns the current monotonic time base used by all timers.">sapi_timer_now()</a> - see src/watchdog/sapi_watchdog.c and <a class="el" href="group__WATCHDOG.html#gad32b54f5e3f62b0ba4f6d2379f970f67" title="Poll all active watchdogs for expiry (call periodically)">sapi_watchdog_timer_tick()</a>'s own doc for how expiry is detected (poll-driven, not an OS-specific interrupt of its own). </p>
 
 <p class="definition">Definition in file <a class="el" href="sapi__watchdog_8h_source.html">sapi_watchdog.h</a>.</p>
 </div></div><!-- contents -->

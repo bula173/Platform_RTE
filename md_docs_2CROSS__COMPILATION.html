@@ -89,8 +89,8 @@ $(function() {
   <div class="headertitle"><div class="title">Cross-Compilation Guide</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md371"></a> This document describes how to build safeAPIFramework for different target platforms (Linux, QNX, etc.).</p>
-<h1><a class="anchor" id="autotoc_md372"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md376"></a> This document describes how to build safeAPIFramework for different target platforms (Linux, QNX, etc.).</p>
+<h1><a class="anchor" id="autotoc_md377"></a>
 Overview</h1>
 <p>The framework uses CMake toolchain files to support cross-compilation. Three levels of configuration are provided:</p>
 <ol type="1">
@@ -99,14 +99,14 @@ Overview</h1>
 <li><b>Build Scripts</b> — Ready-to-use shell scripts for common scenarios</li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md374"></a>
+<h1><a class="anchor" id="autotoc_md379"></a>
 Quick Start</h1>
-<h2><a class="anchor" id="autotoc_md375"></a>
+<h2><a class="anchor" id="autotoc_md380"></a>
 Linux (Native or Cross-compile)</h2>
 <p><b>Native Linux build (your current system):</b> </p><div class="fragment"><div class="line">./examples/build-linux-native.sh</div>
 </div><!-- fragment --><p><b>Linux release build:</b> </p><div class="fragment"><div class="line">./examples/build-linux-native.sh release</div>
 </div><!-- fragment --><p><b>Clean build:</b> </p><div class="fragment"><div class="line">./examples/build-linux-native.sh clean</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md376"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md381"></a>
 QNX RTOS</h2>
 <p><b>Prerequisites:</b></p><ol type="1">
 <li>QNX Momentics IDE or QNX SDP installed</li>
@@ -117,11 +117,11 @@ QNX RTOS</h2>
 <p><b>Build:</b> </p><div class="fragment"><div class="line">./examples/build-qnx.sh</div>
 </div><!-- fragment --><p><b>Release build:</b> </p><div class="fragment"><div class="line">./examples/build-qnx.sh release</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md378"></a>
+<h1><a class="anchor" id="autotoc_md383"></a>
 Detailed Build Instructions</h1>
-<h2><a class="anchor" id="autotoc_md379"></a>
+<h2><a class="anchor" id="autotoc_md384"></a>
 Linux (POSIX OAL)</h2>
-<h3><a class="anchor" id="autotoc_md380"></a>
+<h3><a class="anchor" id="autotoc_md385"></a>
 1. Native Linux Build</h3>
 <p>The framework will use POSIX APIs (<code>pthreads</code>, <code>POSIX timers</code>, etc.) for OAL implementations.</p>
 <p><b>Method 1: Using preset script</b> </p><div class="fragment"><div class="line">./examples/build-linux-native.sh debug</div>
@@ -134,10 +134,10 @@ Linux (POSIX OAL)</h2>
 <div class="line"> </div>
 <div class="line">cmake --build build/linux</div>
 <div class="line">ctest --test-dir build/linux</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md381"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md386"></a>
 2. Linux Release Build</h3>
 <p>Optimized build with all tests enabled: </p><div class="fragment"><div class="line">./examples/build-linux-native.sh release</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md382"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md387"></a>
 3. Install to System</h3>
 <p>After building, install headers and libraries: </p><div class="fragment"><div class="line">cmake --install build/linux-native --prefix /usr/local</div>
 </div><!-- fragment --><p>This installs:</p><ul>
@@ -145,7 +145,7 @@ Linux (POSIX OAL)</h2>
 <li>Libraries: <code>/usr/local/lib/libsafeapi_*.a</code></li>
 <li>CMake config: <code>/usr/local/lib/cmake/safeAPIFramework/</code></li>
 </ul>
-<h3><a class="anchor" id="autotoc_md383"></a>
+<h3><a class="anchor" id="autotoc_md388"></a>
 4. Use in Your Application</h3>
 <p>Create a <code>CMakeLists.txt</code> for your app: </p><div class="fragment"><div class="line">cmake_minimum_required(VERSION 3.16)</div>
 <div class="line">project(my_rbc_app C)</div>
@@ -153,11 +153,11 @@ Linux (POSIX OAL)</h2>
 <div class="line">find_package(safeAPIFramework REQUIRED)</div>
 <div class="line"> </div>
 <div class="line">add_executable(my_app main.c)</div>
-<div class="line">target_link_libraries(my_app </div>
-<div class="line">    safeapi::status </div>
-<div class="line">    safeapi::timer </div>
-<div class="line">    safeapi::task </div>
-<div class="line">    safeapi::log</div>
+<div class="line">target_link_libraries(my_app</div>
+<div class="line">    safeapi::core</div>
+<div class="line">    safeapi::oal</div>
+<div class="line">    safeapi::channels</div>
+<div class="line">    safeapi::appmanager</div>
 <div class="line">    pthread</div>
 <div class="line">)</div>
 <div class="line"> </div>
@@ -167,9 +167,19 @@ Linux (POSIX OAL)</h2>
 <div class="line">cmake --build build</div>
 <div class="line">./build/my_app</div>
 </div><!-- fragment --><hr  />
-<h2><a class="anchor" id="autotoc_md385"></a>
+<h2><a class="anchor" id="autotoc_md390"></a>
+Multi-Architecture Docker Builds (SAPI example app layer)</h2>
+<p><code>cmake/Toolchain-Linux.cmake</code>'s own <code>LINUX_CROSS_COMPILE</code> variable (above) is for a real host cross-compiler toolchain (e.g. <code>aarch64-linux-gnu-gcc</code> installed on a Linux build machine or CI runner) - it has not been exercised end to end against a real one anywhere this framework has actually been built and tested; the mappings it sets up are reviewed-correct, not proven.</p>
+<p>The genuinely working, verified multi-architecture path today is different, and lives among this framework's sibling projects in the workspace (<code>safeAPIRBC2oo2</code> and the three Python sims, direct SAPI-root siblings - see root <code>CLAUDE.md</code>): <b>Docker buildx with QEMU emulation</b>. Every one of those Dockerfiles installs its own toolchain via plain <code>apt-get</code>/<code>pip</code> with no arch-specific package names or triplets - under <code>docker buildx build --platform &lt;target&gt;</code>, that just installs the <em>target</em> arch's own native compiler/interpreter inside an emulated container and compiles there. No cross-compiler is involved at all; it is genuinely native compilation, just running under emulation.</p>
+<div class="fragment"><div class="line">cd safeAPIRBC2oo2TestEnv</div>
+<div class="line">etc/scripts/build_multiarch.sh -i rbc2oo2 -p linux/arm64,linux/386</div>
+<div class="line">docker run --rm --entrypoint uname safeapi-rbc2oo2:latest-386 -m   # -&gt; i686/i386</div>
+</div><!-- fragment --><p>Supports <code>linux/amd64</code>, <code>linux/arm64</code>, <code>linux/386</code>, <code>linux/arm/v7</code> (Docker Desktop's own <code>desktop-linux</code> buildx builder already has QEMU emulators registered for all four - check with <code>docker buildx ls</code>). <code>docker buildx build --load</code> only loads one platform's image locally per invocation (a real multi-platform manifest needs a registry push, not configured for this project), so the script builds one <code>{image, platform}</code> pair at a time, tagging each with its own arch suffix (<code>:latest-arm64</code>, <code>:latest-386</code>, ...) so they coexist in <code>docker images</code>.</p>
+<p>This path proves the <em>application layer</em> (<code>safeAPIRBC2oo2</code>, built via this framework's POSIX OAL backend) runs correctly on ARM64/x86/32-bit/64-bit Linux - it does not exercise <code>Toolchain-Linux.cmake</code>'s own cross-compile branch above, since buildx never cross-compiles.</p>
+<hr  />
+<h2><a class="anchor" id="autotoc_md392"></a>
 QNX RTOS</h2>
-<h3><a class="anchor" id="autotoc_md386"></a>
+<h3><a class="anchor" id="autotoc_md393"></a>
 1. Prerequisites</h3>
 <p><b>QNX Environment:</b></p><ul>
 <li>QNX Momentics IDE 7.0 or later, OR</li>
@@ -180,7 +190,7 @@ QNX RTOS</h2>
 <div class="line">echo $QNX_TARGET</div>
 <div class="line">ls $QNX_HOST/usr/bin/qcc          # Should exist</div>
 <div class="line">ls $QNX_TARGET/usr/include/errno.h # Should exist</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md387"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md394"></a>
 2. Set Environment Variables</h3>
 <div class="fragment"><div class="line"># QNX 7.0.0 example</div>
 <div class="line">export QNX_HOST=/opt/qnx7.0.0/host/linux/x86_64</div>
@@ -188,7 +198,7 @@ QNX RTOS</h2>
 <div class="line"> </div>
 <div class="line"># Verify</div>
 <div class="line">qcc --version</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md388"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md395"></a>
 3. Build for QNX</h3>
 <p><b>Method 1: Using preset script</b> </p><div class="fragment"><div class="line">./examples/build-qnx.sh debug</div>
 </div><!-- fragment --><p><b>Method 2: Using CMake presets</b> </p><div class="fragment"><div class="line">cmake --preset qnx</div>
@@ -202,7 +212,7 @@ QNX RTOS</h2>
 <div class="line"> </div>
 <div class="line">cmake --build build/qnx</div>
 </div><!-- fragment --><p><b>Note:</b> Tests are disabled for QNX targets (cannot run cross-compiled binaries on host).</p>
-<h3><a class="anchor" id="autotoc_md389"></a>
+<h3><a class="anchor" id="autotoc_md396"></a>
 4. Deploy to QNX Target</h3>
 <p>After building, deploy to your QNX system:</p>
 <div class="fragment"><div class="line"># Copy libraries</div>
@@ -213,7 +223,7 @@ QNX RTOS</h2>
 <div class="line"> </div>
 <div class="line"># Copy CMake config (optional, if using find_package)</div>
 <div class="line">scp -r build/qnx/cmake user@qnx-target:/opt/rbc/lib/cmake/</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md390"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md397"></a>
 5. Use in Your QNX Application</h3>
 <p><b>QNX app <code>CMakeLists.txt</code>:</b> </p><div class="fragment"><div class="line">cmake_minimum_required(VERSION 3.16)</div>
 <div class="line">project(my_rbc_qnx C)</div>
@@ -226,11 +236,10 @@ QNX RTOS</h2>
 <div class="line"> </div>
 <div class="line">add_executable(my_rbc_app main.c)</div>
 <div class="line">target_link_libraries(my_rbc_app</div>
-<div class="line">    safeapi::status</div>
-<div class="line">    safeapi::timer</div>
-<div class="line">    safeapi::task</div>
-<div class="line">    safeapi::log</div>
-<div class="line">    safeapi::ipc</div>
+<div class="line">    safeapi::core</div>
+<div class="line">    safeapi::oal</div>
+<div class="line">    safeapi::channels</div>
+<div class="line">    safeapi::appmanager</div>
 <div class="line">)</div>
 <div class="line"> </div>
 <div class="line"># QNX requires certain libraries</div>
@@ -245,9 +254,9 @@ QNX RTOS</h2>
 </div><!-- fragment --><p><b>Deploy and run on QNX target:</b> </p><div class="fragment"><div class="line">scp build/qnx/my_rbc_app user@qnx-target:/opt/rbc/bin/</div>
 <div class="line">ssh user@qnx-target /opt/rbc/bin/my_rbc_app</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md392"></a>
+<h1><a class="anchor" id="autotoc_md399"></a>
 CMake Presets Reference</h1>
-<h2><a class="anchor" id="autotoc_md393"></a>
+<h2><a class="anchor" id="autotoc_md400"></a>
 Linux Presets</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -260,7 +269,7 @@ Linux Presets</h2>
 <p><b>Usage:</b> </p><div class="fragment"><div class="line">cmake --preset linux-native</div>
 <div class="line">cmake --build --preset linux-native</div>
 <div class="line">ctest --preset linux-native</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md394"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md401"></a>
 QNX Presets</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -274,9 +283,9 @@ QNX Presets</h2>
 <div class="line">cmake --preset qnx</div>
 <div class="line">cmake --build --preset qnx</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md396"></a>
+<h1><a class="anchor" id="autotoc_md403"></a>
 Toolchain Files</h1>
-<h2><a class="anchor" id="autotoc_md397"></a>
+<h2><a class="anchor" id="autotoc_md404"></a>
 Toolchain-Linux.cmake</h2>
 <p>Used for building on/for Linux systems. Enables:</p><ul>
 <li>Position-independent code (<code>-fPIC</code>)</li>
@@ -289,7 +298,7 @@ Toolchain-Linux.cmake</h2>
 <p><b>Example: Cross-compile to ARM Linux</b> </p><div class="fragment"><div class="line">cmake -S . -B build/arm-linux \</div>
 <div class="line">  -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain-Linux.cmake \</div>
 <div class="line">  -DLINUX_CROSS_COMPILE=arm-linux-gnueabihf</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md398"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md405"></a>
 Toolchain-QNX.cmake</h2>
 <p>Cross-compiles for QNX RTOS. Requires:</p><ul>
 <li><code>QNX_HOST</code> — Path to QNX host tools</li>
@@ -304,30 +313,30 @@ Toolchain-QNX.cmake</h2>
 <p><b>Required environment:</b> </p><div class="fragment"><div class="line">export QNX_HOST=/path/to/qnx/host/...</div>
 <div class="line">export QNX_TARGET=/path/to/qnx/target/...</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md400"></a>
+<h1><a class="anchor" id="autotoc_md407"></a>
 Troubleshooting</h1>
-<h2><a class="anchor" id="autotoc_md401"></a>
+<h2><a class="anchor" id="autotoc_md408"></a>
 "CMake not found" / "qcc not found"</h2>
 <p><b>Solution:</b> Ensure tools are installed and in PATH: </p><div class="fragment"><div class="line">which cmake</div>
 <div class="line">which qcc</div>
 <div class="line">which arm-linux-gnueabihf-gcc  # For ARM cross-compile</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md402"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md409"></a>
 "QNX_HOST and QNX_TARGET not set"</h2>
 <p><b>Solution:</b> Set environment variables: </p><div class="fragment"><div class="line">export QNX_HOST=/opt/qnx7.0.0/host/linux/x86_64</div>
 <div class="line">export QNX_TARGET=/opt/qnx7.0.0/target/qnx7.0.0/x86_64</div>
 </div><!-- fragment --><p>Or pass via CMake: </p><div class="fragment"><div class="line">cmake -S . -B build \</div>
 <div class="line">  -DQNX_HOST=$QNX_HOST \</div>
 <div class="line">  -DQNX_TARGET=$QNX_TARGET</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md403"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md410"></a>
 Tests fail on cross-compiled targets</h2>
 <p><b>Reason:</b> Cross-compiled binaries cannot run on build host.</p>
 <p><b>Solution:</b> Tests are disabled automatically for QNX (SAFEAPI_BUILD_TESTS=OFF). For other cross-compiles, disable manually: </p><div class="fragment"><div class="line">cmake -S . -B build -DSAFEAPI_BUILD_TESTS=OFF</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md404"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md411"></a>
 "Compiler warnings treated as errors"</h2>
 <p><b>Solution:</b> Build in less-strict mode: </p><div class="fragment"><div class="line">cmake -S . -B build -DSAFEAPI_WARNINGS_AS_ERRORS=OFF</div>
 </div><!-- fragment --><p>Or use a different preset (e.g., <code>minimal</code>): </p><div class="fragment"><div class="line">cmake --preset minimal</div>
 </div><!-- fragment --><hr  />
-<h1><a class="anchor" id="autotoc_md406"></a>
+<h1><a class="anchor" id="autotoc_md413"></a>
 Adding New Targets</h1>
 <p>To support a new platform (e.g., ARM Cortex-M, INTEGRITY OS):</p>
 <ol type="1">
@@ -346,7 +355,7 @@ Adding New Targets</h1>
 <li><b>Document in this file</b> under "Detailed Build Instructions"</li>
 </ol>
 <hr  />
-<h1><a class="anchor" id="autotoc_md408"></a>
+<h1><a class="anchor" id="autotoc_md415"></a>
 References</h1>
 <ul>
 <li><a href="https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html">CMake Toolchain Files</a></li>

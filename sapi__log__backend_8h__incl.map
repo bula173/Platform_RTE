@@ -1,16 +1,16 @@
 <map id="include/safeapi_backend/log/sapi_log_backend.h" name="include/safeapi_backend/log/sapi_log_backend.h">
-<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="47,5,229,45"/>
-<area shape="rect" id="Node000002" href="$sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="116,93,280,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="155,44,183,81,179,84,150,47"/>
-<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="129,47,106,94,88,154,82,153,101,92,124,44"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="182,121,120,161,117,157,179,117"/>
-<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="207,117,230,154,225,156,203,120"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
+<area shape="rect" id="Node000001" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="43,5,226,45"/>
+<area shape="rect" id="Node000002" href="$sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="116,93,265,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="149,44,173,80,169,83,145,47"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,152,221"/>
+<area shape="poly" id="edge7_Node000001_Node000003" title=" " alt="" coords="127,47,107,94,87,168,82,167,101,92,122,44"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="167,136,116,175,113,171,164,131"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="177,181,319,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="206,132,230,168,225,171,201,135"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="104,269,187,295"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="225,224,173,263,170,259,222,219"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="211,269,285,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="251,222,251,255,245,255,245,222"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="310,269,381,295"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="273,219,322,258,319,263,270,224"/>
 </map>

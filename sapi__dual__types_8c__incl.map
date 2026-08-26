@@ -1,7 +1,7 @@
-<map id="src/dual/sapi_dual_types.c" name="src/dual/sapi_dual_types.c">
-<area shape="rect" id="Node000001" title="Diagnostics&#45;only string rendering for the sapi_dual module&#39;s shared enums (ADR&#45;020)." alt="" coords="20,5,159,45"/>
-<area shape="rect" id="Node000002" href="$sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="5,93,173,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,46,92,79,87,79,87,46"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="54,181,125,207"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="92,134,92,167,87,167,87,134"/>
+<map id="src/redundancy/dual/sapi_dual_types.c" name="src/redundancy/dual/sapi_dual_types.c">
+<area shape="rect" id="Node000001" title="Diagnostics&#45;only string rendering for the sapi_dual module&#39;s shared enums (ADR&#45;020)." alt="" coords="16,5,169,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="5,93,180,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,46,95,79,90,79,90,46"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="57,181,128,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="95,134,95,167,90,167,90,134"/>
 </map>

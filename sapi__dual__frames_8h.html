@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/dual/sapi_dual_frames.h File Reference</title>
+<title>Safe API Framework: include/safeapi/redundancy/dual/sapi_dual_frames.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_69499096b0453a128c173ab1461cbb88.html">dual</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_72b2b0f6843c3cddb003f10f065436fa.html">dual</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -100,16 +100,16 @@ $(function() {
 <p>Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between <a class="el" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR-020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault-tolerant,...">sapi_dual_channel.h</a> and <a class="el" href="sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR-020: decides sapi_dual_state_t for both this instance and its peer,...">sapi_dual_negotiator.h</a> so both can refer to the same wire structs without either depending on the other (<a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> has no knowledge of <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> at all; the negotiator is the one-directional dependent - see ADR-020 section 3 and this module's own README note on ownership direction).  
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__dual__types_8h_source.html">safeapi/dual/sapi_dual_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__dual__types_8h_source.html">safeapi/redundancy/dual/sapi_dual_types.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_frames.h:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__incl.svg" width="234" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__incl.svg" width="262" height="212"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__dep__incl.svg" width="576" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__frames_8h__dep__incl.svg" width="656" height="315"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__dual__frames_8h_source.html">Go to the source code of this file.</a></p>
@@ -125,12 +125,16 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SAPI_DUAL_FRAME_KIND_STATE payload - <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>'s own periodic beacon.  <a href="structsapi__dual__state__frame__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__dual__heartbeat__frame__t.html">sapi_dual_heartbeat_frame_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">SAPI_DUAL_FRAME_KIND_HEARTBEAT payload - connection maintenance heartbeat.  <a href="structsapi__dual__heartbeat__frame__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:gae9a0126aee2c6998e5ebbbeac46cb360" id="r_gae9a0126aee2c6998e5ebbbeac46cb360"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">sapi_dual_frame_kind_t</a> { <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619">SAPI_DUAL_FRAME_KIND_DATA</a> = 0
 , <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa">SAPI_DUAL_FRAME_KIND_ACK</a> = 1
 , <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a> = 2
+, <a class="el" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306">SAPI_DUAL_FRAME_KIND_HEARTBEAT</a> = 3
  }</td></tr>
 <tr class="memdesc:gae9a0126aee2c6998e5ebbbeac46cb360"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which kind of Layer-2 frame a given Layer-1 payload holds. Stored as the first byte of every <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> frame so DATA, ACK, and STATE traffic sharing the same redundant links can never be misinterpreted as each other.  <a href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">More...</a><br /></td></tr>
 <tr class="separator:gae9a0126aee2c6998e5ebbbeac46cb360"><td class="memSeparator" colspan="2">&#160;</td></tr>

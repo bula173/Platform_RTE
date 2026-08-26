@@ -111,6 +111,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a1b4d892d11c1e780931a308697bfb47e" id="r_a1b4d892d11c1e780931a308697bfb47e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__operations__t.html#a1b4d892d11c1e780931a308697bfb47e">post_execute</a> )(void *context)</td></tr>
 <tr class="memdesc:a1b4d892d11c1e780931a308697bfb47e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional per-cycle output/cleanup stage (ADR-019)  <br /></td></tr>
 <tr class="separator:a1b4d892d11c1e780931a308697bfb47e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b9e6aa1e6ebb684ec07e325b86d75b4" id="r_a8b9e6aa1e6ebb684ec07e325b86d75b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__operations__t.html#a8b9e6aa1e6ebb684ec07e325b86d75b4">on_checkpoint_result</a> )(void *context, bool committed)</td></tr>
+<tr class="memdesc:a8b9e6aa1e6ebb684ec07e325b86d75b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional per-cycle checkpoint outcome hook (ADR-034)  <br /></td></tr>
+<tr class="separator:a8b9e6aa1e6ebb684ec07e325b86d75b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad23972cdce548ef9f9a0d81b8a2d6619" id="r_ad23972cdce548ef9f9a0d81b8a2d6619"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsapi__appmanager__operations__t.html#ad23972cdce548ef9f9a0d81b8a2d6619">shutdown</a> )(void *context)</td></tr>
 <tr class="memdesc:ad23972cdce548ef9f9a0d81b8a2d6619"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shutdown application.  <br /></td></tr>
 <tr class="separator:ad23972cdce548ef9f9a0d81b8a2d6619"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,7 +129,7 @@ Data Fields</h2></td></tr>
 <p>Each application must implement these operations to be managed by the application manager.</p>
 <p>REQ-APPMANAGER-002: Applications shall implement all mandatory operations in the <a class="el" href="structsapi__appmanager__operations__t.html" title="Application lifecycle operations.">sapi_appmanager_operations_t</a> interface (init, execute, shutdown, get_name, get_version). pre_execute and post_execute are optional (ADR-019, REQ-APPMANAGER-006) and may be left NULL. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00099">99</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00116">116</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="a1f03aa6489eaf45e7ef8c29044af48b1" name="a1f03aa6489eaf45e7ef8c29044af48b1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f03aa6489eaf45e7ef8c29044af48b1">&#9670;&#160;</a></span>init</h2>
@@ -150,7 +153,7 @@ Data Fields</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success, error code on failure </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00109">109</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00126">126</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -177,7 +180,7 @@ Data Fields</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on normal execution Other codes for error conditions </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00131">131</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00148">148</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +206,7 @@ Data Fields</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on normal execution Other codes for error conditions </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00144">144</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00161">161</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -230,7 +233,36 @@ Data Fields</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on normal execution Other codes for error conditions </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00164">164</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00181">181</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+
+</div>
+</div>
+<a id="a8b9e6aa1e6ebb684ec07e325b86d75b4" name="a8b9e6aa1e6ebb684ec07e325b86d75b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b9e6aa1e6ebb684ec07e325b86d75b4">&#9670;&#160;</a></span>on_checkpoint_result</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>(* sapi_appmanager_operations_t::on_checkpoint_result) (void *context, bool committed)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional per-cycle checkpoint outcome hook (ADR-034) </p>
+<p>If non-NULL and config-&gt;checkpoint is configured, called exactly once per cycle immediately after the checkpoint stage (the last stage of the cycle - see this header's own file-level doc and <a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a>'s doc for the stage order). Intended for a "stage output during the cycle, only actually transmit it here" pattern: <code>committed</code> is true when this cycle's checkpoint signature matched the peer's (or checkpoint is disabled/paused - see below), meaning any output staged during <a class="el" href="structsapi__appmanager__operations__t.html#a365e23c52c1e6723fc404e21a93f525d" title="Optional per-cycle input/prepare stage (ADR-019)">pre_execute()</a>/execute()/ <a class="el" href="structsapi__appmanager__operations__t.html#a1b4d892d11c1e780931a308697bfb47e" title="Optional per-cycle output/cleanup stage (ADR-019)">post_execute()</a> may now be safely sent; false only when <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> itself returned non-OK (a genuine validation failure or timeout - REQ-CHECKPOINT-003 has already driven this process to SAPI_SAFESTATE_LEVEL_SAFE by the time this is called), meaning staged output for this cycle should be discarded, never transmitted.</p>
+<p>Called with committed=true (never false) when config-&gt;checkpoint is NULL, or when config-&gt;checkpoint-&gt;voter is NULL (checkpointing paused) - an application using the stage-then-commit pattern does not need to special-case "was checkpoint even active this cycle"; disabled/paused checkpointing simply never withholds a commit. May be NULL, in which case this hook is skipped entirely - existing applications that do not stage output are unaffected.</p>
+<p>A non-OK return is handled exactly like the other optional stages: logged and counted against error_count/error_threshold.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>Application-specific context pointer </td></tr>
+    <tr><td class="paramname">committed</td><td>true if this cycle's output may be sent; false if it must be discarded </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on normal handling; other codes for error conditions (e.g. the staged-output queue itself failed to flush) </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00219">219</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -257,7 +289,7 @@ Data Fields</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on success</dd></dl>
 <p>Note: This function must not fail. It should handle all cleanup robustly, logging errors but continuing cleanup. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00178">178</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00233">233</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -277,7 +309,7 @@ Data Fields</h2></td></tr>
 <p>Used for logging and diagnostics.</p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to null-terminated application name </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00187">187</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00242">242</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
@@ -297,12 +329,12 @@ Data Fields</h2></td></tr>
 <p>Used for logging and version tracking.</p>
 <dl class="section return"><dt>Returns</dt><dd>Pointer to null-terminated version string (e.g., "1.0.0") </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00196">196</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__appmanager_8h_source.html#l00251">251</a> of file <a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/appmanager/<a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a></li>
+<li>include/safeapi/app/appmanager/<a class="el" href="sapi__appmanager_8h_source.html">sapi_appmanager.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

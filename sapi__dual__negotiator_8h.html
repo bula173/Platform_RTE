@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/dual/sapi_dual_negotiator.h File Reference</title>
+<title>Safe API Framework: include/safeapi/redundancy/dual/sapi_dual_negotiator.h File Reference</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -86,7 +86,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_69499096b0453a128c173ab1461cbb88.html">dual</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_72b2b0f6843c3cddb003f10f065436fa.html">dual</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -102,10 +102,10 @@ $(function() {
 <a href="#details">More...</a></p>
 <div class="textblock"><code>#include &lt;stdbool.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="sapi__dual__channel_8h_source.html">safeapi/dual/sapi_dual_channel.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__dual__types_8h_source.html">safeapi/dual/sapi_dual_types.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/status/sapi_status.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/types/sapi_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__dual__channel_8h_source.html">safeapi/redundancy/dual/sapi_dual_channel.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__dual__types_8h_source.html">safeapi/redundancy/dual/sapi_dual_types.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__status_8h_source.html">safeapi/utils/status/sapi_status.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="sapi__types_8h_source.html">safeapi/utils/types/sapi_types.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for sapi_dual_negotiator.h:</div>
 <div class="dyncontent">
@@ -114,7 +114,7 @@ Include dependency graph for sapi_dual_negotiator.h:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__negotiator_8h__dep__incl.svg" width="184" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="sapi__dual__negotiator_8h__dep__incl.svg" width="216" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
 <p><a href="sapi__dual__negotiator_8h_source.html">Go to the source code of this file.</a></p>
@@ -151,7 +151,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Dual state negotiator of ADR-020: decides sapi_dual_state_t for both this instance and its peer, driven over an attached <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a>'s STATE-frame flow. </p>
-<p>One-directional dependency (ADR-020 section 3): <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> depends on an already-initialized <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> (given to it at config time) and drives its own periodic beacon traffic through that channel's <a class="el" href="group__DUAL.html#ga431165112938948db36a786372a74c8e" title="Sends a sapi_dual_state_frame_t (sapi_dual_frames.h) on every configured redundant link - fire-and-fo...">sapi_dual_channel_send_state_frame()</a>/_receive_state_frame() pair; <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> itself has no knowledge of this module.</p>
+<p>One-directional dependency (ADR-020 section 3): <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a> depends on an already-initialized <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> (given to it at config time) and drives its own periodic beacon traffic through that channel's sapi_dual_channel_send_state_frame()/_receive_state_frame() pair; <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a> itself has no knowledge of this module.</p>
 <p>Intended call pattern: <a class="el" href="group__DUAL.html#gac3aa5fce75f095c4fd7f885bd3438cbf" title="Drives one round of state negotiation: refreshes own_channel_degraded from the attached channel&#39;s cur...">sapi_dual_negotiator_execute()</a> once per application cycle (the same way <a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a> is driven today - ADR-017), after the application has already driven <a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a>/_receive() for its own real payload traffic that cycle if it has any.</p>
 <p>REQ-DUAL-NEGOTIATOR-001: no dynamic allocation; caller supplies storage and an already-initialized <a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a>. REQ-DUAL-NEGOTIATOR-002: <a class="el" href="group__DUAL.html#gac3aa5fce75f095c4fd7f885bd3438cbf" title="Drives one round of state negotiation: refreshes own_channel_degraded from the attached channel&#39;s cur...">sapi_dual_negotiator_execute()</a> shall never call <a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a> itself - deciding what a sustained SAPI_DUAL_STATE_UNKNOWN means for safety stays an application policy decision (ADR-020 section 4's "no automatic
                          safety reaction" non-goal). REQ-DUAL-NEGOTIATOR-003: the initial ONLINE-vs-STANDBY decision uses an older-startup-timestamp-wins rule, with own_id/peer_id as a deterministic fallback only on an exact timestamp tie. REQ-DUAL-NEGOTIATOR-004: whichever side is currently STANDBY has its HOT/COLD label derived from the ONLINE side's own channel-degradation bit - never from the STANDBY side's own self-report, and never from the ONLINE side's opinion of itself. REQ-DUAL-NEGOTIATOR-005: loss of peer contact past config-&gt;peer_lost_timeout_ms sets peer_state to UNKNOWN; own_state degrades to UNKNOWN too unless it was already ONLINE, which stays ONLINE. </p>

@@ -1,9 +1,9 @@
-<map id="src/lifecycle/sapi_lifecycle.c" name="src/lifecycle/sapi_lifecycle.c">
-<area shape="rect" id="Node000001" title="Implementation of the process&#45;wide application setup&#45;phase lock &#45; see sapi_lifecycle...." alt="" coords="51,5,181,45"/>
-<area shape="rect" id="Node000002" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="36,93,196,133"/>
+<map id="src/utils/lifecycle/sapi_lifecycle.c" name="src/utils/lifecycle/sapi_lifecycle.c">
+<area shape="rect" id="Node000001" title="Implementation of the process&#45;wide application setup&#45;phase lock &#45; see sapi_lifecycle...." alt="" coords="50,5,182,45"/>
+<area shape="rect" id="Node000002" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="35,93,197,133"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,46,119,79,113,79,113,46"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="5,189,88,214"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="103,135,67,179,63,176,99,132"/>
-<area shape="rect" id="Node000004" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="113,181,258,221"/>
+<area shape="rect" id="Node000004" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="112,181,259,221"/>
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="133,132,163,169,159,172,129,135"/>
 </map>

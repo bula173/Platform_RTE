@@ -1,25 +1,25 @@
-<map id="src/clocksync/sapi_clocksync.c" name="src/clocksync/sapi_clocksync.c">
-<area shape="rect" id="Node000001" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="215,5,355,45"/>
-<area shape="rect" id="Node000002" href="$sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="64,181,233,221"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="287,46,281,89,274,113,261,135,238,159,211,177,208,173,235,155,257,132,269,111,276,88,282,45"/>
-<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="309,181,469,221"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="298,44,373,168,368,171,294,47"/>
-<area shape="rect" id="Node000009" href="$sapi__clocksync__backend_8h.html" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="49,93,248,133"/>
-<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="256,48,192,88,189,84,253,43"/>
+<map id="src/oal/clocksync/sapi_clocksync.c" name="src/oal/clocksync/sapi_clocksync.c">
+<area shape="rect" id="Node000001" title="Implementation of the pluggable clock&#45;sync backend (ADR&#45;017)." alt="" coords="204,5,368,45"/>
+<area shape="rect" id="Node000002" href="$sapi__clocksync_8h.html" title="Pluggable wall&#45;clock synchronization backend (ADR&#45;017)" alt="" coords="69,181,231,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="288,46,283,89,275,113,263,135,240,159,212,177,209,173,236,155,259,132,270,111,277,88,283,45"/>
+<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="307,181,468,221"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="299,44,372,168,367,171,295,47"/>
+<area shape="rect" id="Node000009" href="$sapi__clocksync__backend_8h.html" title="OS&#45;backend adaptation surface for Clock Synchronization (ADR&#45;005, ADR&#45;017, ADR&#45;021)." alt="" coords="51,93,249,133"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="258,48,193,88,190,84,255,43"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="5,357,76,383"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="118,223,91,244,68,271,52,308,45,344,40,343,47,306,64,268,88,240,115,219"/>
-<area shape="rect" id="Node000004" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="244,269,389,309"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="187,219,269,261,267,266,184,224"/>
-<area shape="rect" id="Node000005" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="78,269,219,309"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="151,222,151,255,146,255,146,222"/>
-<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="124,312,70,351,67,347,121,307"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="298,357,381,383"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="195,307,300,350,298,355,193,312"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="111,357,186,383"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="151,310,151,343,146,343,146,310"/>
-<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="375,223,343,261,339,257,371,220"/>
-<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="399,221,410,263,410,287,404,310,390,333,371,351,367,347,386,330,400,308,405,286,404,263,394,222"/>
-<area shape="poly" id="edge13_Node000009_Node000002" title=" " alt="" coords="151,134,151,167,146,167,146,134"/>
-<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="107,136,77,156,54,183,38,224,32,268,34,309,38,343,33,344,28,310,27,267,33,222,49,180,74,152,104,131"/>
-<area shape="poly" id="edge14_Node000009_Node000004" title=" " alt="" coords="184,131,216,153,248,179,279,217,303,255,298,258,274,221,244,183,213,157,181,136"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="119,224,91,244,68,271,52,308,45,344,40,343,47,306,64,268,88,240,115,219"/>
+<area shape="rect" id="Node000004" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="246,269,393,309"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="188,219,271,261,269,266,186,224"/>
+<area shape="rect" id="Node000005" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="79,269,221,309"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="153,222,153,255,147,255,147,222"/>
+<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="125,312,69,351,66,347,122,307"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="299,357,382,383"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="197,307,301,350,299,355,195,312"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="113,357,187,383"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="153,310,153,343,147,343,147,310"/>
+<area shape="poly" id="edge10_Node000008_Node000004" title=" " alt="" coords="374,223,345,260,341,257,370,220"/>
+<area shape="poly" id="edge9_Node000008_Node000006" title=" " alt="" coords="399,221,411,262,413,287,407,310,392,333,373,351,369,347,388,330,402,308,407,286,406,263,394,222"/>
+<area shape="poly" id="edge13_Node000009_Node000002" title=" " alt="" coords="153,134,153,167,147,167,147,134"/>
+<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="111,136,83,156,59,183,42,223,36,267,35,309,39,343,34,344,30,309,30,267,37,222,54,180,79,152,108,131"/>
+<area shape="poly" id="edge14_Node000009_Node000004" title=" " alt="" coords="183,131,214,153,245,179,278,218,304,256,299,259,274,221,241,183,211,157,180,136"/>
 </map>

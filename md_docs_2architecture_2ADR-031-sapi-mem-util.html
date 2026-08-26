@@ -89,7 +89,7 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md290"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code><a class="el" href="sapi__mem__util_8h.html" title="Thin, MISRA-visible wrappers over the three raw memory-block primitives (fill/copy/compare) every oth...">include/safeapi/memory/sapi_mem_util.h</a></code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.2/§4).</p>
+<div class="textblock"><p><a class="anchor" id="autotoc_md290"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/memory/sapi_mem_util.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.2/§4).</p>
 <h1><a class="anchor" id="autotoc_md291"></a>
 1. Context</h1>
 <p><code>safeAPIRBC2oo2</code> (downstream, separate repo) calls libc <code>memset()</code>/ <code>memcpy()</code>/<code>memcmp()</code> directly across ~25 of its own application files (~90 call sites) - fixed-size struct zeroing, buffer copies for the wire codecs, byte-for-byte session comparisons. This framework itself does the same in its own <code>src/</code>/<code>posix_backend</code> files. Direct <code>&lt;string.h&gt;</code> calls are not a MISRA rule violation on their own, but this project's own posture (this repo's <code>CLAUDE.md</code>: "no dynamic memory... prefer a checked
@@ -126,7 +126,7 @@ state" convention this framework's own <code><a class="el" href="structsapi__buf
 <h1><a class="anchor" id="autotoc_md297"></a>
 5. Location</h1>
 <ul>
-<li><code><a class="el" href="sapi__mem__util_8h.html" title="Thin, MISRA-visible wrappers over the three raw memory-block primitives (fill/copy/compare) every oth...">include/safeapi/memory/sapi_mem_util.h</a></code> (new, header-only).</li>
+<li><code>include/safeapi/memory/sapi_mem_util.h</code> (new, header-only).</li>
 <li>No <code>src/</code>, no <code>tests/</code>, no <code>SAFEAPI_ENABLE_*</code> CMake option - see §2.2. </li>
 </ul>
 </div></div><!-- contents -->

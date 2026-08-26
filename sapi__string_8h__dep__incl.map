@@ -1,7 +1,7 @@
-<map id="include/safeapi/string/sapi_string.h" name="include/safeapi/string/sapi_string.h">
-<area shape="rect" id="Node000001" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="79,5,242,45"/>
-<area shape="rect" id="Node000002" href="$sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="5,93,140,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="131,57,88,95,84,91,127,53"/>
-<area shape="rect" id="Node000003" href="$sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="165,93,333,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="194,53,237,91,234,95,191,57"/>
+<map id="include/safeapi/utils/string/sapi_string.h" name="include/safeapi/utils/string/sapi_string.h">
+<area shape="rect" id="Node000001" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="96,5,249,45"/>
+<area shape="rect" id="Node000002" href="$sapi__log_8c.html" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="5,101,164,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="145,57,99,102,95,98,141,53"/>
+<area shape="rect" id="Node000003" href="$sapi__string_8c.html" title="Implementation of the bounded string module (ADR&#45;006)." alt="" coords="188,93,333,133"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,53,243,91,239,95,200,57"/>
 </map>

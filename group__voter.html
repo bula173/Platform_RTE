@@ -169,6 +169,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga6b32b3f6842a04045edf054d4f0d43e9" id="r_ga6b32b3f6842a04045edf054d4f0d43e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#ga6b32b3f6842a04045edf054d4f0d43e9">sapi_voter_get_channel</a> (const <a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, uint32_t index)</td></tr>
 <tr class="memdesc:ga6b32b3f6842a04045edf054d4f0d43e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to one registered channel, by index.  <br /></td></tr>
 <tr class="separator:ga6b32b3f6842a04045edf054d4f0d43e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa3532847161357da62944188e3e94e84" id="r_gaa3532847161357da62944188e3e94e84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#gaa3532847161357da62944188e3e94e84">sapi_voter_get_channel_by_name</a> (const <a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter, const char *name)</td></tr>
+<tr class="memdesc:gaa3532847161357da62944188e3e94e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direct access to one registered channel, by name (e.g. "ChannelAtoB") - the name each channel was given via <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at its own <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time.  <br /></td></tr>
+<tr class="separator:gaa3532847161357da62944188e3e94e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga26a2caa51852059e3cf034ef9af10bd6" id="r_ga26a2caa51852059e3cf034ef9af10bd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__voter.html#ga26a2caa51852059e3cf034ef9af10bd6">sapi_voter_destroy</a> (<a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *voter)</td></tr>
 <tr class="memdesc:ga26a2caa51852059e3cf034ef9af10bd6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destroys a voter instance.  <br /></td></tr>
 <tr class="separator:ga26a2caa51852059e3cf034ef9af10bd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -646,6 +649,47 @@ SAPI_STATUS_INVALID_PARAM if voter is NULL </dd></dl>
 
 </div>
 </div>
+<a id="gaa3532847161357da62944188e3e94e84" name="gaa3532847161357da62944188e3e94e84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa3532847161357da62944188e3e94e84">&#9670;&#160;</a></span>sapi_voter_get_channel_by_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__channel__link.html#gaff9a2ed0350aff104872b9c9656cc469">sapi_channel_t</a> * sapi_voter_get_channel_by_name </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="group__voter.html#ga425136aaff02464a24071880f576afd3">sapi_voter_t</a> *&#160;</td>
+          <td class="paramname"><em>voter</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Direct access to one registered channel, by name (e.g. "ChannelAtoB") - the name each channel was given via <a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a> at its own <a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a> time. </p>
+<p>Linear search over the registered channels (channel counts here are small - SAPI_VOTER_MAX_CHANNELS - so this is not a hot-path lookup by design); compares with strcmp(), so an exact, case-sensitive match is required.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">voter</td><td>Voter handle. Must not be NULL. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>Name to search for. Must not be NULL. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The first registered channel whose own name matches (exact strcmp() equality); NULL if voter or name is NULL, or no registered channel has a matching (non-NULL) name. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__voter_8c_source.html#l00445">445</a> of file <a class="el" href="sapi__voter_8c_source.html">sapi_voter.c</a>.</p>
+
+</div>
+</div>
 <a id="ga26a2caa51852059e3cf034ef9af10bd6" name="ga26a2caa51852059e3cf034ef9af10bd6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga26a2caa51852059e3cf034ef9af10bd6">&#9670;&#160;</a></span>sapi_voter_destroy()</h2>
 
@@ -673,7 +717,7 @@ SAPI_STATUS_INVALID_PARAM if voter is NULL </dd></dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK always. </dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>Idempotent; safe to call with NULL. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__voter_8c_source.html#l00445">445</a> of file <a class="el" href="sapi__voter_8c_source.html">sapi_voter.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__voter_8c_source.html#l00465">465</a> of file <a class="el" href="sapi__voter_8c_source.html">sapi_voter.c</a>.</p>
 
 </div>
 </div>

@@ -1,25 +1,25 @@
-<map id="src/ipc/sapi_ipc_request_reply.c" name="src/ipc/sapi_ipc_request_reply.c">
-<area shape="rect" id="Node000001" title="IPC Request&#45;Reply implementation." alt="" coords="257,5,435,45"/>
-<area shape="rect" id="Node000002" href="$sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="135,93,285,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="318,48,253,88,250,84,315,43"/>
-<area shape="rect" id="Node000009" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="289,181,449,221"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="351,45,367,167,362,168,346,46"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="383,101,490,126"/>
-<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="368,44,416,89,412,93,364,48"/>
-<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="184,269,329,309"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,133,251,255,245,257,213,134"/>
-<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="18,269,159,309"/>
+<map id="src/oal/ipc/sapi_ipc_request_reply.c" name="src/oal/ipc/sapi_ipc_request_reply.c">
+<area shape="rect" id="Node000001" title="IPC Request&#45;Reply implementation." alt="" coords="275,5,420,45"/>
+<area shape="rect" id="Node000002" href="$sapi__ipc__request__reply_8h.html" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="133,93,287,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="319,48,253,88,251,84,316,43"/>
+<area shape="rect" id="Node000009" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="289,181,451,221"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="352,45,368,167,363,168,347,46"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="385,101,491,126"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="369,44,417,89,414,93,366,48"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="185,269,331,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,133,252,255,247,257,213,134"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="17,269,160,309"/>
 <area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="172,136,142,156,116,183,100,219,93,256,88,255,95,217,112,180,138,152,169,131"/>
 <area shape="rect" id="Node000008" href="$sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="127,189,213,214"/>
 <area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="204,135,184,177,179,175,199,132"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="262,357,345,383"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="141,307,260,350,258,355,139,312"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="263,357,346,383"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="141,307,261,350,259,355,139,312"/>
 <area shape="rect" id="Node000006" title=" " alt="" coords="101,357,175,383"/>
 <area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="103,308,126,344,121,347,98,311"/>
 <area shape="rect" id="Node000007" title=" " alt="" coords="5,357,76,383"/>
 <area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="79,311,57,347,53,344,75,308"/>
-<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="184,212,229,257,226,261,180,216"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="184,212,230,258,227,261,180,216"/>
 <area shape="poly" id="edge9_Node000008_Node000004" title=" " alt="" coords="161,216,118,261,115,257,157,212"/>
-<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="345,224,294,263,291,259,342,219"/>
-<area shape="poly" id="edge11_Node000009_Node000005" title=" " alt="" coords="369,222,360,263,344,310,323,348,318,345,340,308,355,262,363,221"/>
+<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="347,224,295,263,292,259,344,219"/>
+<area shape="poly" id="edge11_Node000009_Node000005" title=" " alt="" coords="370,222,361,263,346,310,324,348,320,345,341,308,356,262,365,221"/>
 </map>

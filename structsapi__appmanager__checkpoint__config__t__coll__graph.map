@@ -1,5 +1,5 @@
 <map id="sapi_appmanager_checkpoint_config_t" name="sapi_appmanager_checkpoint_config_t">
-<area shape="rect" id="Node000001" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019)." alt="" coords="9,269,225,309"/>
+<area shape="rect" id="Node000001" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019/ADR&#45;034)." alt="" coords="9,269,225,309"/>
 <area shape="rect" id="Node000002" href="$structsapi__voter__storage__t.html" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="37,181,196,207"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,220,119,269,114,269,114,220"/>
 <area shape="rect" id="Node000003" href="$structsapi__voter__config__t.html" title="Configuration for sapi_voter_init()." alt="" coords="5,93,153,119"/>

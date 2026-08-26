@@ -118,7 +118,7 @@ Data Fields</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>SAPI_DUAL_FRAME_KIND_STATE payload - <a class="el" href="structsapi__dual__negotiator__t.html" title="One sapi_dual_negotiator_t instance&#39;s state. Caller-owned storage; every field is private - reach it ...">sapi_dual_negotiator_t</a>'s own periodic beacon. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00082">82</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00085">85</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 </div><h2 class="groupheader">Field Documentation</h2>
 <a id="aa50a5b4008fa1532de9de299f5fb1ea3" name="aa50a5b4008fa1532de9de299f5fb1ea3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa50a5b4008fa1532de9de299f5fb1ea3">&#9670;&#160;</a></span>header</h2>
@@ -132,7 +132,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00084">84</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00087">87</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 
 </div>
 </div>
@@ -149,7 +149,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Sender's own sapi_dual_state_t, stored as uint8_t for a stable wire size. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00087">87</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00090">90</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 
 </div>
 </div>
@@ -166,7 +166,7 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Sender's own DualChannel aggregate status at beacon time: 0 = SAPI_DUAL_CHANNEL_STATUS_FULL, 1 = SAPI_DUAL_CHANNEL_STATUS_DEGRADED or SAPI_DUAL_CHANNEL_STATUS_DOWN. This is what lets the <em>peer</em> distinguish HOTSTANDBY from COLDSTANDBY for itself - see ADR-020 section 3. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00093">93</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00096">96</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 
 </div>
 </div>
@@ -182,7 +182,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00094">94</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00097">97</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 
 </div>
 </div>
@@ -199,12 +199,12 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 <p>Sender's own fixed value, captured ONCE (typically at <a class="el" href="group__DUAL.html#gade413b6afcb945c9fa3c655edc9825c7" title="Initializes a sapi_dual_negotiator_t. Captures this instance&#39;s own startup timestamp once (sapi_timer...">sapi_dual_negotiator_init()</a> time) and repeated unchanged on every beacon this instance ever sends - NOT a live "now" refreshed each send. Used for the same older-timestamp-wins startup tie-break safeAPIRBC2oo2's site.c uses today (decide_online()): both sides must keep sending the <em>same</em> value across repeated beacons for that comparison to stay stable and reproducible rather than racing by whatever margin two live clocks happened to differ by on a given cycle. Not a cross-site clock synchronization claim either way (see <a class="el" href="sapi__clocksync_8h.html" title="Pluggable wall-clock synchronization backend (ADR-017)">sapi_clocksync.h</a>'s own file-level note: never assume zero jitter). </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00106">106</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__dual__frames_8h_source.html#l00109">109</a> of file <a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>include/safeapi/dual/<a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a></li>
+<li>include/safeapi/redundancy/dual/<a class="el" href="sapi__dual__frames_8h_source.html">sapi_dual_frames.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

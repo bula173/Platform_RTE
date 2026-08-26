@@ -22,8 +22,8 @@
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="sapi__ipc_8c.html" target="_top" xlink:title="IPC service: validates parameters, then dispatches to the backend registered via sapi_ipc_register_ba...">
-<polygon fill="white" stroke="#666666" points="118,-19 19,-19 19,0 118,0 118,-19"/>
-<text text-anchor="middle" x="68.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">src/ipc/sapi_ipc.c</text>
+<polygon fill="white" stroke="#666666" points="127,-19 10,-19 10,0 127,0 127,-19"/>
+<text text-anchor="middle" x="68.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">src/oal/ipc/sapi_ipc.c</text>
 </a>
 </g>
 </g>

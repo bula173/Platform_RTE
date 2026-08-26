@@ -1,17 +1,17 @@
-<map id="src/channel_link/sapi_channel.c" name="src/channel_link/sapi_channel.c">
-<area shape="rect" id="Node000001" title="One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks,..." alt="" coords="179,5,337,45"/>
-<area shape="rect" id="Node000002" href="$sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="89,93,245,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="240,48,199,86,195,82,236,44"/>
-<area shape="rect" id="Node000007" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="270,93,430,133"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="280,44,322,82,318,86,277,48"/>
+<map id="src/redundancy/channel_link/sapi_channel.c" name="src/redundancy/channel_link/sapi_channel.c">
+<area shape="rect" id="Node000001" title="One redundant channel: validates parameters, then dispatches to its configured send/recv callbacks,..." alt="" coords="170,5,346,45"/>
+<area shape="rect" id="Node000002" href="$sapi__channel_8h.html" title="A single redundant &quot;channel&quot;: an opaque transport handle plus send/receive callbacks,..." alt="" coords="49,93,259,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="237,48,189,86,186,82,233,44"/>
+<area shape="rect" id="Node000007" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="283,93,444,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="283,44,331,83,328,87,280,48"/>
 <area shape="rect" id="Node000003" title=" " alt="" coords="5,189,76,214"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="141,136,71,183,68,179,138,131"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="130,136,69,182,65,178,127,131"/>
 <area shape="rect" id="Node000004" title=" " alt="" coords="199,189,282,214"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="186,132,224,176,220,179,182,135"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="175,132,221,177,217,180,171,136"/>
 <area shape="rect" id="Node000005" title=" " alt="" coords="101,189,175,214"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="163,134,149,176,144,174,158,133"/>
-<area shape="rect" id="Node000006" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="307,181,452,221"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="215,131,321,174,319,179,213,136"/>
-<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="327,136,268,182,265,178,324,132"/>
-<area shape="poly" id="edge8_Node000007_Node000006" title=" " alt="" coords="359,133,371,167,366,169,354,134"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="153,134,145,175,140,174,148,133"/>
+<area shape="rect" id="Node000006" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="306,181,453,221"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="204,131,318,174,316,179,203,136"/>
+<area shape="poly" id="edge7_Node000007_Node000004" title=" " alt="" coords="338,136,270,183,267,179,335,131"/>
+<area shape="poly" id="edge8_Node000007_Node000006" title=" " alt="" coords="370,133,376,167,371,168,364,134"/>
 </map>

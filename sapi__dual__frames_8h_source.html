@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Safe API Framework: include/safeapi/dual/sapi_dual_frames.h Source File</title>
+<title>Safe API Framework: include/safeapi/redundancy/dual/sapi_dual_frames.h Source File</title>
 <!--BEGIN PROJECT_ICON-->
 <link rel="icon" href="$projecticon" type="image/x-icon" />
 <!--END PROJECT_ICON-->
@@ -91,7 +91,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_69499096b0453a128c173ab1461cbb88.html">dual</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_b4b35a49b8f349ae6c6fad7dffcf9e92.html">safeapi</a></li><li class="navelem"><a class="el" href="dir_783a881693f922c0ff33df6985db0b2a.html">redundancy</a></li><li class="navelem"><a class="el" href="dir_72b2b0f6843c3cddb003f10f065436fa.html">dual</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -104,7 +104,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__dual__types_8h.html">safeapi/dual/sapi_dual_types.h</a>&quot;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &quot;<a class="code" href="sapi__dual__types_8h.html">safeapi/redundancy/dual/sapi_dual_types.h</a>&quot;</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#ifdef __cplusplus</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
@@ -115,56 +115,68 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>{</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno"><a class="line" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619">   45</a></span>    <a class="code hl_enumvalue" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619">SAPI_DUAL_FRAME_KIND_DATA</a> = 0,</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa">   49</a></span>    <a class="code hl_enumvalue" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa">SAPI_DUAL_FRAME_KIND_ACK</a> = 1,</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <a class="code hl_enumvalue" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a> = 2</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">   53</a></span>} <a class="code hl_enumeration" href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">sapi_dual_frame_kind_t</a>;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">   52</a></span>    <a class="code hl_enumvalue" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a> = 2,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <a class="code hl_enumvalue" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306">SAPI_DUAL_FRAME_KIND_HEARTBEAT</a> = 3</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306">   56</a></span>} <a class="code hl_enumeration" href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">sapi_dual_frame_kind_t</a>;</div>
 </div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
-<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html">   59</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_frame_header_s</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>{</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">   63</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">kind</a>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html#ab88218dcac4b601dc63d236d1271d845">   67</a></span>    uint8_t reserved[3];</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="};">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html">   62</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_frame_header_s</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>{</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">   66</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">kind</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structsapi__dual__frame__header__t.html#ab88218dcac4b601dc63d236d1271d845">   70</a></span>    uint8_t reserved[3];</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>} <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a>;</div>
 </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="foldopen" id="foldopen00071" data-start="{" data-end="};">
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="structsapi__dual__ack__frame__t.html">   71</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_ack_frame_s</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>{</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a> header;</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">   77</a></span>    uint32_t <a class="code hl_variable" href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">acked_sequence</a>;</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>} <a class="code hl_struct" href="structsapi__dual__ack__frame__t.html">sapi_dual_ack_frame_t</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structsapi__dual__ack__frame__t.html">   74</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_ack_frame_s</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>{</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a> header;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">   80</a></span>    uint32_t <a class="code hl_variable" href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">acked_sequence</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>} <a class="code hl_struct" href="structsapi__dual__ack__frame__t.html">sapi_dual_ack_frame_t</a>;</div>
 </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="foldopen" id="foldopen00082" data-start="{" data-end="};">
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html">   82</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_state_frame_s</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>{</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a> header;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">   87</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">state</a>;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">   93</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">channel_degraded</a>;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    uint16_t reserved;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">  106</a></span>    uint64_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">timestamp_ms</a>;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>} <a class="code hl_struct" href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
+<div class="foldopen" id="foldopen00085" data-start="{" data-end="};">
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html">   85</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_state_frame_s</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>{</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a> header;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">   90</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">state</a>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">   96</a></span>    uint8_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">channel_degraded</a>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    uint16_t reserved;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">  109</a></span>    uint64_t <a class="code hl_variable" href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">timestamp_ms</a>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>} <a class="code hl_struct" href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a>;</div>
 </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span><span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>}</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span><span class="preprocessor">#endif </span><span class="comment">/* SAPI_DUAL_FRAMES_H */</span><span class="preprocessor"></span></div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="foldopen" id="foldopen00113" data-start="{" data-end="};">
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="structsapi__dual__heartbeat__frame__t.html">  113</a></span><span class="keyword">typedef</span> <span class="keyword">struct </span>sapi_dual_heartbeat_frame_s</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>{</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <a class="code hl_struct" href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a> header;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno"><a class="line" href="structsapi__dual__heartbeat__frame__t.html#a330bf4aa213fcfce210ff5d0a9555ebf">  117</a></span>    uint64_t <a class="code hl_variable" href="structsapi__dual__heartbeat__frame__t.html#a330bf4aa213fcfce210ff5d0a9555ebf">timestamp_ms</a>;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>} <a class="code hl_struct" href="structsapi__dual__heartbeat__frame__t.html">sapi_dual_heartbeat_frame_t</a>;</div>
+</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span><span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="preprocessor">#endif </span><span class="comment">/* SAPI_DUAL_FRAMES_H */</span><span class="preprocessor"></span></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
 <div class="ttc" id="agroup__DUAL_html_gae9a0126aee2c6998e5ebbbeac46cb360"><div class="ttname"><a href="group__DUAL.html#gae9a0126aee2c6998e5ebbbeac46cb360">sapi_dual_frame_kind_t</a></div><div class="ttdeci">sapi_dual_frame_kind_t</div><div class="ttdoc">Which kind of Layer-2 frame a given Layer-1 payload holds. Stored as the first byte of every sapi_dua...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00041">sapi_dual_frames.h:42</a></div></div>
-<div class="ttc" id="agroup__DUAL_html_ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b"><div class="ttname"><a href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a></div><div class="ttdeci">@ SAPI_DUAL_FRAME_KIND_STATE</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00053">sapi_dual_frames.h:52</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b"><div class="ttname"><a href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a434fae20788f1ba14478fbf0ea1bba3b">SAPI_DUAL_FRAME_KIND_STATE</a></div><div class="ttdeci">@ SAPI_DUAL_FRAME_KIND_STATE</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00052">sapi_dual_frames.h:52</a></div></div>
+<div class="ttc" id="agroup__DUAL_html_ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306"><div class="ttname"><a href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a4bbf271a7babced6f4ff30c342585306">SAPI_DUAL_FRAME_KIND_HEARTBEAT</a></div><div class="ttdeci">@ SAPI_DUAL_FRAME_KIND_HEARTBEAT</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00056">sapi_dual_frames.h:55</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa"><div class="ttname"><a href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a52053cde4e35bbbca8a13007f3ffdfaa">SAPI_DUAL_FRAME_KIND_ACK</a></div><div class="ttdeci">@ SAPI_DUAL_FRAME_KIND_ACK</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00049">sapi_dual_frames.h:49</a></div></div>
 <div class="ttc" id="agroup__DUAL_html_ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619"><div class="ttname"><a href="group__DUAL.html#ggae9a0126aee2c6998e5ebbbeac46cb360a89389d78ccf5c9760da07045cc575619">SAPI_DUAL_FRAME_KIND_DATA</a></div><div class="ttdeci">@ SAPI_DUAL_FRAME_KIND_DATA</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00045">sapi_dual_frames.h:45</a></div></div>
 <div class="ttc" id="asapi__dual__types_8h_html"><div class="ttname"><a href="sapi__dual__types_8h.html">sapi_dual_types.h</a></div><div class="ttdoc">Shared enums for the sapi_dual module (ADR-020): dual-instance state negotiation and the redundant,...</div></div>
-<div class="ttc" id="astructsapi__dual__ack__frame__t_html"><div class="ttname"><a href="structsapi__dual__ack__frame__t.html">sapi_dual_ack_frame_t</a></div><div class="ttdoc">SAPI_DUAL_FRAME_KIND_ACK payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00071">sapi_dual_frames.h:72</a></div></div>
-<div class="ttc" id="astructsapi__dual__ack__frame__t_html_a97d083cf8fd7ebbb526ec59cb9646e8a"><div class="ttname"><a href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">sapi_dual_ack_frame_t::acked_sequence</a></div><div class="ttdeci">uint32_t acked_sequence</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00077">sapi_dual_frames.h:77</a></div></div>
-<div class="ttc" id="astructsapi__dual__frame__header__t_html"><div class="ttname"><a href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a></div><div class="ttdoc">Common 4-byte header prefixing every Layer-2 frame; kept a fixed 4 bytes (not just 1) so the fields t...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00059">sapi_dual_frames.h:60</a></div></div>
-<div class="ttc" id="astructsapi__dual__frame__header__t_html_a72dde57f169e1cb4c5dedaf1193fca7f"><div class="ttname"><a href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">sapi_dual_frame_header_t::kind</a></div><div class="ttdeci">uint8_t kind</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00063">sapi_dual_frames.h:63</a></div></div>
-<div class="ttc" id="astructsapi__dual__state__frame__t_html"><div class="ttname"><a href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a></div><div class="ttdoc">SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t's own periodic beacon.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00082">sapi_dual_frames.h:83</a></div></div>
-<div class="ttc" id="astructsapi__dual__state__frame__t_html_a6aebb5de07dc90fec2f122cc12217001"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">sapi_dual_state_frame_t::timestamp_ms</a></div><div class="ttdeci">uint64_t timestamp_ms</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00106">sapi_dual_frames.h:106</a></div></div>
-<div class="ttc" id="astructsapi__dual__state__frame__t_html_aac9240abda99bec1d1ebfe208b8c86c1"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">sapi_dual_state_frame_t::state</a></div><div class="ttdeci">uint8_t state</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00087">sapi_dual_frames.h:87</a></div></div>
-<div class="ttc" id="astructsapi__dual__state__frame__t_html_ade360cf4383fa167734180fe29f83d97"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">sapi_dual_state_frame_t::channel_degraded</a></div><div class="ttdeci">uint8_t channel_degraded</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00093">sapi_dual_frames.h:93</a></div></div>
+<div class="ttc" id="astructsapi__dual__ack__frame__t_html"><div class="ttname"><a href="structsapi__dual__ack__frame__t.html">sapi_dual_ack_frame_t</a></div><div class="ttdoc">SAPI_DUAL_FRAME_KIND_ACK payload.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00074">sapi_dual_frames.h:75</a></div></div>
+<div class="ttc" id="astructsapi__dual__ack__frame__t_html_a97d083cf8fd7ebbb526ec59cb9646e8a"><div class="ttname"><a href="structsapi__dual__ack__frame__t.html#a97d083cf8fd7ebbb526ec59cb9646e8a">sapi_dual_ack_frame_t::acked_sequence</a></div><div class="ttdeci">uint32_t acked_sequence</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00080">sapi_dual_frames.h:80</a></div></div>
+<div class="ttc" id="astructsapi__dual__frame__header__t_html"><div class="ttname"><a href="structsapi__dual__frame__header__t.html">sapi_dual_frame_header_t</a></div><div class="ttdoc">Common 4-byte header prefixing every Layer-2 frame; kept a fixed 4 bytes (not just 1) so the fields t...</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00062">sapi_dual_frames.h:63</a></div></div>
+<div class="ttc" id="astructsapi__dual__frame__header__t_html_a72dde57f169e1cb4c5dedaf1193fca7f"><div class="ttname"><a href="structsapi__dual__frame__header__t.html#a72dde57f169e1cb4c5dedaf1193fca7f">sapi_dual_frame_header_t::kind</a></div><div class="ttdeci">uint8_t kind</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00066">sapi_dual_frames.h:66</a></div></div>
+<div class="ttc" id="astructsapi__dual__heartbeat__frame__t_html"><div class="ttname"><a href="structsapi__dual__heartbeat__frame__t.html">sapi_dual_heartbeat_frame_t</a></div><div class="ttdoc">SAPI_DUAL_FRAME_KIND_HEARTBEAT payload - connection maintenance heartbeat.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00113">sapi_dual_frames.h:114</a></div></div>
+<div class="ttc" id="astructsapi__dual__heartbeat__frame__t_html_a330bf4aa213fcfce210ff5d0a9555ebf"><div class="ttname"><a href="structsapi__dual__heartbeat__frame__t.html#a330bf4aa213fcfce210ff5d0a9555ebf">sapi_dual_heartbeat_frame_t::timestamp_ms</a></div><div class="ttdeci">uint64_t timestamp_ms</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00117">sapi_dual_frames.h:117</a></div></div>
+<div class="ttc" id="astructsapi__dual__state__frame__t_html"><div class="ttname"><a href="structsapi__dual__state__frame__t.html">sapi_dual_state_frame_t</a></div><div class="ttdoc">SAPI_DUAL_FRAME_KIND_STATE payload - sapi_dual_negotiator_t's own periodic beacon.</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00085">sapi_dual_frames.h:86</a></div></div>
+<div class="ttc" id="astructsapi__dual__state__frame__t_html_a6aebb5de07dc90fec2f122cc12217001"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#a6aebb5de07dc90fec2f122cc12217001">sapi_dual_state_frame_t::timestamp_ms</a></div><div class="ttdeci">uint64_t timestamp_ms</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00109">sapi_dual_frames.h:109</a></div></div>
+<div class="ttc" id="astructsapi__dual__state__frame__t_html_aac9240abda99bec1d1ebfe208b8c86c1"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#aac9240abda99bec1d1ebfe208b8c86c1">sapi_dual_state_frame_t::state</a></div><div class="ttdeci">uint8_t state</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00090">sapi_dual_frames.h:90</a></div></div>
+<div class="ttc" id="astructsapi__dual__state__frame__t_html_ade360cf4383fa167734180fe29f83d97"><div class="ttname"><a href="structsapi__dual__state__frame__t.html#ade360cf4383fa167734180fe29f83d97">sapi_dual_state_frame_t::channel_degraded</a></div><div class="ttdeci">uint8_t channel_degraded</div><div class="ttdef"><b>Definition</b> <a href="sapi__dual__frames_8h_source.html#l00096">sapi_dual_frames.h:96</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

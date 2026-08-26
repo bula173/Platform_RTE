@@ -1,51 +1,51 @@
-<map id="src/dual/sapi_dual_negotiator.c" name="src/dual/sapi_dual_negotiator.c">
-<area shape="rect" id="Node000001" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1139,5,1277,45"/>
-<area shape="rect" id="Node000002" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="940,93,1108,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1169,48,1078,90,1076,85,1166,43"/>
-<area shape="rect" id="Node000014" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="1062,357,1202,397"/>
-<area shape="poly" id="edge33_Node000001_Node000014" title=" " alt="" coords="1207,46,1142,344,1136,343,1201,45"/>
-<area shape="rect" id="Node000003" title=" " alt="" coords="1199,533,1281,559"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1076,131,1119,152,1162,179,1206,218,1222,239,1237,268,1262,326,1275,374,1277,424,1268,486,1255,522,1250,520,1263,485,1272,424,1270,375,1257,328,1232,270,1217,242,1202,222,1158,183,1116,157,1074,136"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="314,533,385,559"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="940,123,691,143,381,178,237,200,118,227,72,241,37,257,15,272,8,289,8,379,10,401,17,422,27,440,40,456,75,484,118,504,166,520,214,530,300,540,300,546,213,535,164,525,116,509,72,488,36,460,22,443,12,424,5,402,3,379,3,287,11,269,34,252,70,236,116,222,236,195,381,172,691,138,940,117"/>
-<area shape="rect" id="Node000005" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="604,181,772,221"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="951,136,775,181,774,175,950,131"/>
-<area shape="rect" id="Node000007" href="$sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="144,357,312,397"/>
-<area shape="poly" id="edge30_Node000002_Node000007" title=" " alt="" coords="940,125,777,143,580,172,484,192,398,215,327,242,299,256,278,271,263,287,252,306,237,345,232,343,247,304,259,284,274,267,296,252,325,237,396,210,483,187,579,167,776,137,939,119"/>
-<area shape="rect" id="Node000011" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="875,445,1021,485"/>
-<area shape="poly" id="edge31_Node000002_Node000011" title=" " alt="" coords="1056,131,1121,179,1157,210,1191,245,1217,283,1233,322,1236,342,1235,361,1228,380,1217,399,1188,419,1143,435,1035,456,1034,451,1142,430,1186,414,1213,396,1223,378,1229,360,1231,342,1228,323,1213,286,1187,249,1154,214,1118,183,1053,136"/>
-<area shape="rect" id="Node000012" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="625,445,767,485"/>
-<area shape="poly" id="edge32_Node000002_Node000012" title=" " alt="" coords="1024,134,1012,186,989,257,973,296,952,333,928,368,899,399,872,419,842,435,781,455,779,450,840,430,870,415,896,395,924,365,948,330,968,293,984,255,1007,185,1018,133"/>
-<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="773,213,890,236,1023,268,1085,287,1141,308,1186,331,1217,356,1230,375,1239,396,1249,441,1250,484,1247,520,1242,520,1245,484,1244,441,1234,397,1225,377,1213,359,1183,335,1139,313,1084,292,1021,273,889,241,772,219"/>
-<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="604,220,544,239,514,254,487,271,443,311,416,348,396,391,373,446,361,484,355,520,350,519,356,483,368,444,391,388,411,345,439,307,484,267,511,249,542,235,603,215"/>
-<area shape="rect" id="Node000006" href="$sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="43,269,211,309"/>
-<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="604,218,225,276,224,271,604,213"/>
-<area shape="poly" id="edge26_Node000005_Node000007" title=" " alt="" coords="604,207,542,212,471,224,400,243,332,272,308,288,286,307,250,348,246,344,282,304,304,284,329,267,398,238,470,218,541,207,604,201"/>
-<area shape="rect" id="Node000008" href="$sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="604,269,772,309"/>
-<area shape="poly" id="edge11_Node000005_Node000008" title=" " alt="" coords="691,222,691,255,685,255,685,222"/>
-<area shape="poly" id="edge28_Node000005_Node000011" title=" " alt="" coords="744,219,791,240,843,270,892,308,913,331,932,356,946,394,951,431,946,432,941,395,927,359,909,334,888,312,840,274,789,245,742,224"/>
-<area shape="poly" id="edge29_Node000005_Node000012" title=" " alt="" coords="638,224,572,254,538,274,508,295,484,319,469,344,466,369,478,396,505,422,539,441,575,452,612,459,611,464,574,458,536,445,502,426,474,399,461,370,464,342,480,316,505,291,536,269,570,249,636,219"/>
-<area shape="rect" id="Node000013" href="$sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="734,357,885,397"/>
-<area shape="poly" id="edge27_Node000005_Node000013" title=" " alt="" coords="729,219,760,240,786,268,803,305,810,343,805,344,798,307,782,271,756,244,726,224"/>
-<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="125,310,123,351,126,374,134,396,150,420,169,441,214,478,262,506,305,526,303,531,259,511,211,482,166,445,146,423,130,399,121,376,118,352,120,309"/>
-<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="151,308,197,346,193,350,147,312"/>
-<area shape="poly" id="edge10_Node000007_Node000004" title=" " alt="" coords="244,396,335,521,331,524,240,399"/>
-<area shape="poly" id="edge12_Node000008_Node000004" title=" " alt="" coords="604,306,539,326,507,341,478,359,437,398,404,442,379,486,362,522,357,520,374,483,400,439,433,394,474,355,504,336,537,321,603,301"/>
-<area shape="rect" id="Node000009" href="$sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="488,357,659,397"/>
-<area shape="poly" id="edge13_Node000008_Node000009" title=" " alt="" coords="664,312,611,351,608,347,661,307"/>
-<area shape="poly" id="edge24_Node000008_Node000011" title=" " alt="" coords="773,299,838,319,870,335,899,355,915,372,927,392,943,431,938,433,922,394,910,376,896,359,868,339,836,324,771,304"/>
-<area shape="poly" id="edge25_Node000008_Node000012" title=" " alt="" coords="692,309,697,431,692,432,686,310"/>
-<area shape="poly" id="edge21_Node000008_Node000013" title=" " alt="" coords="716,307,773,347,770,352,713,312"/>
-<area shape="poly" id="edge14_Node000009_Node000004" title=" " alt="" coords="560,399,522,442,471,487,432,512,393,530,390,526,429,507,468,483,518,438,556,396"/>
-<area shape="rect" id="Node000010" title=" " alt="" coords="600,533,675,559"/>
-<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="583,397,616,484,630,520,625,522,611,486,578,399"/>
-<area shape="poly" id="edge16_Node000009_Node000011" title=" " alt="" coords="656,395,862,442,861,447,655,400"/>
-<area shape="poly" id="edge17_Node000009_Node000012" title=" " alt="" coords="602,395,659,435,656,440,599,400"/>
-<area shape="poly" id="edge18_Node000012_Node000003" title=" " alt="" coords="767,474,1186,534,1185,539,767,480"/>
-<area shape="poly" id="edge20_Node000012_Node000004" title=" " alt="" coords="626,485,398,536,397,531,624,480"/>
-<area shape="poly" id="edge19_Node000012_Node000010" title=" " alt="" coords="684,487,657,524,652,520,680,484"/>
-<area shape="poly" id="edge22_Node000013_Node000011" title=" " alt="" coords="841,395,908,436,905,441,838,400"/>
-<area shape="poly" id="edge23_Node000013_Node000012" title=" " alt="" coords="786,400,733,439,730,435,783,395"/>
-<area shape="poly" id="edge34_Node000014_Node000011" title=" " alt="" coords="1093,400,1002,442,1000,437,1090,395"/>
-<area shape="poly" id="edge35_Node000014_Node000012" title=" " alt="" coords="1062,396,1043,400,781,451,780,446,1042,395,1061,391"/>
+<map id="src/redundancy/dual/sapi_dual_negotiator.c" name="src/redundancy/dual/sapi_dual_negotiator.c">
+<area shape="rect" id="Node000001" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="1182,5,1354,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="969,93,1175,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1226,48,1128,90,1126,85,1224,43"/>
+<area shape="rect" id="Node000014" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="1110,357,1274,397"/>
+<area shape="poly" id="edge33_Node000001_Node000014" title=" " alt="" coords="1267,46,1202,344,1196,343,1261,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="1271,533,1353,559"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1129,131,1177,152,1224,179,1273,217,1291,238,1308,268,1334,325,1348,374,1349,424,1340,486,1327,522,1322,520,1335,485,1344,424,1342,375,1329,327,1303,271,1286,241,1269,221,1221,184,1175,156,1127,136"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="333,533,403,559"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="969,123,706,143,547,158,387,177,240,199,119,226,72,240,37,256,15,272,8,289,8,379,10,402,17,424,28,443,42,459,80,487,126,508,177,523,228,533,319,541,319,547,228,538,175,528,124,513,77,492,39,463,24,446,12,426,5,403,3,379,3,287,11,269,34,251,70,235,118,221,239,194,387,172,546,153,706,138,969,118"/>
+<area shape="rect" id="Node000005" href="$sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="619,181,810,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="994,136,807,181,806,176,993,131"/>
+<area shape="rect" id="Node000007" href="$sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR&#45;020): dual&#45;instance state negotiation and the redundant,..." alt="" coords="155,357,330,397"/>
+<area shape="poly" id="edge30_Node000002_Node000007" title=" " alt="" coords="969,125,798,143,598,172,501,192,414,215,342,241,314,256,292,271,278,287,266,306,252,345,247,343,262,304,274,284,289,267,311,251,340,236,412,210,499,187,597,167,798,138,969,120"/>
+<area shape="rect" id="Node000011" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="923,445,1069,485"/>
+<area shape="poly" id="edge31_Node000002_Node000011" title=" " alt="" coords="1107,131,1180,178,1220,209,1257,244,1287,281,1305,320,1308,340,1307,360,1301,380,1289,399,1275,411,1256,421,1205,438,1144,450,1083,459,1083,453,1143,445,1203,432,1254,416,1272,406,1285,396,1296,378,1302,359,1303,341,1300,322,1282,284,1253,248,1216,213,1176,182,1104,136"/>
+<area shape="rect" id="Node000012" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="681,445,823,485"/>
+<area shape="poly" id="edge32_Node000002_Node000012" title=" " alt="" coords="1071,134,1060,186,1037,257,1000,333,976,368,947,399,922,418,895,433,838,453,836,448,893,428,920,414,944,395,972,365,996,330,1032,255,1055,185,1066,133"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="811,213,938,234,1080,265,1148,284,1207,306,1256,329,1289,355,1302,374,1312,395,1321,440,1323,484,1319,520,1314,519,1317,484,1316,441,1306,397,1297,377,1285,359,1253,334,1205,311,1146,290,1079,271,937,240,810,218"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="620,221,561,241,533,255,507,271,463,310,435,348,415,390,392,446,380,484,373,520,368,519,375,483,387,444,410,388,431,345,459,307,504,267,530,250,559,236,618,216"/>
+<area shape="rect" id="Node000006" href="$sapi__dual__frames_8h.html" title="Layer&#45;2 (DualChannel&#45;owned) frame kind/header definitions for ADR&#45;020 &#45; shared between sapi_dual_chan..." alt="" coords="43,269,229,309"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="620,219,243,275,242,270,619,214"/>
+<area shape="poly" id="edge26_Node000005_Node000007" title=" " alt="" coords="619,207,557,213,488,225,417,244,351,272,326,288,303,307,266,348,262,344,299,303,322,283,348,267,415,239,487,220,556,208,619,202"/>
+<area shape="rect" id="Node000008" href="$sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR&#45;020: one EN 50159&#45;defended message channel over one already&#45;open sapi_netlink_..." alt="" coords="605,269,824,309"/>
+<area shape="poly" id="edge11_Node000005_Node000008" title=" " alt="" coords="717,222,717,255,712,255,712,222"/>
+<area shape="poly" id="edge28_Node000005_Node000011" title=" " alt="" coords="781,219,833,239,887,268,939,307,961,330,980,356,994,394,999,431,994,432,989,395,975,359,957,333,935,311,885,273,830,244,779,224"/>
+<area shape="poly" id="edge29_Node000005_Node000012" title=" " alt="" coords="662,224,594,254,559,274,527,295,502,319,487,344,484,369,497,396,522,414,564,429,667,451,666,456,563,434,520,418,493,399,479,370,482,342,498,316,524,291,556,269,591,250,660,219"/>
+<area shape="rect" id="Node000013" href="$sapi__netlink_8h.html" title="OS Abstraction Layer &#45; Point&#45;to&#45;point network link service." alt="" coords="790,357,933,397"/>
+<area shape="poly" id="edge27_Node000005_Node000013" title=" " alt="" coords="772,219,807,239,838,268,849,286,856,305,863,343,858,344,851,306,844,288,834,271,804,243,769,224"/>
+<area shape="poly" id="edge8_Node000006_Node000004" title=" " alt="" coords="135,310,133,351,136,375,145,396,162,420,181,442,228,478,277,506,322,526,319,531,275,511,225,483,178,445,157,423,140,399,131,376,128,352,130,309"/>
+<area shape="poly" id="edge9_Node000006_Node000007" title=" " alt="" coords="161,308,210,347,207,351,158,312"/>
+<area shape="poly" id="edge10_Node000007_Node000004" title=" " alt="" coords="259,396,353,521,349,524,255,399"/>
+<area shape="poly" id="edge12_Node000008_Node000004" title=" " alt="" coords="606,311,549,330,496,359,456,397,423,442,397,486,380,522,375,519,393,483,418,439,452,394,493,355,547,325,604,306"/>
+<area shape="rect" id="Node000009" href="$sapi__checksum_8h.html" title="Checksum and CRC utilities for data integrity in redundant systems." alt="" coords="507,357,715,397"/>
+<area shape="poly" id="edge13_Node000008_Node000009" title=" " alt="" coords="693,312,646,350,643,346,690,308"/>
+<area shape="poly" id="edge24_Node000008_Node000011" title=" " alt="" coords="825,300,889,320,919,336,947,355,963,372,975,392,991,431,986,433,970,394,959,375,944,359,917,340,887,325,823,305"/>
+<area shape="poly" id="edge25_Node000008_Node000012" title=" " alt="" coords="721,309,748,432,743,433,716,310"/>
+<area shape="poly" id="edge21_Node000008_Node000013" title=" " alt="" coords="748,307,819,348,816,353,746,312"/>
+<area shape="poly" id="edge14_Node000009_Node000004" title=" " alt="" coords="594,400,548,442,489,488,449,511,410,530,408,525,447,506,487,483,545,438,590,396"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="652,533,727,559"/>
+<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="622,397,680,520,676,522,617,399"/>
+<area shape="poly" id="edge16_Node000009_Node000011" title=" " alt="" coords="696,395,909,442,908,447,695,400"/>
+<area shape="poly" id="edge17_Node000009_Node000012" title=" " alt="" coords="643,395,711,436,708,441,640,400"/>
+<area shape="poly" id="edge18_Node000012_Node000003" title=" " alt="" coords="824,474,1257,534,1256,540,823,479"/>
+<area shape="poly" id="edge20_Node000012_Node000004" title=" " alt="" coords="681,484,418,537,416,532,680,479"/>
+<area shape="poly" id="edge19_Node000012_Node000010" title=" " alt="" coords="739,487,709,524,705,521,735,484"/>
+<area shape="poly" id="edge22_Node000013_Node000011" title=" " alt="" coords="893,395,956,436,953,440,890,400"/>
+<area shape="poly" id="edge23_Node000013_Node000012" title=" " alt="" coords="839,400,789,439,785,435,835,396"/>
+<area shape="poly" id="edge34_Node000014_Node000011" title=" " alt="" coords="1150,400,1052,442,1050,437,1148,395"/>
+<area shape="poly" id="edge35_Node000014_Node000012" title=" " alt="" coords="1110,397,837,450,836,445,1109,392"/>
 </map>

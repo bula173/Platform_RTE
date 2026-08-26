@@ -1,13 +1,13 @@
-<map id="include/safeapi/dual/sapi_dual_channel.h" name="include/safeapi/dual/sapi_dual_channel.h">
-<area shape="rect" id="Node000001" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="226,5,385,45"/>
-<area shape="rect" id="Node000002" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,93,179,133"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="247,53,140,96,138,91,245,48"/>
-<area shape="rect" id="Node000004" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="203,93,407,133"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="308,59,308,93,303,93,303,59"/>
-<area shape="rect" id="Node000006" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="432,93,571,133"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="362,48,459,91,457,96,360,53"/>
-<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="23,181,161,221"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="95,147,95,181,89,181,89,147"/>
-<area shape="rect" id="Node000005" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="228,181,383,221"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="308,147,308,181,303,181,303,147"/>
+<map id="include/safeapi/redundancy/dual/sapi_dual_channel.h" name="include/safeapi/redundancy/dual/sapi_dual_channel.h">
+<area shape="rect" id="Node000001" title="&quot;DualChannel&quot; layer of ADR&#45;020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault&#45;tolerant,..." alt="" coords="251,5,453,45"/>
+<area shape="rect" id="Node000002" href="$sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR&#45;020: decides sapi_dual_state_t for both this instance and its peer,..." alt="" coords="5,93,211,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="287,52,162,96,161,91,285,47"/>
+<area shape="rect" id="Node000004" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="235,93,469,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="355,59,355,93,349,93,349,59"/>
+<area shape="rect" id="Node000006" href="$sapi__dual__channel_8c.html" title="&quot;DualChannel&quot; layer of ADR&#45;020 &#45; see sapi_dual_channel.h." alt="" coords="493,93,651,133"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="414,48,525,91,523,96,412,53"/>
+<area shape="rect" id="Node000003" href="$sapi__dual__negotiator_8c.html" title="Dual state negotiator of ADR&#45;020 &#45; see sapi_dual_negotiator.h." alt="" coords="22,181,194,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="111,147,111,181,105,181,105,147"/>
+<area shape="rect" id="Node000005" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="250,181,454,221"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="355,147,355,181,349,181,349,147"/>
 </map>

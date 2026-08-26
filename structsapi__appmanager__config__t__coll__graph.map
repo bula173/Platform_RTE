@@ -2,7 +2,7 @@
 <area shape="rect" id="Node000001" title="Application manager configuration." alt="" coords="50,372,246,397"/>
 <area shape="rect" id="Node000002" href="$structsapi__appmanager__operations__t.html" title="Application lifecycle operations." alt="" coords="5,277,232,302"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,314,147,371,142,373,124,316"/>
-<area shape="rect" id="Node000003" href="$structsapi__appmanager__checkpoint__config__t.html" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019)." alt="" coords="256,269,472,309"/>
+<area shape="rect" id="Node000003" href="$structsapi__appmanager__checkpoint__config__t.html" title="Optional built&#45;in checkpoint rendezvous configuration (ADR&#45;019/ADR&#45;034)." alt="" coords="256,269,472,309"/>
 <area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="309,317,176,374,174,369,307,312"/>
 <area shape="rect" id="Node000004" href="$structsapi__voter__storage__t.html" title="Storage for one voter instance (opaque to caller). No dynamic memory." alt="" coords="285,181,443,207"/>
 <area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="367,220,367,269,361,269,361,220"/>

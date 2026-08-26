@@ -154,7 +154,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if at least config-&gt;expected_node_count valid confirmations arrived within config-&gt;max_delay_ms (the optional watchdog, if any, has been kicked). </dd>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if at least config-&gt;expected_node_count valid confirmations arrived within config-&gt;max_delay_ms (the optional watchdog, if any, has been kicked at least once - once per internal retry round, plus once more on this success). </dd>
 <dd>
 SAPI_STATUS_INVALID_PARAM if voter or config is NULL, or config-&gt;expected_node_count exceeds voter's registered channel count. </dd>
 <dd>
@@ -164,7 +164,7 @@ SAPI_STATUS_TIMEOUT if fewer than expected_node_count valid confirmations arrive
       automatically by the sync/vote logic itself" pattern <a class="el" href="group__voter.html#gae73e861bc9f4db2276051add1a471ee2" title="Receives from every registered, healthy channel and votes.">sapi_voter_receive()</a> already uses on a voting disagreement.</dd></dl>
 <dl class="section user"><dt>Safety:</dt><dd>No dynamic memory allocation. Never blocks longer than config-&gt;max_delay_ms (REQ-CHECKPOINT-001). </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00139">139</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__checkpoint_8c_source.html#l00198">198</a> of file <a class="el" href="sapi__checkpoint_8c_source.html">sapi_checkpoint.c</a>.</p>
 
 </div>
 </div>

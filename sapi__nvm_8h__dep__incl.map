@@ -1,8 +1,8 @@
-<map id="include/safeapi/nvm/sapi_nvm.h" name="include/safeapi/nvm/sapi_nvm.h">
-<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="92,5,247,45"/>
+<map id="include/safeapi/oal/nvm/sapi_nvm.h" name="include/safeapi/oal/nvm/sapi_nvm.h">
+<area shape="rect" id="Node000001" title="OS Abstraction Layer &#45; Non&#45;Volatile Memory service." alt="" coords="97,5,242,45"/>
 <area shape="rect" id="Node000002" href="$sapi__nvm__backend_8h.html" title="OS&#45;backend adaptation surface for the NVM service (ADR&#45;005, ADR&#45;021)." alt="" coords="5,93,200,133"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,58,120,95,115,91,144,55"/>
-<area shape="rect" id="Node000003" href="$sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="93,181,245,207"/>
+<area shape="rect" id="Node000003" href="$sapi__nvm_8c.html" title="NVM service: validates parameters, then dispatches to the backend registered via sapi_nvm_register_ba..." alt="" coords="81,181,257,207"/>
 <area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="196,55,215,92,219,113,215,134,200,162,183,183,179,180,196,159,209,132,213,113,209,94,191,58"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="130,142,161,179,157,183,126,146"/>
 </map>

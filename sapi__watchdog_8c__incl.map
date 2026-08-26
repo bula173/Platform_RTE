@@ -1,34 +1,34 @@
-<map id="src/watchdog/sapi_watchdog.c" name="src/watchdog/sapi_watchdog.c">
-<area shape="rect" id="Node000001" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="524,5,744,31"/>
-<area shape="rect" id="Node000002" href="$sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="170,79,338,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="579,33,352,80,351,75,578,28"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="781,255,863,280"/>
-<area shape="poly" id="edge19_Node000001_Node000005" title=" " alt="" coords="745,26,847,44,889,58,916,77,928,99,930,122,925,146,914,170,882,213,848,247,844,243,878,210,909,167,920,144,925,122,923,100,912,80,887,63,846,49,744,31"/>
-<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="742,79,902,119"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="662,28,765,71,763,76,660,33"/>
-<area shape="rect" id="Node000009" href="$sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="363,86,527,111"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="607,33,486,83,484,78,605,28"/>
-<area shape="rect" id="Node000010" href="$sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="551,79,717,119"/>
-<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="637,31,637,65,631,65,631,31"/>
-<area shape="rect" id="Node000011" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="5,79,145,119"/>
-<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="524,33,357,52,159,81,158,76,356,47,524,27"/>
-<area shape="rect" id="Node000012" title=" " alt="" coords="977,86,1048,111"/>
-<area shape="poly" id="edge20_Node000001_Node000012" title=" " alt="" coords="715,28,831,48,959,76,969,79,968,84,957,81,830,53,714,33"/>
-<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="456,167,601,207"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="315,116,456,160,454,165,313,121"/>
-<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="290,167,431,207"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="279,117,328,156,325,160,276,121"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="432,201,445,204,621,234,767,256,767,261,621,239,444,209,431,207"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="373,255,447,280"/>
-<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="375,205,398,242,393,244,370,208"/>
-<area shape="rect" id="Node000007" title=" " alt="" coords="277,255,348,280"/>
-<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="351,208,329,244,325,241,347,205"/>
-<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="758,121,607,165,605,160,757,116"/>
-<area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="825,119,825,241,819,241,819,119"/>
-<area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="458,110,502,155,498,158,454,113"/>
-<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="435,113,391,158,387,155,431,110"/>
-<area shape="poly" id="edge14_Node000010_Node000003" title=" " alt="" coords="612,121,564,160,561,156,609,117"/>
-<area shape="poly" id="edge15_Node000010_Node000004" title=" " alt="" coords="575,121,435,165,433,160,573,116"/>
-<area shape="poly" id="edge17_Node000011_Node000003" title=" " alt="" coords="146,114,158,116,299,140,443,164,442,169,298,145,158,121,145,119"/>
-<area shape="poly" id="edge18_Node000011_Node000004" title=" " alt="" coords="139,116,286,160,284,165,137,121"/>
+<map id="src/redundancy/watchdog/sapi_watchdog.c" name="src/redundancy/watchdog/sapi_watchdog.c">
+<area shape="rect" id="Node000001" title="Real watchdog implementation: a fixed&#45;size pool of watchdog slots, timed via the already&#45;portable sap..." alt="" coords="584,5,772,45"/>
+<area shape="rect" id="Node000002" href="$sapi__watchdog_8h.html" title="Watchdog mechanism for detecting system/task hang conditions." alt="" coords="194,93,397,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="595,48,393,93,392,88,593,43"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="825,269,907,295"/>
+<area shape="poly" id="edge19_Node000001_Node000005" title=" " alt="" coords="773,34,829,43,885,55,932,71,949,81,961,92,973,114,975,137,969,161,958,185,926,228,892,262,889,258,922,225,954,182,964,159,970,137,968,115,957,95,946,85,929,76,884,60,828,48,772,39"/>
+<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="785,93,947,133"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="720,43,814,85,811,90,718,48"/>
+<area shape="rect" id="Node000009" href="$sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="421,93,570,133"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="639,48,549,90,546,85,637,43"/>
+<area shape="rect" id="Node000010" href="$sapi__safestate_8h.html" title="Safe&#45;state transitions and checked assertions (ADR&#45;004)." alt="" coords="595,93,761,133"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="681,46,681,79,675,79,675,46"/>
+<area shape="rect" id="Node000011" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="5,93,169,133"/>
+<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="584,40,403,63,183,96,182,91,402,58,583,35"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="1023,101,1093,126"/>
+<area shape="poly" id="edge20_Node000001_Node000012" title=" " alt="" coords="773,40,884,62,1004,91,1015,94,1013,99,1003,96,883,67,772,45"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="507,181,654,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="359,131,506,175,504,180,357,136"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="340,181,483,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="323,131,376,171,373,175,319,136"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="483,216,496,219,668,249,811,270,810,276,667,254,495,224,482,221"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="423,269,498,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="426,220,448,256,444,259,421,223"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="328,269,399,295"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="402,223,380,259,375,256,397,220"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="804,136,657,180,656,175,803,131"/>
+<area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="869,134,869,256,863,256,863,134"/>
+<area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="516,132,554,170,550,173,512,135"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="479,135,441,173,437,170,475,132"/>
+<area shape="poly" id="edge14_Node000010_Node000003" title=" " alt="" coords="658,136,614,174,611,170,655,132"/>
+<area shape="poly" id="edge15_Node000010_Node000004" title=" " alt="" coords="620,136,483,180,482,175,619,131"/>
+<area shape="poly" id="edge17_Node000011_Node000003" title=" " alt="" coords="170,128,182,131,337,154,494,179,493,184,336,159,182,136,169,134"/>
+<area shape="poly" id="edge18_Node000011_Node000004" title=" " alt="" coords="159,131,328,175,327,180,158,136"/>
 </map>

@@ -1,17 +1,17 @@
-<map id="include/safeapi/ipc/sapi_ipc_request_reply.h" name="include/safeapi/ipc/sapi_ipc_request_reply.h">
-<area shape="rect" id="Node000001" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="71,5,256,45"/>
-<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,167,151,207"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="146,47,127,69,110,95,97,124,88,154,82,152,92,122,105,92,123,66,142,44"/>
-<area shape="rect" id="Node000003" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="175,167,317,207"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="184,44,203,66,220,92,233,122,242,152,237,154,228,124,216,95,199,69,180,47"/>
-<area shape="rect" id="Node000007" href="$sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="120,93,207,119"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="166,46,166,79,161,79,161,46"/>
-<area shape="rect" id="Node000004" title=" " alt="" coords="102,255,185,280"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="223,209,171,248,168,244,220,205"/>
-<area shape="rect" id="Node000005" title=" " alt="" coords="209,255,283,280"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="249,207,249,241,243,241,243,207"/>
-<area shape="rect" id="Node000006" title=" " alt="" coords="308,255,379,280"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="271,205,320,244,317,248,268,209"/>
-<area shape="poly" id="edge7_Node000007_Node000002" title=" " alt="" coords="153,121,110,159,107,155,149,117"/>
-<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="177,117,218,155,214,159,174,121"/>
+<map id="include/safeapi/oal/ipc/sapi_ipc_request_reply.h" name="include/safeapi/oal/ipc/sapi_ipc_request_reply.h">
+<area shape="rect" id="Node000001" title="IPC Request&#45;Reply Pattern (RPC&#45;style communication)" alt="" coords="85,5,243,60"/>
+<area shape="rect" id="Node000002" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="5,181,152,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="143,62,110,109,98,139,89,169,83,167,93,137,106,107,138,59"/>
+<area shape="rect" id="Node000003" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="177,181,319,221"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,59,221,107,243,167,238,169,216,109,184,61"/>
+<area shape="rect" id="Node000007" href="$sapi__ipc_8h.html" title="OS Abstraction Layer &#45; Inter&#45;process/inter&#45;task communication service." alt="" coords="121,108,207,133"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="167,60,167,94,161,94,161,60"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="104,269,187,295"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="225,224,173,263,170,259,222,219"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="211,269,285,295"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="251,222,251,255,245,255,245,222"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="310,269,381,295"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="273,219,322,258,319,263,270,224"/>
+<area shape="poly" id="edge7_Node000007_Node000002" title=" " alt="" coords="153,135,111,174,108,170,150,132"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="178,132,220,170,216,174,175,135"/>
 </map>

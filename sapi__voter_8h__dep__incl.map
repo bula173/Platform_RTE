@@ -1,22 +1,22 @@
-<map id="include/safeapi/voter/sapi_voter.h" name="include/safeapi/voter/sapi_voter.h">
-<area shape="rect" id="Node000001" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="465,5,624,45"/>
-<area shape="rect" id="Node000002" href="$sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="5,101,212,141"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="452,48,224,96,191,103,190,98,223,91,451,43"/>
-<area shape="rect" id="Node000004" href="$sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="236,101,432,141"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="491,53,378,103,375,98,488,48"/>
-<area shape="rect" id="Node000006" href="$sapi__cross__comparator_8h.html" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="457,93,633,148"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="547,59,547,93,542,93,542,59"/>
-<area shape="rect" id="Node000008" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="657,101,861,141"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="601,48,717,98,715,103,599,53"/>
-<area shape="rect" id="Node000010" href="$sapi__voter_8c.html" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="885,108,1047,133"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="638,41,875,91,929,105,927,111,873,96,637,46"/>
-<area shape="rect" id="Node000003" href="$sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="53,196,212,236"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="120,153,130,195,125,197,114,155"/>
-<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="282,149,174,198,172,194,280,144"/>
-<area shape="rect" id="Node000005" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="261,196,407,236"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="337,154,337,196,331,196,331,154"/>
-<area shape="rect" id="Node000007" href="$sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="451,196,638,236"/>
-<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="547,162,547,196,542,196,542,162"/>
-<area shape="rect" id="Node000009" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="682,196,837,236"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="762,154,762,196,757,196,757,154"/>
+<map id="include/safeapi/redundancy/voter/sapi_voter.h" name="include/safeapi/redundancy/voter/sapi_voter.h">
+<area shape="rect" id="Node000001" title="N&#45;way voting across registered sapi_channel_t links (2oo2/2oo3/NMR)." alt="" coords="519,5,720,45"/>
+<area shape="rect" id="Node000002" href="$sapi__appmanager_8h.html" title="Application Manager abstraction for safeAPIFramework applications." alt="" coords="5,101,244,141"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="505,50,257,96,219,103,218,98,256,91,504,45"/>
+<area shape="rect" id="Node000004" href="$sapi__checkpoint_8h.html" title="Bounded checkpoint rendezvous for distributed vital channels (ADR&#45;017)" alt="" coords="269,101,487,141"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="559,53,428,103,426,98,557,48"/>
+<area shape="rect" id="Node000006" href="$sapi__cross__comparator_8h.html" title="Pairwise comparison between exactly 2 registered sapi_channel_t links (ADR&#45;025)." alt="" coords="512,93,727,148"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="622,59,622,93,617,93,617,59"/>
+<area shape="rect" id="Node000008" href="$sapi__safechannel_8h.html" title="Unified, transport&#45;hiding channel factory (ADR&#45;022)." alt="" coords="751,101,986,141"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="683,48,819,98,817,103,681,53"/>
+<area shape="rect" id="Node000010" href="$sapi__voter_8c.html" title="N&#45;way voting engine (ADR&#45;025): validates parameters, dispatches send/receive to every registered heal..." alt="" coords="1011,101,1169,141"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="734,41,862,63,999,91,1028,98,1026,103,997,96,861,68,733,46"/>
+<area shape="rect" id="Node000003" href="$sapi__appmanager_8c.html" title="Application Manager implementation." alt="" coords="74,203,229,243"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="136,153,149,203,144,204,131,155"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="324,149,195,206,193,201,322,144"/>
+<area shape="rect" id="Node000005" href="$sapi__checkpoint_8c.html" title="Implementation of the bounded checkpoint rendezvous (ADR&#45;017)." alt="" coords="280,203,476,243"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="381,155,381,203,375,203,375,155"/>
+<area shape="rect" id="Node000007" href="$sapi__cross__comparator_8c.html" title="Pairwise channel comparison (ADR&#45;025): validates parameters, receives from both registered channels,..." alt="" coords="531,196,707,251"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="622,162,622,196,617,196,617,162"/>
+<area shape="rect" id="Node000009" href="$sapi__safechannel_8c.html" title="Unified channel factory: opens netlink links internally, wraps sapi_dual_channel_t or a sapi_voter_t ..." alt="" coords="767,203,971,243"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="871,155,871,203,866,203,866,155"/>
 </map>

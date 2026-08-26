@@ -20,11 +20,12 @@ var searchData=
   ['sapi_5fnvm_5fhandle_5ft_17',['sapi_nvm_handle_t',['../group__NVM.html#gab437c71e4df85e23e7468816246beb67',1,'sapi_nvm.h']]],
   ['sapi_5fsafestate_5fhandler_5ft_18',['sapi_safestate_handler_t',['../group__SAFESTATE.html#gaefcfb06364cd3344be647bb308a90a65',1,'sapi_safestate.h']]],
   ['sapi_5fsafestate_5freason_5ft_19',['sapi_safestate_reason_t',['../group__SAFESTATE.html#ga21e00aebd55809df7fc153e42d9494a5',1,'sapi_safestate.h']]],
-  ['sapi_5ftask_5fentry_5ft_20',['sapi_task_entry_t',['../group__TASK.html#ga39c7e2204129ffc3f8f171f7c1babb59',1,'sapi_task.h']]],
-  ['sapi_5ftask_5fhandle_5ft_21',['sapi_task_handle_t',['../group__TASK.html#ga56905dc212511186e7a0934c5f1f569b',1,'sapi_task.h']]],
-  ['sapi_5ftimer_5fcallback_5ft_22',['sapi_timer_callback_t',['../group__TIMER.html#gaf7b72d768f7e4e9ae1dd80362dca0d41',1,'sapi_timer.h']]],
-  ['sapi_5ftimer_5fhandle_5ft_23',['sapi_timer_handle_t',['../group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270',1,'sapi_timer.h']]],
-  ['sapi_5ftimestamp_5fms_5ft_24',['sapi_timestamp_ms_t',['../group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80',1,'sapi_types.h']]],
-  ['sapi_5fvoter_5fcompare_5ffn_25',['sapi_voter_compare_fn',['../group__voter.html#gaad809cb68e4d57e49ba7443a2d44d746',1,'sapi_voter.h']]],
-  ['sapi_5fvoter_5ft_26',['sapi_voter_t',['../group__voter.html#ga425136aaff02464a24071880f576afd3',1,'sapi_voter.h']]]
+  ['sapi_5fsafety_5fviolation_5fhandler_5ft_20',['sapi_safety_violation_handler_t',['../group__SAFETYVIOLATION.html#gadcd003b8f7f546107de35a5efa067546',1,'sapi_safety_violation.h']]],
+  ['sapi_5ftask_5fentry_5ft_21',['sapi_task_entry_t',['../group__TASK.html#ga39c7e2204129ffc3f8f171f7c1babb59',1,'sapi_task.h']]],
+  ['sapi_5ftask_5fhandle_5ft_22',['sapi_task_handle_t',['../group__TASK.html#ga56905dc212511186e7a0934c5f1f569b',1,'sapi_task.h']]],
+  ['sapi_5ftimer_5fcallback_5ft_23',['sapi_timer_callback_t',['../group__TIMER.html#gaf7b72d768f7e4e9ae1dd80362dca0d41',1,'sapi_timer.h']]],
+  ['sapi_5ftimer_5fhandle_5ft_24',['sapi_timer_handle_t',['../group__TIMER.html#ga389cfc3373e1a656bb669f42069f7270',1,'sapi_timer.h']]],
+  ['sapi_5ftimestamp_5fms_5ft_25',['sapi_timestamp_ms_t',['../group__TYPES.html#ga6ddbda091ac06ffc94a5814d14284a80',1,'sapi_types.h']]],
+  ['sapi_5fvoter_5fcompare_5ffn_26',['sapi_voter_compare_fn',['../group__voter.html#gaad809cb68e4d57e49ba7443a2d44d746',1,'sapi_voter.h']]],
+  ['sapi_5fvoter_5ft_27',['sapi_voter_t',['../group__voter.html#ga425136aaff02464a24071880f576afd3',1,'sapi_voter.h']]]
 ];
