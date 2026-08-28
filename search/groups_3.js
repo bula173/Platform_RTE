@@ -19,9 +19,11 @@ var searchData=
   ['communication_20backend_20adaptation_16',['Inter-Process Communication - Backend Adaptation',['../group__IPC__BACKEND.html',1,'']]],
   ['comparator_202_20way_20channel_20comparison_17',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
   ['comparison_18',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
-  ['controlled_20reboot_19',['Controlled Reboot',['../group__REBOOT.html',1,'']]],
-  ['controlled_20reboot_20backend_20adaptation_20',['Controlled Reboot - Backend Adaptation',['../group__REBOOT__BACKEND.html',1,'']]],
-  ['crc_20utilities_21',['Checksum &amp; CRC Utilities',['../group__CHECKSUM.html',1,'']]],
-  ['cross_20comparator_202_20way_20channel_20comparison_22',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
-  ['cross_20layer_20data_20buffer_23',['Cross-Layer Data Buffer',['../group__BUFFER.html',1,'']]]
+  ['configuration_19',['Real-Time Platform Configuration',['../group__PLATFORM.html',1,'']]],
+  ['configuration_20backend_20adaptation_20',['Real-Time Platform Configuration - Backend Adaptation',['../group__PLATFORM__BACKEND.html',1,'']]],
+  ['controlled_20reboot_21',['Controlled Reboot',['../group__REBOOT.html',1,'']]],
+  ['controlled_20reboot_20backend_20adaptation_22',['Controlled Reboot - Backend Adaptation',['../group__REBOOT__BACKEND.html',1,'']]],
+  ['crc_20utilities_23',['Checksum &amp; CRC Utilities',['../group__CHECKSUM.html',1,'']]],
+  ['cross_20comparator_202_20way_20channel_20comparison_24',['Cross-Comparator (2-way channel comparison)',['../group__cross__comparator.html',1,'']]],
+  ['cross_20layer_20data_20buffer_25',['Cross-Layer Data Buffer',['../group__BUFFER.html',1,'']]]
 ];

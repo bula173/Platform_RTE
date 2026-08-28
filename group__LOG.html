@@ -131,6 +131,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga039f92d06b19a508fc70d476bd715e4d" id="r_ga039f92d06b19a508fc70d476bd715e4d"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d">sapi_log_level_to_string</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level)</td></tr>
 <tr class="memdesc:ga039f92d06b19a508fc70d476bd715e4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders a sapi_log_level_t as a fixed, human-readable tag - "DEBUG"/"INFO"/"WARNING"/"ERROR" - used as the LEVEL field of <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a>'s structured line and available to any backend/integrator wanting the same canonical spelling.  <br /></td></tr>
 <tr class="separator:ga039f92d06b19a508fc70d476bd715e4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab61561d99ecdf1a06b24f6326f12f892" id="r_gab61561d99ecdf1a06b24f6326f12f892"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gab61561d99ecdf1a06b24f6326f12f892">sapi_log_level_from_string</a> (const char *name, <a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> *out_level)</td></tr>
+<tr class="memdesc:gab61561d99ecdf1a06b24f6326f12f892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parses one of the canonical level spellings ("DEBUG", "INFO", "WARNING", "ERROR" - exactly as <a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d" title="Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...">sapi_log_level_to_string()</a> renders them, case-sensitive) into a sapi_log_level_t.  <br /></td></tr>
+<tr class="separator:gab61561d99ecdf1a06b24f6326f12f892"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa4ab0aafbfde15a11000a9561a8226c7" id="r_gaa4ab0aafbfde15a11000a9561a8226c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#gaa4ab0aafbfde15a11000a9561a8226c7">sapi_log_set_level</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> min_level)</td></tr>
+<tr class="memdesc:gaa4ab0aafbfde15a11000a9561a8226c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the minimum severity that <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> and <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> forward to the backend - a call whose level is below min_level is dropped before dispatch (and before any formatting work). Default is SAPI_LOG_LEVEL_DEBUG: nothing is filtered until this is called.  <br /></td></tr>
+<tr class="separator:gaa4ab0aafbfde15a11000a9561a8226c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga369405bca5d1174049c2e285262538e8" id="r_ga369405bca5d1174049c2e285262538e8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga369405bca5d1174049c2e285262538e8">sapi_log_get_level</a> (void)</td></tr>
+<tr class="memdesc:ga369405bca5d1174049c2e285262538e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current minimum severity (see <a class="el" href="group__LOG.html#gaa4ab0aafbfde15a11000a9561a8226c7" title="Sets the minimum severity that sapi_log_write() and sapi_log_write_event() forward to the backend - a...">sapi_log_set_level()</a>). REQ-OAL-LOG-015.  <br /></td></tr>
+<tr class="separator:ga369405bca5d1174049c2e285262538e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga004ab3c470ffcbce6c4c5470a3e93c48" id="r_ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48">sapi_log_write_event</a> (<a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> level, const char *site, uint32_t cycle, const char *source, const char *destination, const char *type, const char *info, const char *extra_fields)</td></tr>
 <tr class="memdesc:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emits one structured inter-channel event/message-trail log line - for a message actually sent/received/decided between channels or nodes (e.g. an AB_SAMPLE frame, an M136 report, a checkpoint REQUEST/REPLY, a cross-compare AGREE/DISAGREE) - distinct from <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>'s free-text diagnostic logging, which remains the right call for an event with no natural cycle/source/destination (e.g. an NVM write failure).  <br /></td></tr>
 <tr class="separator:ga004ab3c470ffcbce6c4c5470a3e93c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -152,7 +161,7 @@ Functions</h2></td></tr>
 
 <p>Max length, in bytes and not counting the NUL terminator, of one <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> line - fields are truncated, not rejected, if the formatted line would exceed this (REQ-OAL-LOG-001: a formatting limit must never turn into a blocked/failed caller). Sized generously for the 8 mandatory fields plus a typical extra_fields value; a longer extra_fields is where truncation would first show up in practice. </p>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00078">78</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8h_source.html#l00119">119</a> of file <a class="el" href="sapi__log_8h_source.html">sapi_log.h</a>.</p>
 
 </div>
 </div>
@@ -205,7 +214,7 @@ Functions</h2></td></tr>
 <p>Initializes the logging backend. Safe to call once at startup. </p>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK if no backend is registered yet (a no-op logger is a valid state) or if the registered backend's init succeeds; a backend-defined error status otherwise. REQ-OAL-LOG-010 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00076">76</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00099">99</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
 
 </div>
 </div>
@@ -251,7 +260,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00085">85</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00108">108</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
 
 </div>
 </div>
@@ -280,7 +289,98 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A NUL-terminated string literal - static storage, never NULL; caller must not modify or free it. REQ-OAL-LOG-013 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00097">97</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00162">162</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+
+</div>
+</div>
+<a id="gab61561d99ecdf1a06b24f6326f12f892" name="gab61561d99ecdf1a06b24f6326f12f892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab61561d99ecdf1a06b24f6326f12f892">&#9670;&#160;</a></span>sapi_log_level_from_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_log_level_from_string </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> *&#160;</td>
+          <td class="paramname"><em>out_level</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Parses one of the canonical level spellings ("DEBUG", "INFO", "WARNING", "ERROR" - exactly as <a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d" title="Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...">sapi_log_level_to_string()</a> renders them, case-sensitive) into a sapi_log_level_t. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>NUL-terminated candidate spelling. Must not be NULL. </td></tr>
+    <tr><td class="paramname">out_level</td><td>Receives the parsed level on success. Must not be NULL (left unchanged on failure). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK on a match; SAPI_STATUS_INVALID_PARAM if name or out_level is NULL, or name matches none of the four spellings. REQ-OAL-LOG-016 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00125">125</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+
+</div>
+</div>
+<a id="gaa4ab0aafbfde15a11000a9561a8226c7" name="gaa4ab0aafbfde15a11000a9561a8226c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa4ab0aafbfde15a11000a9561a8226c7">&#9670;&#160;</a></span>sapi_log_set_level()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sapi_log_set_level </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a>&#160;</td>
+          <td class="paramname"><em>min_level</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the minimum severity that <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> and <a class="el" href="group__LOG.html#ga004ab3c470ffcbce6c4c5470a3e93c48" title="Emits one structured inter-channel event/message-trail log line - for a message actually sent/receive...">sapi_log_write_event()</a> forward to the backend - a call whose level is below min_level is dropped before dispatch (and before any formatting work). Default is SAPI_LOG_LEVEL_DEBUG: nothing is filtered until this is called. </p>
+<p>Runtime-settable so an integrator can quiet or open up logging without a rebuild (e.g. a remote "set log level" command). NOT a setup-only action (unlike <a class="el" href="group__LOG__BACKEND.html#gaedcbc8ee1aa520a1fbf3f29b2b143b6d" title="Registers the backend implementation used by sapi_log_init()/ sapi_log_write() (ADR-005 section 2....">sapi_log_register_backend()</a>) - may be called at any time, from any thread: the threshold is one int-sized value, so a concurrent change racing an in-flight <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a> only ever means that one call sees the old or the new threshold, never a torn value, and at worst one best-effort log line is kept or dropped unexpectedly (REQ-OAL-LOG-001).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">min_level</td><td>Lowest level to keep. A value outside SAPI_LOG_LEVEL_DEBUG..SAPI_LOG_LEVEL_ERROR is ignored (the current threshold is left unchanged). REQ-OAL-LOG-015 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00146">146</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+
+</div>
+</div>
+<a id="ga369405bca5d1174049c2e285262538e8" name="ga369405bca5d1174049c2e285262538e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga369405bca5d1174049c2e285262538e8">&#9670;&#160;</a></span>sapi_log_get_level()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__LOG.html#ga1f07b7615e7ca6517936e596d2c9652b">sapi_log_level_t</a> sapi_log_get_level </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the current minimum severity (see <a class="el" href="group__LOG.html#gaa4ab0aafbfde15a11000a9561a8226c7" title="Sets the minimum severity that sapi_log_write() and sapi_log_write_event() forward to the backend - a...">sapi_log_set_level()</a>). REQ-OAL-LOG-015. </p>
+
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00157">157</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
 
 </div>
 </div>
@@ -368,7 +468,7 @@ Functions</h2></td></tr>
 <dd>
 Every field is truncated, not rejected, if the internal fixed-size line buffer (SAPI_LOG_EVENT_LINE_MAX_LEN) is too small for the full line - consistent with REQ-OAL-LOG-001's "never affect caller control flow"; there is no error return (this function returns void, like <a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a>). REQ-OAL-LOG-014 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00123">123</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__log_8c_source.html#l00188">188</a> of file <a class="el" href="sapi__log_8c_source.html">sapi_log.c</a>.</p>
 
 </div>
 </div>

@@ -1,15 +1,17 @@
 <map id="src/oal/log/sapi_log.c" name="src/oal/log/sapi_log.c">
-<area shape="rect" id="Node000001" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="240,5,399,31"/>
+<area shape="rect" id="Node000001" title="Logging service: dispatches to the backend registered via sapi_log_register_backend() (ADR&#45;005)...." alt="" coords="349,5,508,31"/>
 <area shape="rect" id="Node000002" href="$sapi__log_8h.html" title="OS Abstraction Layer &#45; Logging/diagnostics service." alt="" coords="242,167,391,207"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="322,31,320,153,315,153,316,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="423,32,339,157,335,154,419,29"/>
 <area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,167,167,207"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="240,27,208,33,175,44,144,59,117,81,105,97,97,115,89,153,84,152,92,113,101,94,113,77,141,55,173,39,206,28,239,22"/>
-<area shape="rect" id="Node000009" href="$sapi__log__backend_8h.html" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="127,79,282,119"/>
-<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="304,33,245,73,242,69,301,29"/>
-<area shape="rect" id="Node000010" href="$sapi__string_8h.html" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="401,79,544,119"/>
-<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="343,28,425,70,422,75,341,33"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="350,26,307,33,260,43,214,59,171,81,151,97,133,116,105,156,100,153,129,113,147,93,169,76,212,54,259,38,306,28,349,21"/>
+<area shape="rect" id="Node000009" href="$sapi__log__backend_8h.html" title="OS&#45;backend adaptation surface for the Logging/diagnostics service (ADR&#45;005, ADR&#45;021)." alt="" coords="182,79,337,119"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="405,33,314,75,311,70,403,28"/>
+<area shape="rect" id="Node000010" href="$sapi__string_8h.html" title="Bounded, checked string manipulation (ADR&#45;006). Replaces strcpy/strcat/sprintf/atoi/strtok&#45;style unbo..." alt="" coords="412,79,555,119"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="439,29,464,66,460,69,435,32"/>
 <area shape="rect" id="Node000012" href="$sapi__timer_8h.html" title="OS Abstraction Layer &#45; Timer service." alt="" coords="635,167,799,207"/>
-<area shape="poly" id="edge19_Node000001_Node000012" title=" " alt="" coords="392,28,473,47,558,76,627,115,685,156,682,160,624,119,556,81,472,52,391,33"/>
+<area shape="poly" id="edge19_Node000001_Node000012" title=" " alt="" coords="463,28,514,49,569,76,596,96,621,117,679,157,676,161,618,121,592,100,566,81,511,54,461,33"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="631,86,701,111"/>
+<area shape="poly" id="edge22_Node000001_Node000013" title=" " alt="" coords="465,28,612,76,621,79,619,84,610,81,464,33"/>
 <area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="269,255,415,295"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="325,206,335,241,330,242,320,208"/>
 <area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="467,255,609,295"/>
@@ -22,12 +24,12 @@
 <area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="528,296,505,332,501,330,524,293"/>
 <area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="143,204,274,248,272,253,141,209"/>
 <area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="114,205,295,333,292,337,111,209"/>
-<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="231,117,282,156,279,160,228,121"/>
-<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="207,118,213,161,221,184,232,205,255,228,282,246,279,250,251,232,228,208,216,186,208,162,202,119"/>
-<area shape="poly" id="edge17_Node000010_Node000003" title=" " alt="" coords="464,120,438,161,405,208,373,246,369,243,401,205,434,158,460,117"/>
-<area shape="poly" id="edge18_Node000010_Node000004" title=" " alt="" coords="544,101,619,108,699,120,769,138,795,150,813,165,826,190,822,211,804,229,777,242,703,261,624,271,623,266,702,256,775,237,801,224,817,209,821,191,809,168,793,155,767,143,698,125,618,113,544,106"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="274,117,299,154,294,157,270,120"/>
+<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="248,120,238,139,229,161,226,184,232,205,251,228,276,246,273,250,248,232,228,208,221,184,224,160,233,137,244,118"/>
+<area shape="poly" id="edge17_Node000010_Node000003" title=" " alt="" coords="472,121,405,208,372,246,368,243,401,205,468,117"/>
+<area shape="poly" id="edge18_Node000010_Node000004" title=" " alt="" coords="555,107,712,133,778,149,801,157,813,165,826,190,822,211,804,229,776,242,703,261,624,271,623,266,702,256,775,237,801,224,817,209,821,191,809,168,798,161,777,154,711,138,554,112"/>
 <area shape="rect" id="Node000011" href="$sapi__buffer_8h.html" title="Cross&#45;layer data buffer abstraction (ADR&#45;002)." alt="" coords="466,167,610,207"/>
-<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="489,117,518,154,513,157,485,121"/>
+<area shape="poly" id="edge14_Node000010_Node000011" title=" " alt="" coords="498,117,521,154,516,156,493,120"/>
 <area shape="poly" id="edge15_Node000011_Node000003" title=" " alt="" coords="496,209,398,252,396,247,494,204"/>
 <area shape="poly" id="edge16_Node000011_Node000004" title=" " alt="" coords="541,207,541,241,535,241,535,207"/>
 <area shape="poly" id="edge20_Node000012_Node000003" title=" " alt="" coords="635,209,430,256,428,251,634,204"/>

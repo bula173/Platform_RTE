@@ -1,0 +1,24 @@
+<map id="src/oal/platform/sapi_platform.c" name="src/oal/platform/sapi_platform.c">
+<area shape="rect" id="Node000001" title="Real&#45;time platform configuration service: validates parameters, then dispatches to the backend regist..." alt="" coords="172,5,328,45"/>
+<area shape="rect" id="Node000002" href="$sapi__platform_8h.html" title="OS Abstraction Layer &#45; Real&#45;time platform configuration service (ADR&#45;035)." alt="" coords="191,181,346,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,45,268,167,263,168,249,46"/>
+<area shape="rect" id="Node000008" href="$sapi__lifecycle_8h.html" title="Process&#45;wide application setup&#45;phase lock (ADR&#45;026)." alt="" coords="5,181,167,221"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="234,47,115,173,111,170,230,44"/>
+<area shape="rect" id="Node000009" href="$sapi__platform__backend_8h.html" title="OS&#45;backend adaptation surface for the Real&#45;Time Platform Configuration service (ADR&#45;035,..." alt="" coords="288,93,479,133"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="281,43,344,84,341,88,278,48"/>
+<area shape="rect" id="Node000003" href="$sapi__status_8h.html" title="Common status/error codes returned by every Safe API Framework function. Shared across all OS Abstrac..." alt="" coords="174,269,321,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="267,222,258,256,253,255,261,221"/>
+<area shape="rect" id="Node000004" href="$sapi__types_8h.html" title="Common fixed&#45;width types and the caller&#45;owned&#45;storage handle pattern used by every OAL service (see A..." alt="" coords="345,269,488,309"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="302,219,373,260,371,265,300,224"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="185,357,267,383"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="372,312,268,355,266,350,370,307"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="427,357,502,383"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="431,308,453,344,448,347,426,311"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="332,357,403,383"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="407,311,384,347,380,344,402,308"/>
+<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="123,219,201,261,199,265,120,224"/>
+<area shape="poly" id="edge8_Node000008_Node000005" title=" " alt="" coords="100,220,128,261,164,308,204,346,200,350,160,311,124,265,96,223"/>
+<area shape="poly" id="edge11_Node000009_Node000002" title=" " alt="" coords="359,136,306,175,303,171,356,131"/>
+<area shape="poly" id="edge12_Node000009_Node000003" title=" " alt="" coords="386,134,380,177,372,201,360,223,337,247,310,265,307,261,334,243,356,220,367,199,375,176,381,133"/>
+<area shape="poly" id="edge13_Node000009_Node000004" title=" " alt="" coords="392,133,405,181,416,255,411,256,399,182,387,134"/>
+</map>

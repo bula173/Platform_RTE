@@ -7,9 +7,10 @@ var searchData=
   ['fix_4',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
   ['fixed_20capacity_20registered_20callback_20list_20shape_5',['ADR-030: &lt;tt&gt;sapi_notify&lt;/tt&gt; - fixed-capacity registered-callback list shape',['../md_docs_2architecture_2ADR-030-registered-callback-list-shape.html',1,'']]],
   ['for_20distributed_20vital_20channels_6',['ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels',['../md_docs_2architecture_2ADR-017-checkpoint-and-clock-sync.html',1,'']]],
-  ['for_20redundant_20channels_7',['ADR-016: CRC-64 Data Integrity for Redundant Channels',['../md_docs_2architecture_2ADR-016-crc64-data-integrity.html',1,'']]],
-  ['for_20the_20safe_20api_20framework_8',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
-  ['for_20tt_20sapi_5fnetlink_20tt_9',['ADR-027: UDP Transport for &lt;tt&gt;sapi_netlink&lt;/tt&gt;',['../md_docs_2architecture_2ADR-027-udp-netlink-transport.html',1,'']]],
-  ['framework_10',['framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework'],['../index.html',1,'Safe API Framework']]],
-  ['from_20app_20code_11',['ADR-022: Unified &lt;tt&gt;sapi_safechannel&lt;/tt&gt; Factory (Hiding IPC/Netlink from App Code)',['../md_docs_2architecture_2ADR-022-unified-safechannel-factory.html',1,'']]]
+  ['for_20real_20time_20bring_20up_7',['ADR-035: &lt;tt&gt;sapi_platform&lt;/tt&gt; OAL service for real-time bring-up',['../md_docs_2architecture_2ADR-035-platform-realtime-init.html',1,'']]],
+  ['for_20redundant_20channels_8',['ADR-016: CRC-64 Data Integrity for Redundant Channels',['../md_docs_2architecture_2ADR-016-crc64-data-integrity.html',1,'']]],
+  ['for_20the_20safe_20api_20framework_9',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
+  ['for_20tt_20sapi_5fnetlink_20tt_10',['ADR-027: UDP Transport for &lt;tt&gt;sapi_netlink&lt;/tt&gt;',['../md_docs_2architecture_2ADR-027-udp-netlink-transport.html',1,'']]],
+  ['framework_11',['framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework'],['../index.html',1,'Safe API Framework']]],
+  ['from_20app_20code_12',['ADR-022: Unified &lt;tt&gt;sapi_safechannel&lt;/tt&gt; Factory (Hiding IPC/Netlink from App Code)',['../md_docs_2architecture_2ADR-022-unified-safechannel-factory.html',1,'']]]
 ];

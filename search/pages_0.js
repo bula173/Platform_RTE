@@ -26,5 +26,6 @@ var searchData=
   ['031_3a_20tt_20sapi_5fmem_5futil_20tt_20one_20sanctioned_20call_20site_20per_20libc_20memory_20primitive_23',['ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'']]],
   ['032_3a_20setup_20phase_20lock_20coverage_20extended_20to_20backend_20registration_20and_20remaining_20setup_20only_20constructors_24',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
   ['033_3a_20sapi_5fmutex_20a_20portable_20mutual_20exclusion_20primitive_25',['ADR-033: sapi_mutex - a portable mutual-exclusion primitive',['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'']]],
-  ['034_3a_20checkpoint_20signature_20marks_20and_20stage_20then_20commit_20output_26',['ADR-034: Checkpoint-signature marks and stage-then-commit output',['../md_docs_2architecture_2ADR-034-checkpoint-signature-marks.html',1,'']]]
+  ['034_3a_20checkpoint_20signature_20marks_20and_20stage_20then_20commit_20output_26',['ADR-034: Checkpoint-signature marks and stage-then-commit output',['../md_docs_2architecture_2ADR-034-checkpoint-signature-marks.html',1,'']]],
+  ['035_3a_20tt_20sapi_5fplatform_20tt_20oal_20service_20for_20real_20time_20bring_20up_27',['ADR-035: &lt;tt&gt;sapi_platform&lt;/tt&gt; OAL service for real-time bring-up',['../md_docs_2architecture_2ADR-035-platform-realtime-init.html',1,'']]]
 ];
