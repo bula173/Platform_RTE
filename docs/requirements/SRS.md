@@ -276,6 +276,21 @@ now-transport-agnostic contract, not the earlier TCP-specific one.
 | REQ-OAL-NETLINK-013 | `sapi_netlink_close()` shall close a link; the handle is invalid to use afterward. |
 | REQ-OAL-NETLINK-014 | This service provides no message ordering, deduplication, or delivery guarantee of its own — a backend may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (`sapi_dual_msgchannel`/`sapi_dual_channel`, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one). |
 
+### 2.9 Real-time platform configuration — `sapi_platform.h` (ADR-035)
+
+Framework ships the interface and validate-then-dispatch layer only; a
+concrete backend (e.g. POSIX `mlockall()` + `SCHED_FIFO`) is
+integrator-supplied and lives with `safeAPIBackendPosix`. Exists so
+application startup code can ask for real-time bring-up through the OAL
+rather than calling a backend symbol directly (the layering ADR-001 §3.5
+requires).
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-PLATFORM-001 | `sapi_platform_realtime_init()` is best-effort: a backend that cannot obtain some or all of the requested capabilities (unprivileged host, no RT scheduler, a bounded lockable-memory limit) shall still return `SAPI_STATUS_OK`, having applied what it could, and shall not leave the process in a state that prevents later timer/task thread creation. |
+| REQ-OAL-PLATFORM-010 | `sapi_platform_realtime_init(rt_priority)` shall reject `rt_priority > 99` with `SAPI_STATUS_INVALID_PARAM` before any backend dispatch, then request the registered backend apply memory-residency configuration and (for `rt_priority > 0`) a real-time scheduling policy/priority for the calling process/thread. |
+| REQ-OAL-PLATFORM-011 | `sapi_platform_register_backend()` per REQ-OAL-BACKEND-001. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

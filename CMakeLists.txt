@@ -145,6 +145,7 @@ option(SAFEAPI_ENABLE_TASK     "Enable sapi_task (task/thread scheduling service
 option(SAFEAPI_ENABLE_NETLINK  "Enable sapi_netlink (network transport service)" ON)
 option(SAFEAPI_ENABLE_IPC      "Enable sapi_ipc (inter-process queue service)" ON)
 option(SAFEAPI_ENABLE_REBOOT   "Enable sapi_reboot (controlled reboot service)" ON)
+option(SAFEAPI_ENABLE_PLATFORM "Enable sapi_platform (real-time platform configuration service, ADR-035)" ON)
 option(SAFEAPI_ENABLE_LOG      "Enable sapi_log (structured logging) - needs TIMER" ON)
 option(SAFEAPI_ENABLE_WATCHDOG "Enable sapi_watchdog (liveness watchdog) - needs LOG, TIMER" ON)
 
@@ -173,7 +174,7 @@ safeapi_require_feature(SAFEAPI_ENABLE_SAFECHANNEL  DEPENDS SAFEAPI_ENABLE_CHECK
 safeapi_require_feature(SAFEAPI_ENABLE_APPMANAGER   DEPENDS SAFEAPI_ENABLE_VOTER SAFEAPI_ENABLE_WATCHDOG SAFEAPI_ENABLE_CHECKPOINT)
 
 message(STATUS "safeAPIFramework feature selection:")
-foreach(_sapi_feat TIMER NVM MEMORY TASK NETLINK IPC REBOOT LOG WATCHDOG
+foreach(_sapi_feat TIMER NVM MEMORY TASK NETLINK IPC REBOOT PLATFORM LOG WATCHDOG
                     CLOCKSYNC CHECKSUM CHANNEL_LINK VOTER CROSS_COMPARATOR
                     CHECKPOINT DUAL SAFECHANNEL APPMANAGER)
     message(STATUS "  SAFEAPI_ENABLE_${_sapi_feat}: ${SAFEAPI_ENABLE_${_sapi_feat}}")
@@ -257,6 +258,9 @@ if(SAFEAPI_ENABLE_LOG)
 endif()
 if(SAFEAPI_ENABLE_REBOOT)
     list(APPEND _safeapi_oal_sources src/oal/reboot/sapi_reboot.c)
+endif()
+if(SAFEAPI_ENABLE_PLATFORM)
+    list(APPEND _safeapi_oal_sources src/oal/platform/sapi_platform.c)
 endif()
 if(SAFEAPI_ENABLE_WATCHDOG)
     list(APPEND _safeapi_oal_sources src/redundancy/watchdog/sapi_watchdog.c)
@@ -515,8 +519,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # the platform integrator wiring a concrete backend does. Kept as a
     # separate top-level tree (not a subfolder of include/safeapi) so the
     # two audiences are visibly, physically separate, not just conventionally
-    # so. Currently only the timer module has been split this way (pilot);
-    # more modules move here incrementally.
+    # so. Started as a timer-only pilot; timer, reboot and platform (ADR-035)
+    # use it today, and more modules move here incrementally. install(DIRECTORY)
+    # copies the whole tree, so a newly-split module needs no change here.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_backend")
         install(DIRECTORY include/safeapi_backend
             DESTINATION ${INCLUDE_INSTALL_DIR}

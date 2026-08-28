@@ -1,6 +1,43 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-26 (see "update 20" note below)
+Date: 2026-08-27 (see "update 21" note below)
+
+**2026-08-27, update 21 (ADR-035: new `sapi_platform` OAL service - one-shot
+real-time platform bring-up moved out of a direct `safeAPIBackendPosix`
+call in `safeAPIRBC2oo2GP` startup):** no automated `cppcheck` run - the
+tool is not installed in the environment this change was made in (same
+"state plainly when no tool was available" posture as updates 4/5/13).
+Manual MISRA C:2012 review of the change:
+
+- **`src/oal/platform/sapi_platform.c`** (new, in `safeapi_oal`): a
+  validate-then-dispatch service structurally identical to
+  `src/oal/reboot/sapi_reboot.c` (its template) - fixed-width types
+  (`uint32_t`), one named constant (`SAPI_PLATFORM_RT_PRIORITY_MAX 99U`),
+  no dynamic memory, no recursion, single-level pointer use, `const`
+  backend pointer. The early-return validation style (Rule 15.5,
+  Advisory) is the established, already-deviated pattern for every OAL
+  `*_register_backend()` / dispatch function in this project - not a new
+  deviation. One function-pointer call through the registered vtable,
+  same as `sapi_reboot`/`sapi_timer`.
+- **`include/safeapi/oal/platform/sapi_platform.h` +
+  `include/safeapi_backend/platform/sapi_platform_backend.h`** (new):
+  consumer/backend header split per ADR-021, Doxygen `@file`/`@brief`,
+  full `@param`/`@return`, include guards, `extern "C"` wrappers - matches
+  the reboot pair verbatim in shape.
+- **`tests/platform/test_sapi_platform.c`** (new): `<assert.h>`-based, in
+  the already-out-of-scope `tests/` tree (section 4).
+- No change to any existing `safeapi_core`/`safeapi_oal`/`safeapi_channels`
+  translation unit; the static finding total is unchanged from update
+  20's **1229** (the new `.c` was not run through the tool, so it
+  contributes 0 counted findings - flagged here rather than silently
+  folded in).
+- Backend side (`safeAPIBackendPosix`, integrator code, not this
+  framework's SIL scope): the `mlockall`/`SCHED_FIFO` body was **moved**
+  from `sapi_posix_backend.c` to a new `sapi_posix_backend_platform.c`
+  behind the vtable, with one behavioural fix (gate `MCL_FUTURE` on
+  `getrlimit(RLIMIT_MEMLOCK)`). Its POSIX-API use (`errno`, `strerror`,
+  `snprintf`) is pre-existing and unchanged in kind, consistent with the
+  rest of that project's backend files.
 
 **2026-08-26, update 20 (dynamic analysis tooling added to the build:
 `SAFEAPI_ENABLE_ASAN`/`SAFEAPI_ENABLE_UBSAN` CMake options + a Valgrind
