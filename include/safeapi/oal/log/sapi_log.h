@@ -68,6 +68,47 @@ void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message
  */
 const char *sapi_log_level_to_string(sapi_log_level_t level);
 
+/**
+ * @brief Parses one of the canonical level spellings ("DEBUG", "INFO",
+ *        "WARNING", "ERROR" - exactly as sapi_log_level_to_string()
+ *        renders them, case-sensitive) into a sapi_log_level_t.
+ * @param name       NUL-terminated candidate spelling. Must not be NULL.
+ * @param out_level  Receives the parsed level on success. Must not be NULL
+ *                   (left unchanged on failure).
+ * @return SAPI_STATUS_OK on a match; SAPI_STATUS_INVALID_PARAM if name or
+ *         out_level is NULL, or name matches none of the four spellings.
+ * REQ-OAL-LOG-016
+ */
+sapi_status_t sapi_log_level_from_string(const char *name, sapi_log_level_t *out_level);
+
+/**
+ * @brief Sets the minimum severity that sapi_log_write() and
+ *        sapi_log_write_event() forward to the backend - a call whose
+ *        level is below min_level is dropped before dispatch (and before
+ *        any formatting work). Default is SAPI_LOG_LEVEL_DEBUG: nothing is
+ *        filtered until this is called.
+ *
+ * Runtime-settable so an integrator can quiet or open up logging without a
+ * rebuild (e.g. a remote "set log level" command). NOT a setup-only action
+ * (unlike sapi_log_register_backend()) - may be called at any time, from
+ * any thread: the threshold is one int-sized value, so a concurrent change
+ * racing an in-flight sapi_log_write() only ever means that one call sees
+ * the old or the new threshold, never a torn value, and at worst one
+ * best-effort log line is kept or dropped unexpectedly (REQ-OAL-LOG-001).
+ *
+ * @param min_level  Lowest level to keep. A value outside
+ *                   SAPI_LOG_LEVEL_DEBUG..SAPI_LOG_LEVEL_ERROR is ignored
+ *                   (the current threshold is left unchanged).
+ * REQ-OAL-LOG-015
+ */
+void sapi_log_set_level(sapi_log_level_t min_level);
+
+/**
+ * @brief Returns the current minimum severity (see sapi_log_set_level()).
+ * REQ-OAL-LOG-015
+ */
+sapi_log_level_t sapi_log_get_level(void);
+
 /** @brief Max length, in bytes and not counting the NUL terminator, of
  *         one sapi_log_write_event() line - fields are truncated, not
  *         rejected, if the formatted line would exceed this (REQ-OAL-LOG-001:

@@ -18,13 +18,36 @@
 #include "safeapi/utils/string/sapi_string.h"
 #include "safeapi/oal/timer/sapi_timer.h"
 
+#include <string.h>
+
 /** Local makros */
 
 /** Local types declarations */
+/** @brief One canonical level spelling <-> value pair for
+ *         sapi_log_level_from_string(). */
+typedef struct
+{
+    const char      *name;
+    sapi_log_level_t level;
+} sapi_log_level_name_t;
 
 /** Local variables declarations */
 /** @brief Currently registered backend, or NULL if none (ADR-005). */
 static const sapi_log_backend_t *s_backend = NULL;
+
+/** @brief Minimum severity forwarded to the backend (sapi_log_set_level()).
+ *         SAPI_LOG_LEVEL_DEBUG = nothing filtered - the historical
+ *         behaviour before this threshold existed. */
+static sapi_log_level_t s_min_level = SAPI_LOG_LEVEL_DEBUG;
+
+/** @brief The four canonical spellings, kept in sync with
+ *         sapi_log_level_to_string(). */
+static const sapi_log_level_name_t s_level_names[] = {
+    { "DEBUG",   SAPI_LOG_LEVEL_DEBUG   },
+    { "INFO",    SAPI_LOG_LEVEL_INFO    },
+    { "WARNING", SAPI_LOG_LEVEL_WARNING },
+    { "ERROR",   SAPI_LOG_LEVEL_ERROR   }
+};
 
 /** Global variables declarations */
 
@@ -91,7 +114,49 @@ void sapi_log_write(sapi_log_level_t level, const char *tag, const char *message
          * caller's control flow. */
         return;
     }
+    if ((int)level < (int)s_min_level)
+    {
+        /* Below the runtime threshold (sapi_log_set_level()) - dropped. */
+        return;
+    }
     s_backend->write(level, tag, message);
+}
+
+sapi_status_t sapi_log_level_from_string(const char *name, sapi_log_level_t *out_level)
+{
+    sapi_status_t status = SAPI_STATUS_INVALID_PARAM;
+
+    if ((name != NULL) && (out_level != NULL))
+    {
+        size_t i;
+
+        for (i = 0U; i < (sizeof(s_level_names) / sizeof(s_level_names[0])); i++)
+        {
+            if (strcmp(name, s_level_names[i].name) == 0)
+            {
+                *out_level = s_level_names[i].level;
+                status = SAPI_STATUS_OK;
+                break;
+            }
+        }
+    }
+    return status;
+}
+
+void sapi_log_set_level(sapi_log_level_t min_level)
+{
+    /* Only an upper bound is checked: the enum's underlying type is
+     * unsigned (values 0..3), so `>= SAPI_LOG_LEVEL_DEBUG` would be a
+     * tautology. A wrapped/garbage value lands above ERROR and is ignored. */
+    if ((int)min_level <= (int)SAPI_LOG_LEVEL_ERROR)
+    {
+        s_min_level = min_level;
+    }
+}
+
+sapi_log_level_t sapi_log_get_level(void)
+{
+    return s_min_level;
 }
 
 const char *sapi_log_level_to_string(sapi_log_level_t level)
@@ -137,11 +202,12 @@ void sapi_log_write_event(sapi_log_level_t level,
     const char *ts_cstr = NULL;
     const char *line_cstr = NULL;
 
-    if ((s_backend == NULL) || (s_backend->write == NULL))
+    if ((s_backend == NULL) || (s_backend->write == NULL) || ((int)level < (int)s_min_level))
     {
-        /* Same silent-no-op contract as sapi_log_write() above - avoid
-         * even the formatting work below when there is nowhere for it
-         * to go. */
+        /* Same silent-no-op contract as sapi_log_write() above - and the
+         * same runtime-threshold drop (sapi_log_set_level()). Bail before
+         * the formatting work below when there is nowhere for it to go, or
+         * when it would be dropped anyway. */
         return;
     }
 

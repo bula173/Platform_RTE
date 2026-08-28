@@ -1,6 +1,40 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-27 (see "update 21" note below)
+Date: 2026-08-28 (see "update 22" note below)
+
+**2026-08-28, update 22 (runtime log-level threshold: `sapi_log_set_level()`
+/ `sapi_log_get_level()` / `sapi_log_level_from_string()` added to
+`sapi_log`):** no automated `cppcheck` run - not installed in this
+environment (same "state plainly when no tool was available" posture as
+updates 4/5/13/21). Manual MISRA C:2012 review of the change
+(`src/oal/log/sapi_log.c`, `include/safeapi/oal/log/sapi_log.h`):
+
+- New threshold `static sapi_log_level_t s_min_level` (default
+  `SAPI_LOG_LEVEL_DEBUG` = historical no-filter behaviour). Gate in
+  `sapi_log_write()` / `sapi_log_write_event()` is `((int)level <
+  (int)s_min_level)` - both operands explicitly cast to a signed integer
+  before the relational compare rather than comparing `enum` values
+  directly (Rule 10.x essential-type hygiene). `sapi_log_set_level()`
+  checks only the **upper** bound (`(int)min_level <= (int)SAPI_LOG_LEVEL_ERROR`):
+  the enum's underlying type is unsigned, so a `>= SAPI_LOG_LEVEL_DEBUG`
+  (== 0) test would be a tautology (Rule 14.3 / a `-Wtype-limits`
+  warning-as-error); a wrapped/garbage value lands above ERROR and is
+  ignored. Comment in-code records this.
+- `sapi_log_level_from_string()` iterates a `static const` name/level
+  table with `strcmp()` (`<string.h>` - already used by
+  `src/redundancy/voter/sapi_voter.c` etc., not a new banned-header
+  situation; `errno`/`assert` remain the only banned std headers per
+  CLAUDE.md). Single `for` loop, `size_t` index, `break` on match, single
+  `return` of an accumulated status - no early return, CC well under 10.
+- Concurrency: `s_min_level` is a single int-sized value read on the log
+  path from any thread and written by `sapi_log_set_level()`. Documented
+  in the header as best-effort (REQ-OAL-LOG-001): a racing change only
+  keeps/drops one in-flight best-effort log line, never a torn read on
+  any supported target. Consistent with how this module already treats
+  its `s_backend` pointer (set at startup, read everywhere, no lock).
+- No change to any other translation unit; static finding total unchanged
+  from update 21's **1229** (the touched `.c` was not re-run through the
+  tool - flagged, not silently folded in).
 
 **2026-08-27, update 21 (ADR-035: new `sapi_platform` OAL service - one-shot
 real-time platform bring-up moved out of a direct `safeAPIBackendPosix`

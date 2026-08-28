@@ -182,5 +182,50 @@ int main(void)
                     "Info=info");
     assert(strcmp(g_last_message, expected) == 0);
 
+    /* --- sapi_log_level_from_string(): the four canonical spellings, the
+     *     no-match case, and NULL args (REQ-OAL-LOG-016). --- */
+    {
+        sapi_log_level_t parsed = SAPI_LOG_LEVEL_ERROR;
+
+        assert(sapi_log_level_from_string("DEBUG", &parsed) == SAPI_STATUS_OK && parsed == SAPI_LOG_LEVEL_DEBUG);
+        assert(sapi_log_level_from_string("INFO", &parsed) == SAPI_STATUS_OK && parsed == SAPI_LOG_LEVEL_INFO);
+        assert(sapi_log_level_from_string("WARNING", &parsed) == SAPI_STATUS_OK && parsed == SAPI_LOG_LEVEL_WARNING);
+        assert(sapi_log_level_from_string("ERROR", &parsed) == SAPI_STATUS_OK && parsed == SAPI_LOG_LEVEL_ERROR);
+        /* case-sensitive, and unknown spellings rejected without touching *out_level */
+        parsed = SAPI_LOG_LEVEL_WARNING;
+        assert(sapi_log_level_from_string("debug", &parsed) == SAPI_STATUS_INVALID_PARAM && parsed == SAPI_LOG_LEVEL_WARNING);
+        assert(sapi_log_level_from_string("TRACE", &parsed) == SAPI_STATUS_INVALID_PARAM && parsed == SAPI_LOG_LEVEL_WARNING);
+        assert(sapi_log_level_from_string(NULL, &parsed) == SAPI_STATUS_INVALID_PARAM);
+        assert(sapi_log_level_from_string("INFO", NULL) == SAPI_STATUS_INVALID_PARAM);
+    }
+
+    /* --- sapi_log_set_level() / sapi_log_get_level() (REQ-OAL-LOG-015):
+     *     the threshold gates both sapi_log_write() and
+     *     sapi_log_write_event(); default is DEBUG (nothing filtered). --- */
+    assert(sapi_log_get_level() == SAPI_LOG_LEVEL_DEBUG);
+
+    sapi_log_set_level(SAPI_LOG_LEVEL_WARNING);
+    assert(sapi_log_get_level() == SAPI_LOG_LEVEL_WARNING);
+
+    reset_capture();
+    sapi_log_write(SAPI_LOG_LEVEL_INFO, "TAG", "below threshold");
+    assert(g_write_calls == 0); /* INFO < WARNING -> dropped */
+    sapi_log_write_event(SAPI_LOG_LEVEL_DEBUG, "WEST", 1U, "C", "-", "M136", "below", NULL);
+    assert(g_write_calls == 0); /* DEBUG < WARNING -> dropped before formatting */
+    sapi_log_write(SAPI_LOG_LEVEL_WARNING, "TAG", "at threshold");
+    assert(g_write_calls == 1);
+    sapi_log_write(SAPI_LOG_LEVEL_ERROR, "TAG", "above threshold");
+    assert(g_write_calls == 2);
+
+    /* Out-of-range set is ignored (threshold unchanged). */
+    sapi_log_set_level((sapi_log_level_t)99);
+    assert(sapi_log_get_level() == SAPI_LOG_LEVEL_WARNING);
+
+    /* Restore the default so ordering with any future test stays clean. */
+    sapi_log_set_level(SAPI_LOG_LEVEL_DEBUG);
+    reset_capture();
+    sapi_log_write(SAPI_LOG_LEVEL_DEBUG, "TAG", "restored");
+    assert(g_write_calls == 1);
+
     return 0;
 }
