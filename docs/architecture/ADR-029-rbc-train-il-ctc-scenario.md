@@ -364,3 +364,65 @@ network.
   + command channel; `common.py` retired - fully superseded)
 - `docker-compose.yml` (Train/IL/CTC env vars + control-port host mappings)
 - `tests/robot/rbc_scenario/` (new scenario test suite), `tests/robot/supportFunctions/*.resource` (Train/IL/CTC/RBC-common keyword libraries backing it and every other tests/robot/ suite)
+
+## Addendum (2026-08-28) - chunked, active-only state transfer for up to 100 trains (ADR-036)
+
+ADR-036 raises the concurrently-tracked train ceiling from 2 to 100 and
+multiplexes all trains onto one simulator<->RBC link per relay kind. Two
+parts of §2 change; everything else in this ADR stands.
+
+### A. §2.3 session table - fixed size stays, live count is runtime
+
+`SAFEAPI_EXAMPLE_MAX_TRAINS` becomes 100 and remains the compile-time
+size of every `session[]` / `peer_sessions[]` array (no-malloc rule
+intact). The number of trains a process actually services is a **runtime**
+value - `SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2), overridable by the
+`SAPI_RBC_ACTIVE_TRAINS` environment variable, clamped `1..MAX_TRAINS`.
+Per-train loops in `C` and `A/B` iterate `0 .. active-1`. It is not a
+wire field; each process reads it independently. Trains are identified
+solely by `train_id` (nid_engine); the ADR-029 `west/east == slot`
+coupling is dropped (see ADR-036 §5).
+
+### B. §2.4 cross-site transfer - the full snapshot no longer fits one vital frame
+
+`SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` + `SAFEAPI_EXAMPLE_DB_WIRE_SIZE`
+encoded the whole session + whole runtime-route table every cycle inside
+one `sapi_vital_message_t` (248-byte payload, `uint8_t` size field). At
+100 trains that is ~8.3 kB. Revised encoding:
+
+- Only `in_use` sessions and `in_use` runtime routes are encoded; a
+  silent train contributes nothing.
+- The active set is transmitted as a round-robin **window** of
+  `SAFEAPI_EXAMPLE_SITE_XFER_WINDOW` sessions (+ a matching route
+  window) per cycle. `SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` /
+  `_DB_WIRE_SIZE` are recomputed from `WINDOW` and
+  `_Static_assert`-ed `<= 248`.
+- The peer's session table converges within
+  `ceil(active_trains / WINDOW)` cycles. Each windowed frame carries its
+  base index and count so the receiver applies it to the right slots
+  and never treats "not in this window" as "session ended".
+
+### C. REQ-RBC-029A - promotion during an incomplete sweep
+
+A STANDBY promoted to ONLINE before a full sweep completed holds a
+**bounded-partial** table: every session it has received is
+authoritative and answered normally; a `train_id` not yet swept is
+handled by the existing new-train path (treated as a fresh P0 on its
+next M136, which re-establishes the session within one cycle). Trains
+present in a prior *completed* sweep see unbroken continuity; a train
+that connected within the last incomplete sweep may see one delayed
+cycle. This bounded relaxation replaces ADR-029 §2.4's "the promoted
+site must already know every connected train" - an unbounded snapshot
+inside a fixed vital frame is not achievable, and the convergence bound
+is analysable (window size x cycle period). Verification: ADR-036 §3
+items 2-3.
+
+### D. Location delta (post GP/GA/SA split)
+
+The paths in §4 predate the `safeAPIRBC2oo2` -> `safeAPIRBC2oo2GP/GA/SA`
+split. Current equivalents: `channel_ab*` -> `safeAPIRBC2oo2GP/src/application/AB/GP/com/ab_gp_channel*`;
+`monitor_c*` -> `safeAPIRBC2oo2GP/src/application/C/{gateway_c*,monitor_c*}`;
+`src/application/{rbc_wire_types.h,common_config.h,site_config.*}` ->
+`safeAPIRBC2oo2GP/src/application/{AB,C}/common/`; `sims/*.py` -> the
+`SimCore` + `TrainRBCSim`/`ILRBCSim`/`CTCRBCSim` projects;
+`tests/robot/` -> `safeAPIRBC2oo2TestEnv/robot/`.
