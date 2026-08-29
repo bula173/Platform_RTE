@@ -63,6 +63,23 @@ The old `safeapi_gateway_c` binary and the `safeapi_monitor_c` symlink
 are **removed**. `gateway_c.c` is deleted (its contents split between
 `gateway_c_common.c` and the three `main_c_<svc>.c`).
 
+**Project ownership follows the A/B-side split.** IL and CTC are
+`safeAPIRBC2oo2GA`'s domain (that project already owns `src/AB/il/ab_ga_il.c`
+and `src/AB/ctc/ab_ga_ctc.c`), so the IL and CTC gateway services live in
+GA too: `safeAPIRBC2oo2GA/src/C/il/{gateway_c_il_handler,gateway_c_logctl,main_c_il}.c`
+and `safeAPIRBC2oo2GA/src/C/ctc/{gateway_c_ctc_handler,main_c_ctc}.c` (one
+subfolder per handler, mirroring `src/AB/{il,ctc}/`). GA builds
+`safeapi_gateway_c_il` / `_ctc`; GP keeps only `safeapi_gateway_c_train`.
+`gateway_c_common` is transport/lifecycle - platform scope - so it stays
+in GP, defined *before* GP's `add_subdirectory(safeAPIRBC2oo2GA)` so GA
+can link it; a standalone GA build (conan) just builds the `.so` and
+skips the two executables. Because GA is add_subdirectory()'d by GP, the
+two GA-built binaries install into GP's own `dist/<platform>/bin/`
+alongside the train binary (GP `install(TARGETS ...)` cross-dir, exactly
+as it already does for `safeapi_rbc2oo2_ga`), so the SA installer and
+`setupLocalTestEnv.sh` still see all three in one place - no change
+needed on either.
+
 ### 2. Per-site, but one container per site hosting the service processes
 
 Each service runs **per-site** (`safeapi_gateway_c_train WEST`, ...) -
