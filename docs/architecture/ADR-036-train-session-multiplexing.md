@@ -65,7 +65,15 @@ regression suite, CI, and a plain local bring-up paying only the
 process reads it independently, and a train_id outside the local active
 range simply has no `in_use` session.
 
-### 2. One multiplexed link per relay kind, per site - demux by `train_id`
+### 2. One multiplexed link per relay kind - and `C` is a pure pipe
+
+The integrator's explicit refinement: **`C` accepts ONE session per
+relay kind and never inspects `train_id`.** It is a byte pipe, exactly
+as ADR-029 §2.2 already frames role C ("a pure relay - no session state
+of its own"); multiplexing changes nothing about that, it only removes
+the per-instance socket fan-out. Distinguishing which train an envelope
+belongs to is **A/B's** job, by the `nid_engine` the envelope already
+carries.
 
 - **Sim-facing**: `C` binds **one** Train listen port and **one** IL
   listen port per site (CTC is already single). `site_config_c_port_for_train(site)`
@@ -74,23 +82,33 @@ range simply has no `in_use` session.
   `{peer, kind, instance}`. `relay_channel[GATEWAY_C_PEER_COUNT]` for
   Train, likewise for IL. `site_config_c_port_for_a/_b(site, kind)`
   lose the per-index expansion for TRAIN/IL.
-- The Train simulator opens **one** connection to each site it serves
-  and sends P0/M136/M146 for **every** train it hosts on that link,
-  each envelope stamped with that train's own `train_id`. `C` relays
-  the identical bytes to A and B (unchanged broadcast discipline). A/B
-  demux inbound envelopes into `session[train_id_to_slot(id)]`;
-  outbound answer envelopes already carry `train_id` and are written to
-  the single relay link. `C` forwards them to the single sim link; the
-  simulator demuxes by `train_id`.
-- Per-train liveness/failover bookkeeping in `gateway_c_train_handler.c`
-  (the `a_stale_cycles` / `relay_down_since_ms` / `last_known_tag`
-  machinery) stays **per slot**, now updated from the demultiplexed
-  stream rather than from a dedicated socket per train. Link-down
-  detection becomes "the one relay link is down" rather than "train[i]'s
-  relay link is down".
+- The Train simulator opens **one** connection per site and sends
+  P0/M136/M146 for **every** train it hosts on that link, each envelope
+  stamped with its own `train_id`. `C`'s Train gateway reads that one
+  socket and forwards **each frame verbatim to both A and B** (the same
+  broadcast discipline it already uses); it reads the one A relay and
+  the one B relay and forwards their frames to the one sim socket
+  (A-primary / B-fallback logic unchanged, just now per-link not
+  per-train). **No `train_id` parsing, no per-train arrays, no
+  per-train liveness in `C`.**
+- `gateway_c_{train,il}_handler.c`: `sim_channel[MAX_TRAINS]` ->
+  `sim_channel` (scalar); `relay_channel[PEER][MAX_TRAINS]` ->
+  `relay_channel[PEER]`; the `a_stale_cycles` / `relay_down_since_ms` /
+  `last_known_tag` / `a_seen_this_cycle` arrays -> scalars (per link).
+  `_check_link_down` reports "the Train relay link", not "train[i]'s".
+- **A/B** decode `nid_engine` from each inbound relay envelope and route
+  it to `session[train_id - 1]` (`ab_gp_train.c` already indexes this
+  way); outbound answer envelopes already carry `train_id` and go out
+  the single relay link. The per-`{kind}` relay link in
+  `ab_gp_channel_types.h` drops its `[MAX_TRAINS]` dimension;
+  `ab_gp_channel_send_relay` / `_stage_relay` lose their `index`
+  parameter; `on_relay_envelope_received` loses `index`.
+- `SAPI_RBC_ACTIVE_TRAINS` is read by **A/B** (session-table iteration
+  bound) and the **sims** (how many trains to create). `C` does not
+  read it - it relays whatever arrives.
 - Channel resolver names lose their `-%u` suffix: `c-sim-train`,
-  `c-relay-train-a`, `c-relay-train-b`, and the IL equivalents
-  (`gateway_c.c`, `ab_gp_channel_io.c`).
+  `c-relay-train-a`, `c-relay-train-b`, `ab-relay-train`, and the IL
+  equivalents.
 
 ### 3. Port map collapse
 
