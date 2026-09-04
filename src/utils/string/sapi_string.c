@@ -421,6 +421,168 @@ sapi_status_t sapi_string_from_i32(sapi_string_t *dest, int32_t value)
     return sapi_string_from_i64(dest, widened);
 }
 
+/**
+ * @brief Appends exactly n bytes of src to dest, no NUL scan, bounds-checked
+ *        against dest's remaining capacity. Shared tail of every
+ *        sapi_string_append_*() below - same append semantics as
+ *        sapi_string_concat() but for a known, not-NUL-terminated length.
+ * @param dest  Destination string. Must be non-NULL and valid.
+ * @param src   Source bytes. Must be non-NULL when n > 0.
+ * @param n     Number of bytes to append.
+ * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM for a bad argument;
+ *         SAPI_STATUS_RESOURCE_EXHAUSTED if n exceeds dest's remaining
+ *         capacity (dest left unmodified).
+ */
+static sapi_status_t sapi_string_append_bytes(sapi_string_t *dest, const char *src, size_t n)
+{
+    size_t remaining;
+    char *data;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (!sapi_buffer_is_valid(&dest->buf))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    remaining = dest->buf.capacity - dest->buf.length;
+    if (n > remaining)
+    {
+        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+    }
+    if (n > 0U)
+    {
+        data = (char *)dest->buf.data;
+        (void)memcpy(&data[dest->buf.length], src, n);
+        dest->buf.length += n;
+    }
+    return SAPI_STATUS_OK;
+}
+
+sapi_status_t sapi_string_append_u64(sapi_string_t *dest, uint64_t value)
+{
+    char digits[20];
+    size_t len = 0U;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    sapi_string_format_u64_digits(value, digits, &len);
+    return sapi_string_append_bytes(dest, digits, len);
+}
+
+sapi_status_t sapi_string_append_i64(sapi_string_t *dest, int64_t value)
+{
+    char buf[21]; /* 1 sign byte + up to 20 digits */
+    size_t len = 0U;
+    uint64_t magnitude;
+    bool negative;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    negative = (value < 0);
+    if (negative)
+    {
+        /* Safe negation avoiding overflow for INT64_MIN (see sapi_string_from_i64). */
+        magnitude = (uint64_t)(-(value + 1)) + 1U;
+        buf[0] = '-';
+        sapi_string_format_u64_digits(magnitude, &buf[1], &len);
+        return sapi_string_append_bytes(dest, buf, len + 1U);
+    }
+    magnitude = (uint64_t)value;
+    sapi_string_format_u64_digits(magnitude, buf, &len);
+    return sapi_string_append_bytes(dest, buf, len);
+}
+
+sapi_status_t sapi_string_append_u32(sapi_string_t *dest, uint32_t value)
+{
+    uint64_t widened = 0U;
+    sapi_status_t st;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    st = sapi_cast_u32_to_u64(value, &widened);
+    if (st != SAPI_STATUS_OK) /* GCOVR_EXCL_START - only fails for a NULL out
+                                * pointer; &widened is always valid. */
+    {
+        return st;
+    } /* GCOVR_EXCL_STOP */
+    return sapi_string_append_u64(dest, widened);
+}
+
+sapi_status_t sapi_string_append_i32(sapi_string_t *dest, int32_t value)
+{
+    int64_t widened = 0;
+    sapi_status_t st;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    st = sapi_cast_i32_to_i64(value, &widened);
+    if (st != SAPI_STATUS_OK) /* GCOVR_EXCL_START - only fails for a NULL out
+                                * pointer; &widened is always valid. */
+    {
+        return st;
+    } /* GCOVR_EXCL_STOP */
+    return sapi_string_append_i64(dest, widened);
+}
+
+sapi_status_t sapi_string_append_hex_u32(sapi_string_t *dest, uint32_t value, uint8_t min_digits)
+{
+    static const char hex_lc[16] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                                     '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    char out[8] = {0}; /* n is provably >= 1 below; zero-init keeps static
+                        * analysis from flagging a can't-happen n == 0 path. */
+    size_t real_digits = 1U;
+    size_t width;
+    size_t n;
+    size_t i;
+    uint32_t w = value;
+
+    if (dest == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    width = (size_t)min_digits;
+    if (width < 1U)
+    {
+        width = 1U;
+    }
+    if (width > 8U)
+    {
+        width = 8U;
+    }
+    while (w > 0x0FU)
+    {
+        real_digits++;
+        w >>= 4U;
+    }
+    n = (real_digits > width) ? real_digits : width;
+    for (i = 0U; i < n; i++)
+    {
+        /* Digit weight, counting from the right: position i from the left
+         * is shift (n - 1 - i) nibbles. Positions past real_digits are
+         * left-pad zeros. */
+        size_t shift = (n - 1U) - i;
+        if (shift >= real_digits)
+        {
+            out[i] = '0';
+        }
+        else
+        {
+            out[i] = hex_lc[(value >> (4U * (uint32_t)shift)) & 0x0FU];
+        }
+    }
+    return sapi_string_append_bytes(dest, out, n);
+}
+
 sapi_status_t sapi_string_to_u64(const sapi_string_t *str, uint64_t *out_value)
 {
     size_t i;

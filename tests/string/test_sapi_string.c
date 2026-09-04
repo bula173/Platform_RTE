@@ -178,6 +178,52 @@ static void test_numeric(void)
     assert(sapi_string_to_i32(&s, &i32) == SAPI_STATUS_INVALID_PARAM);
 }
 
+static void test_append_numeric(void)
+{
+    char storage[64] __attribute__((unused));
+    char tiny[4] __attribute__((unused));
+    sapi_string_t s __attribute__((unused));
+    sapi_string_t t __attribute__((unused));
+    const char *c __attribute__((unused));
+
+    assert(sapi_string_init(&s, storage, sizeof(storage)) == SAPI_STATUS_OK);
+    /* Compound line assembly - the snprintf replacement use case. */
+    assert(sapi_string_copy(&s, "id=") == SAPI_STATUS_OK);
+    assert(sapi_string_append_u32(&s, 4294967295U) == SAPI_STATUS_OK);
+    assert(sapi_string_concat(&s, " d=") == SAPI_STATUS_OK);
+    assert(sapi_string_append_i32(&s, -5) == SAPI_STATUS_OK);
+    assert(sapi_string_c_str(&s, &c) == SAPI_STATUS_OK);
+    assert(strcmp(c, "id=4294967295 d=-5") == 0);
+
+    assert(sapi_string_clear(&s) == SAPI_STATUS_OK);
+    assert(sapi_string_append_u64(&s, 18446744073709551615ULL) == SAPI_STATUS_OK);
+    assert(sapi_string_append_i64(&s, INT64_MIN) == SAPI_STATUS_OK);
+    assert(sapi_string_c_str(&s, &c) == SAPI_STATUS_OK);
+    assert(strcmp(c, "18446744073709551615-9223372036854775808") == 0);
+
+    /* Hex: min-digit zero padding, and no truncation when the value is wider. */
+    assert(sapi_string_clear(&s) == SAPI_STATUS_OK);
+    assert(sapi_string_append_hex_u32(&s, 0x2AU, 4U) == SAPI_STATUS_OK);
+    assert(sapi_string_append_hex_u32(&s, 0U, 2U) == SAPI_STATUS_OK);
+    assert(sapi_string_append_hex_u32(&s, 0xDEADBEEFU, 2U) == SAPI_STATUS_OK);
+    assert(sapi_string_append_hex_u32(&s, 0xFFU, 0U) == SAPI_STATUS_OK); /* clamps to 1 */
+    assert(sapi_string_c_str(&s, &c) == SAPI_STATUS_OK);
+    assert(strcmp(c, "002a00deadbeefff") == 0);
+
+    /* Bounds: append that would overflow remaining capacity leaves dest intact. */
+    assert(sapi_string_init(&t, tiny, sizeof(tiny)) == SAPI_STATUS_OK);
+    assert(sapi_string_copy(&t, "ab") == SAPI_STATUS_OK);
+    assert(sapi_string_append_u32(&t, 99999U) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+    assert(sapi_string_length(&t) == 2U);
+    assert(sapi_string_append_u32(&t, 7U) == SAPI_STATUS_OK); /* "ab7" fits (cap 4) */
+    assert(sapi_string_length(&t) == 3U);
+
+    /* NULL dest. */
+    assert(sapi_string_append_u32(NULL, 1U) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_string_append_i64(NULL, 1) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_string_append_hex_u32(NULL, 1U, 1U) == SAPI_STATUS_INVALID_PARAM);
+}
+
 static void test_null_and_invalid_params(void)
 {
     char storage[32] __attribute__((unused));
@@ -318,6 +364,7 @@ int main(void)
     test_find();
     test_split();
     test_numeric();
+    test_append_numeric();
     test_null_and_invalid_params();
     return 0;
 }

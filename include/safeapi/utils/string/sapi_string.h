@@ -220,6 +220,66 @@ sapi_status_t sapi_string_from_u64(sapi_string_t *dest, uint64_t value);
 sapi_status_t sapi_string_from_i64(sapi_string_t *dest, int64_t value);
 
 /**
+ * @brief Bounded base-10 append of a uint32_t to dest's existing content
+ *        (unlike sapi_string_from_u32(), which replaces it). Intended to
+ *        replace `snprintf(buf, n, "...%u...", v)`-style line assembly with
+ *        a checked, non-variadic, MISRA-clean primitive (ADR-006).
+ * @param dest   Destination string. Must not be NULL. Appended to on
+ *               success; left unmodified on failure.
+ * @param value  Value to format and append.
+ * @return SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM if dest is NULL or its
+ *         backing buffer is invalid; SAPI_STATUS_RESOURCE_EXHAUSTED if the
+ *         formatted digits do not fit dest's remaining capacity.
+ * REQ-COMMON-STR-029
+ */
+sapi_status_t sapi_string_append_u32(sapi_string_t *dest, uint32_t value);
+/**
+ * @brief Bounded base-10 append of an int32_t; a leading '-' is emitted for
+ *        negative values. See sapi_string_append_u32().
+ * @param dest   Destination string. Must not be NULL. Appended to on
+ *               success; left unmodified on failure.
+ * @param value  Value to format and append.
+ * @return Same status contract as sapi_string_append_u32().
+ * REQ-COMMON-STR-030
+ */
+sapi_status_t sapi_string_append_i32(sapi_string_t *dest, int32_t value);
+/**
+ * @brief Bounded base-10 append of a uint64_t. See sapi_string_append_u32().
+ * @param dest   Destination string. Must not be NULL. Appended to on
+ *               success; left unmodified on failure.
+ * @param value  Value to format and append.
+ * @return Same status contract as sapi_string_append_u32().
+ * REQ-COMMON-STR-031
+ */
+sapi_status_t sapi_string_append_u64(sapi_string_t *dest, uint64_t value);
+/**
+ * @brief Bounded base-10 append of an int64_t; a leading '-' is emitted for
+ *        negative values. See sapi_string_append_u32().
+ * @param dest   Destination string. Must not be NULL. Appended to on
+ *               success; left unmodified on failure.
+ * @param value  Value to format and append.
+ * @return Same status contract as sapi_string_append_u32().
+ * REQ-COMMON-STR-032
+ */
+sapi_status_t sapi_string_append_i64(sapi_string_t *dest, int64_t value);
+/**
+ * @brief Bounded append of a uint32_t formatted as lowercase hexadecimal
+ *        (no "0x" prefix - the caller prepends a literal with
+ *        sapi_string_concat() if wanted). Replaces `snprintf(..., "%02x",
+ *        v)` / `"0x%x"`-style formatting.
+ * @param dest        Destination string. Must not be NULL. Appended to on
+ *                    success; left unmodified on failure.
+ * @param value       Value to format and append.
+ * @param min_digits  Minimum digit count, zero-padded on the left; clamped
+ *                    to the range 1..8 (0 is treated as 1, values > 8 as 8).
+ *                    A value needing more than min_digits digits is emitted
+ *                    in full, never truncated.
+ * @return Same status contract as sapi_string_append_u32().
+ * REQ-COMMON-STR-033
+ */
+sapi_status_t sapi_string_append_hex_u32(sapi_string_t *dest, uint32_t value, uint8_t min_digits);
+
+/**
  * @brief Bounded base-10 atoi equivalent for uint32_t.
  * @param str        Source string. Must not be NULL and must be entirely
  *                    composed of ASCII digits (no sign, no whitespace).

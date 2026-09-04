@@ -134,6 +134,8 @@ are ordinary functions, not macros, so they cannot capture the caller's
 | REQ-COMMON-STR-020 | `sapi_string_split_next()` shall use only caller-owned cursor state (no hidden/global state, unlike `strtok`), producing a zero-copy view of each token. |
 | REQ-COMMON-STR-021..024 | `sapi_string_from_u32/i32/u64/i64()` shall format the value as base-10 ASCII, replacing dest's content. |
 | REQ-COMMON-STR-025..028 | `sapi_string_to_u32/i32/u64/i64()` shall parse base-10 ASCII, yielding `SAPI_STATUS_INVALID_PARAM` for malformed input and `SAPI_STATUS_VALUE_OUT_OF_RANGE` for a value that doesn't fit the destination type. |
+| REQ-COMMON-STR-029..032 | `sapi_string_append_u32/i32/u64/i64()` shall append the value as base-10 ASCII to dest's existing content (advancing its length), scanning nothing, leaving dest unmodified and yielding `SAPI_STATUS_RESOURCE_EXHAUSTED` when the digits do not fit the remaining capacity. |
+| REQ-COMMON-STR-033 | `sapi_string_append_hex_u32()` shall append the value as lowercase hexadecimal (no `0x` prefix) with a caller-supplied minimum digit count clamped to 1..8, never truncating a value that needs more digits, under the same bounds/immutability contract as REQ-COMMON-STR-029..032. |
 
 ## 2. OS Abstraction Layer
 

@@ -1,6 +1,41 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-08-28 (see "update 22" note below)
+Date: 2026-09-04 (see "update 23" note below)
+
+**2026-09-04, update 23 (bounded numeric append: `sapi_string_append_u32()`
+/ `_i32()` / `_u64()` / `_i64()` / `sapi_string_append_hex_u32()` added to
+`sapi_string`, REQ-COMMON-STR-029..033):** `cppcheck --enable=all
+--addon=misra --std=c99` was available and run on
+`src/utils/string/sapi_string.c` this pass (unlike updates 22/21). Manual
+review plus tool run of the change
+(`src/utils/string/sapi_string.c`, `include/safeapi/utils/string/sapi_string.h`,
+`tests/string/test_sapi_string.c`):
+
+- New shared static tail `sapi_string_append_bytes()` mirrors
+  `sapi_string_concat()`'s already-reviewed append logic but for a known,
+  not-NUL-terminated length: validates `dest`/buffer, checks
+  `n > (capacity - length)` before any write, `memcpy` + advance only when
+  `n > 0`, single accumulated `return`. `<string.h>` already used by this
+  TU.
+- `_u32`/`_i32` widen through the existing checked casts
+  (`sapi_cast_u32_to_u64` / `sapi_cast_i32_to_i64`), same `GCOVR_EXCL`
+  can't-fail pattern as `sapi_string_from_u32`/`_i32`. `_i64` reuses the
+  INT64_MIN-safe negation idiom already in `sapi_string_from_i64`.
+- `_append_hex_u32`: `out[8]` explicitly zero-initialised - `n` is
+  provably `>= 1` (`n = max(real_digits>=1, width clamped to 1..8)`) so
+  the `append_bytes(out, n)` call can never read an unwritten byte, but
+  cppcheck's single-file analysis cannot prove `n != 0` and flagged
+  `uninitvar`; the zero-init removes the finding cleanly rather than
+  suppressing it. No `<stdio.h>` / `snprintf` introduced - the point of
+  the addition is to give the reference app a checked, non-variadic
+  alternative to `snprintf(...,"%u"/"%x",...)` line assembly.
+- cppcheck after the zero-init: only `unusedFunction` style noise
+  (single-file public-API analysis), no `warning`/`error`/`misra-*` on
+  the new code. All 30 `ctest` binaries pass, `test_sapi_string`
+  extended with `test_append_numeric()` (compound assembly, hex padding,
+  remaining-capacity refusal leaves dest intact, NULL dest).
+- Static finding total: not re-run whole-tree; the touched `.c`'s own
+  new code is clean per above. Carried from update 22's **1229**.
 
 **2026-08-28, update 22 (runtime log-level threshold: `sapi_log_set_level()`
 / `sapi_log_get_level()` / `sapi_log_level_from_string()` added to

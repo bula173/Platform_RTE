@@ -71,7 +71,16 @@ search, numeric formatting (both directions), and splitting.
   reported through an `out_found` boolean, not an error status: failing to
   find a substring is a normal outcome, not a fault.
 - `sapi_string_from_u32` / `_from_i32` / `_from_u64` / `_from_i64` - base-10
-  formatting into a `sapi_string_t`.
+  formatting into a `sapi_string_t` (replacing its content).
+- `sapi_string_append_u32` / `_append_i32` / `_append_u64` / `_append_i64` /
+  `_append_hex_u32` - base-10 (or lowercase-hex) formatting **appended** to a
+  `sapi_string_t`'s existing content, advancing its length. Added
+  (REQ-COMMON-STR-029..033) so the reference application can assemble a log
+  line or diagnostic string from literal + numeric parts with a checked,
+  non-variadic primitive instead of falling back to
+  `snprintf(buf, n, "...%u...%x...", ...)` - which is bounded but pulls in
+  `<stdio.h>` (MISRA Rule 21.6) and a format string. `sapi_string_concat`
+  supplies the literal segments between appends.
 - `sapi_string_to_u32` / `_to_i32` / `_to_u64` / `_to_i64` - base-10
   parsing; malformed input or a value that doesn't fit the destination
   type yields `SAPI_STATUS_INVALID_PARAM` / `SAPI_STATUS_VALUE_OUT_OF_RANGE`
