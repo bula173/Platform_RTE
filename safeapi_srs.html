@@ -89,13 +89,13 @@ $(function() {
   <div class="headertitle"><div class="title">Software Requirements Specification (SRS)</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md424"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md468"></a>
 Safe API Framework — Software Requirements Specification (SRS)</h1>
 <p>Date: 2026-08-02 Status: Draft, consolidated from <code>REQ-*</code> traceability tags already present in the header comments under <code>include/safeapi/</code>. This document is the canonical source those tags cite; if a requirement's wording ever needs to change, change it here first, then update the corresponding code comment to match. Design rationale for each requirement lives in the referenced ADR under <code>docs/architecture/</code>; this document states <em>what</em> is required, the ADRs explain <em>why</em>.</p>
 <p>Format: <code>REQ-&lt;AREA&gt;-&lt;MODULE&gt;-&lt;NUMBER&gt;</code>. <code>AREA</code> is <code>OAL</code> (OS Abstraction Layer) or <code>COMMON</code> (layer-agnostic) — a conceptual grouping, not a directory: since ADR-007 each module below lives in its own <code>include/safeapi/&lt;feature&gt;/</code> + <code>src/&lt;feature&gt;/</code> pair rather than a shared <code>common/</code>/<code>os/</code> folder.</p>
-<h2><a class="anchor" id="autotoc_md425"></a>
+<h2><a class="anchor" id="autotoc_md469"></a>
 1. Common facilities</h2>
-<h3><a class="anchor" id="autotoc_md426"></a>
+<h3><a class="anchor" id="autotoc_md470"></a>
 1.1 Status codes — &lt;tt&gt;sapi_status.h&lt;/tt&gt; (ADR-001 §3.6)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -105,7 +105,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-OAL-COMMON-002   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__STATUS.html#gae33bf09c513f285687ec246a4f1806ad" title="Returns a short, static, human-readable string for a status code. Intended for diagnostics/logging on...">sapi_status_to_string()</a></code> shall return a short, static, human-readable string for every defined status code, for diagnostics/logging use only — never on a safety-decision path.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md427"></a>
+<h3><a class="anchor" id="autotoc_md471"></a>
 1.2 Common types — &lt;tt&gt;sapi_types.h&lt;/tt&gt; (ADR-001 §3.4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -113,7 +113,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-COMMON-010   </td><td class="markdownTableBodyNone">No dynamic memory allocation is used by the framework after initialization; every stateful object is created from caller-supplied storage.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md428"></a>
+<h3><a class="anchor" id="autotoc_md472"></a>
 1.3 Cross-layer data buffer — &lt;tt&gt;sapi_buffer.h&lt;/tt&gt; (ADR-002)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -141,7 +141,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-COMMON-BUF-026..031   </td><td class="markdownTableBodyNone"><code>sapi_buffer_read_u16/u32/u64_le/be()</code> shall decode a value in the stated byte order from the given offset without mutating the buffer.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md429"></a>
+<h3><a class="anchor" id="autotoc_md473"></a>
 1.4 Checked integer casting — &lt;tt&gt;sapi_cast.h&lt;/tt&gt; (ADR-003)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -156,7 +156,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <p>Applies uniformly to all 72 <code>sapi_cast_&lt;from&gt;_to_&lt;to&gt;</code> functions covering every ordered pair among <code>int8_t</code>/<code>int16_t</code>/<code>int32_t</code>/<code>int64_t</code>/ <code>uint8_t</code>/<code>uint16_t</code>/<code>uint32_t</code>/<code>uint64_t</code>/<code>size_t</code> — see ADR-003 §2.1 for the full type matrix; not enumerated as 72 separate IDs since all 72 satisfy the same three requirements by construction.</p>
 <p>| REQ-COMMON-CAST-004 | <code><a class="el" href="group__CAST.html#gadc09d52b236ce0b370574fb9f6a80839" title="Checked addition: *out = a + b, only if the result fits uint32_t.">sapi_cast_checked_add_u32()</a></code>/<code>_sub_u32()</code>/<code>_mul_u32()</code> and the <code>size_t</code> equivalents shall detect overflow/underflow and yield <code>SAPI_STATUS_VALUE_OUT_OF_RANGE</code> instead of wrapping silently; <code>*out</code> is left untouched on failure (REQ-COMMON-CAST-001). | | REQ-COMMON-CAST-005 | <code>sapi_cast_bounds_check(index, count)</code> shall return <code>SAPI_STATUS_OK</code> if <code>index &lt; count</code>, else <code>SAPI_STATUS_VALUE_OUT_OF_RANGE</code> - a checked helper standardizing the array/index-bounds check pattern already hand-rolled ad hoc across this codebase's consumers. |</p>
 <p>Added during the framework module reorg (module directories nested under <code>common</code>/<code>oal</code>/<code>redundancy</code>/<code>app</code> tiers - see this session's own commit history/<code>CLAUDE.md</code> for the reorg itself, unrelated to these two new requirements): overflow-checked arithmetic and a bounds-check helper, the two "extra MISRA-safety helpers" requested alongside the safe-pointer wrapper (2.3 below) and the already-existing <code><a class="el" href="group__SAFESTATE.html#gaf576b4fb4d3c52ec505cd13f149df041" title="Checked assertion. Always active in every build configuration, including production (ADR-004 section ...">SAPI_ASSERT()</a></code> (1.5 below).</p>
-<h3><a class="anchor" id="autotoc_md430"></a>
+<h3><a class="anchor" id="autotoc_md474"></a>
 1.5 Safe-state transitions — &lt;tt&gt;sapi_safestate.h&lt;/tt&gt; (ADR-004)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -171,7 +171,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <td class="markdownTableBodyNone">REQ-COMMON-SAFESTATE-011   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a></code> shall invoke the registered handler for the given level (if any) before applying REQ-COMMON-SAFESTATE-002's non-return guarantee.   </td></tr>
 </table>
 <p><code>SAPI_ASSERT</code> is always active in every build configuration (no <code>NDEBUG</code>-style compile-out) and, on a false condition, calls <code>sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_ASSERT_FAILED, ...)</code> — this behavior is a consequence of REQ-COMMON-SAFESTATE-002/011 applied to the <code>SAFE</code> level and is not tracked as a separate requirement ID.</p>
-<h4><a class="anchor" id="autotoc_md431"></a>
+<h4><a class="anchor" id="autotoc_md475"></a>
 1.5.1 Safety-primitive violation notification — &lt;tt&gt;sapi_safety_violation.h&lt;/tt&gt;</h4>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -182,7 +182,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <td class="markdownTableBodyNone">REQ-COMMON-SAFETYVIOLATION-002   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__SAFETYVIOLATION.html#ga19bca26a907dbff7596da7f90ebfee2c" title="Reports one violation to the registered handler, if any.">sapi_safety_violation_report()</a></code> shall be a no-op when no handler is registered — reporting a violation shall never itself become a new failure mode.   </td></tr>
 </table>
 <p>Deliberately a separate, opt-in mechanism from <code>sapi_safestate</code> (1.5 above): unlike a checkpoint timeout or voter disagreement (always genuine faults, escalated unconditionally through <code><a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a></code>), the three primitives this module instruments are also invoked during ordinary, expected control flow (e.g. <code><a class="el" href="group__CAST.html#ga4b3365e11016587540d9bf3dad205969" title="Checked array/index bounds check: is index a valid index into an array of count elements?">sapi_cast_bounds_check()</a></code> used to ask "is this the last valid index" is not itself a fault) — forcing every failure through <code><a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a></code> would trigger REQ-COMMON-SAFESTATE-002's permanent halt on entirely normal code paths. Instrumented call sites: <code><a class="el" href="group__SAFEPTR.html#ga93ec140cf2d4a531902e627417424aa5" title="Retrieves the wrapped pointer directly (the whole region, no offset) after validating it.">sapi_safe_ptr_get()</a></code>/<code>_offset()</code> (REQ-OAL-SAFEPTR-001/002, kind <code>SAPI_SAFETY_VIOLATION_CORRUPTION</code>/<code>_OUT_OF_RANGE</code>), <code><a class="el" href="group__CAST.html#gadc09d52b236ce0b370574fb9f6a80839" title="Checked addition: *out = a + b, only if the result fits uint32_t.">sapi_cast_checked_add_u32()</a></code>/<code>_sub_u32()</code>/<code>_mul_u32()</code>/<code>_add_size()</code>/ <code>_sub_size()</code>/<code>_mul_size()</code> (REQ-COMMON-CAST-004, kind <code>SAPI_SAFETY_VIOLATION_OVERFLOW</code>), and <code><a class="el" href="group__CAST.html#ga4b3365e11016587540d9bf3dad205969" title="Checked array/index bounds check: is index a valid index into an array of count elements?">sapi_cast_bounds_check()</a></code> (REQ-COMMON-CAST-005, kind <code>SAPI_SAFETY_VIOLATION_OUT_OF_RANGE</code>). The reported <code>file</code>/<code>line</code> is the detection site inside this framework's own implementation, not the ultimate caller's site — these three primitives are ordinary functions, not macros, so they cannot capture the caller's <code>__FILE__</code>/<code>__LINE__</code> the way <code>SAPI_ASSERT</code>/<code>SAPI_SAFESTATE</code> do.</p>
-<h3><a class="anchor" id="autotoc_md432"></a>
+<h3><a class="anchor" id="autotoc_md476"></a>
 1.6 Bounded string manipulation — &lt;tt&gt;sapi_string.h&lt;/tt&gt; (ADR-006)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -218,9 +218,13 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-COMMON-STR-021..024   </td><td class="markdownTableBodyNone"><code>sapi_string_from_u32/i32/u64/i64()</code> shall format the value as base-10 ASCII, replacing dest's content.    </td></tr>
 <tr class="markdownTableRowEven">
-<td class="markdownTableBodyNone">REQ-COMMON-STR-025..028   </td><td class="markdownTableBodyNone"><code>sapi_string_to_u32/i32/u64/i64()</code> shall parse base-10 ASCII, yielding <code>SAPI_STATUS_INVALID_PARAM</code> for malformed input and <code>SAPI_STATUS_VALUE_OUT_OF_RANGE</code> for a value that doesn't fit the destination type.   </td></tr>
+<td class="markdownTableBodyNone">REQ-COMMON-STR-025..028   </td><td class="markdownTableBodyNone"><code>sapi_string_to_u32/i32/u64/i64()</code> shall parse base-10 ASCII, yielding <code>SAPI_STATUS_INVALID_PARAM</code> for malformed input and <code>SAPI_STATUS_VALUE_OUT_OF_RANGE</code> for a value that doesn't fit the destination type.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">REQ-COMMON-STR-029..032   </td><td class="markdownTableBodyNone"><code>sapi_string_append_u32/i32/u64/i64()</code> shall append the value as base-10 ASCII to dest's existing content (advancing its length), scanning nothing, leaving dest unmodified and yielding <code>SAPI_STATUS_RESOURCE_EXHAUSTED</code> when the digits do not fit the remaining capacity.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">REQ-COMMON-STR-033   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__STRING.html#ga513932786107ee6477528f99807ac53c" title="Bounded append of a uint32_t formatted as lowercase hexadecimal (no &quot;0x&quot; prefix - the caller prepends...">sapi_string_append_hex_u32()</a></code> shall append the value as lowercase hexadecimal (no <code>0x</code> prefix) with a caller-supplied minimum digit count clamped to 1..8, never truncating a value that needs more digits, under the same bounds/immutability contract as REQ-COMMON-STR-029..032.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md433"></a>
+<h2><a class="anchor" id="autotoc_md477"></a>
 2. OS Abstraction Layer</h2>
 <p>Every OAL service below shares the backend-registration contract defined once in ADR-005 rather than repeating it per service. <b>Note:</b> <code>REQ-OAL-BACKEND-001/002/003</code> below are a documentation-only consolidation for readability — unlike every other ID in this SRS, they do <b>not</b> appear verbatim as a tag in any header comment (see the traceability caveat in section 4); the behavior they describe is what each per-service <code>REQ-OAL-&lt;SERVICE&gt;-01X</code> "register_backend" entry already requires:</p>
 <blockquote class="doxtable">
@@ -228,7 +232,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <p><b>REQ-OAL-BACKEND-002</b> (ADR-005 §2.2, applies to every OAL service except <code>sapi_log</code>): every public function shall validate its own parameters before consulting the backend; with no backend registered it shall return <code>SAPI_STATUS_NOT_INITIALIZED</code>; with a backend registered but the corresponding vtable slot NULL, it shall return <code>SAPI_STATUS_NOT_SUPPORTED</code>.</p>
 <p><b>REQ-OAL-BACKEND-003</b> (ADR-005 §2.5, <code>sapi_log</code> only): an unregistered backend is not an error; <code><a class="el" href="group__LOG.html#gae503764e3fb83a2ee19e57d3f6b057a1" title="Emits one log message. Non-blocking; never fails the caller&#39;s control flow even if the message is dro...">sapi_log_write()</a></code> with no backend registered shall silently do nothing. </p>
 </blockquote>
-<h3><a class="anchor" id="autotoc_md434"></a>
+<h3><a class="anchor" id="autotoc_md478"></a>
 2.1 Timer — &lt;tt&gt;sapi_timer.h&lt;/tt&gt; (ADR-001 §4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -252,7 +256,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-TIMER-015   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__TIMER__BACKEND.html#ga45ba555c8be39f02390b33a99721a4f1" title="Registers the backend implementation used by every sapi_timer_* call. This is how an integrator suppl...">sapi_timer_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md435"></a>
+<h3><a class="anchor" id="autotoc_md479"></a>
 2.2 Non-volatile memory — &lt;tt&gt;sapi_nvm.h&lt;/tt&gt; (ADR-001 §4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -274,7 +278,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-OAL-NVM-015   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__NVM__BACKEND.html#gaf5348d814b574e6791759a424becd589" title="Registers the backend implementation used by every sapi_nvm_* call (ADR-005 section 2....">sapi_nvm_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md436"></a>
+<h3><a class="anchor" id="autotoc_md480"></a>
 2.3 Static memory reservation — &lt;tt&gt;sapi_memory.h&lt;/tt&gt; (ADR-001 §4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -292,7 +296,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-OAL-MEM-014   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__MEMORY__BACKEND.html#ga3d890b9d724722c2c3aa0f5ad6b308b5" title="Registers the backend implementation used by every sapi_mem_pool_* call (ADR-005 section 2....">sapi_mem_pool_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h4><a class="anchor" id="autotoc_md437"></a>
+<h4><a class="anchor" id="autotoc_md481"></a>
 2.3.1 Safe pointer wrapper — &lt;tt&gt;sapi_safe_ptr.h&lt;/tt&gt;</h4>
 <p>Bounds + NULL + corruption-canary checked access to a raw memory region a caller already owns (a static buffer, a <code><a class="el" href="group__MEMORY.html#ga033f09446764a4568acd23948b421688" title="Acquires one fixed-size block from the pool.">sapi_mem_pool_acquire()</a></code> block, ...) - <code><a class="el" href="structsapi__safe__ptr__t.html" title="A bounds-checked, canary-protected wrapper around one raw memory region. Opaque to callers in spirit ...">sapi_safe_ptr_t</a></code> never allocates anything itself.</p>
 <table class="markdownTable">
@@ -305,7 +309,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-SAFEPTR-003   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__SAFEPTR.html#ga925cc3131154ee1586bebe4f97f096ef" title="Invalidates sp: clears the wrapped pointer and the canary, so every subsequent access on sp fails SAP...">sapi_safe_ptr_invalidate()</a></code> shall clear both the wrapped pointer and the canary, so a subsequent access on the same wrapper fails <code>SAPI_STATUS_DATA_CORRUPTION</code> rather than silently succeeding against a logically-released region.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md438"></a>
+<h3><a class="anchor" id="autotoc_md482"></a>
 2.4 Task/thread scheduling — &lt;tt&gt;sapi_task.h&lt;/tt&gt; (ADR-001 §4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -325,7 +329,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-TASK-014   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__TASK__BACKEND.html#ga13a36c3389fb8c06a7cd8a6845558dd3" title="Registers the backend implementation used by every sapi_task_* call (ADR-005 section 2....">sapi_task_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md439"></a>
+<h3><a class="anchor" id="autotoc_md483"></a>
 2.5 Inter-process/inter-task communication — &lt;tt&gt;sapi_ipc.h&lt;/tt&gt; (ADR-001 §4)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -345,7 +349,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-IPC-014   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__IPC__BACKEND.html#gac358505516016f8431e8c6f45be560d3" title="Registers the backend implementation used by every sapi_ipc_* call (ADR-005 section 2....">sapi_ipc_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md440"></a>
+<h3><a class="anchor" id="autotoc_md484"></a>
 2.6 Logging/diagnostics — &lt;tt&gt;sapi_log.h&lt;/tt&gt; (ADR-001 §4, non-safety-related)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -367,7 +371,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-OAL-LOG-016   </td><td class="markdownTableBodyNone"><code>sapi_log_level_from_string(name, out_level)</code> shall parse exactly the four canonical spellings <code><a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d" title="Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...">sapi_log_level_to_string()</a></code> renders (<code>"DEBUG"</code>/<code>"INFO"</code>/<code>"WARNING"</code>/<code>"ERROR"</code>, case-sensitive) into <code>*out_level</code> and return <code>SAPI_STATUS_OK</code>; any other <code>name</code>, or a NULL <code>name</code>/<code>out_level</code>, shall return <code>SAPI_STATUS_INVALID_PARAM</code> and leave <code>*out_level</code> unchanged.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md441"></a>
+<h3><a class="anchor" id="autotoc_md485"></a>
 2.7 Controlled reboot — &lt;tt&gt;sapi_reboot.h&lt;/tt&gt; (ADR-004 §3)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -379,7 +383,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-REBOOT-011   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__REBOOT__BACKEND.html#gab5638a101dcd6791e7e7be5317a45d04" title="Registers the backend implementation used by sapi_reboot_request() (ADR-005 section 2....">sapi_reboot_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md442"></a>
+<h3><a class="anchor" id="autotoc_md486"></a>
 2.8 Point-to-point network link — &lt;tt&gt;sapi_netlink.h&lt;/tt&gt; (ADR-001 §4, ADR-005, ADR-021, ADR-027)</h3>
 <p>Framework ships the interface and validate-then-dispatch layer only; a concrete backend (e.g. POSIX UDP sockets) is integrator-supplied and lives with the application that registers it — see <code>safeAPIRBC2oo2</code>'s <code>src/posix_backend/sapi_posix_backend_netlink.c</code>. This table was backfilled alongside ADR-027 (TCP → UDP migration) — the requirement IDs were already cited in <code><a class="el" href="sapi__netlink_8h.html" title="OS Abstraction Layer - Point-to-point network link service.">sapi_netlink.h</a></code>'s own header comments beforehand, but had no matching table entry here; the wording below reflects the now-transport-agnostic contract, not the earlier TCP-specific one.</p>
 <table class="markdownTable">
@@ -402,7 +406,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-OAL-NETLINK-014   </td><td class="markdownTableBodyNone">This service provides no message ordering, deduplication, or delivery guarantee of its own — a backend may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (<code>sapi_dual_msgchannel</code>/<code>sapi_dual_channel</code>, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one).   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md443"></a>
+<h3><a class="anchor" id="autotoc_md487"></a>
 2.9 Real-time platform configuration — &lt;tt&gt;sapi_platform.h&lt;/tt&gt; (ADR-035)</h3>
 <p>Framework ships the interface and validate-then-dispatch layer only; a concrete backend (e.g. POSIX <code>mlockall()</code> + <code>SCHED_FIFO</code>) is integrator-supplied and lives with <code>safeAPIBackendPosix</code>. Exists so application startup code can ask for real-time bring-up through the OAL rather than calling a backend symbol directly (the layering ADR-001 §3.5 requires).</p>
 <table class="markdownTable">
@@ -415,7 +419,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-OAL-PLATFORM-011   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__PLATFORM__BACKEND.html#gad0034419667d1a5345085b7fd14152d2" title="Registers the backend implementation used by sapi_platform_realtime_init() (ADR-005 section 2....">sapi_platform_register_backend()</a></code> per REQ-OAL-BACKEND-001.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md444"></a>
+<h2><a class="anchor" id="autotoc_md488"></a>
 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)</h2>
 <p>These apply across every module above and are enforced by convention and the MISRA compliance review (<code>docs/MISRA_COMPLIANCE_REPORT.md</code>) rather than an individual <code>REQ-*</code> tag on every function:</p>
 <ul>
@@ -425,10 +429,10 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <li>All integer type conversions go through <code>sapi_cast_*</code> (§1.3) — no bare C-style casts.</li>
 <li>No recursion, no uninitialized variables, no standard <code>errno</code>/<code>assert()</code> in production paths (<code>SAPI_ASSERT</code>, §1.4, is the replacement).</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md445"></a>
+<h2><a class="anchor" id="autotoc_md489"></a>
 3a. Distributed channel synchronization (ADR-017)</h2>
 <p>Not yet backfilled into this document for every module added since the sections above were written (<code>sapi_checksum</code> currently has no REQ-tagged entries here despite existing in <code>include/</code>/<code>src/</code> — a pre-existing gap, not introduced by this section). This section covers the two modules added by ADR-017.</p>
-<h3><a class="anchor" id="autotoc_md446"></a>
+<h3><a class="anchor" id="autotoc_md490"></a>
 3a.1 Checkpoint rendezvous — &lt;tt&gt;sapi_checkpoint.h&lt;/tt&gt; (ADR-017 §2.2)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -441,7 +445,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <td class="markdownTableBodyNone">REQ-CHECKPOINT-003   </td><td class="markdownTableBodyNone">If fewer than <code>expected_node_count</code> valid replies arrive within <code>max_delay_ms</code>, <code><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a></code> shall call <code><a class="el" href="group__SAFESTATE.html#gaca60cf2b3d730a9997a5887c415ed129" title="Enters a safe-state level: invokes the registered handler (if any), then, for SAPI_SAFESTATE_LEVEL_SA...">sapi_safestate_enter()</a></code> at <code>SAPI_SAFESTATE_LEVEL_SAFE</code> with <code>SAPI_SAFESTATE_REASON_CHECKPOINT_TIMEOUT</code> before returning <code>SAPI_STATUS_TIMEOUT</code>.   </td></tr>
 </table>
 <p><b>ADR-034 note (does not change the three requirements above):</b> <code><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a></code> itself is unchanged — still exact <code>checkpoint_id</code> equality plus CRC verification, still the same bounded-retry-loop/watchdog-kick behavior. What changed is upstream, in <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code>'s built-in checkpoint integration (3c below): <code>checkpoint_id</code> is no longer a bare per-cycle counter, it is computed by folding <code><a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48" title="Records a checkpoint mark for this call site (ADR-034) - see sapi_appmanager_checkpoint_mark()&#39;s own ...">SAPI_CHECKPOINT_MARK()</a></code> calls into a running signature (REQ-APPMANAGER-014). A <code>safeAPIRBC2oo2</code> caller <b>not</b> going through <code>sapi_appmanager</code>'s built-in integration still owns <code>checkpoint_id</code> entirely itself and these three requirements are the complete contract it needs.</p>
-<h3><a class="anchor" id="autotoc_md447"></a>
+<h3><a class="anchor" id="autotoc_md491"></a>
 3a.2 Clock synchronization (diagnostic only) — &lt;tt&gt;sapi_clocksync.h&lt;/tt&gt; (ADR-017 §2.3)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -451,7 +455,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-CLOCKSYNC-002   </td><td class="markdownTableBodyNone">This module shall never be called from, or influence the outcome of, <code><a class="el" href="group__CHECKPOINT.html#ga9d2c128dd981154b0ce7ee3ea2e4f85e" title="Performs one bounded checkpoint rendezvous across every channel registered with a voter.">sapi_channel_checkpoint()</a></code> or any other vital comparison — checkpoint-ID rendezvous, not clock agreement, is the basis of comparison correctness (ADR-017 §2.3).   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md448"></a>
+<h2><a class="anchor" id="autotoc_md492"></a>
 3b. Watchdog — &lt;tt&gt;sapi_watchdog.h&lt;/tt&gt; (partial)</h2>
 <p>Not a full backfill of this module (see 3a's own note on the pre-existing gap) - just the <code>SAPI_WATCHDOG_ACTION_FAILOVER</code> action, added when a real integrator (safeAPIRBC2oo2's dual-channel A/B link and SITE&lt;-&gt;SITE heartbeat) needed a "my redundant peer stopped responding" reaction and found the action a documented dead stub.</p>
 <table class="markdownTable">
@@ -462,7 +466,7 @@ Safe API Framework — Software Requirements Specification (SRS)</h1>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-WATCHDOG-002   </td><td class="markdownTableBodyNone">On timeout, a watchdog configured with <code>SAPI_WATCHDOG_ACTION_FAILOVER</code> shall invoke <code>config-&gt;custom_action(config-&gt;context)</code> — identical dispatch to <code>SAPI_WATCHDOG_ACTION_CUSTOM</code> — and shall not itself decide what the timeout means; that decision belongs to the integrator's <code>custom_action</code>.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md449"></a>
+<h2><a class="anchor" id="autotoc_md493"></a>
 3c. Application lifecycle hooks and cycle checkpoint — &lt;tt&gt;sapi_appmanager.h&lt;/tt&gt; (ADR-019/ADR-034)</h2>
 <p><code>sapi_appmanager</code> was one of the modules 3a flagged as not yet backfilled; this section starts that backfill with the <code>REQ-APPMANAGER-*</code> IDs introduced or already present in the header as of ADR-019/ADR-034, not a full retroactive pass over every pre-existing behavior of the module.</p>
 <p><b>ADR-034 (checkpoint-signature marks, stage reorder):</b> found live in <code>safeAPIRBC2oo2GP</code> (A/WEST and B/WEST cycling reboots roughly every 40s, never stabilizing): <code>checkpoint_id</code> used to be <code>iteration_count</code>, a process-local counter that resets to 0 on every reboot — two independently-rebooting channels' counters have no reason to ever coincide again after either one reboots alone, so REQ-CHECKPOINT-002 correctly (but uselessly) kept rejecting every reply as "wrong
@@ -493,7 +497,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-APPMANAGER-014   </td><td class="markdownTableBodyNone">(ADR-034) <code>sapi_appmanager_checkpoint_mark(file, line, label)</code> — normally invoked via <code><a class="el" href="group__APPMANAGER.html#gaaee9dd382382d1aa3bfaf789d0fb5d48" title="Records a checkpoint mark for this call site (ADR-034) - see sapi_appmanager_checkpoint_mark()&#39;s own ...">SAPI_CHECKPOINT_MARK()</a></code>/<code><a class="el" href="group__APPMANAGER.html#gad5d68f3f2bbbafc0b3f29e4f9d6dde72" title="Records a checkpoint mark identified by a caller-supplied label instead of this call site&#39;s file:line...">SAPI_CHECKPOINT_MARK_LABEL()</a></code> — shall, when called during an active <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code> cycle, fold a CRC64 hash of <code>label</code> (if non-<code>NULL</code>) or <code><a href="file:line">file:line</a></code> into that cycle's running signature via <code>signature = crc64(encode_le(signature) \|\| encode_le(mark_hash))</code>, and shall be a documented no-op (the signature untouched) when called outside an active cycle (before the loop starts, or after it ends, including from <code>init()</code>/<code>shutdown()</code>). The signature shall reset to the fixed seed <code>SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED</code> at the start of every cycle, before <code>pre_execute()</code> runs. <code><a class="el" href="group__APPMANAGER.html#gaa0bd28731c0ccf8c866928b4bd17f5af" title="Pure helper: folds a 64-bit checkpoint signature down to the uint32_t sapi_checkpoint_config_t::check...">sapi_appmanager_checkpoint_fold_signature(uint64_t)</a></code> shall be a pure function (no reference to any in-progress cycle) computing the same 64-to-32-bit fold <code><a class="el" href="group__APPMANAGER.html#gab9538e91ca0849775b4989d3b1c0f566" title="Run application with lifecycle management.">sapi_appmanager_run()</a></code> uses internally, so a caller can independently compute the expected <code>checkpoint_id</code> for a known signature value (e.g. a no-marks cycle always folds to <code>0</code>, since the seed's own two 32-bit halves are equal).   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md450"></a>
+<h2><a class="anchor" id="autotoc_md494"></a>
 3c-bis. Application setup-phase lock — &lt;tt&gt;sapi_lifecycle.h&lt;/tt&gt; (ADR-026)</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -503,10 +507,10 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-LIFECYCLE-002   </td><td class="markdownTableBodyNone">The setup-phase lock shall be a single, process-wide flag (no dynamic allocation, no OS dependency, no per-<code><a class="el" href="structsapi__appmanager__config__t.html" title="Application manager configuration.">sapi_appmanager_config_t</a></code> instance) — this framework has no concept of more than one concurrently-running application per process, matching <code>sapi_appmanager</code>'s own existing <code>g_app_state</code> single-instance assumption.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md451"></a>
+<h2><a class="anchor" id="autotoc_md495"></a>
 3d. Single-link channel, N-way voting, and 2-way cross-comparison — ADR-025</h2>
 <p>ADR-025 split what this section previously described (a single <code>sapi_channel</code> type combining a redundant transport link with N-way voting logic, <code>channel_count</code>/<code>voting_strategy</code> included in its own init config) into three modules with a clean responsibility boundary: <code>sapi_channel</code> is now a single point-to-point link only, <code>sapi_voter</code> does N-way 2oo2/2oo3/NMR voting over channels registered into it, and <code>sapi_cross_comparator</code> does 2-way peer comparison. <code>channel_count</code> and <code>voting_strategy</code> moved off <code><a class="el" href="group__channel__link.html#ga8972fa352eba4f25f1b0af7712d227cc" title="Initializes one vital channel over a caller-supplied transport.">sapi_channel_init()</a></code>'s config entirely and onto <code><a class="el" href="group__voter.html#gac02cb7c3021b1c4dd28125f69b5f7d54" title="Initializes a voter with zero registered channels.">sapi_voter_init()</a></code>'s — the floor this section used to describe (previously relaxed by ADR-019 §5.1 to allow a single-channel NMR voter with <code>quorum_size == 1</code>) now lives there instead, unchanged in substance: <code>SAPI_VOTING_2OO2</code> requires exactly 2 registered channels, <code>SAPI_VOTING_2OO3</code> exactly 3, <code>SAPI_VOTING_NMR</code> at least 1 with <code>1 &lt;= quorum_size &lt;= channel_count</code>.</p>
-<h3><a class="anchor" id="autotoc_md452"></a>
+<h3><a class="anchor" id="autotoc_md496"></a>
 3d.1 Single-link channel — &lt;tt&gt;sapi_channel.h&lt;/tt&gt; (&lt;tt&gt;channel_link/&lt;/tt&gt;, ADR-025 §2.1)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -522,7 +526,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-CHANNEL-005   </td><td class="markdownTableBodyNone"><code><a class="el" href="structsapi__channel__config__t.html#a7608b60a72dd73c805cfd76e26f7a08d">sapi_channel_config_t::name</a></code> (e.g. <code>"ChannelAtoB"</code>) is optional (may be <code>NULL</code>) and is not copied - same caller-owned-pointer convention as <code><a class="el" href="structsapi__watchdog__config__t.html#ace4926de9ceba31c6cda2ef518630322">sapi_watchdog_config_t::name</a></code> - so it must outlive the channel. <code><a class="el" href="group__channel__link.html#ga476e85a04158e94c2d00f5f541c3e7b8" title="Returns this channel&#39;s name, as given in sapi_channel_config_t::name at sapi_channel_init() time.">sapi_channel_get_name()</a></code> shall return it verbatim (<code>NULL</code> if <code>handle</code> is <code>NULL</code> or no name was configured).   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md453"></a>
+<h3><a class="anchor" id="autotoc_md497"></a>
 3d.2 N-way voter — &lt;tt&gt;sapi_voter.h&lt;/tt&gt; (ADR-025 §2.2)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -540,7 +544,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-VOTER-006   </td><td class="markdownTableBodyNone"><code>sapi_voter_get_channel_by_name(voter, name)</code> shall return the first registered channel whose own <code><a class="el" href="group__channel__link.html#ga476e85a04158e94c2d00f5f541c3e7b8" title="Returns this channel&#39;s name, as given in sapi_channel_config_t::name at sapi_channel_init() time.">sapi_channel_get_name()</a></code> exactly (<code>strcmp()</code>) matches <code>name</code>, or <code>NULL</code> if <code>voter</code>/<code>name</code> is <code>NULL</code> or no registered channel's name matches (including a channel whose own name is itself <code>NULL</code> - never matched by any lookup, REQ-CHANNEL-005).   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md454"></a>
+<h3><a class="anchor" id="autotoc_md498"></a>
 3d.3 2-way cross-comparator — &lt;tt&gt;sapi_cross_comparator.h&lt;/tt&gt; (ADR-025 §2.3)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -554,10 +558,10 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-CROSSCOMPARATOR-004   </td><td class="markdownTableBodyNone">The comparison itself shall use <code>config-&gt;compare</code> if registered, otherwise a full <code>memcmp()</code> of the two channels' received payloads — CRC-64 transport-integrity verification (<code>sapi_checksum</code>) is a separate, already-applied concern and is never itself treated as "the comparison" (ADR-025 §2.4).   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md455"></a>
+<h2><a class="anchor" id="autotoc_md499"></a>
 3e. Dual-transfer state negotiation — &lt;tt&gt;sapi_dual&lt;/tt&gt; (ADR-020)</h2>
 <p>Three files under <code>include/safeapi/dual/</code>: <code><a class="el" href="sapi__dual__msgchannel_8h.html" title="&quot;Channel&quot; layer of ADR-020: one EN 50159-defended message channel over one already-open sapi_netlink_...">sapi_dual_msgchannel.h</a></code> (Layer 1 "Channel", one EN 50159-defended message channel over one <code>sapi_netlink_handle_t</code>), <code><a class="el" href="sapi__dual__channel_8h.html" title="&quot;DualChannel&quot; layer of ADR-020: wraps 1..N redundant sapi_dual_msgchannel_t links for fault-tolerant,...">sapi_dual_channel.h</a></code> ("DualChannel", 1..N redundant Layer-1 links with always-send + bounded-ACK-wait delivery and connection-status tracking), and <code><a class="el" href="sapi__dual__negotiator_8h.html" title="Dual state negotiator of ADR-020: decides sapi_dual_state_t for both this instance and its peer,...">sapi_dual_negotiator.h</a></code> (own/peer <code>sapi_dual_state_t</code> negotiation driven over an attached DualChannel). <code><a class="el" href="sapi__dual__types_8h.html" title="Shared enums for the sapi_dual module (ADR-020): dual-instance state negotiation and the redundant,...">sapi_dual_types.h</a></code> and <code><a class="el" href="sapi__dual__frames_8h.html" title="Layer-2 (DualChannel-owned) frame kind/header definitions for ADR-020 - shared between sapi_dual_chan...">sapi_dual_frames.h</a></code> hold shared enums/wire structs with no behavior of their own beyond what the three modules above require.</p>
-<h3><a class="anchor" id="autotoc_md456"></a>
+<h3><a class="anchor" id="autotoc_md500"></a>
 3e.1 Shared types — &lt;tt&gt;sapi_dual_types.h&lt;/tt&gt; (ADR-020 Decision §1)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -565,7 +569,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-DUAL-TYPES-001   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__DUAL.html#ga8f99957bd2bd04338cf52c5e319075a8" title="Returns a short, static, human-readable string for a sapi_dual_state_t. Intended for diagnostics/logg...">sapi_dual_state_to_string()</a></code> and <code><a class="el" href="group__DUAL.html#gac845977f5ff35886467da840a10b555e" title="Returns a short, static, human-readable string for a sapi_dual_channel_status_t. Same diagnostics-onl...">sapi_dual_channel_status_to_string()</a></code> shall return a non-NULL, static string for every defined enum value and a defensive <code>"UNKNOWN_STATE"</code>/<code>"UNKNOWN_STATUS"</code> respectively for an unrecognized one (same posture as <code><a class="el" href="group__LOG.html#ga039f92d06b19a508fc70d476bd715e4d" title="Renders a sapi_log_level_t as a fixed, human-readable tag - &quot;DEBUG&quot;/&quot;INFO&quot;/&quot;WARNING&quot;/&quot;ERROR&quot; - used a...">sapi_log_level_to_string()</a></code>, REQ-OAL-LOG-013).   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md457"></a>
+<h3><a class="anchor" id="autotoc_md501"></a>
 3e.2 Base Channel — &lt;tt&gt;sapi_dual_msgchannel.h&lt;/tt&gt; (ADR-020 §1, Layer 1)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -581,7 +585,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-DUAL-MSGCHANNEL-005   </td><td class="markdownTableBodyNone">A CRC or sequence-continuity failure on receive shall yield <code>SAPI_STATUS_DATA_CORRUPTION</code> and leave <code>expected_sequence</code> unchanged (the failed frame is not consumed into the sequence stream).   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md458"></a>
+<h3><a class="anchor" id="autotoc_md502"></a>
 3e.3 DualChannel — &lt;tt&gt;sapi_dual_channel.h&lt;/tt&gt; (ADR-020 §2, Layer 2)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -603,7 +607,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-DUAL-CHANNEL-008   </td><td class="markdownTableBodyNone">If no link produces a usable frame/ACK before <code><a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a></code>/<code>_receive()</code> return, and at least one link's own underlying send/receive reported <code>SAPI_STATUS_HARDWARE_FAULT</code> (a closed/reset connection, not just "nothing arrived within this poll"), that status shall be returned instead of the generic <code>SAPI_STATUS_TIMEOUT</code> every other "nothing usable this call" case returns. Found via a <code>safeAPIRBC2oo2</code> container-topology failover test: <code><a class="el" href="group__DUAL.html#ga0596fe47d993699f89ee80864b4507e8" title="Sends payload as a DATA frame on every configured redundant link - never gated by any negotiated stat...">sapi_dual_channel_send()</a></code>/<code>_receive()</code> previously collapsed <em>every</em> non-success outcome — a genuinely dead TCP connection (peer container restarted) exactly as much as an ordinary "peer hasn't answered yet" — into the same <code>SAPI_STATUS_TIMEOUT</code>, so a consumer's own reconnect logic (<code>channel_ab_negotiate_execute()</code>, gating link teardown on "status is neither OK nor TIMEOUT") could never distinguish the two and never reconnected, leaving one side listening forever for a peer that had already come back up on a fresh socket. A malformed/corrupted frame (<code>SAPI_STATUS_DATA_CORRUPTION</code>) on an otherwise-healthy link is deliberately NOT included in this escalation — it does not indicate a broken transport, only a defended-integrity rejection of one bad frame (REQ-DUAL-CHANNEL-006), and continues to fold into the generic <code>SAPI_STATUS_TIMEOUT</code> as before.   </td></tr>
 </table>
-<h3><a class="anchor" id="autotoc_md459"></a>
+<h3><a class="anchor" id="autotoc_md503"></a>
 3e.4 Dual state negotiator — &lt;tt&gt;sapi_dual_negotiator.h&lt;/tt&gt; (ADR-020 §3)</h3>
 <table class="markdownTable">
 <tr class="markdownTableHead">
@@ -619,7 +623,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-DUAL-NEGOTIATOR-005   </td><td class="markdownTableBodyNone">Loss of peer contact for longer than <code>config-&gt;peer_lost_timeout_ms</code> shall set <code>peer_state</code> to <code>SAPI_DUAL_STATE_UNKNOWN</code>; <code>own_state</code> shall degrade to <code>SAPI_DUAL_STATE_UNKNOWN</code> too unless it was already <code>SAPI_DUAL_STATE_ONLINE</code>, in which case it shall remain <code>SAPI_DUAL_STATE_ONLINE</code> (an active instance keeps acting without needing continuous peer confirmation).   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md460"></a>
+<h2><a class="anchor" id="autotoc_md504"></a>
 3f. Unified channel factory — &lt;tt&gt;sapi_safechannel.h&lt;/tt&gt; (ADR-022)</h2>
 <p>Hides <code>sapi_netlink</code>/<code>sapi_ipc</code> from application code: an application opens one <code><a class="el" href="structsapi__safechannel__t.html" title="Caller-owned storage for one sapi_safechannel_t instance. Every field is private - reach it only thro...">sapi_safechannel_t</a></code> by type and host/port endpoints and never holds a <code>sapi_netlink_handle_t</code> itself.</p>
 <table class="markdownTable">
@@ -632,7 +636,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-SAFECHANNEL-003   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__SAFECHANNEL.html#ga7c4c432bbef904e5b7452fe88b7ae46c" title="Sends payload on the underlying channel - broadcast-with-ACK- wait for DUAL_REDUNDANT (sapi_dual_chan...">sapi_safechannel_send()</a></code>/<code>_receive()</code> shall behave identically to the caller regardless of <code>config.type</code> — a uniform facade over <code><a class="el" href="structsapi__dual__channel__t.html" title="One sapi_dual_channel_t instance&#39;s state. Caller-owned storage; every field is private - reach it onl...">sapi_dual_channel_t</a></code>/<code>sapi_channel_t</code>.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md461"></a>
+<h2><a class="anchor" id="autotoc_md505"></a>
 3g. Checksum / CRC-64 data integrity — &lt;tt&gt;sapi_checksum.h&lt;/tt&gt;</h2>
 <p>CRC-64 computation and a "vital message" envelope (sequence + sender + CRC-64) used by <code>sapi_dual_msgchannel</code> (REQ-DUAL-MSGCHANNEL-003) and <code>sapi_checkpoint</code> for cross-channel/cross-site data integrity. Depends only on <code>sapi_timer</code> (best-effort message timestamping — see REQ-CHECKSUM-005's note that a missing timer backend degrades gracefully, not a hard failure of message creation), not on <code>sapi_log</code> or <code>sapi_safestate</code> despite once <code>#include</code>-ing both unused.</p>
 <table class="markdownTable">
@@ -655,7 +659,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">REQ-CHECKSUM-008   </td><td class="markdownTableBodyNone"><code><a class="el" href="group__CHECKSUM.html#gabcccb5e3265f857e8e6b3183d6126652" title="Get checksum statistics.">sapi_checksum_get_stats()</a></code>/<code>_reset_stats()</code> are diagnostics-only (never on a safety-decision path); <code>_get_stats()</code> returns <code>SAPI_STATUS_INVALID_PARAM</code> for a <code>NULL stats_out</code>, otherwise both always return <code>SAPI_STATUS_OK</code>.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md462"></a>
+<h2><a class="anchor" id="autotoc_md506"></a>
 3h. RBC Train/IL/CTC scenario — &lt;tt&gt;safeAPIRBC2oo2&lt;/tt&gt; (ADR-029)</h2>
 <p>Entirely <code>safeAPIRBC2oo2</code>-side (no framework header changes) - kept here per this document's own cross-repo convention (REQ-APPMANAGER-011 already set this precedent for a <code>safeAPIRBC2oo2</code>-discovered requirement). See ADR-029 for the full design and the live debugging that produced several of these.</p>
 <table class="markdownTable">
@@ -680,7 +684,7 @@ checkpoint_id" until, by chance, both channels next rebooted together. Fixed by 
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone">REQ-RBC-009   </td><td class="markdownTableBodyNone"><code>monitor_c_init()</code> shall NOT block C's own startup waiting for a Train/IL/CTC client to connect (unlike the A/B links, which are this project's own co-deployed, expected-reachable containers) - each such link's background rx task shall start with a NULL handle and establish the connection lazily on its own reconnect-forever loop, since a Train/IL/CTC sim is a genuinely external, opportunistically-connecting client that may not be running yet.   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md463"></a>
+<h2><a class="anchor" id="autotoc_md507"></a>
 4. Traceability</h2>
 <p>Every <code>REQ-*</code> ID in this document appears verbatim in the corresponding header's Doxygen comment in <code>include/safeapi/</code>, <b>except</b> <code>REQ-OAL-BACKEND-001/002/003</code> in section 2, which are a documentation-only consolidation of a pattern repeated across all seven <code>REQ-OAL-*-01X</code> "register_backend" entries (see the note above section 2.1) and intentionally do not appear as literal source tags.</p>
 <p>Regenerate the source-side list (<code>grep -rhoE "REQ-[A-Z]+-[A-Z]+-[0-9]+" include | sort -u</code>) whenever a module is added or changed, and update both this file and the source comment together — they are required to stay in sync by inspection, since there is currently no automated cross-check between the two (a natural next step: a CI script that fails if a <code>REQ-*</code> ID appears in code but not here, or vice versa, ignoring the documented <code>REQ-OAL-BACKEND-*</code> exception). </p>

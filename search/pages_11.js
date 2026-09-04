@@ -1,16 +1,14 @@
 var searchData=
 [
-  ['patterns_0',['Channel Topologies and Redundancy Patterns',['../vital_channel_topologies.html',1,'']]],
-  ['per_20feature_20directory_20layout_1',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
-  ['per_20libc_20memory_20primitive_2',['ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'']]],
-  ['per_20module_20feature_20selection_20at_20configure_20time_3',['ADR-024: Per-Module Feature Selection at Configure Time',['../md_docs_2architecture_2ADR-024-configurable-feature-build.html',1,'']]],
-  ['phase_20lock_20and_20single_20entry_20point_20enforcement_4',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
-  ['phase_20lock_20coverage_20extended_20to_20backend_20registration_20and_20remaining_20setup_20only_20constructors_5',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
-  ['plantuml_20doxygen_6',['Architecture Diagrams with PlantUML &amp; Doxygen',['../md_docs_2architecture_2DIAGRAMS__GUIDE.html',1,'']]],
-  ['point_20enforcement_7',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
-  ['portable_20mutual_20exclusion_20primitive_8',['ADR-033: sapi_mutex - a portable mutual-exclusion primitive',['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'']]],
-  ['posix_20linux_20oal_20backend_9',['ADR-018: A Real POSIX/Linux OAL Backend',['../md_docs_2architecture_2ADR-018-posix-oal-backend.html',1,'']]],
-  ['primitive_10',['primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive'],['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'ADR-033: sapi_mutex - a portable mutual-exclusion primitive']]],
-  ['process_20communication_20guide_11',['IPC (Inter-Process Communication) Guide',['../ipc_guide.html',1,'']]],
-  ['protocol_20and_20failover_20ready_20session_20state_12',['ADR-029: RBC Train/IL/CTC Scenario - Real Multi-Train Protocol and Failover-Ready Session State',['../md_docs_2architecture_2ADR-029-rbc-train-il-ctc-scenario.html',1,'']]]
+  ['oal_20backend_0',['ADR-018: A Real POSIX/Linux OAL Backend',['../md_docs_2architecture_2ADR-018-posix-oal-backend.html',1,'']]],
+  ['oal_20backend_20registration_20via_20callbacks_1',['ADR-005: OAL Backend Registration via Callbacks',['../md_docs_2architecture_2ADR-005-oal-backend-registration.html',1,'']]],
+  ['oal_20for_20the_20safe_20api_20framework_2',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
+  ['oal_20service_20for_20real_20time_20bring_20up_3',['ADR-035: &lt;tt&gt;sapi_platform&lt;/tt&gt; OAL service for real-time bring-up',['../md_docs_2architecture_2ADR-035-platform-realtime-init.html',1,'']]],
+  ['one_20link_20many_20trains_20up_20to_20100_4',['ADR-036: Train-session multiplexing - one link, many trains (up to 100)',['../md_docs_2architecture_2ADR-036-train-session-multiplexing.html',1,'']]],
+  ['one_20sanctioned_20call_20site_20per_20libc_20memory_20primitive_5',['ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'']]],
+  ['only_20constructors_6',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
+  ['os_20abstraction_20layer_20oal_20for_20the_20safe_20api_20framework_7',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
+  ['os_20backend_20header_20separation_8',['ADR-021: Consumer / OS-Backend Header Separation',['../md_docs_2architecture_2ADR-021-consumer-backend-header-split.html',1,'']]],
+  ['output_9',['ADR-034: Checkpoint-signature marks and stage-then-commit output',['../md_docs_2architecture_2ADR-034-checkpoint-signature-marks.html',1,'']]],
+  ['overview_10',['System Architecture Overview',['../system_architecture.html',1,'']]]
 ];

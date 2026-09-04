@@ -89,25 +89,25 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md290"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/memory/sapi_mem_util.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.2/§4).</p>
-<h1><a class="anchor" id="autotoc_md291"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md295"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/memory/sapi_mem_util.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.2/§4).</p>
+<h1><a class="anchor" id="autotoc_md296"></a>
 1. Context</h1>
 <p><code>safeAPIRBC2oo2</code> (downstream, separate repo) calls libc <code>memset()</code>/ <code>memcpy()</code>/<code>memcmp()</code> directly across ~25 of its own application files (~90 call sites) - fixed-size struct zeroing, buffer copies for the wire codecs, byte-for-byte session comparisons. This framework itself does the same in its own <code>src/</code>/<code>posix_backend</code> files. Direct <code>&lt;string.h&gt;</code> calls are not a MISRA rule violation on their own, but this project's own posture (this repo's <code>CLAUDE.md</code>: "no dynamic memory... prefer a checked
 conversion helper over a bare C-style cast") already favors a single, reviewed, intention-revealing wrapper over scattered direct libc calls for other primitives (<code><a class="el" href="structsapi__buffer__t.html" title="Mutable, bounds-tracked view over caller-owned storage.">sapi_buffer_t</a></code>'s own bounds-checked read/write helpers instead of raw pointer arithmetic being the closest existing precedent) - a downstream integrator asked for the same treatment here: route every fixed-size fill/copy/compare through one small framework header instead of <code>&lt;string.h&gt;</code> directly, so an audit for "does this
 codebase call libc memory functions directly" has exactly one file to check.</p>
 <p>No such wrapper exists in this framework today - <code><a class="el" href="sapi__memory_8h.html" title="OS Abstraction Layer - Static memory reservation service.">sapi_memory.h</a></code> is a fixed-block POOL ALLOCATOR (<code><a class="el" href="group__MEMORY.html#gaa81b76e31790a7e8576b88a4a5b0daf8" title="Reserves a fixed-size-block memory pool.">sapi_mem_pool_create()</a></code>/<code>_acquire()</code>/ <code>_release()</code>), a completely different concern (managing a bounded set of reusable blocks, not filling/copying/comparing bytes within one already- owned buffer) - confirmed by a repository-wide search finding no <code>sapi_mem_set</code>/<code>_copy</code>/<code>_compare</code>-shaped function anywhere.</p>
-<h1><a class="anchor" id="autotoc_md292"></a>
+<h1><a class="anchor" id="autotoc_md297"></a>
 2. Decision</h1>
-<h2><a class="anchor" id="autotoc_md293"></a>
+<h2><a class="anchor" id="autotoc_md298"></a>
 2.1 Three trivial wrappers, no "safe string library" scope creep</h2>
 <p><code>sapi_mem_set(dest, value, count)</code> / <code>sapi_mem_copy(dest, src, count)</code> / <code>sapi_mem_compare(a, b, count)</code> wrap <code>memset()</code>/<code>memcpy()</code>/<code>memcmp()</code> exactly, with no bounds-checking of their own (callers already own both buffers and their sizes - the same "caller-owned storage, no hidden
 state" convention this framework's own <code><a class="el" href="structsapi__buffer__t.html" title="Mutable, bounds-tracked view over caller-owned storage.">sapi_buffer_t</a></code> and every downstream <code>channel_ab_*</code> module already follow) and no variable-length text handling (<code>strcpy</code>/<code>strcat</code>/<code>strlen</code>-style functions are deliberately out of scope - this framework and every application built on it work in fixed-size buffers throughout, CLAUDE.md's "no malloc/free" rule, so there is no genuine need for a variable-length string primitive; adding one now would be speculative scope this ADR's own triggering request never asked for).</p>
-<h2><a class="anchor" id="autotoc_md294"></a>
+<h2><a class="anchor" id="autotoc_md299"></a>
 2.2 Header-only, no &lt;tt&gt;SAFEAPI_ENABLE_*&lt;/tt&gt; option</h2>
 <p>Same rationale as ADR-030 §2.3 (<code><a class="el" href="sapi__notify_8h.html" title="Fixed-capacity registered-callback list shape (ADR-030).">sapi_notify.h</a></code>): these are <code>static inline</code> wrappers with no OS dependency and no runtime state of their own</p><ul>
 <li>they belong alongside <code>sapi_buffer</code>/<code>sapi_types</code>/<code>sapi_notify</code> as an always-available foundational header, not an optional subsystem with its own <code>.c</code>/dependency-graph entry per ADR-024.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md295"></a>
+<h1><a class="anchor" id="autotoc_md300"></a>
 3. Consequences</h1>
 <ul>
 <li>Positive: every fixed-size fill/copy/compare in this framework and its downstream consumers can now route through one reviewed header instead of <code>&lt;string.h&gt;</code> directly - a single place to add, say, a debug-build canary-fill-on-free or a bounds assertion later, without touching every call site.</li>
@@ -116,14 +116,14 @@ state" convention this framework's own <code><a class="el" href="structsapi__buf
 <li>Negative: purely a naming/indirection layer - <code><a class="el" href="sapi__mem__util_8h.html#a65f14ef3990395910e5b58981e083e75" title="Fills count bytes starting at dest with value - the one sanctioned call site for libc memset() in thi...">sapi_mem_set()</a></code> behaves identically to <code>memset()</code>, so it adds no new safety property by itself; its value is entirely the "one call site to audit/extend later" argument in §3's first point, not a behavior change today.</li>
 <li>Neutral: does not touch <code><a class="el" href="sapi__memory_8h.html" title="OS Abstraction Layer - Static memory reservation service.">sapi_memory.h</a></code>'s own pool allocator, a genuinely different concern (§1) - both can coexist without confusion since their names are deliberately distinct (<code>sapi_mem_pool_*</code> vs. <code>sapi_mem_set</code>/<code>_copy</code>/<code>_compare</code>).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md296"></a>
+<h1><a class="anchor" id="autotoc_md301"></a>
 4. Verification</h1>
 <ul>
 <li>Standalone compile check (<code>gcc -std=c99 -Wall -Wextra -Wpedantic</code>, header include path only): clean, zero warnings.</li>
 <li><code>safeAPIRBC2oo2</code> (downstream consumer, separate repo): full clean rebuild plus <code>ctest</code> and <code>.claude/skills/run-safeAPIRBC2oo2/smoke.sh</code> matching its established baseline after every direct <code>&lt;string.h&gt;</code> call in that repo was replaced with these wrappers (pure mechanical substitution, no behavior change) - same "verify the downstream repo's
   own build" lesson ADR-025 §3 and ADR-030 §4 both already applied.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md297"></a>
+<h1><a class="anchor" id="autotoc_md302"></a>
 5. Location</h1>
 <ul>
 <li><code>include/safeapi/memory/sapi_mem_util.h</code> (new, header-only).</li>

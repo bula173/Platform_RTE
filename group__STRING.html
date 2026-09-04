@@ -156,6 +156,21 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3f27032a12d3808e4e9a8cdca613f885" id="r_ga3f27032a12d3808e4e9a8cdca613f885"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#ga3f27032a12d3808e4e9a8cdca613f885">sapi_string_from_i64</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, int64_t value)</td></tr>
 <tr class="memdesc:ga3f27032a12d3808e4e9a8cdca613f885"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 itoa equivalent for int64_t. Replaces dest's content.  <br /></td></tr>
 <tr class="separator:ga3f27032a12d3808e4e9a8cdca613f885"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga71b8829658e394a4ff551aa0225c8f08" id="r_ga71b8829658e394a4ff551aa0225c8f08"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08">sapi_string_append_u32</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, uint32_t value)</td></tr>
+<tr class="memdesc:ga71b8829658e394a4ff551aa0225c8f08"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 append of a uint32_t to dest's existing content (unlike <a class="el" href="group__STRING.html#gaeead25ce84c2e4efc7a7e887d3055e69" title="Bounded base-10 itoa equivalent for uint32_t. Replaces dest&#39;s content.">sapi_string_from_u32()</a>, which replaces it). Intended to replace <code>snprintf(buf, n, "...%u...", v)</code>-style line assembly with a checked, non-variadic, MISRA-clean primitive (ADR-006).  <br /></td></tr>
+<tr class="separator:ga71b8829658e394a4ff551aa0225c8f08"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5a5df05c4950d8d4d8dfbca037613b5" id="r_gab5a5df05c4950d8d4d8dfbca037613b5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#gab5a5df05c4950d8d4d8dfbca037613b5">sapi_string_append_i32</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, int32_t value)</td></tr>
+<tr class="memdesc:gab5a5df05c4950d8d4d8dfbca037613b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 append of an int32_t; a leading '-' is emitted for negative values. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>.  <br /></td></tr>
+<tr class="separator:gab5a5df05c4950d8d4d8dfbca037613b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7e6822b9c1d35703e77b615c357ddfbf" id="r_ga7e6822b9c1d35703e77b615c357ddfbf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#ga7e6822b9c1d35703e77b615c357ddfbf">sapi_string_append_u64</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, uint64_t value)</td></tr>
+<tr class="memdesc:ga7e6822b9c1d35703e77b615c357ddfbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 append of a uint64_t. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>.  <br /></td></tr>
+<tr class="separator:ga7e6822b9c1d35703e77b615c357ddfbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga538e723caef235144894bab7be9a882e" id="r_ga538e723caef235144894bab7be9a882e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#ga538e723caef235144894bab7be9a882e">sapi_string_append_i64</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, int64_t value)</td></tr>
+<tr class="memdesc:ga538e723caef235144894bab7be9a882e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 append of an int64_t; a leading '-' is emitted for negative values. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>.  <br /></td></tr>
+<tr class="separator:ga538e723caef235144894bab7be9a882e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga513932786107ee6477528f99807ac53c" id="r_ga513932786107ee6477528f99807ac53c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#ga513932786107ee6477528f99807ac53c">sapi_string_append_hex_u32</a> (<a class="el" href="structsapi__string__t.html">sapi_string_t</a> *dest, uint32_t value, uint8_t min_digits)</td></tr>
+<tr class="memdesc:ga513932786107ee6477528f99807ac53c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded append of a uint32_t formatted as lowercase hexadecimal (no "0x" prefix - the caller prepends a literal with <a class="el" href="group__STRING.html#ga5de695061db6cfd5906549905e12fb9d" title="Bounded strcat equivalent. Never calls strlen(src) - scans for a NUL only up to dest&#39;s remaining capa...">sapi_string_concat()</a> if wanted). Replaces <code>snprintf(..., "%02x", v)</code> / <code>"0x%x"</code>-style formatting.  <br /></td></tr>
+<tr class="separator:ga513932786107ee6477528f99807ac53c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab471bda7cfc02f0fa0bd4630d5f74602" id="r_gab471bda7cfc02f0fa0bd4630d5f74602"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__STRING.html#gab471bda7cfc02f0fa0bd4630d5f74602">sapi_string_to_u32</a> (const <a class="el" href="structsapi__string__t.html">sapi_string_t</a> *str, uint32_t *out_value)</td></tr>
 <tr class="memdesc:gab471bda7cfc02f0fa0bd4630d5f74602"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded base-10 atoi equivalent for uint32_t.  <br /></td></tr>
 <tr class="separator:gab471bda7cfc02f0fa0bd4630d5f74602"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -820,6 +835,213 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="ga71b8829658e394a4ff551aa0225c8f08" name="ga71b8829658e394a4ff551aa0225c8f08"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga71b8829658e394a4ff551aa0225c8f08">&#9670;&#160;</a></span>sapi_string_append_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_string_append_u32 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded base-10 append of a uint32_t to dest's existing content (unlike <a class="el" href="group__STRING.html#gaeead25ce84c2e4efc7a7e887d3055e69" title="Bounded base-10 itoa equivalent for uint32_t. Replaces dest&#39;s content.">sapi_string_from_u32()</a>, which replaces it). Intended to replace <code>snprintf(buf, n, "...%u...", v)</code>-style line assembly with a checked, non-variadic, MISRA-clean primitive (ADR-006). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dest</td><td>Destination string. Must not be NULL. Appended to on success; left unmodified on failure. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format and append. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM if dest is NULL or its backing buffer is invalid; SAPI_STATUS_RESOURCE_EXHAUSTED if the formatted digits do not fit dest's remaining capacity. REQ-COMMON-STR-029 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00501">501</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+
+</div>
+</div>
+<a id="gab5a5df05c4950d8d4d8dfbca037613b5" name="gab5a5df05c4950d8d4d8dfbca037613b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab5a5df05c4950d8d4d8dfbca037613b5">&#9670;&#160;</a></span>sapi_string_append_i32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_string_append_i32 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded base-10 append of an int32_t; a leading '-' is emitted for negative values. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dest</td><td>Destination string. Must not be NULL. Appended to on success; left unmodified on failure. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format and append. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. REQ-COMMON-STR-030 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00519">519</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+
+</div>
+</div>
+<a id="ga7e6822b9c1d35703e77b615c357ddfbf" name="ga7e6822b9c1d35703e77b615c357ddfbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7e6822b9c1d35703e77b615c357ddfbf">&#9670;&#160;</a></span>sapi_string_append_u64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_string_append_u64 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded base-10 append of a uint64_t. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dest</td><td>Destination string. Must not be NULL. Appended to on success; left unmodified on failure. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format and append. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. REQ-COMMON-STR-031 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00463">463</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+
+</div>
+</div>
+<a id="ga538e723caef235144894bab7be9a882e" name="ga538e723caef235144894bab7be9a882e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga538e723caef235144894bab7be9a882e">&#9670;&#160;</a></span>sapi_string_append_i64()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_string_append_i64 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded base-10 append of an int64_t; a leading '-' is emitted for negative values. See <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dest</td><td>Destination string. Must not be NULL. Appended to on success; left unmodified on failure. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format and append. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. REQ-COMMON-STR-032 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00476">476</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+
+</div>
+</div>
+<a id="ga513932786107ee6477528f99807ac53c" name="ga513932786107ee6477528f99807ac53c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga513932786107ee6477528f99807ac53c">&#9670;&#160;</a></span>sapi_string_append_hex_u32()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__STATUS.html#gacaa927d6005081fd4daff3d99df9ed83">sapi_status_t</a> sapi_string_append_hex_u32 </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structsapi__string__t.html">sapi_string_t</a> *&#160;</td>
+          <td class="paramname"><em>dest</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>min_digits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded append of a uint32_t formatted as lowercase hexadecimal (no "0x" prefix - the caller prepends a literal with <a class="el" href="group__STRING.html#ga5de695061db6cfd5906549905e12fb9d" title="Bounded strcat equivalent. Never calls strlen(src) - scans for a NUL only up to dest&#39;s remaining capa...">sapi_string_concat()</a> if wanted). Replaces <code>snprintf(..., "%02x", v)</code> / <code>"0x%x"</code>-style formatting. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">dest</td><td>Destination string. Must not be NULL. Appended to on success; left unmodified on failure. </td></tr>
+    <tr><td class="paramname">value</td><td>Value to format and append. </td></tr>
+    <tr><td class="paramname">min_digits</td><td>Minimum digit count, zero-padded on the left; clamped to the range 1..8 (0 is treated as 1, values &gt; 8 as 8). A value needing more than min_digits digits is emitted in full, never truncated. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#ga71b8829658e394a4ff551aa0225c8f08" title="Bounded base-10 append of a uint32_t to dest&#39;s existing content (unlike sapi_string_from_u32(),...">sapi_string_append_u32()</a>. REQ-COMMON-STR-033 </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00537">537</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+
+</div>
+</div>
 <a id="gab471bda7cfc02f0fa0bd4630d5f74602" name="gab471bda7cfc02f0fa0bd4630d5f74602"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab471bda7cfc02f0fa0bd4630d5f74602">&#9670;&#160;</a></span>sapi_string_to_u32()</h2>
 
@@ -856,7 +1078,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>SAPI_STATUS_OK; SAPI_STATUS_INVALID_PARAM if str is empty or contains a non-digit character; SAPI_STATUS_VALUE_OUT_OF_RANGE if the value does not fit uint32_t. REQ-COMMON-STR-025 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00538">538</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00700">700</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
 
 </div>
 </div>
@@ -896,7 +1118,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#gab471bda7cfc02f0fa0bd4630d5f74602" title="Bounded base-10 atoi equivalent for uint32_t.">sapi_string_to_u32()</a>. REQ-COMMON-STR-026 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00555">555</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00717">717</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
 
 </div>
 </div>
@@ -936,7 +1158,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#gab471bda7cfc02f0fa0bd4630d5f74602" title="Bounded base-10 atoi equivalent for uint32_t.">sapi_string_to_u32()</a>. REQ-COMMON-STR-027 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00424">424</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00586">586</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
 
 </div>
 </div>
@@ -976,7 +1198,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Same status contract as <a class="el" href="group__STRING.html#gab471bda7cfc02f0fa0bd4630d5f74602" title="Bounded base-10 atoi equivalent for uint32_t.">sapi_string_to_u32()</a>. REQ-COMMON-STR-028 </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00463">463</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="sapi__string_8c_source.html#l00625">625</a> of file <a class="el" href="sapi__string_8c_source.html">sapi_string.c</a>.</p>
 
 </div>
 </div>

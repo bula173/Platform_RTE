@@ -1,16 +1,10 @@
 var searchData=
 [
-  ['factory_20hiding_20ipc_20netlink_20from_20app_20code_0',['ADR-022: Unified &lt;tt&gt;sapi_safechannel&lt;/tt&gt; Factory (Hiding IPC/Netlink from App Code)',['../md_docs_2architecture_2ADR-022-unified-safechannel-factory.html',1,'']]],
-  ['failover_20ready_20session_20state_1',['ADR-029: RBC Train/IL/CTC Scenario - Real Multi-Train Protocol and Failover-Ready Session State',['../md_docs_2architecture_2ADR-029-rbc-train-il-ctc-scenario.html',1,'']]],
-  ['feature_20directory_20layout_2',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
-  ['feature_20selection_20at_20configure_20time_3',['ADR-024: Per-Module Feature Selection at Configure Time',['../md_docs_2architecture_2ADR-024-configurable-feature-build.html',1,'']]],
-  ['fix_4',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
-  ['fixed_20capacity_20registered_20callback_20list_20shape_5',['ADR-030: &lt;tt&gt;sapi_notify&lt;/tt&gt; - fixed-capacity registered-callback list shape',['../md_docs_2architecture_2ADR-030-registered-callback-list-shape.html',1,'']]],
-  ['for_20distributed_20vital_20channels_6',['ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels',['../md_docs_2architecture_2ADR-017-checkpoint-and-clock-sync.html',1,'']]],
-  ['for_20real_20time_20bring_20up_7',['ADR-035: &lt;tt&gt;sapi_platform&lt;/tt&gt; OAL service for real-time bring-up',['../md_docs_2architecture_2ADR-035-platform-realtime-init.html',1,'']]],
-  ['for_20redundant_20channels_8',['ADR-016: CRC-64 Data Integrity for Redundant Channels',['../md_docs_2architecture_2ADR-016-crc64-data-integrity.html',1,'']]],
-  ['for_20the_20safe_20api_20framework_9',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
-  ['for_20tt_20sapi_5fnetlink_20tt_10',['ADR-027: UDP Transport for &lt;tt&gt;sapi_netlink&lt;/tt&gt;',['../md_docs_2architecture_2ADR-027-udp-netlink-transport.html',1,'']]],
-  ['framework_11',['framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework'],['../index.html',1,'Safe API Framework']]],
-  ['from_20app_20code_12',['ADR-022: Unified &lt;tt&gt;sapi_safechannel&lt;/tt&gt; Factory (Hiding IPC/Netlink from App Code)',['../md_docs_2architecture_2ADR-022-unified-safechannel-factory.html',1,'']]]
+  ['endianness_20safe_20buffer_20access_0',['ADR-006: Safe String Manipulation and Endianness-Safe Buffer Access',['../md_docs_2architecture_2ADR-006-string-and-endian-buffer-access.html',1,'']]],
+  ['enforcement_1',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
+  ['entry_20point_20enforcement_2',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
+  ['escalation_20to_20reboot_20and_20a_20cyclic_20executive_20starvation_20fix_3',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
+  ['exclusion_20primitive_4',['ADR-033: sapi_mutex - a portable mutual-exclusion primitive',['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'']]],
+  ['executive_20starvation_20fix_5',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
+  ['extended_20to_20backend_20registration_20and_20remaining_20setup_20only_20constructors_6',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]]
 ];

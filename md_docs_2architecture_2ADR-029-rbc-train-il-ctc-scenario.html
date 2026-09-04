@@ -162,8 +162,29 @@ ONLINE" is inferred purely from which site actually answers (a STANDBY site's C 
 </ul>
 </li>
 <li><code>docker-compose.yml</code> (Train/IL/CTC env vars + control-port host mappings)</li>
-<li><code>tests/robot/rbc_scenario/</code> (new scenario test suite), <code>tests/robot/supportFunctions/*.resource</code> (Train/IL/CTC/RBC-common keyword libraries backing it and every other tests/robot/ suite) </li>
+<li><code>tests/robot/rbc_scenario/</code> (new scenario test suite), <code>tests/robot/supportFunctions/*.resource</code> (Train/IL/CTC/RBC-common keyword libraries backing it and every other tests/robot/ suite)</li>
 </ul>
+<h1><a class="anchor" id="autotoc_md281"></a>
+Addendum (2026-08-28) - chunked, active-only state transfer for up to 100 trains (ADR-036)</h1>
+<p>ADR-036 raises the concurrently-tracked train ceiling from 2 to 100 and multiplexes all trains onto one simulator&lt;-&gt;RBC link per relay kind. Two parts of §2 change; everything else in this ADR stands.</p>
+<h2><a class="anchor" id="autotoc_md282"></a>
+A. §2.3 session table - fixed size stays, live count is runtime</h2>
+<p><code>SAFEAPI_EXAMPLE_MAX_TRAINS</code> becomes 100 and remains the compile-time size of every <code>session[]</code> / <code>peer_sessions[]</code> array (no-malloc rule intact). The number of trains a process actually services is a <b>runtime</b> value - <code>SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS</code> (2), overridable by the <code>SAPI_RBC_ACTIVE_TRAINS</code> environment variable, clamped <code>1..MAX_TRAINS</code>. Per-train loops in <code>C</code> and <code>A/B</code> iterate <code>0 .. active-1</code>. It is not a wire field; each process reads it independently. Trains are identified solely by <code>train_id</code> (nid_engine); the ADR-029 <code>west/east == slot</code> coupling is dropped (see ADR-036 §5).</p>
+<h2><a class="anchor" id="autotoc_md283"></a>
+B. §2.4 cross-site transfer - the full snapshot no longer fits one vital frame</h2>
+<p><code>SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE</code> + <code>SAFEAPI_EXAMPLE_DB_WIRE_SIZE</code> encoded the whole session + whole runtime-route table every cycle inside one <code><a class="el" href="structsapi__vital__message__t.html" title="Vital channel message with integrated CRC-64.">sapi_vital_message_t</a></code> (248-byte payload, <code>uint8_t</code> size field). At 100 trains that is ~8.3 kB. Revised encoding:</p>
+<ul>
+<li>Only <code>in_use</code> sessions and <code>in_use</code> runtime routes are encoded; a silent train contributes nothing.</li>
+<li>The active set is transmitted as a round-robin <b>window</b> of <code>SAFEAPI_EXAMPLE_SITE_XFER_WINDOW</code> sessions (+ a matching route window) per cycle. <code>SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE</code> / <code>_DB_WIRE_SIZE</code> are recomputed from <code>WINDOW</code> and <code>_Static_assert</code>-ed <code>&lt;= 248</code>.</li>
+<li>The peer's session table converges within <code>ceil(active_trains / WINDOW)</code> cycles. Each windowed frame carries its base index and count so the receiver applies it to the right slots and never treats "not in this window" as "session ended".</li>
+</ul>
+<h2><a class="anchor" id="autotoc_md284"></a>
+C. REQ-RBC-029A - promotion during an incomplete sweep</h2>
+<p>A STANDBY promoted to ONLINE before a full sweep completed holds a <b>bounded-partial</b> table: every session it has received is authoritative and answered normally; a <code>train_id</code> not yet swept is handled by the existing new-train path (treated as a fresh P0 on its next M136, which re-establishes the session within one cycle). Trains present in a prior <em>completed</em> sweep see unbroken continuity; a train that connected within the last incomplete sweep may see one delayed cycle. This bounded relaxation replaces ADR-029 §2.4's "the promoted
+site must already know every connected train" - an unbounded snapshot inside a fixed vital frame is not achievable, and the convergence bound is analysable (window size x cycle period). Verification: ADR-036 §3 items 2-3.</p>
+<h2><a class="anchor" id="autotoc_md285"></a>
+D. Location delta (post GP/GA/SA split)</h2>
+<p>The paths in §4 predate the <code>safeAPIRBC2oo2</code> -&gt; <code>safeAPIRBC2oo2GP/GA/SA</code> split. Current equivalents: <code>channel_ab*</code> -&gt; <code>safeAPIRBC2oo2GP/src/application/AB/GP/com/ab_gp_channel*</code>; <code>monitor_c*</code> -&gt; <code>safeAPIRBC2oo2GP/src/application/C/{gateway_c*,monitor_c*}</code>; <code>src/application/{rbc_wire_types.h,common_config.h,site_config.*}</code> -&gt; <code>safeAPIRBC2oo2GP/src/application/{AB,C}/common/</code>; <code>sims/*.py</code> -&gt; the <code>SimCore</code> + <code>TrainRBCSim</code>/<code>ILRBCSim</code>/<code>CTCRBCSim</code> projects; <code>tests/robot/</code> -&gt; <code>safeAPIRBC2oo2TestEnv/robot/</code>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->

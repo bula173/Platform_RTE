@@ -1,10 +1,14 @@
 var searchData=
 [
-  ['endianness_20safe_20buffer_20access_0',['ADR-006: Safe String Manipulation and Endianness-Safe Buffer Access',['../md_docs_2architecture_2ADR-006-string-and-endian-buffer-access.html',1,'']]],
-  ['enforcement_1',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
-  ['entry_20point_20enforcement_2',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
-  ['escalation_20to_20reboot_20and_20a_20cyclic_20executive_20starvation_20fix_3',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
-  ['exclusion_20primitive_4',['ADR-033: sapi_mutex - a portable mutual-exclusion primitive',['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'']]],
-  ['executive_20starvation_20fix_5',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
-  ['extended_20to_20backend_20registration_20and_20remaining_20setup_20only_20constructors_6',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]]
+  ['data_20buffer_20abstraction_0',['ADR-002: Cross-Layer Data Buffer Abstraction',['../md_docs_2architecture_2ADR-002-cross-layer-data-buffers.html',1,'']]],
+  ['data_20integrity_20for_20redundant_20channels_1',['ADR-016: CRC-64 Data Integrity for Redundant Channels',['../md_docs_2architecture_2ADR-016-crc64-data-integrity.html',1,'']]],
+  ['decomposition_20into_20per_20client_20type_20service_20binaries_2',['ADR-037: Role C gateway - decomposition into per-client-type service binaries',['../md_docs_2architecture_2ADR-037-role-c-gateway-decomposition.html',1,'']]],
+  ['diagrams_20with_20plantuml_20doxygen_3',['Architecture Diagrams with PlantUML &amp; Doxygen',['../md_docs_2architecture_2DIAGRAMS__GUIDE.html',1,'']]],
+  ['directory_20layout_4',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
+  ['distributed_20vital_20channels_5',['ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels',['../md_docs_2architecture_2ADR-017-checkpoint-and-clock-sync.html',1,'']]],
+  ['diversity_6',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]],
+  ['down_20escalation_20to_20reboot_20and_20a_20cyclic_20executive_20starvation_20fix_7',['ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix',['../md_docs_2architecture_2ADR-028-channel-down-reboot-and-executive-starvation-fix.html',1,'']]],
+  ['doxygen_8',['Architecture Diagrams with PlantUML &amp; Doxygen',['../md_docs_2architecture_2DIAGRAMS__GUIDE.html',1,'']]],
+  ['dual_20channel_20vital_20architecture_20—_20ccf_20mitigation_20via_20build_20diversity_9',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]],
+  ['dual_20transfer_20state_20negotiation_20tt_20sapi_5fdual_20tt_10',['ADR-020: Dual-Transfer State Negotiation (&lt;tt&gt;sapi_dual&lt;/tt&gt;)',['../md_docs_2architecture_2ADR-020-dual-transfer-state-negotiation.html',1,'']]]
 ];

@@ -89,17 +89,17 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-033: sapi_mutex - a portable mutual-exclusion primitive</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md305"></a> </p>
-<h1><a class="anchor" id="autotoc_md306"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md310"></a> </p>
+<h1><a class="anchor" id="autotoc_md311"></a>
 Status</h1>
 <p>Accepted</p>
-<h1><a class="anchor" id="autotoc_md307"></a>
+<h1><a class="anchor" id="autotoc_md312"></a>
 Context</h1>
 <p>safeAPIRBC2oo2 (the reference application built on this framework) guards a netlink handle shared between its own cyclic-executive thread and a background relay-rx task with a mutex (<code>ctx-&gt;peer_send_mutex</code>, used by <code>channel_ab_checkpoint.c</code>'s own checkpoint send/recv adapter and <code>channel_ab_io.c</code>'s own peer-sample/relay-envelope/site-state sends). Found live, during an architecture review of every "backend"-named symbol the application uses: that mutex was declared as a raw <code>pthread_mutex_t</code> and manipulated with <code>pthread_mutex_init()</code>/<code>_lock()</code>/ <code>_unlock()</code>/<code>_destroy()</code> directly, with <code>&lt;pthread.h&gt;</code> included straight into an <em>application</em> header (<code>channel_ab_types.h</code>), not confined to a POSIX-backend implementation file.</p>
 <p>This violates this project's own foundational premise (ADR-001/ADR-005): an application built on safeAPIFreamwork should depend only on this framework's own OS-Abstraction-Layer API, never on a specific platform's threading primitives directly - the whole point of the backend-dispatch pattern every other OAL service (<code>sapi_timer</code>, <code>sapi_task</code>, <code>sapi_ipc</code>, <code>sapi_netlink</code>, ...) already follows is that swapping the platform/RTOS underneath an application should mean swapping <em>one backend registration call</em>, not auditing every application source file for platform-specific API usage. A <code>pthread_mutex_t</code> baked into an application-level struct defeats that guarantee outright: porting this application to a target with no pthreads (a bare-metal RTOS, for instance) would require rewriting application code, not just registering a different backend.</p>
 <p>Checked before deciding on a fix: does safeAPIFreamwork already expose <em>any</em> portable synchronization primitive under a different name (a critical-section API bundled into <code>sapi_task</code>, for instance)? It does not - the OAL surface (<code>clocksync</code>/<code>ipc</code>/<code>log</code>/<code>memory</code>/<code>netlink</code>/<code>nvm</code>/ <code>reboot</code>/<code>task</code>/<code>timer</code>) has no mutex/lock/semaphore module at all. So this is not "the application should have called an existing framework
 function instead" - the framework itself was missing the primitive, the same gap-class ADR-031 (<code>sapi_mem_util</code>, for <code>&lt;string.h&gt;</code>) and ADR-026/032 (<code>sapi_lifecycle</code>, for setup-phase gating) already closed this project's history.</p>
-<h1><a class="anchor" id="autotoc_md308"></a>
+<h1><a class="anchor" id="autotoc_md313"></a>
 Decision</h1>
 <p>Add <code>sapi_mutex</code> as a new OAL-layer service, following the exact same consumer/backend split every other OAL service uses (ADR-021):</p>
 <ul>
@@ -115,20 +115,20 @@ Decision</h1>
 <p>The POSIX backend implementation (<code>sapi_posix_backend_mutex.c</code>, a thin wrapper over <code>pthread_mutex_init()</code>/<code>_lock()</code>/<code>_unlock()</code>/<code>_destroy()</code>) lives in safeAPIRBC2oo2's own <code>src/posix_backend/</code>, not in safeAPIFreamwork - matching every other OAL backend's location per ADR-018's own "a backend is integrator-supplied, not part of the
 reusable framework" philosophy. This is exactly where <code>pthread_mutex_t</code> usage belongs: confined to the one file whose entire job is adapting a specific platform to this framework's portable API, never leaking into application code above it.</p>
 <p>safeAPIRBC2oo2's own <code>channel_ab_types.h</code>/<code>channel_ab.c</code>/ <code>channel_ab_checkpoint.c</code>/<code>channel_ab_io.c</code> were migrated to <code>sapi_mutex_handle_t</code> + <code>sapi_mutex_storage_t</code>, dropping <code>&lt;pthread.h&gt;</code> from application code entirely (the one remaining <code>pthread_join()</code> use inside <code><a class="el" href="group__TASK.html#ga9420b4f76a7ad6c8c076dba4c8b20785" title="Terminates and destroys a task.">sapi_task_destroy()</a></code>'s own doc-comment cross-reference is a framework-internal detail the application only reads about, not calls directly).</p>
-<h1><a class="anchor" id="autotoc_md309"></a>
+<h1><a class="anchor" id="autotoc_md314"></a>
 Consequences</h1>
 <ul>
 <li>Every application built on this framework now has a portable mutex available without reaching for platform threading primitives directly.</li>
 <li>The POSIX backend's own <code>sapi_posix_backend_register_all()</code> gained one more call (<code>sapi_mutex_register_backend(sapi_posix_backend_mutex())</code>); any other backend integrator adding a new target must do the same.</li>
 <li><code>channel_ab_negotiate.c</code>'s own direct <code>select()</code>/<code>read()</code> on <code>STDIN_FILENO</code> (the interactive <code>ASK_USER</code> transfer-policy prompt) was reviewed in the same pass and found to be a second, separate instance of the same class of violation - deliberately left out of this ADR's scope; it has no framework equivalent to migrate to yet (no portable console/stdin abstraction exists) and was called out to the user as an explicitly separate, not-yet-scoped follow-up.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md310"></a>
+<h1><a class="anchor" id="autotoc_md315"></a>
 Verification</h1>
 <ul>
 <li>safeAPIFreamwork: full clean rebuild + <code>ctest</code> (matching the existing suite's own pass/fail baseline - no test added specifically for <code>sapi_mutex</code> beyond compilation, matching <code>sapi_timer</code>'s own precedent of relying on downstream consumers, not a dedicated unit test, since the backend dispatch logic is identical in shape to every other already-tested OAL service).</li>
 <li>safeAPIRBC2oo2: full clean rebuild + <code>ctest</code>, <code>smoke.sh</code>, and the real Docker-based <code>safeAPITestEnv</code> Robot Framework suite, after migrating off <code>pthread_mutex_t</code> - confirmed no behavior change (the POSIX mutex backend's own locking semantics are identical to what the application called directly before, just routed through the OAL dispatch layer).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md311"></a>
+<h1><a class="anchor" id="autotoc_md316"></a>
 Location</h1>
 <ul>
 <li><code>include/safeapi/mutex/sapi_mutex.h</code></li>

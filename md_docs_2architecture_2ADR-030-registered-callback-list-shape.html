@@ -89,29 +89,29 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-030: &lt;tt&gt;sapi_notify&lt;/tt&gt; - fixed-capacity registered-callback list shape</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md281"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/notify/sapi_notify.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.3/§5).</p>
-<h1><a class="anchor" id="autotoc_md282"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md286"></a> Status: Accepted Date: 2026-08-20 Applies to: new <code>include/safeapi/notify/sapi_notify.h</code> (header-only, no <code>src/</code>, no <code>SAFEAPI_ENABLE_*</code> option, no <code>tests/</code> executable of its own - see §2.3/§5).</p>
+<h1><a class="anchor" id="autotoc_md287"></a>
 1. Context</h1>
 <p><code>safeAPIRBC2oo2</code> (downstream, separate repo) is introducing a GA/GP split inside its A/B redundant-channel application: a "GP" orchestrator module (the cyclic train-route connect sweep) needs to (a) ask its registered "GA" peers "is this proposed action OK" before proceeding - a veto gate, every registered peer must agree - and (b) separately tell its registered GA peers "this happened" once it has - a fan-out notification, no return value. Today it does neither: it <code>#include</code>s its peer module's header directly and calls its functions by name, the same tight compile-time coupling ADR-025's own §1 context flags for <code>channel_ab_crosscompare.c</code> before that ADR - "already reimplemented
 outside the framework because no equivalent primitive existed here." The same trigger applies again: no registered-callback list primitive exists in this framework, so a downstream project reaches for a hand-rolled one.</p>
 <p>A repository-wide search confirmed this is a genuine gap, not a naming mismatch: <code>sapi_channel_t</code>/<code>sapi_voter_t</code>/<code>sapi_cross_comparator_t</code> each carry a single, concretely-typed callback field per config (<code>sapi_voter_compare_fn</code>, <code>on_disagreement</code>, ...) - none register a bounded LIST of N independently-registered <code>{callback, context}</code> pairs. <code>sapi_ipc_pubsub</code> is structurally the closest cousin (<code>_topic_create</code>/ <code>_subscribe</code>/<code>_publish</code>) but a different shape entirely - subscribers poll a bounded async queue (<code>sapi_ipc_pubsub_receive</code> with a timeout), not a synchronous callback invocation - wrong fit for a same-cycle "ask before proceeding" gate or an immediate "tell everyone now" notification, both of which need to resolve within the same call, not on a later poll.</p>
 <p><code>docs/MISRA_COMPLIANCE_REPORT.md</code> Rule 11.1 ("Conversions shall not be
 performed between a pointer to a function and any other type") rules out the obvious type-erased design (store callbacks as <code>void *</code>, cast back to the real signature at dispatch) outright - a genuinely generic, signature-agnostic dispatcher is not an option here the way it might be in a non-MISRA codebase.</p>
-<h1><a class="anchor" id="autotoc_md283"></a>
+<h1><a class="anchor" id="autotoc_md288"></a>
 2. Decision</h1>
-<h2><a class="anchor" id="autotoc_md284"></a>
+<h2><a class="anchor" id="autotoc_md289"></a>
 2.1 Storage-shape macro only, no generated control flow</h2>
 <p><code><a class="el" href="group__NOTIFY.html#gac3f7c52664cf56fba61219373ed6bf2c" title="Declares a fixed-capacity list of {callback, context} slots for one concretely-typed callback functio...">SAFEAPI_DECLARE_CALLBACK_LIST(list_type, callback_fn_type, max_subscribers)</a></code> declares <code>list_type_slot_t</code> (<code>{callback_fn_type fn; void *context;}</code>) and <code>list_type</code> (<code>{list_type_slot_t slots[max_subscribers]; uint32_t count;}</code>)</p><ul>
 <li>nothing else. Every existing macro in this framework (<code>SAFEAPI_DECLARE_STORAGE</code>, <code><a class="el" href="sapi__types_8h.html" title="Common fixed-width types and the caller-owned-storage handle pattern used by every OAL service (see A...">sapi_types.h</a></code>) declares a TYPE only, never control flow; this stays consistent rather than introducing the framework's first macro-generated loop/conditional, which would need either <code>__VA_ARGS__</code>-based dispatch (poor MISRA posture - hidden control flow inside a function-like macro, awkward to trace/review) or the <code>void *</code> type-erasure §1 already rules out.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md285"></a>
+<h2><a class="anchor" id="autotoc_md290"></a>
 2.2 Init/register/dispatch are hand-written per call site, not generated</h2>
 <p>Each concrete instantiation gets its own small, ordinary <code>list_type_init()</code>/<code>_register()</code>/dispatch function, following the worked example in <code><a class="el" href="sapi__notify_8h.html" title="Fixed-capacity registered-callback list shape (ADR-030).">sapi_notify.h</a></code>'s own header doc. <code>_register()</code> calls <code><a class="el" href="group__LIFECYCLE.html#ga5e18e5edf28983f151a3d58d6edfb791" title="Convenience check for a setup-only constructor: call this as one of the first checks in any function ...">sapi_lifecycle_check_setup_allowed()</a></code> as its first check, mirroring every other setup-only constructor in this framework (<code><a class="el" href="group__TIMER.html#ga7ec1f35543b16aaf3fe24c7ad7ae55dc" title="Creates a timer bound to caller-owned storage. Does not start it.">sapi_timer_create()</a></code>, <code><a class="el" href="group__voter.html#gac02cb7c3021b1c4dd28125f69b5f7d54" title="Initializes a voter with zero registered channels.">sapi_voter_init()</a></code>/<code>_register_channel()</code>, <code><a class="el" href="group__cross__comparator.html#ga8accab55c6bca5025c11575f7d5e7cfa" title="Initializes a cross-comparator with zero registered channels.">sapi_cross_comparator_init()</a></code>/<code>_register_channel()</code>, <code><a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8" title="Create a watchdog.">sapi_watchdog_create()</a></code>) - registering a callback is exactly the same kind of INIT-phase-only resource construction ADR-026 already gates. A veto-gate dispatch function returns <code>false</code> if ANY registered validator returns <code>false</code>, <b>and if zero validators are registered</b> (fail-safe default-deny: nothing is authorized without an explicit, registered authority - the safety-appropriate default for code that will run in a SIL2/SIL3 context). A fan-out notify dispatch function NULL-guards every slot before calling it, the same "same function
 pointer type, same call site, same NULL-guard" precedent <code><a class="el" href="group__WATCHDOG.html#gaa459a30f525834a12cad00a0f40f15b8" title="Create a watchdog.">sapi_watchdog_create()</a></code> already established (per <code>docs/MISRA_COMPLIANCE_REPORT.md</code>'s own note on that function).</p>
-<h2><a class="anchor" id="autotoc_md286"></a>
+<h2><a class="anchor" id="autotoc_md291"></a>
 2.3 Header-only, no &lt;tt&gt;SAFEAPI_ENABLE_*&lt;/tt&gt; option</h2>
 <p>Unlike <code>sapi_voter</code>/<code>sapi_cross_comparator</code> (full runtime modules with their own <code>.c</code>, own enable flag, own dependency-graph entry per ADR-024), this is a single header-only macro with zero runtime code of its own - the actual logic lives in each caller's own hand-written functions (§2.2), which compile as part of that caller's own translation unit. It belongs alongside <code>sapi_buffer</code>/<code>sapi_types</code> as an always-available foundational header, not as an optional subsystem a consuming project opts into.</p>
-<h1><a class="anchor" id="autotoc_md287"></a>
+<h1><a class="anchor" id="autotoc_md292"></a>
 3. Consequences</h1>
 <ul>
 <li>Positive: gives <code>safeAPIRBC2oo2</code> (and any future integrator with the same "ask before proceeding" / "tell everyone after" need) a shared, reviewed storage shape instead of a fully hand-rolled one, without introducing macro-generated control flow or MISRA Rule 11.1-violating type erasure into this framework.</li>
@@ -119,13 +119,13 @@ pointer type, same call site, same NULL-guard" precedent <code><a class="el" hre
 <li>Negative: less "free" than a fully-generated dispatcher would be - every call site still hand-writes ~15 lines of init/register/dispatch. Judged acceptable (§2.1) given the MISRA constraint leaves no cleaner alternative; the shared storage shape is still real, non-trivial value (bounds-checked capacity, consistent NULL-guard/lifecycle-lock posture across every instantiation).</li>
 <li>Neutral: this ADR does not itself change any existing module - <code>sapi_channel</code>/<code>sapi_voter</code>/<code>sapi_cross_comparator</code>'s own single-typed- callback-per-config shape is unaffected and remains the right choice for their own conceptually-single-slot use cases (ADR-025 §2.3's own "keep conceptually distinct relationships as separate types" applies here too: a registered-callback LIST is a different concept from a single configured callback, not a generalization that should replace it).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md288"></a>
+<h1><a class="anchor" id="autotoc_md293"></a>
 4. Verification</h1>
 <ul>
 <li>Standalone compile check (<code>gcc -std=c99 -Wall -Wextra -Wpedantic</code>, header include path only) of a worked instantiation matching <code><a class="el" href="sapi__notify_8h.html" title="Fixed-capacity registered-callback list shape (ADR-030).">sapi_notify.h</a></code>'s own doc example: clean, zero warnings.</li>
 <li><code>safeAPIRBC2oo2</code> (downstream consumer, separate repo): full clean rebuild after wiring its new GA/GP callback lists against this header, plus <code>.claude/skills/run-safeAPIRBC2oo2/smoke.sh</code> matching its established baseline (no behavior change - the GA/GP notification path is additive/logging-only this pass, per that project's own design decision) - lesson from ADR-025 §3 applied directly: verify the downstream repo's own build, not just this repo's.</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md289"></a>
+<h1><a class="anchor" id="autotoc_md294"></a>
 5. Location</h1>
 <ul>
 <li><code>include/safeapi/notify/sapi_notify.h</code> (new, header-only).</li>

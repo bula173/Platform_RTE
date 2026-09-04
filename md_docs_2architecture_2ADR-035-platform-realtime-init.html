@@ -89,17 +89,17 @@ $(function() {
   <div class="headertitle"><div class="title">ADR-035: &lt;tt&gt;sapi_platform&lt;/tt&gt; OAL service for real-time bring-up</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md317"></a> </p>
-<h1><a class="anchor" id="autotoc_md318"></a>
+<div class="textblock"><p><a class="anchor" id="autotoc_md322"></a> </p>
+<h1><a class="anchor" id="autotoc_md323"></a>
 Status</h1>
 <p>Accepted</p>
-<h1><a class="anchor" id="autotoc_md319"></a>
+<h1><a class="anchor" id="autotoc_md324"></a>
 Context</h1>
 <p><code>safeAPIRBC2oo2GP</code>'s process startup (<code>app_main_common.c</code>, both the AB and C variants) called <code>sapi_posix_backend_init_realtime(80U)</code> directly - a symbol exported by <code>safeAPIBackendPosix</code>, not by <code>safeAPIFreamwork</code>. That is a layering violation: ADR-001 §3.5 and ADR-005 require application code to reach the OS <em>only</em> through the framework's OAL API, with the single exception of the composition-root wiring that registers a concrete backend (<code>sapi_*_register_backend()</code>). <code>sapi_posix_backend_init_realtime()</code> is not registration - it is behaviour (POSIX <code>mlockall()</code> + <code>SCHED_FIFO</code>) the application was invoking by reaching around the framework, and there was no OAL API for it to use instead.</p>
 <p>It also hid a real bug. The POSIX implementation called <code>mlockall(MCL_CURRENT | MCL_FUTURE)</code> and treated only <em>failure</em> of that call as noteworthy. On a host with a bounded <code>RLIMIT_MEMLOCK</code> (a stock Ubuntu VM: 8 MiB soft/hard cap) the call <em>succeeds</em>, and <code>MCL_FUTURE</code> then forces every subsequent mapping - including each new 8 MiB thread stack - to be locked. The next <code>pthread_create()</code> fails with <code>EAGAIN</code>, so <code>sapi_timer</code>'s backend cannot start its cyclic-timer thread, <code>sapi_appmanager</code> init fails with <code>INTERNAL_ERROR</code>, and every RBC process exits at startup. 13 of 16 end-to-end scenario tests failed as a result, all with the same downstream symptom (no RBC indications ever produced).</p>
-<h1><a class="anchor" id="autotoc_md320"></a>
+<h1><a class="anchor" id="autotoc_md325"></a>
 Decision</h1>
-<h2><a class="anchor" id="autotoc_md321"></a>
+<h2><a class="anchor" id="autotoc_md326"></a>
 1. New OAL service &lt;tt&gt;sapi_platform&lt;/tt&gt; (framework)</h2>
 <p>A minimal validate-then-dispatch service in the same shape as <code>sapi_reboot</code> (ADR-004/005) and split consumer/backend headers per ADR-021:</p>
 <ul>
@@ -110,7 +110,7 @@ Decision</h1>
 </ul>
 <p>The name is <code>platform</code>, not <code>realtime</code>, so the one service can absorb other one-shot platform bring-up concerns later without another ADR; the only operation today is <code>realtime_init</code>.</p>
 <p><code>realtime_init</code> is defined as <b>best-effort</b> (REQ-OAL-PLATFORM-001): a backend that cannot get RT scheduling or full memory residency still returns <code>SAPI_STATUS_OK</code> - and, critically, must not leave the process unable to create threads afterwards. That last clause is what the POSIX backend's old code violated.</p>
-<h2><a class="anchor" id="autotoc_md322"></a>
+<h2><a class="anchor" id="autotoc_md327"></a>
 2. POSIX implementation moves behind the vtable (&lt;tt&gt;safeAPIBackendPosix&lt;/tt&gt;)</h2>
 <ul>
 <li>New <code>src/sapi_posix_backend_platform.c</code>: the <code>mlockall</code> / stack pre-fault / <code>SCHED_FIFO</code> body moves here from <code>sapi_posix_backend.c::sapi_posix_backend_init_realtime()</code>, as the <code>realtime_init</code> vtable function, plus a <code>sapi_posix_backend_platform()</code> accessor (matching <code>sapi_posix_backend_timer()</code> etc.).</li>
@@ -118,10 +118,10 @@ Decision</h1>
 <li>The old public <code>sapi_posix_backend_init_realtime()</code> is <b>removed</b> - it had exactly one caller (GP), now migrated.</li>
 </ul>
 <p><b>The <code>RLIMIT_MEMLOCK</code> fix</b>: before <code>mlockall</code>, the backend now calls <code>getrlimit(RLIMIT_MEMLOCK)</code>. If the limit is not <code>RLIM_INFINITY</code>, it locks with <code>MCL_CURRENT</code> only (never <code>MCL_FUTURE</code>) and logs a WARNING explaining why. A privileged / <code>memlock=unlimited</code> deployment is unaffected and still gets <code>MCL_CURRENT | MCL_FUTURE</code>; an unprivileged dev/CI host keeps its current footprint resident but no longer poisons later thread creation.</p>
-<h2><a class="anchor" id="autotoc_md323"></a>
+<h2><a class="anchor" id="autotoc_md328"></a>
 3. GP calls the framework</h2>
 <p><code>app_main_common.c</code> (AB and C) replaces <code>sapi_posix_backend_init_realtime(80U)</code> with <code>sapi_platform_realtime_init(80U)</code> and includes <code><a class="el" href="sapi__platform_8h.html" title="OS Abstraction Layer - Real-time platform configuration service (ADR-035).">safeapi/oal/platform/sapi_platform.h</a></code>. It still includes <code>sapi_posix_backend.h</code> for <code>sapi_posix_backend_register_all()</code> and <code>sapi_posix_backend_reboot_set_argv()</code> - those are the sanctioned composition-root wiring; the RT call no longer is.</p>
-<h1><a class="anchor" id="autotoc_md324"></a>
+<h1><a class="anchor" id="autotoc_md329"></a>
 Consequences</h1>
 <ul>
 <li>Application code no longer invokes any <code>safeAPIBackendPosix</code> <em>behaviour</em> symbol - only the registration seam. <code>sapi_posix_backend_channel_service_register_resolver()</code> (in <code>gateway_c.c</code> / <code>ab_gp_channel.c</code>) and <code>sapi_posix_backend_reboot_set_argv()</code> are the remaining direct backend touches; folding those behind framework seams is left as follow-up work, out of scope here.</li>

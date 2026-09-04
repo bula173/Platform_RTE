@@ -1,17 +1,15 @@
 var searchData=
 [
-  ['manager_20integration_20with_20channels_0',['App Manager Integration with Channels',['../appmanager_integration.html',1,'']]],
-  ['manipulation_20and_20endianness_20safe_20buffer_20access_1',['ADR-006: Safe String Manipulation and Endianness-Safe Buffer Access',['../md_docs_2architecture_2ADR-006-string-and-endian-buffer-access.html',1,'']]],
-  ['marks_20and_20stage_20then_20commit_20output_2',['ADR-034: Checkpoint-signature marks and stage-then-commit output',['../md_docs_2architecture_2ADR-034-checkpoint-signature-marks.html',1,'']]],
-  ['memory_20architecture_3',['Non-Volatile Memory Architecture',['../nvm_architecture.html',1,'']]],
-  ['memory_20module_20architecture_4',['Memory Module - Architecture',['../memory_architecture.html',1,'']]],
-  ['memory_20module_20user_20guide_5',['Memory Module - User Guide',['../memory_user_guide.html',1,'']]],
-  ['memory_20primitive_6',['ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'']]],
-  ['memory_20user_20guide_7',['Non-Volatile Memory User Guide',['../nvm_user_guide.html',1,'']]],
-  ['mitigation_20via_20build_20diversity_8',['ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity',['../md_docs_2architecture_2ADR-008-dual-channel-ccf-mitigation.html',1,'']]],
-  ['module_20architecture_9',['module architecture',['../buffer_architecture.html',1,'Buffer Module - Architecture'],['../cast_architecture.html',1,'Cast Module - Architecture'],['../checksum_architecture.html',1,'Checksum Module - Architecture'],['../log_architecture.html',1,'Log Module - Architecture'],['../memory_architecture.html',1,'Memory Module - Architecture'],['../reboot_architecture.html',1,'Reboot Module - Architecture'],['../safestate_architecture.html',1,'Safe-State Module - Architecture'],['../status_architecture.html',1,'Status Module - Architecture'],['../string_architecture.html',1,'String Module - Architecture'],['../task_architecture.html',1,'Task Queue Module - Architecture'],['../timer_architecture.html',1,'Timer Module - Architecture'],['../types_architecture.html',1,'Types Module - Architecture'],['../watchdog_architecture.html',1,'Watchdog Module - Architecture']]],
-  ['module_20feature_20selection_20at_20configure_20time_10',['ADR-024: Per-Module Feature Selection at Configure Time',['../md_docs_2architecture_2ADR-024-configurable-feature-build.html',1,'']]],
-  ['module_20user_20guide_11',['module user guide',['../buffer_user_guide.html',1,'Buffer Module - User Guide'],['../cast_user_guide.html',1,'Cast Module - User Guide'],['../checksum_user_guide.html',1,'Checksum Module - User Guide'],['../log_user_guide.html',1,'Logging Module - User Guide'],['../memory_user_guide.html',1,'Memory Module - User Guide'],['../reboot_user_guide.html',1,'Reboot Module - User Guide'],['../safestate_user_guide.html',1,'Safe-State Module - User Guide'],['../status_user_guide.html',1,'Status Module - User Guide'],['../string_user_guide.html',1,'String Module - User Guide'],['../task_user_guide.html',1,'Task Queue Module - User Guide'],['../timer_user_guide.html',1,'Timer Module - User Guide'],['../types_user_guide.html',1,'Types Module - User Guide'],['../vital_channel_user_guide.html',1,'Vital Channel Module - User Guide'],['../watchdog_user_guide.html',1,'Watchdog Module - User Guide']]],
-  ['multi_20train_20protocol_20and_20failover_20ready_20session_20state_12',['ADR-029: RBC Train/IL/CTC Scenario - Real Multi-Train Protocol and Failover-Ready Session State',['../md_docs_2architecture_2ADR-029-rbc-train-il-ctc-scenario.html',1,'']]],
-  ['mutual_20exclusion_20primitive_13',['ADR-033: sapi_mutex - a portable mutual-exclusion primitive',['../md_docs_2architecture_2ADR-033-sapi-mutex.html',1,'']]]
+  ['layer_20data_20buffer_20abstraction_0',['ADR-002: Cross-Layer Data Buffer Abstraction',['../md_docs_2architecture_2ADR-002-cross-layer-data-buffers.html',1,'']]],
+  ['layer_20oal_20for_20the_20safe_20api_20framework_1',['ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework',['../md_docs_2architecture_2ADR-001-os-abstraction-layer.html',1,'']]],
+  ['layout_2',['ADR-007: Per-Feature Directory Layout',['../md_docs_2architecture_2ADR-007-per-feature-directory-layout.html',1,'']]],
+  ['libc_20memory_20primitive_3',['ADR-031: &lt;tt&gt;sapi_mem_util&lt;/tt&gt; - one sanctioned call site per libc memory primitive',['../md_docs_2architecture_2ADR-031-sapi-mem-util.html',1,'']]],
+  ['library_20targets_20into_204_4',['ADR-023: Consolidate 22 CMake Library Targets into 4',['../md_docs_2architecture_2ADR-023-consolidate-cmake-libraries.html',1,'']]],
+  ['link_20many_20trains_20up_20to_20100_5',['ADR-036: Train-session multiplexing - one link, many trains (up to 100)',['../md_docs_2architecture_2ADR-036-train-session-multiplexing.html',1,'']]],
+  ['linux_20oal_20backend_6',['ADR-018: A Real POSIX/Linux OAL Backend',['../md_docs_2architecture_2ADR-018-posix-oal-backend.html',1,'']]],
+  ['list_20shape_7',['ADR-030: &lt;tt&gt;sapi_notify&lt;/tt&gt; - fixed-capacity registered-callback list shape',['../md_docs_2architecture_2ADR-030-registered-callback-list-shape.html',1,'']]],
+  ['lock_20and_20single_20entry_20point_20enforcement_8',['ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement',['../md_docs_2architecture_2ADR-026-application-setup-phase-lock.html',1,'']]],
+  ['lock_20coverage_20extended_20to_20backend_20registration_20and_20remaining_20setup_20only_20constructors_9',['ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors',['../md_docs_2architecture_2ADR-032-setup-phase-lock-coverage-extended.html',1,'']]],
+  ['log_20module_20architecture_10',['Log Module - Architecture',['../log_architecture.html',1,'']]],
+  ['logging_20module_20user_20guide_11',['Logging Module - User Guide',['../log_user_guide.html',1,'']]]
 ];
