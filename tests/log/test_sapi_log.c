@@ -227,5 +227,68 @@ int main(void)
     sapi_log_write(SAPI_LOG_LEVEL_DEBUG, "TAG", "restored");
     assert(g_write_calls == 1);
 
+    /* --- sapi_log_fields_t builder + sapi_log_write_event_fields()
+     *     (REQ-OAL-LOG-017): typed key=value pairs, one separating space
+     *     between them and none at the ends, then handed straight to the
+     *     event writer as extra_fields. --- */
+    {
+        sapi_log_fields_t f;
+
+        /* Empty builder -> "" -> no extra text at all after Info= (same
+         * as passing NULL). */
+        sapi_log_fields_reset(&f);
+        assert(strcmp(sapi_log_fields_c_str(&f), "") == 0);
+        reset_capture();
+        sapi_log_write_event_fields(SAPI_LOG_LEVEL_INFO, "WEST", 3U, "A/WEST", "IL", "ROUTE",
+                                     "no fields", &f);
+        (void)snprintf(expected, sizeof(expected),
+                        "Site=WEST Timestamp=123456789 Level=INFO Cycle=3 Source=A/WEST Destination=IL "
+                        "Type=ROUTE Info=no fields");
+        assert(strcmp(g_last_message, expected) == 0);
+
+        /* One pair of each type; chaining returns the builder. */
+        sapi_log_fields_reset(&f);
+        assert(sapi_log_fields_add_u32(&f, "route", 4U) == &f);
+        sapi_log_fields_add_i32(&f, "d_lrbg", -12);
+        sapi_log_fields_add_u64(&f, "seq", 4294967296ULL);
+        sapi_log_fields_add_i64(&f, "off", -1);
+        sapi_log_fields_add_hex_u32(&f, "crc", 0xABU, 4U);
+        sapi_log_fields_add_bool(&f, "stub", true);
+        sapi_log_fields_add_str(&f, "result", "OK");
+        sapi_log_fields_add_str(&f, "note", NULL); /* NULL string -> empty value */
+        assert(strcmp(sapi_log_fields_c_str(&f),
+                      "route=4 d_lrbg=-12 seq=4294967296 off=-1 crc=0x00ab stub=true result=OK note=") == 0);
+
+        reset_capture();
+        sapi_log_write_event_fields(SAPI_LOG_LEVEL_DEBUG, "EAST", 9U, "B/EAST", "IL", "ROUTE_FSM",
+                                     "step", &f);
+        (void)snprintf(expected, sizeof(expected),
+                        "Site=EAST Timestamp=123456789 Level=DEBUG Cycle=9 Source=B/EAST Destination=IL "
+                        "Type=ROUTE_FSM Info=step "
+                        "route=4 d_lrbg=-12 seq=4294967296 off=-1 crc=0x00ab stub=true result=OK note=");
+        assert(strcmp(g_last_message, expected) == 0);
+
+        /* NULL builder tolerated by every entry point. */
+        sapi_log_fields_reset(NULL);
+        assert(sapi_log_fields_add_u32(NULL, "x", 1U) == NULL);
+        assert(strcmp(sapi_log_fields_c_str(NULL), "") == 0);
+        reset_capture();
+        sapi_log_write_event_fields(SAPI_LOG_LEVEL_INFO, "WEST", 1U, "A", "B", "T", "i", NULL);
+        (void)snprintf(expected, sizeof(expected),
+                        "Site=WEST Timestamp=123456789 Level=INFO Cycle=1 Source=A Destination=B Type=T Info=i");
+        assert(strcmp(g_last_message, expected) == 0);
+
+        /* sapi_log_fields_c_str() output is also valid as the `extra_fields`
+         * arg of the plain writer. */
+        sapi_log_fields_reset(&f);
+        sapi_log_fields_add_u32(&f, "n", 7U);
+        reset_capture();
+        sapi_log_write_event(SAPI_LOG_LEVEL_INFO, "WEST", 2U, "A", "B", "T", "i", sapi_log_fields_c_str(&f));
+        (void)snprintf(expected, sizeof(expected),
+                        "Site=WEST Timestamp=123456789 Level=INFO Cycle=2 Source=A Destination=B Type=T "
+                        "Info=i n=7");
+        assert(strcmp(g_last_message, expected) == 0);
+    }
+
     return 0;
 }

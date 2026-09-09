@@ -1,6 +1,49 @@
 # MISRA C:2012 Compliance Report
 
-Date: 2026-09-04 (see "update 23" note below)
+Date: 2026-09-09 (see "update 24" note below)
+
+**2026-09-09, update 24 (structured-log field builder:
+`sapi_log_fields_t` + `sapi_log_fields_reset()` /
+`sapi_log_fields_add_str/_u32/_i32/_u64/_i64/_hex_u32/_bool()` /
+`sapi_log_fields_c_str()` / `sapi_log_write_event_fields()`,
+REQ-OAL-LOG-017):** manual review of the change
+(`include/safeapi/oal/log/sapi_log.h`, `src/oal/log/sapi_log.c`,
+`tests/log/test_sapi_log.c`); `cppcheck --enable=all --addon=misra
+--std=c99` run on `src/oal/log/sapi_log.c`.
+
+- **Rule 17.1 (`<stdarg.h>` / variadic) — this is the reason the builder
+  exists.** `sapi_log_write_event()` deliberately has no `printf`-style
+  variant; the builder is a fixed-arity, typed alternative for
+  interpolating variable values into a log line. No `<stdarg.h>`,
+  `<stdio.h>`, or `snprintf` introduced.
+- **No allocation (Dir 4.12 / Rule 21.3):** `sapi_log_fields_t` carries
+  its own `char storage[SAPI_LOG_EVENT_LINE_MAX_LEN]`; `sapi_log_fields_reset()`
+  binds an in-struct `sapi_string_t` to it. Every `_add_*` goes through
+  the already-reviewed bounded `sapi_string_concat()` / `_append_u32()` …
+  primitives (update 23), so the truncation/bounds behaviour is inherited,
+  not re-implemented.
+- Every entry point NULL-checks `fields` (and `_add_*` also `key`) and is
+  a silent no-op otherwise — REQ-OAL-LOG-001 (a logging helper must never
+  affect the caller's control flow). `_add_*` return `fields` for
+  optional inline chaining; a single accumulated path, no early `return`
+  inside the body beyond the guard.
+- `sapi_log_write_event()` gained a one-line hardening: an empty-string
+  `extra_fields` is now treated exactly like NULL (`(extra_fields != NULL)
+  && (extra_fields[0] != '\0')`), so an empty builder round-trips with no
+  trailing space. Behaviour for a non-empty `extra_fields` is unchanged.
+- `sapi_log.h` now `#include`s `safeapi/utils/string/sapi_string.h` (for
+  the `sapi_string_t` member) and `<stdbool.h>` (for `_add_bool`) — the
+  `.c` already depended on `sapi_string`; the header dependency is new but
+  matches the module doc, which already names `safeapi::string` as the
+  event-formatting path's dependency.
+- cppcheck on `sapi_log.c` after the change: only `unusedFunction` style
+  noise (single-TU public-API analysis), no `warning`/`error`/`misra-*`
+  on the new code. All 30 `ctest` binaries pass; `test_sapi_log` extended
+  with a builder block (per-type pairs, separator placement, NULL string
+  value, NULL builder tolerance at every entry point, `_c_str()` output
+  reused as the plain writer's `extra_fields`).
+- Static finding total: not re-run whole-tree; the touched `.c`'s own new
+  code is clean per above. Carried from update 23's **1229**.
 
 **2026-09-04, update 23 (bounded numeric append: `sapi_string_append_u32()`
 / `_i32()` / `_u64()` / `_i64()` / `sapi_string_append_hex_u32()` added to

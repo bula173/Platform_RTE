@@ -234,19 +234,148 @@ void sapi_log_write_event(sapi_log_level_t level,
     sapi_log_append_event_field(&line, "Type", type);
     sapi_log_append_event_field(&line, "Info", info);
 
-    if (extra_fields != NULL)
+    if ((extra_fields != NULL) && (extra_fields[0] != '\0'))
     {
         /* extra_fields is already caller-formatted Key=Value text (see
          * this function's own doc) - appended verbatim behind a single
          * separating space, not wrapped in another key, so it reads as
          * more of the same space-separated Key=Value convention rather
-         * than a nested field. */
+         * than a nested field. An empty string is treated exactly like
+         * NULL (no field, no trailing space) so an empty
+         * sapi_log_fields_t builder round-trips cleanly. */
         (void)sapi_string_concat(&line, " ");
         (void)sapi_string_concat(&line, extra_fields);
     }
 
     (void)sapi_string_c_str(&line, &line_cstr);
     s_backend->write(level, source, (line_cstr != NULL) ? line_cstr : "");
+}
+
+void sapi_log_fields_reset(sapi_log_fields_t *fields)
+{
+    if (fields != NULL)
+    {
+        (void)sapi_string_init(&fields->str, fields->storage, sizeof(fields->storage));
+    }
+}
+
+/**
+ * @brief Appends the "[ ]key=" prefix of one pair (leading space only if
+ *        the builder already holds something). Best-effort; a truncated
+ *        concat is silently accepted (REQ-OAL-LOG-001).
+ * @return true if @p fields and @p key are both non-NULL (i.e. the caller
+ *         should append the value), false otherwise.
+ */
+static bool sapi_log_fields_begin_pair(sapi_log_fields_t *fields, const char *key)
+{
+    bool ok = (fields != NULL) && (key != NULL);
+
+    if (ok)
+    {
+        if (sapi_string_length(&fields->str) > 0U)
+        {
+            (void)sapi_string_concat(&fields->str, " ");
+        }
+        (void)sapi_string_concat(&fields->str, key);
+        (void)sapi_string_concat(&fields->str, "=");
+    }
+    return ok;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_str(sapi_log_fields_t *fields, const char *key, const char *value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_concat(&fields->str, (value != NULL) ? value : "");
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_u32(sapi_log_fields_t *fields, const char *key, uint32_t value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_append_u32(&fields->str, value);
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_i32(sapi_log_fields_t *fields, const char *key, int32_t value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_append_i32(&fields->str, value);
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_u64(sapi_log_fields_t *fields, const char *key, uint64_t value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_append_u64(&fields->str, value);
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_i64(sapi_log_fields_t *fields, const char *key, int64_t value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_append_i64(&fields->str, value);
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_hex_u32(sapi_log_fields_t *fields, const char *key,
+                                               uint32_t value, uint8_t min_digits)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_concat(&fields->str, "0x");
+        (void)sapi_string_append_hex_u32(&fields->str, value, min_digits);
+    }
+    return fields;
+}
+
+sapi_log_fields_t *sapi_log_fields_add_bool(sapi_log_fields_t *fields, const char *key, bool value)
+{
+    if (sapi_log_fields_begin_pair(fields, key))
+    {
+        (void)sapi_string_concat(&fields->str, value ? "true" : "false");
+    }
+    return fields;
+}
+
+const char *sapi_log_fields_c_str(sapi_log_fields_t *fields)
+{
+    const char *out = "";
+
+    if (fields != NULL)
+    {
+        const char *tmp = NULL;
+
+        if (sapi_string_c_str(&fields->str, &tmp) == SAPI_STATUS_OK)
+        {
+            out = tmp;
+        }
+    }
+    return out;
+}
+
+void sapi_log_write_event_fields(sapi_log_level_t level,
+                                  const char *site,
+                                  uint32_t cycle,
+                                  const char *source,
+                                  const char *destination,
+                                  const char *type,
+                                  const char *info,
+                                  sapi_log_fields_t *fields)
+{
+    /* c_str() yields "" for a NULL/empty builder; sapi_log_write_event()
+     * now treats "" exactly like NULL, so no special-casing needed. */
+    sapi_log_write_event(level, site, cycle, source, destination, type, info,
+                          sapi_log_fields_c_str(fields));
 }
 
 

@@ -21,6 +21,9 @@
 
 #include "safeapi/utils/status/sapi_status.h"
 #include "safeapi/utils/types/sapi_types.h"
+#include "safeapi/utils/string/sapi_string.h" /* sapi_log_fields_t backing store */
+
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -202,6 +205,97 @@ void sapi_log_write_event(sapi_log_level_t level,
                            const char *type,
                            const char *info,
                            const char *extra_fields);
+
+/**
+ * @brief Bounded builder for `sapi_log_write_event()`'s `extra_fields`
+ *        (or `info`) argument: accumulates space-separated `key=value`
+ *        pairs, each typed at the call site, so a caller adding a couple
+ *        of variable values does not hand-roll a
+ *        `sapi_string_concat()`/`sapi_string_append_u32()` chain every
+ *        time (MISRA C:2012 Rule 17.1 rules out a `printf`-style variadic
+ *        here).
+ *
+ * All storage is inside the struct - no allocation. Over-long content is
+ * truncated, never rejected, matching `sapi_log_write_event()`'s own
+ * REQ-OAL-LOG-001 posture. Typical use:
+ * @code
+ * sapi_log_fields_t f;
+ * sapi_log_fields_reset(&f);
+ * sapi_log_fields_add_u32(&f, "route", route_id);
+ * sapi_log_fields_add_i32(&f, "d_lrbg", d_lrbg);
+ * sapi_log_fields_add_str(&f, "result", "OK");
+ * sapi_log_write_event_fields(SAPI_LOG_LEVEL_INFO, "WEST", cycle,
+ *                             "A/WEST", "IL", "ROUTE", "route connected", &f);
+ * @endcode
+ */
+typedef struct sapi_log_fields_s
+{
+    sapi_string_t str;                         /**< Bound to @ref storage by sapi_log_fields_reset(). */
+    char          storage[SAPI_LOG_EVENT_LINE_MAX_LEN]; /**< Backing bytes - do not touch directly. */
+} sapi_log_fields_t;
+
+/**
+ * @brief (Re)initialises a builder to empty. MUST be called before the
+ *        first `sapi_log_fields_add_*()`; safe to call again to reuse the
+ *        same builder for another line.
+ * @param fields  Builder to reset. A NULL @p fields is a silent no-op.
+ * REQ-OAL-LOG-017
+ */
+void sapi_log_fields_reset(sapi_log_fields_t *fields);
+
+/**
+ * @brief Appends one `key=value` pair (preceded by a single separating
+ *        space only when the builder is already non-empty).
+ * @param fields  Builder (must have been `sapi_log_fields_reset()`).
+ * @param key     Field key/label, e.g. `"route"`. Must not be NULL.
+ * @param value   Value: for `_add_str` a NULL string is written as an
+ *                empty value; for `_add_hex_u32`, @p min_digits is the
+ *                minimum digit count (zero-padded), prefixed with `0x`;
+ *                for `_add_bool`, `"true"`/`"false"` is written.
+ * @return @p fields, so a few calls can be chained inline.
+ * @note Best-effort: a NULL @p fields / NULL @p key, or a full backing
+ *       store, silently leaves the builder unchanged (REQ-OAL-LOG-001).
+ * REQ-OAL-LOG-017
+ * @{
+ */
+sapi_log_fields_t *sapi_log_fields_add_str(sapi_log_fields_t *fields, const char *key, const char *value);
+sapi_log_fields_t *sapi_log_fields_add_u32(sapi_log_fields_t *fields, const char *key, uint32_t value);
+sapi_log_fields_t *sapi_log_fields_add_i32(sapi_log_fields_t *fields, const char *key, int32_t value);
+sapi_log_fields_t *sapi_log_fields_add_u64(sapi_log_fields_t *fields, const char *key, uint64_t value);
+sapi_log_fields_t *sapi_log_fields_add_i64(sapi_log_fields_t *fields, const char *key, int64_t value);
+sapi_log_fields_t *sapi_log_fields_add_hex_u32(sapi_log_fields_t *fields, const char *key,
+                                               uint32_t value, uint8_t min_digits);
+sapi_log_fields_t *sapi_log_fields_add_bool(sapi_log_fields_t *fields, const char *key, bool value);
+/** @} */
+
+/**
+ * @brief NUL-terminated view of the accumulated pairs.
+ * @param fields  Builder. NULL / empty yields `""`.
+ * @return A pointer into @p fields->storage, valid until the next
+ *         `sapi_log_fields_reset()`/`_add_*()` on the same builder; never
+ *         NULL. Pass it straight as `sapi_log_write_event()`'s
+ *         @p extra_fields (or @p info).
+ * REQ-OAL-LOG-017
+ */
+const char *sapi_log_fields_c_str(sapi_log_fields_t *fields);
+
+/**
+ * @brief `sapi_log_write_event()` with a builder passed directly as the
+ *        extra fields - no `sapi_log_fields_c_str()` at the call site.
+ * @param fields  Extra `key=value` pairs; NULL or an empty builder emits
+ *                no extra fields (identical to passing NULL to
+ *                `sapi_log_write_event()`). Every other parameter is
+ *                exactly as `sapi_log_write_event()`.
+ * REQ-OAL-LOG-017
+ */
+void sapi_log_write_event_fields(sapi_log_level_t level,
+                                  const char *site,
+                                  uint32_t cycle,
+                                  const char *source,
+                                  const char *destination,
+                                  const char *type,
+                                  const char *info,
+                                  sapi_log_fields_t *fields);
 
 /*
  * The backend vtable (sapi_log_backend_t) and sapi_log_register_backend()
