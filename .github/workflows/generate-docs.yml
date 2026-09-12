@@ -1,12 +1,7 @@
 name: Generate Documentation
 
-# contents: write - required by peaceiris/actions-gh-pages below to push
-# to the gh-pages branch using the default GITHUB_TOKEN. Missing this was
-# the cause of the observed "Write access to repository not granted" / 403
-# failure (GitHub now defaults the token to read-only unless a workflow
-# explicitly requests write access).
 permissions:
-  contents: write
+  contents: read
 
 on:
   push:
@@ -54,13 +49,9 @@ jobs:
           path: docs/api/html/
           retention-days: 30
 
-      - name: Deploy to GitHub Pages (on master/main push only)
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/api/html/
-          cname: safeapiframework.example.com
+      # Deploy step removed: this project's docs are now published as a subpage of the single
+      # unified GitHub Pages site on the top-level bula173/SAPI repo, not this project's own
+      # gh-pages branch — see docs.yml's own note and the root repo's .github/workflows/docs.yml.
 
       - name: Comment on PR with doc link
         if: github.event_name == 'pull_request'
