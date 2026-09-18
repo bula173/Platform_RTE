@@ -1336,3 +1336,19 @@ become permanent.
   before returning success, so an integrator declares what it supports instead of re-checking
   the loaded config itself. Same accepted buckets (15.5, 8.7); `test_sapi_redundancy_config`
   gained one new case (accept/reject/clear-callback).
+
+- **Update (2026-09-18, same day): `sapi_cross_comparator_execute_buffers()`** (RCA/OCORA
+  Phase 2b - a buffers-based comparator entry point needing no `sapi_channel_t` registration,
+  collapsing an integrator's hand-rolled channel-adapter boilerplate). Refactoring
+  `sapi_cross_comparator_execute()` to share its AGREED/DISAGREED/safestate tail with the new
+  function via a `cross_comparator_finish()` helper surfaced a REAL, previously-latent
+  `cppcheck` finding, not just style: `buf_a` could reach that shared helper uninitialized on
+  the unhealthy-channel path (`local_result` forced to `SAPI_VOTING_INSUFFICIENT_QUORUM` before
+  `buf_a` is ever populated) - never dereferenced there in practice (that path can't produce
+  `SAPI_VOTING_AGREED`, the only branch that reads it), but a genuine defect, fixed by
+  zero-initializing `buf_a` at declaration rather than leaving it as an accepted finding. Also
+  fixed two `variableScope` findings (`buf_b`/`st_a`/`st_b` narrowed into the branch that
+  actually uses them) surfaced by the same pass. No new MISRA rule categories beyond the
+  already-accepted set for this module (15.5, 21.16, 20.7, 20.10, 2.3, 2.5, 8.7). `ctest`: 34/34
+  (3 new cases: buffers-agreement, buffers-disagreement-triggers-safestate,
+  buffers-validation).

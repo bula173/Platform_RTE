@@ -93,65 +93,16 @@ sapi_status_t sapi_cross_comparator_register_channel(sapi_cross_comparator_t *cm
     return SAPI_STATUS_OK;
 }
 
-sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t data_size,
-                                             sapi_voting_result_t *result,
-                                             void *out_data, size_t *out_size)
+/** Shared tail for both sapi_cross_comparator_execute() and
+ *  sapi_cross_comparator_execute_buffers(): given a computed
+ *  local_result, applies the exact same AGREED/DISAGREED/other handling
+ *  (callback, unconditional safestate on DISAGREED) both public entry
+ *  points must have identically - see sapi_cross_comparator.h's own
+ *  RCA/OCORA PI-API compatibility note for why this exists. */
+static sapi_status_t cross_comparator_finish(sapi_cross_comparator_t *cmp, sapi_voting_result_t local_result,
+                                              const void *agreed_data, size_t data_size,
+                                              sapi_voting_result_t *result, void *out_data, size_t *out_size)
 {
-    uint8_t buf_a[SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE];
-    uint8_t buf_b[SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE];
-    sapi_channel_health_t health_a;
-    sapi_channel_health_t health_b;
-    sapi_status_t st_a;
-    sapi_status_t st_b;
-    sapi_voting_result_t local_result;
-
-    if ((cmp == NULL) || (data_size == 0U))
-    {
-        return SAPI_STATUS_INVALID_PARAM;
-    }
-    if (!cmp->initialized)
-    {
-        return SAPI_STATUS_NOT_INITIALIZED;
-    }
-    if (data_size > SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE)
-    {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
-    }
-    if (cmp->registered_count != 2U)
-    {
-        return SAPI_STATUS_INVALID_PARAM;
-    }
-
-    (void)sapi_channel_get_health(cmp->channel_a, &health_a);
-    (void)sapi_channel_get_health(cmp->channel_b, &health_b);
-
-    if ((!health_a.is_healthy) || (!health_b.is_healthy))
-    {
-        local_result = SAPI_VOTING_INSUFFICIENT_QUORUM;
-    }
-    else
-    {
-        st_a = sapi_channel_receive(cmp->channel_a, buf_a, data_size, cmp->config.channel_timeout_ms);
-        st_b = sapi_channel_receive(cmp->channel_b, buf_b, data_size, cmp->config.channel_timeout_ms);
-
-        if ((st_a == SAPI_STATUS_TIMEOUT) || (st_b == SAPI_STATUS_TIMEOUT))
-        {
-            local_result = SAPI_VOTING_TIMEOUT;
-        }
-        else if ((st_a != SAPI_STATUS_OK) || (st_b != SAPI_STATUS_OK))
-        {
-            local_result = SAPI_VOTING_INSUFFICIENT_QUORUM;
-        }
-        else if (cross_comparator_data_equal(cmp, buf_a, buf_b, data_size))
-        {
-            local_result = SAPI_VOTING_AGREED;
-        }
-        else
-        {
-            local_result = SAPI_VOTING_DISAGREED;
-        }
-    }
-
     if (result != NULL)
     {
         *result = local_result;
@@ -161,7 +112,7 @@ sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t
     {
         if (out_data != NULL)
         {
-            (void)memcpy(out_data, buf_a, data_size);
+            (void)memcpy(out_data, agreed_data, data_size);
         }
         if (out_size != NULL)
         {
@@ -208,6 +159,93 @@ sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t
     }
 
     return SAPI_STATUS_HARDWARE_FAULT;
+}
+
+sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t data_size,
+                                             sapi_voting_result_t *result,
+                                             void *out_data, size_t *out_size)
+{
+    uint8_t buf_a[SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE] = { 0 };
+    sapi_channel_health_t health_a;
+    sapi_channel_health_t health_b;
+    sapi_voting_result_t local_result;
+
+    if ((cmp == NULL) || (data_size == 0U))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (!cmp->initialized)
+    {
+        return SAPI_STATUS_NOT_INITIALIZED;
+    }
+    if (data_size > SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE)
+    {
+        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+    }
+    if (cmp->registered_count != 2U)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+
+    (void)sapi_channel_get_health(cmp->channel_a, &health_a);
+    (void)sapi_channel_get_health(cmp->channel_b, &health_b);
+
+    if ((!health_a.is_healthy) || (!health_b.is_healthy))
+    {
+        local_result = SAPI_VOTING_INSUFFICIENT_QUORUM;
+    }
+    else
+    {
+        uint8_t buf_b[SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE];
+        sapi_status_t st_a = sapi_channel_receive(cmp->channel_a, buf_a, data_size, cmp->config.channel_timeout_ms);
+        sapi_status_t st_b = sapi_channel_receive(cmp->channel_b, buf_b, data_size, cmp->config.channel_timeout_ms);
+
+        if ((st_a == SAPI_STATUS_TIMEOUT) || (st_b == SAPI_STATUS_TIMEOUT))
+        {
+            local_result = SAPI_VOTING_TIMEOUT;
+        }
+        else if ((st_a != SAPI_STATUS_OK) || (st_b != SAPI_STATUS_OK))
+        {
+            local_result = SAPI_VOTING_INSUFFICIENT_QUORUM;
+        }
+        else if (cross_comparator_data_equal(cmp, buf_a, buf_b, data_size))
+        {
+            local_result = SAPI_VOTING_AGREED;
+        }
+        else
+        {
+            local_result = SAPI_VOTING_DISAGREED;
+        }
+    }
+
+    return cross_comparator_finish(cmp, local_result, buf_a, data_size, result, out_data, out_size);
+}
+
+sapi_status_t sapi_cross_comparator_execute_buffers(sapi_cross_comparator_t *cmp,
+                                                      const void *local_data, const void *peer_data,
+                                                      size_t data_size,
+                                                      sapi_voting_result_t *result,
+                                                      void *out_data, size_t *out_size)
+{
+    sapi_voting_result_t local_result;
+
+    if ((cmp == NULL) || (local_data == NULL) || (peer_data == NULL) || (data_size == 0U))
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (!cmp->initialized)
+    {
+        return SAPI_STATUS_NOT_INITIALIZED;
+    }
+    if (data_size > SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE)
+    {
+        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+    }
+
+    local_result = cross_comparator_data_equal(cmp, local_data, peer_data, data_size) ? SAPI_VOTING_AGREED
+                                                                                       : SAPI_VOTING_DISAGREED;
+
+    return cross_comparator_finish(cmp, local_result, local_data, data_size, result, out_data, out_size);
 }
 
 sapi_status_t sapi_cross_comparator_get_aggregated_health(const sapi_cross_comparator_t *cmp,

@@ -170,6 +170,61 @@ sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t
                                              void *out_data, size_t *out_size);
 
 /**
+ * @brief Compares two already-in-hand data buffers directly, with the
+ *        same on_disagreement-then-unconditional-safestate semantics as
+ *        sapi_cross_comparator_execute() - no sapi_channel_t registration
+ *        needed. Added per direct request as part of the RCA/OCORA
+ *        compatibility initiative's Phase 2b (see docs/rca/ at the
+ *        workspace root and TODO.md): an integrator whose local/peer data
+ *        already arrived through its own transport (e.g.
+ *        safeAPIRBC2oo2GP's kind-multiplexed peer_channel, which carries
+ *        cross-compare traffic alongside checkpoint/site-state frames on
+ *        one shared link - not something a generic comparator API can
+ *        transparently subsume) no longer needs to hand-wire two pure
+ *        in-memory sapi_channel_t "already arrived" adapters (send() that
+ *        is never called, recv() that just returns a buffer) purely to
+ *        satisfy sapi_cross_comparator_execute()'s channel-based
+ *        interface - this collapses that boilerplate to one call.
+ *
+ * A cross-comparator used with this function does not need
+ * sapi_cross_comparator_register_channel() called on it at all - only
+ * sapi_cross_comparator_init(). Mixing the two calling styles on the same
+ * sapi_cross_comparator_t is allowed (this function ignores any
+ * registered channels; sapi_cross_comparator_execute() ignores this
+ * function's own lack of them) but is not a pattern any current caller
+ * uses.
+ *
+ * @param[in]  cmp        Cross-comparator handle (sapi_cross_comparator_init()'d).
+ *                        Must not be NULL.
+ * @param[in]  local_data This side's own data. Must not be NULL.
+ * @param[in]  peer_data  The counterpart's data, already received via
+ *                        whatever transport the caller owns. Must not be
+ *                        NULL.
+ * @param[in]  data_size  Bytes to compare; must be > 0 and <=
+ *                        SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE.
+ * @param[out] result     Comparison outcome (always SAPI_VOTING_AGREED or
+ *                        SAPI_VOTING_DISAGREED - there is no I/O here, so
+ *                        TIMEOUT/INSUFFICIENT_QUORUM never occur). Can be
+ *                        NULL.
+ * @param[out] out_data   Receives local_data on AGREED. Can be NULL.
+ * @param[out] out_size   Bytes written to out_data. Can be NULL.
+ *
+ * @return SAPI_STATUS_OK if result is SAPI_VOTING_AGREED.
+ * @return SAPI_STATUS_INVALID_PARAM for a bad argument.
+ * @return SAPI_STATUS_HARDWARE_FAULT on SAPI_VOTING_DISAGREED - but see
+ *         @post: this function does not return in that case.
+ *
+ * @post On SAPI_VOTING_DISAGREED, identical to sapi_cross_comparator_execute():
+ *       invokes config->on_disagreement (if set) and then unconditionally
+ *       enters config->safestate_level.
+ */
+sapi_status_t sapi_cross_comparator_execute_buffers(sapi_cross_comparator_t *cmp,
+                                                      const void *local_data, const void *peer_data,
+                                                      size_t data_size,
+                                                      sapi_voting_result_t *result,
+                                                      void *out_data, size_t *out_size);
+
+/**
  * @brief Aggregated health across both registered channels.
  *
  * @param[in]  cmp                 Cross-comparator handle. Must not be NULL.

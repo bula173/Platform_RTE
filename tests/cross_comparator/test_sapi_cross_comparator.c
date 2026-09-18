@@ -341,6 +341,88 @@ static void test_custom_compare_fn(void)
     assert(result == SAPI_VOTING_AGREED);
 }
 
+/* sapi_cross_comparator_execute_buffers() (RCA/OCORA Phase 2b - see
+ * sapi_cross_comparator.h's own doc): no channel registration needed at
+ * all, just two already-in-hand buffers. */
+static void test_execute_buffers_agreement(void)
+{
+    sapi_cross_comparator_storage_t storage;
+    sapi_cross_comparator_config_t cfg;
+    uint8_t local_buf[4] = {0x42U, 0x42U, 0x42U, 0x42U};
+    uint8_t peer_buf[4] = {0x42U, 0x42U, 0x42U, 0x42U};
+    sapi_voting_result_t result;
+    uint8_t out_data[4];
+    size_t out_size = 0U;
+
+    memset(&cfg, 0, sizeof(cfg));
+    assert(sapi_cross_comparator_init(&storage, &cfg) == SAPI_STATUS_OK);
+
+    /* Deliberately no sapi_cross_comparator_register_channel() call. */
+    assert(sapi_cross_comparator_execute_buffers(&storage, local_buf, peer_buf, sizeof(local_buf), &result,
+                                                  out_data, &out_size) == SAPI_STATUS_OK);
+    assert(result == SAPI_VOTING_AGREED);
+    assert(out_size == sizeof(local_buf));
+    assert(memcmp(out_data, local_buf, sizeof(local_buf)) == 0);
+}
+
+static void test_execute_buffers_disagreement_triggers_safestate(void)
+{
+    sapi_cross_comparator_storage_t storage;
+    sapi_cross_comparator_config_t cfg;
+    uint8_t local_buf[4] = {0xAAU, 0xAAU, 0xAAU, 0xAAU};
+    uint8_t peer_buf[4] = {0xBBU, 0xBBU, 0xBBU, 0xBBU};
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.log_disagreements = true;
+    cfg.safestate_level = SAPI_SAFESTATE_LEVEL_SAFE;
+    cfg.safestate_reason = SAPI_SAFESTATE_REASON_UNSPECIFIED;
+    cfg.on_disagreement = disagreement_callback;
+    assert(sapi_cross_comparator_init(&storage, &cfg) == SAPI_STATUS_OK);
+
+    assert(sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_SAFE, diverting_handler) == SAPI_STATUS_OK);
+
+    g_handler_calls = 0;
+    if (setjmp(g_jmp) == 0)
+    {
+        (void)sapi_cross_comparator_execute_buffers(&storage, local_buf, peer_buf, sizeof(local_buf), NULL, NULL,
+                                                     NULL);
+        assert(0);
+    }
+    else
+    {
+        assert(g_handler_calls == 1);
+    }
+}
+
+static void test_execute_buffers_validation(void)
+{
+    sapi_cross_comparator_storage_t storage;
+    sapi_cross_comparator_config_t cfg;
+    uint8_t buf[4] = {0};
+    uint8_t oversized[SAPI_CROSS_COMPARATOR_MAX_MESSAGE_SIZE + 1U];
+
+    memset(&cfg, 0, sizeof(cfg));
+    assert(sapi_cross_comparator_init(&storage, &cfg) == SAPI_STATUS_OK);
+
+    assert(sapi_cross_comparator_execute_buffers(NULL, buf, buf, sizeof(buf), NULL, NULL, NULL) ==
+           SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cross_comparator_execute_buffers(&storage, NULL, buf, sizeof(buf), NULL, NULL, NULL) ==
+           SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cross_comparator_execute_buffers(&storage, buf, NULL, sizeof(buf), NULL, NULL, NULL) ==
+           SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cross_comparator_execute_buffers(&storage, buf, buf, 0U, NULL, NULL, NULL) ==
+           SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_cross_comparator_execute_buffers(&storage, oversized, oversized, sizeof(oversized), NULL, NULL,
+                                                  NULL) == SAPI_STATUS_RESOURCE_EXHAUSTED);
+
+    {
+        sapi_cross_comparator_storage_t uninit;
+        memset(&uninit, 0, sizeof(uninit));
+        assert(sapi_cross_comparator_execute_buffers(&uninit, buf, buf, sizeof(buf), NULL, NULL, NULL) ==
+               SAPI_STATUS_NOT_INITIALIZED);
+    }
+}
+
 /* REQ-LIFECYCLE-001 (ADR-026): once the application's setup phase is
  * locked, sapi_cross_comparator_init()/_register_channel() refuse even
  * with fully-valid arguments. */
@@ -384,6 +466,9 @@ int main(void)
     test_execute_disagreement_triggers_reboot_level();
     test_execute_timeout_and_unhealthy();
     test_custom_compare_fn();
+    test_execute_buffers_agreement();
+    test_execute_buffers_disagreement_triggers_safestate();
+    test_execute_buffers_validation();
     test_lifecycle_lock();
     test_destroy();
     return 0;
