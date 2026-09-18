@@ -15,6 +15,41 @@ static void write_file(const char *path, const char *content)
     (void)fclose(fp);
 }
 
+static int g_capability_calls;
+static sapi_redundancy_topology_t g_capability_last_topology;
+static uint32_t g_capability_last_replicas;
+
+static bool only_2oo2_pair(sapi_redundancy_topology_t topology, uint32_t replica_count, void *context)
+{
+    assert(context == (void *)0x1234);
+    g_capability_calls++;
+    g_capability_last_topology = topology;
+    g_capability_last_replicas = replica_count;
+    return (topology == SAPI_REDUNDANCY_TOPOLOGY_2OO2) && (replica_count == 2U);
+}
+
+static void test_capability_callback_rejects_unsupported(void)
+{
+    sapi_redundancy_config_t cfg;
+
+    assert(sapi_redundancy_config_register_capability(only_2oo2_pair, (void *)0x1234) == SAPI_STATUS_OK);
+
+    write_file("/tmp/sapi_redcfg_cap_ok.json", "{\"topology\": \"2oo2\", \"replicas\": 2}");
+    g_capability_calls = 0;
+    assert(sapi_redundancy_config_load("/tmp/sapi_redcfg_cap_ok.json", &cfg) == SAPI_STATUS_OK);
+    assert(g_capability_calls == 1);
+    assert(g_capability_last_topology == SAPI_REDUNDANCY_TOPOLOGY_2OO2);
+    assert(g_capability_last_replicas == 2U);
+
+    write_file("/tmp/sapi_redcfg_cap_bad.json", "{\"topology\": \"2oo3\", \"replicas\": 3}");
+    assert(sapi_redundancy_config_load("/tmp/sapi_redcfg_cap_bad.json", &cfg) == SAPI_STATUS_NOT_SUPPORTED);
+
+    /* Clearing the callback (NULL) restores the pre-existing behavior:
+     * any successfully-parsed config is accepted. */
+    assert(sapi_redundancy_config_register_capability(NULL, NULL) == SAPI_STATUS_OK);
+    assert(sapi_redundancy_config_load("/tmp/sapi_redcfg_cap_bad.json", &cfg) == SAPI_STATUS_OK);
+}
+
 static void test_standby_mode_default_cold(void)
 {
     sapi_redundancy_config_t cfg;
@@ -147,6 +182,7 @@ int main(void)
     test_standby_mode_hot();
     test_standby_mode_bad_value_rejected();
     test_standby_mode_string_roundtrip();
+    test_capability_callback_rejects_unsupported();
     printf("test_sapi_redundancy_config: all tests passed\n");
     return 0;
 }

@@ -42,6 +42,7 @@
 #define SAPI_REDUNDANCY_CONFIG_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "safeapi/utils/status/sapi_status.h"
 #include "safeapi/redundancy/voter/sapi_voter.h"
 
@@ -160,6 +161,40 @@ sapi_status_t sapi_redundancy_config_topology_from_string(const char *name,
 const char *sapi_redundancy_config_topology_to_string(sapi_redundancy_topology_t topology);
 
 /**
+ * @brief Integrator-supplied capability query: can THIS application
+ *        actually run the given topology/replica_count combination? This
+ *        is how an integrator (e.g. safeAPIRBC2oo2GP) declares what it
+ *        supports to the Platform, instead of the Platform (or the
+ *        integrator's own call site) hardcoding a topology allowlist -
+ *        matches OCORA's own "Platform decides" posture already used
+ *        throughout this module and sapi_voter/sapi_cross_comparator's
+ *        own safestate-transition ownership.
+ * @param[in] topology       The loaded config's topology.
+ * @param[in] replica_count  The loaded config's replica_count.
+ * @param[in] context        Whatever sapi_redundancy_config_register_capability()
+ *                           was given.
+ * @return true if this application can run this combination; false
+ *         otherwise (sapi_redundancy_config_load() then fails with
+ *         SAPI_STATUS_NOT_SUPPORTED instead of returning SAPI_STATUS_OK).
+ */
+typedef bool (*sapi_redundancy_capability_fn)(sapi_redundancy_topology_t topology, uint32_t replica_count,
+                                               void *context);
+
+/**
+ * @brief Registers the capability callback sapi_redundancy_config_load()
+ *        consults after successfully parsing a file, before returning
+ *        SAPI_STATUS_OK. Call once at startup, before load(). No callback
+ *        registered (the default) means load() accepts any
+ *        successfully-parsed, internally-consistent config - the same
+ *        behavior this module had before this function existed.
+ * @param[in] fn       May be NULL to clear a previously registered callback
+ *                     (load() then accepts any config again).
+ * @param[in] context  Passed verbatim to fn on every call; may be NULL.
+ * @return SAPI_STATUS_OK always.
+ */
+sapi_status_t sapi_redundancy_config_register_capability(sapi_redundancy_capability_fn fn, void *context);
+
+/**
  * @brief Load a redundancy topology config from a JSON file.
  *
  * @param[in]  path        NUL-terminated filesystem path.
@@ -173,6 +208,9 @@ const char *sapi_redundancy_config_topology_to_string(sapi_redundancy_topology_t
  *         "roles" array longer than SAPI_REDUNDANCY_CONFIG_MAX_REPLICAS, a
  *         role name longer than SAPI_REDUNDANCY_CONFIG_MAX_ROLE_NAME_LEN-1,
  *         or replica_count/quorum_size that fail sanity checks below).
+ *         SAPI_STATUS_NOT_SUPPORTED - the file parsed and validated fine,
+ *         but a registered sapi_redundancy_capability_fn returned false for
+ *         it (see sapi_redundancy_config_register_capability()).
  *
  * @post On success: 1 <= replica_count <= SAPI_REDUNDANCY_CONFIG_MAX_REPLICAS,
  *       1 <= quorum_size <= replica_count.

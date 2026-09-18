@@ -15,6 +15,16 @@
 #include <string.h>
 #include <stdbool.h>
 
+static sapi_redundancy_capability_fn s_capability_fn;
+static void *s_capability_context;
+
+sapi_status_t sapi_redundancy_config_register_capability(sapi_redundancy_capability_fn fn, void *context)
+{
+    s_capability_fn = fn;
+    s_capability_context = context;
+    return SAPI_STATUS_OK;
+}
+
 /** Skip ASCII whitespace starting at buf[pos], bounded by len. */
 static size_t skip_ws(const char *buf, size_t len, size_t pos)
 {
@@ -359,6 +369,10 @@ sapi_status_t sapi_redundancy_config_load(const char *path, sapi_redundancy_conf
         }
     } else {
         result.role_count = 0U;
+    }
+
+    if ((s_capability_fn != NULL) && (!s_capability_fn(result.topology, result.replica_count, s_capability_context))) {
+        return SAPI_STATUS_NOT_SUPPORTED;
     }
 
     *out_config = result;

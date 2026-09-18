@@ -1330,3 +1330,9 @@ become permanent.
   style via `sapi_mem_copy()`, 8.7 exported-function declarations) - no new categories from
   either addition. `ctest`: 34/34 (`test_sapi_state_transfer` new, 6 cases;
   `test_sapi_redundancy_config` gained 4 standby_mode cases, same executable/ctest entry).
+
+- **Update (2026-09-18, same day): `sapi_redundancy_config_register_capability()`** - a new
+  integrator-registered capability-query callback `sapi_redundancy_config_load()` consults
+  before returning success, so an integrator declares what it supports instead of re-checking
+  the loaded config itself. Same accepted buckets (15.5, 8.7); `test_sapi_redundancy_config`
+  gained one new case (accept/reject/clear-callback).
