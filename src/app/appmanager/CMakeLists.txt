@@ -1,4 +1,4 @@
-add_library(safeapi_appmanager STATIC sapi_appmanager.c)
+add_library(safeapi_appmanager ${SAFEAPI_LIB_TYPE} sapi_appmanager.c)
 
 target_include_directories(safeapi_appmanager
     PUBLIC

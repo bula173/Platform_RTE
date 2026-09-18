@@ -10,6 +10,16 @@
  * not a value to pick a winner from - generalizes the pattern
  * `safeAPIRBC2oo2`'s `channel_ab_crosscompare.c` hand-rolls today.
  *
+ * RCA/OCORA PI-API compatibility note (see
+ * ../../../../../docs/rca/RCA-OCORA-SCP-Mapping.md at the workspace
+ * root): per OCORA's Safe Computing Platform model, the Platform - not
+ * the application - owns the decision to transition to a safe state on
+ * disagreement between replicas/peers. sapi_cross_comparator_execute()
+ * therefore ALWAYS enters config->safestate_level on a DISAGREED
+ * result; an application can no longer opt out of the transition
+ * happening (only earlier, on_disagreement gave the application a
+ * chance to react - e.g. clean up - before it does).
+ *
  * @defgroup cross_comparator Cross-Comparator (2-way channel comparison)
  * @{
  */
@@ -22,6 +32,7 @@
 #include <stddef.h>
 
 #include "safeapi/utils/status/sapi_status.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
 #include "safeapi/redundancy/channel_link/sapi_channel.h"
 #include "safeapi/redundancy/voter/sapi_voter.h"
 
@@ -42,14 +53,25 @@ typedef struct {
     void *compare_context;
     /** Log a disagreement via sapi_log_write() when it occurs. */
     bool log_disagreements;
-    /** If true (default expected), a DISAGREED result also triggers
-     *  SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, ...) before
-     *  sapi_cross_comparator_execute() returns - same rationale as
-     *  sapi_voter_config_t::trigger_safestate_on_disagreement. */
-    bool trigger_safestate_on_disagreement;
+    /** Safe-state level entered unconditionally on a DISAGREED result,
+     *  after on_disagreement (below) has already run - see this
+     *  header's own "RCA/OCORA PI-API compatibility" note above
+     *  sapi_cross_comparator_execute(). Replaces the old
+     *  `bool trigger_safestate_on_disagreement` (which let a caller
+     *  opt OUT of transitioning at all - the Platform, not the
+     *  application, now always owns this decision). Use
+     *  SAPI_SAFESTATE_LEVEL_SAFE as the conservative default if the
+     *  caller has no stronger reaction (e.g. REBOOT) of its own. */
+    sapi_safestate_level_t safestate_level;
+    /** Diagnostic reason code passed to the safestate transition above. */
+    sapi_safestate_reason_t safestate_reason;
     /** Optional callback invoked whenever the result is not
-     *  SAPI_VOTING_AGREED. See sapi_voter_config_t::on_disagreement for
-     *  when this can/can't fire relative to the safestate trigger above. */
+     *  SAPI_VOTING_AGREED, BEFORE the unconditional safestate
+     *  transition above - the application's one chance to react (e.g.
+     *  flush peer-negotiation state, raise an alarm, close its own
+     *  links) before control does not return. Do this work
+     *  synchronously within the callback; there is no "after" for a
+     *  SAFE/REBOOT-level transition (REQ-COMMON-SAFESTATE-002). */
     void (*on_disagreement)(void *context, sapi_voting_result_t result);
     /** User context passed to on_disagreement(). */
     void *disagreement_context;
@@ -130,9 +152,11 @@ sapi_status_t sapi_cross_comparator_register_channel(sapi_cross_comparator_t *cm
  *         INSUFFICIENT_QUORUM - the latter meaning one or both channels
  *         are marked unhealthy)
  *
- * @post On SAPI_VOTING_DISAGREED, if
- *       config->trigger_safestate_on_disagreement is true, this
- *       function does not return.
+ * @post On SAPI_VOTING_DISAGREED, this function invokes
+ *       config->on_disagreement (if set) and then unconditionally
+ *       enters config->safestate_level - it does not return unless
+ *       that level is SAPI_SAFESTATE_LEVEL_DEGRADED (the only level
+ *       sapi_safestate_enter() may return from).
  *
  * REQ-CROSSCOMPARATOR-003: Both channels must be healthy and
  * successfully receive data_size bytes before comparison is attempted;

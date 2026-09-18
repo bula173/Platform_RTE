@@ -395,15 +395,28 @@ sapi_status_t sapi_voter_receive(sapi_voter_t *voter, void *data, size_t data_si
         {
             sapi_log_write(SAPI_LOG_LEVEL_ERROR, "voter", "channels disagreed");
         }
-        if (voter->config.trigger_safestate_on_disagreement)
+        /* Application reacts BEFORE the Platform enters safe state below -
+         * see this module's own RCA/OCORA PI-API compatibility note
+         * (sapi_voter.h) for why the Platform now unconditionally owns
+         * this transition. */
+        if (voter->config.on_disagreement != NULL)
         {
-            SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_UNSPECIFIED);
+            voter->config.on_disagreement(voter->config.disagreement_context, local_result);
         }
+        SAPI_SAFESTATE(voter->config.safestate_level, voter->config.safestate_reason);
     }
-
-    if (voter->config.on_disagreement != NULL)
+    else if (voter->config.on_disagreement != NULL)
     {
+        /* Non-DISAGREED non-AGREED results (TIMEOUT/INSUFFICIENT_QUORUM)
+         * still get the callback, same as before this change, but do
+         * NOT trigger a safestate transition here - only a genuine
+         * DISAGREE does. */
         voter->config.on_disagreement(voter->config.disagreement_context, local_result);
+    }
+    else
+    {
+        /* Nothing further to do for a non-DISAGREED result with no
+         * callback registered. */
     }
 
     return SAPI_STATUS_HARDWARE_FAULT;

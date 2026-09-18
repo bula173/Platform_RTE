@@ -168,7 +168,10 @@ static sapi_status_t safechannel_open_vital(sapi_safechannel_t *channel, const s
     voter_cfg.quorum_size = cfg->quorum_size;
     voter_cfg.channel_timeout_ms = (uint32_t)cfg->channel_timeout_ms;
     voter_cfg.log_disagreements = cfg->log_disagreements;
-    voter_cfg.trigger_safestate_on_disagreement = true;
+    /* Always SAFE on disagreement - matches this path's pre-RCA/OCORA
+     * behavior exactly (see sapi_voter.h's own compatibility note). */
+    voter_cfg.safestate_level = SAPI_SAFESTATE_LEVEL_SAFE;
+    voter_cfg.safestate_reason = SAPI_SAFESTATE_REASON_UNSPECIFIED;
     voter_cfg.on_disagreement = cfg->on_disagreement;
     voter_cfg.disagreement_context = cfg->context;
 

@@ -121,6 +121,33 @@ if(SAFEAPI_ENABLE_UBSAN)
 endif()
 
 # ---------------------------------------------------------------------------
+# Platform library type (RCA/OCORA compatibility - see docs/rca/ at the SAPI
+# workspace root): today, safeapi_core/oal/channels/appmanager build STATIC
+# and get absorbed directly into whatever links them (e.g. safeAPIRBC2oo2GP's
+# own libsafeapi_gp.dylib/.so). For genuine PI-API "portability among IT
+# platform realizations from different vendors" (OCORA's own stated goal),
+# the Platform needs a stable ABI boundary a Functional Application links
+# against dynamically, not code baked into the application's own binary at
+# compile time - the same problem this project already solved once, for the
+# GP<->GA boundary specifically (a real shared library + explicit
+# function-pointer interface, see safeAPIRBC2oo2GA/CLAUDE.md), applied one
+# layer lower here.
+#
+# Deliberately an opt-in, default-OFF option, NOT a hardcoded flip:
+# switching every consumer (safeAPIRBC2oo2GP's own link step, RPATH,
+# safeAPIRBC2oo2SA's installer packaging, the Docker image build) to the
+# shared-library shape is real, separate, staged work (root TODO.md) - this
+# option lets that work proceed incrementally, verified at each step,
+# without changing default behavior for anyone who does not ask for it.
+option(SAFEAPI_BUILD_SHARED_LIBS
+    "Build safeapi_core/oal/channels/appmanager as SHARED libraries (a dynamically-linked Platform ABI boundary) instead of STATIC (today's default, unchanged)" OFF)
+if(SAFEAPI_BUILD_SHARED_LIBS)
+    set(SAFEAPI_LIB_TYPE SHARED)
+else()
+    set(SAFEAPI_LIB_TYPE STATIC)
+endif()
+
+# ---------------------------------------------------------------------------
 # Feature selection (ADR-024): choose which modules get compiled in
 # ---------------------------------------------------------------------------
 # CORE (status/types/buffer/cast/safestate/string, below) is always
@@ -143,6 +170,7 @@ option(SAFEAPI_ENABLE_NVM      "Enable sapi_nvm (non-volatile storage service)" 
 option(SAFEAPI_ENABLE_MEMORY   "Enable sapi_memory (static memory region service)" ON)
 option(SAFEAPI_ENABLE_TASK     "Enable sapi_task (task/thread scheduling service)" ON)
 option(SAFEAPI_ENABLE_NETLINK  "Enable sapi_netlink (network transport service)" ON)
+option(SAFEAPI_ENABLE_FLOW     "Enable sapi_flow (OCORA PI-API-compatible name-addressed pub/sub Flow service)" ON)
 option(SAFEAPI_ENABLE_IPC      "Enable sapi_ipc (inter-process queue service)" ON)
 option(SAFEAPI_ENABLE_REBOOT   "Enable sapi_reboot (controlled reboot service)" ON)
 option(SAFEAPI_ENABLE_PLATFORM "Enable sapi_platform (real-time platform configuration service, ADR-035)" ON)
@@ -158,6 +186,8 @@ option(SAFEAPI_ENABLE_CROSS_COMPARATOR "Enable sapi_cross_comparator (2-way chan
 option(SAFEAPI_ENABLE_CHECKPOINT    "Enable sapi_checkpoint (cross-channel rendezvous) - needs CHECKSUM, TIMER, VOTER, WATCHDOG" ON)
 option(SAFEAPI_ENABLE_DUAL          "Enable sapi_dual (dual-transfer state negotiation) - needs CHECKSUM, NETLINK, TIMER" ON)
 option(SAFEAPI_ENABLE_SAFECHANNEL   "Enable sapi_safechannel (unified channel factory) - needs CHECKSUM, DUAL, NETLINK, VOTER" ON)
+option(SAFEAPI_ENABLE_REDUNDANCY_CONFIG "Enable sapi_redundancy_config (JSON-loaded 2oo2/2oo2_redundant/2oo3/NMR topology config, RCA/OCORA initiative) - needs VOTER" ON)
+option(SAFEAPI_ENABLE_STATE_TRANSFER "Enable sapi_state_transfer (declarative hot/warm/cold standby state registry, RCA/OCORA initiative)" ON)
 
 # --- App layer ---
 option(SAFEAPI_ENABLE_APPMANAGER "Enable sapi_appmanager (cyclic-executive lifecycle) - needs VOTER, WATCHDOG, CHECKPOINT" ON)
@@ -174,7 +204,7 @@ safeapi_require_feature(SAFEAPI_ENABLE_SAFECHANNEL  DEPENDS SAFEAPI_ENABLE_CHECK
 safeapi_require_feature(SAFEAPI_ENABLE_APPMANAGER   DEPENDS SAFEAPI_ENABLE_VOTER SAFEAPI_ENABLE_WATCHDOG SAFEAPI_ENABLE_CHECKPOINT)
 
 message(STATUS "safeAPIFramework feature selection:")
-foreach(_sapi_feat TIMER NVM MEMORY TASK NETLINK IPC REBOOT PLATFORM LOG WATCHDOG
+foreach(_sapi_feat TIMER NVM MEMORY TASK NETLINK FLOW IPC REBOOT PLATFORM LOG WATCHDOG
                     CLOCKSYNC CHECKSUM CHANNEL_LINK VOTER CROSS_COMPARATOR
                     CHECKPOINT DUAL SAFECHANNEL APPMANAGER)
     message(STATUS "  SAFEAPI_ENABLE_${_sapi_feat}: ${SAFEAPI_ENABLE_${_sapi_feat}}")
@@ -203,7 +233,7 @@ endforeach()
 # separate target: its header is already reachable through this
 # library's own PUBLIC include directory below, same as every other
 # feature's header.
-add_library(safeapi_core STATIC
+add_library(safeapi_core ${SAFEAPI_LIB_TYPE}
     src/utils/status/sapi_status.c
     src/utils/buffer/sapi_buffer.c
     src/utils/cast/sapi_cast.c
@@ -253,6 +283,9 @@ endif()
 if(SAFEAPI_ENABLE_NETLINK)
     list(APPEND _safeapi_oal_sources src/oal/netlink/sapi_netlink.c)
 endif()
+if(SAFEAPI_ENABLE_FLOW)
+    list(APPEND _safeapi_oal_sources src/oal/flow/sapi_flow.c)
+endif()
 if(SAFEAPI_ENABLE_LOG)
     list(APPEND _safeapi_oal_sources src/oal/log/sapi_log.c)
 endif()
@@ -270,7 +303,7 @@ if(NOT _safeapi_oal_sources)
                          "is OFF - safeapi_oal would have no sources. Enable at least one.")
 endif()
 
-add_library(safeapi_oal STATIC ${_safeapi_oal_sources})
+add_library(safeapi_oal ${SAFEAPI_LIB_TYPE} ${_safeapi_oal_sources})
 target_include_directories(safeapi_oal PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
@@ -293,6 +326,11 @@ if(SAFEAPI_ENABLE_CHANNEL_LINK)
     list(APPEND _safeapi_channels_sources
         src/redundancy/channel_link/sapi_channel.c
         src/redundancy/channel_service/sapi_channel_service.c
+    )
+endif()
+if(SAFEAPI_ENABLE_CHANNEL_LINK AND SAFEAPI_ENABLE_FLOW)
+    list(APPEND _safeapi_channels_sources
+        src/redundancy/channel_service/sapi_channel_service_flow_backend.c
     )
 endif()
 if(SAFEAPI_ENABLE_VOTER)
@@ -318,12 +356,18 @@ endif()
 if(SAFEAPI_ENABLE_SAFECHANNEL)
     list(APPEND _safeapi_channels_sources src/redundancy/safechannel/sapi_safechannel.c)
 endif()
+if(SAFEAPI_ENABLE_REDUNDANCY_CONFIG)
+    list(APPEND _safeapi_channels_sources src/redundancy/config/sapi_redundancy_config.c)
+endif()
+if(SAFEAPI_ENABLE_STATE_TRANSFER)
+    list(APPEND _safeapi_channels_sources src/redundancy/state_transfer/sapi_state_transfer.c)
+endif()
 if(NOT _safeapi_channels_sources)
     message(FATAL_ERROR "safeAPIFramework: every SAFEAPI_ENABLE_<channels-feature> option "
                          "is OFF - safeapi_channels would have no sources. Enable at least one.")
 endif()
 
-add_library(safeapi_channels STATIC ${_safeapi_channels_sources})
+add_library(safeapi_channels ${SAFEAPI_LIB_TYPE} ${_safeapi_channels_sources})
 target_include_directories(safeapi_channels PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>

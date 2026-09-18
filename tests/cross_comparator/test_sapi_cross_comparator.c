@@ -197,7 +197,8 @@ static void test_execute_disagreement_triggers_safestate(void)
 
     memset(&cfg, 0, sizeof(cfg));
     cfg.log_disagreements = true;
-    cfg.trigger_safestate_on_disagreement = true;
+    cfg.safestate_level = SAPI_SAFESTATE_LEVEL_SAFE;
+    cfg.safestate_reason = SAPI_SAFESTATE_REASON_UNSPECIFIED;
     cfg.on_disagreement = disagreement_callback;
     assert(sapi_cross_comparator_init(&storage, &cfg) == SAPI_STATUS_OK);
 
@@ -224,15 +225,26 @@ static void test_execute_disagreement_triggers_safestate(void)
     }
 }
 
-static void test_execute_disagreement_without_safestate(void)
+/* Per the RCA/OCORA PI-API compatibility change (see sapi_cross_comparator.h's
+ * own note), an application can no longer opt out of the safestate
+ * transition on disagreement - the Platform always owns it. What an
+ * application CAN still configure is which level/reason, and it is
+ * guaranteed its own on_disagreement callback runs first (e.g. this is
+ * where safeAPIRBC2oo2GP's own cleanup - flushing peer-negotiation
+ * state, raising an alarm, closing its own links - happens before
+ * control does not return). This test exercises a REBOOT-level
+ * configuration (as safeAPIRBC2oo2GP itself uses, rather than the
+ * SAFE-level default the previous test exercises) and verifies the
+ * callback-then-transition ordering. */
+static void test_execute_disagreement_triggers_reboot_level(void)
 {
     sapi_cross_comparator_storage_t storage;
     sapi_cross_comparator_config_t cfg;
     sapi_channel_storage_t ch[2];
-    sapi_voting_result_t result;
 
     memset(&cfg, 0, sizeof(cfg));
-    cfg.trigger_safestate_on_disagreement = false;
+    cfg.safestate_level = SAPI_SAFESTATE_LEVEL_REBOOT;
+    cfg.safestate_reason = (sapi_safestate_reason_t)(SAPI_SAFESTATE_REASON_APPLICATION_BASE + 1U);
     cfg.on_disagreement = disagreement_callback;
     assert(sapi_cross_comparator_init(&storage, &cfg) == SAPI_STATUS_OK);
 
@@ -245,11 +257,22 @@ static void test_execute_disagreement_without_safestate(void)
     memset(g_mock[0].recv_buffer, 0xAA, sizeof(g_mock[0].recv_buffer));
     memset(g_mock[1].recv_buffer, 0xBB, sizeof(g_mock[1].recv_buffer));
 
+    assert(sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_REBOOT, diverting_handler) == SAPI_STATUS_OK);
+
     g_disagreement_calls = 0;
-    assert(sapi_cross_comparator_execute(&storage, 4U, &result, NULL, NULL) == SAPI_STATUS_HARDWARE_FAULT);
-    assert(result == SAPI_VOTING_DISAGREED);
-    assert(g_disagreement_calls == 1);
-    assert(g_last_result == SAPI_VOTING_DISAGREED);
+    g_handler_calls = 0;
+    if (setjmp(g_jmp) == 0)
+    {
+        (void)sapi_cross_comparator_execute(&storage, 4U, NULL, NULL, NULL);
+        assert(0);
+    }
+    else
+    {
+        /* on_disagreement ran BEFORE the transition. */
+        assert(g_disagreement_calls == 1);
+        assert(g_last_result == SAPI_VOTING_DISAGREED);
+        assert(g_handler_calls == 1);
+    }
 
     {
         uint32_t disagreements = 0U;
@@ -358,7 +381,7 @@ int main(void)
     test_execute_validation();
     test_execute_agreement();
     test_execute_disagreement_triggers_safestate();
-    test_execute_disagreement_without_safestate();
+    test_execute_disagreement_triggers_reboot_level();
     test_execute_timeout_and_unhealthy();
     test_custom_compare_fn();
     test_lifecycle_lock();

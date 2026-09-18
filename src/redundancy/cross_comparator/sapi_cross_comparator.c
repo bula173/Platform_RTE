@@ -182,15 +182,29 @@ sapi_status_t sapi_cross_comparator_execute(sapi_cross_comparator_t *cmp, size_t
         {
             sapi_log_write(SAPI_LOG_LEVEL_ERROR, "cross_comparator", "channels disagreed");
         }
-        if (cmp->config.trigger_safestate_on_disagreement)
+        /* Application reacts (cleanup, alarms, closing its own links)
+         * BEFORE the Platform enters safe state below - it gets no
+         * "after". See this module's own RCA/OCORA PI-API compatibility
+         * note (sapi_cross_comparator.h) for why the Platform, not the
+         * application, now unconditionally owns this transition. */
+        if (cmp->config.on_disagreement != NULL)
         {
-            SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, SAPI_SAFESTATE_REASON_UNSPECIFIED);
+            cmp->config.on_disagreement(cmp->config.disagreement_context, local_result);
         }
+        SAPI_SAFESTATE(cmp->config.safestate_level, cmp->config.safestate_reason);
     }
-
-    if (cmp->config.on_disagreement != NULL)
+    else if (cmp->config.on_disagreement != NULL)
     {
+        /* Non-DISAGREED non-AGREED results (TIMEOUT/INSUFFICIENT_QUORUM)
+         * still get the callback, same as before this change, but do
+         * NOT trigger a safestate transition here - only a genuine
+         * DISAGREE does. */
         cmp->config.on_disagreement(cmp->config.disagreement_context, local_result);
+    }
+    else
+    {
+        /* Nothing further to do for a non-DISAGREED result with no
+         * callback registered. */
     }
 
     return SAPI_STATUS_HARDWARE_FAULT;

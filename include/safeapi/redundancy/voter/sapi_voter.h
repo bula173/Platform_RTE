@@ -9,6 +9,14 @@
  * `sapi_channel_t` instances, then use sapi_voter_send()/
  * _receive() the way sapi_channel_send()/_receive() used to work.
  *
+ * RCA/OCORA PI-API compatibility note (see
+ * ../../../../../docs/rca/RCA-OCORA-SCP-Mapping.md at the workspace
+ * root, and sapi_cross_comparator.h's own identical note): per OCORA's
+ * Safe Computing Platform model, the Platform - not the application -
+ * owns the decision to transition to a safe state on disagreement.
+ * sapi_voter_receive() therefore ALWAYS enters config->safestate_level
+ * on a DISAGREED result; an application can no longer opt out.
+ *
  * @defgroup voter Voter (N-way channel voting)
  * @{
  */
@@ -21,6 +29,7 @@
 #include <stddef.h>
 
 #include "safeapi/utils/status/sapi_status.h"
+#include "safeapi/utils/safestate/sapi_safestate.h"
 #include "safeapi/redundancy/channel_link/sapi_channel.h"
 
 #ifdef __cplusplus
@@ -89,19 +98,31 @@ typedef struct {
     void *compare_context;
     /** Log a disagreement via sapi_log_write() when it occurs. */
     bool log_disagreements;
-    /** If true (default expected), a DISAGREED result also triggers
-     *  SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, ...) before
-     *  sapi_voter_receive() returns - matching the pre-ADR-025
-     *  sapi_channel behavior. Set false for a voter instance that
-     *  is not itself on a safety-decision path and wants to handle
-     *  disagreement entirely through on_disagreement below instead. */
-    bool trigger_safestate_on_disagreement;
+    /** Safe-state level entered unconditionally on a DISAGREED result,
+     *  after on_disagreement (below) has already run. RCA/OCORA PI-API
+     *  compatibility note (see docs/rca/RCA-OCORA-SCP-Mapping.md at the
+     *  workspace root, and sapi_cross_comparator.h's own identical
+     *  note): the Platform, not the application, owns this decision -
+     *  replaces the old `bool trigger_safestate_on_disagreement` (which
+     *  let a caller opt OUT of transitioning at all). A voter instance
+     *  that is provably never able to disagree (e.g. a single-channel
+     *  SAPI_VOTING_NMR quorum_size==1 registration, where the "group"
+     *  of one channel trivially always meets quorum) can safely leave
+     *  this zero-initialized (SAPI_SAFESTATE_LEVEL_DEGRADED) since the
+     *  DISAGREED branch can never actually be reached for it. */
+    sapi_safestate_level_t safestate_level;
+    /** Diagnostic reason code passed to the safestate transition above. */
+    sapi_safestate_reason_t safestate_reason;
     /** Optional callback invoked whenever sapi_voter_receive() does not
-     *  return SAPI_VOTING_AGREED (DISAGREED/TIMEOUT/INSUFFICIENT_QUORUM).
-     *  Invoked after safestate (if triggered above) would already not
-     *  have returned, so in practice this only fires when
-     *  trigger_safestate_on_disagreement is false or the result is
-     *  TIMEOUT/INSUFFICIENT_QUORUM (which never triggers safestate). */
+     *  return SAPI_VOTING_AGREED (DISAGREED/TIMEOUT/INSUFFICIENT_QUORUM),
+     *  BEFORE the unconditional safestate transition above for a
+     *  DISAGREED result - the application's one chance to react (e.g.
+     *  clean up its own state) before control does not return. Do this
+     *  work synchronously; there is no "after" for a SAFE/REBOOT-level
+     *  transition (REQ-COMMON-SAFESTATE-002). For TIMEOUT/
+     *  INSUFFICIENT_QUORUM results (which never trigger the transition
+     *  above), this callback simply fires and sapi_voter_receive()
+     *  returns normally afterward. */
     void (*on_disagreement)(void *context, sapi_voting_result_t result);
     /** User context passed to on_disagreement(). */
     void *disagreement_context;
@@ -209,18 +230,19 @@ sapi_status_t sapi_voter_send(sapi_voter_t *voter, const void *data, size_t data
  * @return SAPI_STATUS_HARDWARE_FAULT otherwise (DISAGREED/TIMEOUT/
  *         INSUFFICIENT_QUORUM)
  *
- * @post On SAPI_VOTING_DISAGREED, if config->trigger_safestate_on_disagreement
- *       is true (the default expectation), this function does not
- *       return - see SAPI_SAFESTATE_LEVEL_SAFE.
+ * @post On SAPI_VOTING_DISAGREED, this function invokes
+ *       config->on_disagreement (if set) and then unconditionally
+ *       enters config->safestate_level - it does not return unless
+ *       that level is SAPI_SAFESTATE_LEVEL_DEGRADED (the only level
+ *       sapi_safestate_enter() may return from).
  *
  * REQ-VOTER-003: Requires the registered-channel count to match the
  * configured strategy before receiving/voting.
  * REQ-VOTER-004: Groups responses by mutual agreement and selects the
  * largest quorum-meeting group (majority vote), not a pairwise compare
  * against a single reference channel.
- * REQ-VOTER-005: On DISAGREED, enters SAPI_SAFESTATE_LEVEL_SAFE when
- * trigger_safestate_on_disagreement is true, and always invokes
- * on_disagreement (if registered) regardless of that flag.
+ * REQ-VOTER-005: On DISAGREED, always invokes on_disagreement (if
+ * registered) and then unconditionally enters config->safestate_level.
  */
 sapi_status_t sapi_voter_receive(sapi_voter_t *voter, void *data, size_t data_size,
                                   sapi_voting_result_t *result, size_t *bytes_received);

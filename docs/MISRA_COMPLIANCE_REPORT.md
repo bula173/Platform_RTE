@@ -1240,6 +1240,14 @@ same rules:
   intentionally confined to test-only tooling.
 - All test files use `<assert.h>` per normal unit-test practice.
 
+**Update 2026-09-18:** new module `sapi_flow` (`include/safeapi/oal/flow/`,
+`include/safeapi_backend/flow/`, `src/oal/flow/sapi_flow.c` -
+OCORA PI-API-compatible name-addressed pub/sub Flow service, ADR-005
+backend seam, `SAFEAPI_ENABLE_FLOW`) added, same validate-then-dispatch
+shape as `sapi_netlink`. `cmake --build build --target cppcheck` re-run
+after adding it: zero new MISRA findings. `ctest` 31/31 (was 30/30) with
+`test_sapi_flow` added following `test_sapi_netlink`'s own pattern.
+
 ## 5. Recommended follow-up
 
 Section 1a is that real tool run - it is no longer unavailable, at least
@@ -1272,3 +1280,53 @@ This report should be regenerated (or have section 1a re-run and
 refreshed) whenever a new module is added or the un-triaged rule list
 above is worked through - don't let the "not yet triaged" framing above
 become permanent.
+
+- **Update (2026-09-18): new module `sapi_redundancy_config`** (RCA/OCORA
+  initiative - JSON-loaded 2oo2/2oo2_redundant/2oo3/NMR voting-topology
+  config, `include/safeapi/redundancy/config/`, `src/redundancy/config/`).
+  `cppcheck --addon=misra` findings, all in the same already-accepted
+  buckets as the rest of the tree: Rule 15.5 (single-exit/guard-clause
+  style, dominant everywhere), Rule 21.6 (`<stdio.h>` - `fopen`/`fread`/
+  `fclose`, deliberate and load-time-only, same rationale as
+  `sapi_appmanager.c`'s own confirmed 21.6 use above and
+  `safeCommFreamwork`'s `safecomm_config_load`'s hand-written file
+  loader), Rule 21.14/21.16 (`memcmp` pointer-arithmetic style, consistent
+  with `sapi_checksum.c`/codec modules elsewhere). New to this module:
+  Rule 17.8 (a `size_t pos` scan-cursor parameter is reassigned inside
+  `skip_ws()`/`parse_string_value()`/`parse_string_array()`) - accepted as
+  a deviation: each is a small, single-purpose bounded scanner where `pos`
+  IS the cursor state being advanced: introducing a second local variable
+  purely to satisfy the rule would add indirection without reducing risk
+  (the function bodies are short, single-entry/single-loop, no aliasing).
+  `ctest`: 32/32 (was 31/31), zero regressions.
+
+- **Update (2026-09-18): new module `sapi_channel_service_flow_backend`**
+  (RCA/OCORA Phase 4 - a `sapi_channel_service_backend_t` implementation over
+  `sapi_flow`, `include/safeapi/redundancy/channel_service/`,
+  `src/redundancy/channel_service/`). `cppcheck --addon=misra` findings, all
+  in already-accepted buckets: Rule 15.5 (single-exit, dominant everywhere),
+  Rule 11.5 (`void *` -> typed-pointer cast in `channel_state()`, identical
+  pattern to `safeAPIBackendPosix`'s own `sapi_posix_backend_channel_service.c`
+  `channel_state()` helper), Rule 8.9 (file-scope `static const` vtable
+  initializer, same pattern every other backend registration in this tree
+  uses). `ctest`: 34/34 (was 32/32 after the redundancy_config update above -
+  this update also added `test_sapi_channel_service_flow_backend`, 6 cases).
+  **Update (2026-09-18, same day): lazy-open redesign.** `backend_setup()` was changed from
+  eager (`sapi_flow_open()` called immediately) to lazy (resolve+store only; the real open
+  happens on the first `read()`/`send()`, bounded by THAT call's own `timeout_ms`) after a real
+  bug was found live against `safeAPIRBC2oo2GP`: eager open made `sapi_channel_service_setup()`
+  block for the full peer-handshake timeout and then fail outright for a channel whose peer
+  legitimately isn't running yet, aborting the whole integrator process over one optional
+  channel - see root `TODO.md`'s Phase 4 entry for the full story. No new MISRA rule categories
+  from this redesign (still 15.5/11.5/8.9, same as the original addition above). `ctest`
+  re-verified 34/34 after the redesign (test file itself updated: 2 existing cases adjusted for
+  lazy-open, 1 new case covering "absent peer fails only I/O calls, not setup()").
+
+- **Update (2026-09-18, same day): new module `sapi_state_transfer`** (RCA/OCORA hot/warm/cold
+  standby initiative - `include/safeapi/redundancy/state_transfer/`,
+  `src/redundancy/state_transfer/`), plus a new `standby_mode` field on
+  `sapi_redundancy_config_t` (`"hot"`/`"warm"`/`"cold"`, default `"cold"`). Same already-accepted
+  rule buckets as every other module in this tree (15.5 single-exit, 21.16 `memcmp`/pointer
+  style via `sapi_mem_copy()`, 8.7 exported-function declarations) - no new categories from
+  either addition. `ctest`: 34/34 (`test_sapi_state_transfer` new, 6 cases;
+  `test_sapi_redundancy_config` gained 4 standby_mode cases, same executable/ctest entry).
