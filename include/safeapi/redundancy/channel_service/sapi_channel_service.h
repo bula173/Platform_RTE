@@ -56,6 +56,7 @@ typedef struct
 
 sapi_status_t sapi_channel_service_register_backend(const sapi_channel_service_backend_t *backend);
 sapi_status_t sapi_channel_service_setup(sapi_channel_service_t *storage, const char *channel_name);
+sapi_status_t sapi_channel_service_setup_by_id(sapi_channel_service_t *storage, uint32_t channel_id);
 sapi_status_t sapi_channel_service_read(sapi_channel_service_t *storage,
                                          void *data,
                                          size_t data_size,

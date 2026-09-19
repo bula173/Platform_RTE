@@ -167,6 +167,83 @@ static void test_topology_string_roundtrip(void)
     assert(sapi_redundancy_config_topology_from_string("bogus", &t) == SAPI_STATUS_INVALID_PARAM);
 }
 
+static void test_channels_parsing(void)
+{
+    sapi_redundancy_config_t cfg;
+    sapi_channel_def_t ch;
+    const char *content = "{\n"
+                          "  \"topology\": \"2oo2\",\n"
+                          "  \"replicas\": 2,\n"
+                          "  \"channels\": [\n"
+                          "    {\n"
+                          "      \"id\": 1,\n"
+                          "      \"name\": \"ab-peer\",\n"
+                          "      \"transport\": \"flow\",\n"
+                          "      \"role\": \"listen\",\n"
+                          "      \"host\": \"127.0.0.1\",\n"
+                          "      \"port\": 15001,\n"
+                          "      \"message_size\": 384,\n"
+                          "      \"connect_timeout_ms\": 1000\n"
+                          "    },\n"
+                          "    {\n"
+                          "      \"id\": 2,\n"
+                          "      \"name\": \"ab-relay\",\n"
+                          "      \"transport\": \"netlink\",\n"
+                          "      \"role\": \"connect\",\n"
+                          "      \"host\": \"10.0.0.1\",\n"
+                          "      \"port\": 15002,\n"
+                          "      \"message_size\": 1024,\n"
+                          "      \"connect_timeout_ms\": 2000\n"
+                          "    }\n"
+                          "  ]\n"
+                          "}";
+
+    write_file("/tmp/sapi_redcfg_channels.json", content);
+    assert(sapi_redundancy_config_load("/tmp/sapi_redcfg_channels.json", &cfg) == SAPI_STATUS_OK);
+    assert(cfg.channel_count == 2U);
+
+    /* Lookup by name */
+    memset(&ch, 0, sizeof(ch));
+    assert(sapi_redundancy_config_find_channel_by_name(&cfg, "ab-peer", &ch) == SAPI_STATUS_OK);
+    assert(ch.id == 1U);
+    assert(strcmp(ch.name, "ab-peer") == 0);
+    assert(ch.transport == SAPI_CHANNEL_TRANSPORT_FLOW);
+    assert(ch.role == SAPI_CHANNEL_ROLE_LISTEN);
+    assert(strcmp(ch.host, "127.0.0.1") == 0);
+    assert(ch.port == 15001U);
+    assert(ch.message_size == 384U);
+    assert(ch.connect_timeout_ms == 1000U);
+
+    /* Lookup by ID */
+    memset(&ch, 0, sizeof(ch));
+    assert(sapi_redundancy_config_find_channel_by_id(&cfg, 2U, &ch) == SAPI_STATUS_OK);
+    assert(ch.id == 2U);
+    assert(strcmp(ch.name, "ab-relay") == 0);
+    assert(ch.transport == SAPI_CHANNEL_TRANSPORT_POSIX_NETLINK);
+    assert(ch.role == SAPI_CHANNEL_ROLE_CONNECT);
+    assert(strcmp(ch.host, "10.0.0.1") == 0);
+    assert(ch.port == 15002U);
+    assert(ch.message_size == 1024U);
+    assert(ch.connect_timeout_ms == 2000U);
+
+    /* Missing channel lookups */
+    assert(sapi_redundancy_config_find_channel_by_name(&cfg, "nonexistent", &ch) == SAPI_STATUS_INVALID_PARAM);
+    assert(sapi_redundancy_config_find_channel_by_id(&cfg, 999U, &ch) == SAPI_STATUS_INVALID_PARAM);
+
+    /* Active configuration check */
+    const sapi_redundancy_config_t *active = sapi_redundancy_config_get_active();
+    assert(active != NULL);
+    assert(active->channel_count == 2U);
+}
+
+static void test_channels_malformed_rejected(void)
+{
+    sapi_redundancy_config_t cfg;
+    const char *bad_content = "{\"topology\": \"2oo2\", \"replicas\": 2, \"channels\": [ {\"id\": 1} ]}";
+    write_file("/tmp/sapi_redcfg_bad_ch.json", bad_content);
+    assert(sapi_redundancy_config_load("/tmp/sapi_redcfg_bad_ch.json", &cfg) == SAPI_STATUS_INVALID_STATE);
+}
+
 int main(void)
 {
     test_2oo2_default_quorum();
@@ -183,6 +260,9 @@ int main(void)
     test_standby_mode_bad_value_rejected();
     test_standby_mode_string_roundtrip();
     test_capability_callback_rejects_unsupported();
+    test_channels_parsing();
+    test_channels_malformed_rejected();
     printf("test_sapi_redundancy_config: all tests passed\n");
     return 0;
 }
+

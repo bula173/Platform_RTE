@@ -58,7 +58,41 @@ extern "C" {
 
 /** Largest config file this loader will read - a bounded, static buffer,
  *  no dynamic allocation; a larger file is rejected as invalid. */
-#define SAPI_REDUNDANCY_CONFIG_MAX_FILE_SIZE 4096U
+#define SAPI_REDUNDANCY_CONFIG_MAX_FILE_SIZE 8192U
+
+/** Largest channel count accepted in the "channels" array. */
+#define SAPI_CHANNEL_CONFIG_MAX_CHANNELS 32U
+
+/** Longest channel name (including terminator). */
+#define SAPI_CHANNEL_CONFIG_MAX_NAME_LEN 32U
+
+/** Longest host name (including terminator). */
+#define SAPI_CHANNEL_CONFIG_MAX_HOST_LEN 64U
+
+/** Channel transport type. */
+typedef enum {
+    SAPI_CHANNEL_TRANSPORT_FLOW = 0,
+    SAPI_CHANNEL_TRANSPORT_POSIX_NETLINK = 1,
+    SAPI_CHANNEL_TRANSPORT_DDS = 2
+} sapi_channel_transport_t;
+
+/** Channel endpoint role. */
+typedef enum {
+    SAPI_CHANNEL_ROLE_LISTEN = 0,
+    SAPI_CHANNEL_ROLE_CONNECT = 1
+} sapi_channel_role_t;
+
+/** Definition of a single communication channel. */
+typedef struct {
+    uint32_t                 id;
+    char                     name[SAPI_CHANNEL_CONFIG_MAX_NAME_LEN];
+    sapi_channel_transport_t transport;
+    sapi_channel_role_t      role;
+    char                     host[SAPI_CHANNEL_CONFIG_MAX_HOST_LEN];
+    uint16_t                 port;
+    uint32_t                 message_size;
+    uint32_t                 connect_timeout_ms;
+} sapi_channel_def_t;
 
 /** Voting/replication topology, matching the OCORA/RCA-discussed options. */
 typedef enum {
@@ -120,6 +154,10 @@ typedef struct {
     /** Optional per-replica role labels (e.g. "A", "B", "C"), diagnostic only -
      *  not consumed by sapi_voter itself. */
     char roles[SAPI_REDUNDANCY_CONFIG_MAX_REPLICAS][SAPI_REDUNDANCY_CONFIG_MAX_ROLE_NAME_LEN];
+    /** Number of entries populated in channels[] below. */
+    uint32_t channel_count;
+    /** Resolved channel definitions from configuration. */
+    sapi_channel_def_t channels[SAPI_CHANNEL_CONFIG_MAX_CHANNELS];
 } sapi_redundancy_config_t;
 
 /**
@@ -240,6 +278,40 @@ sapi_status_t sapi_redundancy_config_load(const char *path, sapi_redundancy_conf
  */
 sapi_status_t sapi_redundancy_config_apply_to_voter(const sapi_redundancy_config_t *config,
                                                      sapi_voter_config_t *voter_cfg);
+
+/**
+ * @brief Parse transport name string ("flow", "netlink", "posix", "dds") into enum.
+ */
+sapi_status_t sapi_channel_config_transport_from_string(const char *name, sapi_channel_transport_t *out_transport);
+
+/**
+ * @brief Parse channel role name string ("listen", "connect", "publisher", "subscriber") into enum.
+ */
+sapi_status_t sapi_channel_config_role_from_string(const char *name, sapi_channel_role_t *out_role);
+
+/**
+ * @brief Find channel definition by name in the given configuration.
+ */
+sapi_status_t sapi_redundancy_config_find_channel_by_name(const sapi_redundancy_config_t *config,
+                                                          const char *name,
+                                                          sapi_channel_def_t *out_channel);
+
+/**
+ * @brief Find channel definition by ID in the given configuration.
+ */
+sapi_status_t sapi_redundancy_config_find_channel_by_id(const sapi_redundancy_config_t *config,
+                                                        uint32_t id,
+                                                        sapi_channel_def_t *out_channel);
+
+/**
+ * @brief Get the currently active loaded redundancy/channel configuration (if any).
+ */
+const sapi_redundancy_config_t *sapi_redundancy_config_get_active(void);
+
+/**
+ * @brief Set the active configuration explicitly (or automatically by sapi_redundancy_config_load).
+ */
+void sapi_redundancy_config_set_active(const sapi_redundancy_config_t *config);
 
 #ifdef __cplusplus
 }

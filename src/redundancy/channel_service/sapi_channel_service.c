@@ -4,6 +4,7 @@
  */
 
 #include "safeapi/redundancy/channel_service/sapi_channel_service.h"
+#include "safeapi/redundancy/config/sapi_redundancy_config.h"
 
 static const sapi_channel_service_backend_t *s_backend;
 
@@ -42,6 +43,28 @@ sapi_status_t sapi_channel_service_setup(sapi_channel_service_t *storage, const 
         return status;
     }
     return s_backend->setup(storage, channel_name);
+}
+
+sapi_status_t sapi_channel_service_setup_by_id(sapi_channel_service_t *storage, uint32_t channel_id)
+{
+    const sapi_redundancy_config_t *active = sapi_redundancy_config_get_active();
+    sapi_channel_def_t def;
+    sapi_status_t status;
+
+    if (storage == NULL)
+    {
+        return SAPI_STATUS_INVALID_PARAM;
+    }
+    if (active == NULL)
+    {
+        return SAPI_STATUS_NOT_INITIALIZED;
+    }
+    status = sapi_redundancy_config_find_channel_by_id(active, channel_id, &def);
+    if (status != SAPI_STATUS_OK)
+    {
+        return status;
+    }
+    return sapi_channel_service_setup(storage, def.name);
 }
 
 sapi_status_t sapi_channel_service_read(sapi_channel_service_t *storage,

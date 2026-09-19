@@ -33,6 +33,7 @@
 
 #include "safeapi/oal/flow/sapi_flow.h"
 #include "safeapi/oal/memory/sapi_mem_util.h"
+#include "safeapi/redundancy/config/sapi_redundancy_config.h"
 
 /* Only the fields ensure_open() needs to rebuild a sapi_flow_config_t are
  * stored (not the whole struct) - this backend's storage must fit inside
@@ -45,6 +46,7 @@ typedef struct
     uint32_t              oflags;
     size_t                message_size;
     char                  name_buf[SAPI_CHANNEL_SERVICE_NAME_SIZE];
+    sapi_duration_ms_t    default_timeout_ms;
     bool                  resolved;   /**< setup() succeeded; the fields above are valid. */
     bool                  opened;     /**< flow_handle is valid (lazy-opened). */
 } flow_channel_state_t;
@@ -76,7 +78,7 @@ static sapi_status_t backend_setup(sapi_channel_service_storage_t *storage, cons
     sapi_netlink_config_t resolved;
     sapi_status_t status;
 
-    if ((storage == NULL) || (channel_name == NULL) || (s_resolver == NULL))
+    if ((storage == NULL) || (channel_name == NULL))
     {
         return SAPI_STATUS_INVALID_PARAM;
     }
@@ -84,15 +86,38 @@ static sapi_status_t backend_setup(sapi_channel_service_storage_t *storage, cons
     sapi_mem_set(state, 0, sizeof(*state));
 
     sapi_mem_set(&resolved, 0, sizeof(resolved));
-    status = s_resolver(channel_name, &resolved, s_resolver_context);
-    if (status != SAPI_STATUS_OK)
+    if (s_resolver != NULL)
     {
-        return status;
+        status = s_resolver(channel_name, &resolved, s_resolver_context);
+        if (status != SAPI_STATUS_OK)
+        {
+            return status;
+        }
+    }
+    else
+    {
+        const sapi_redundancy_config_t *active = sapi_redundancy_config_get_active();
+        sapi_channel_def_t def;
+        if (active == NULL)
+        {
+            return SAPI_STATUS_NOT_INITIALIZED;
+        }
+        status = sapi_redundancy_config_find_channel_by_name(active, channel_name, &def);
+        if (status != SAPI_STATUS_OK)
+        {
+            return status;
+        }
+        resolved.role = (def.role == SAPI_CHANNEL_ROLE_CONNECT) ? SAPI_NETLINK_ROLE_CONNECT : SAPI_NETLINK_ROLE_LISTEN;
+        resolved.host = (def.host[0] != '\0') ? def.host : NULL;
+        resolved.port = def.port;
+        resolved.message_size = def.message_size;
+        resolved.connect_timeout_ms = def.connect_timeout_ms;
     }
 
     (void)strncpy(state->name_buf, channel_name, sizeof(state->name_buf) - 1U);
     state->oflags = oflags_for_role(resolved.role);
     state->message_size = resolved.message_size;
+    state->default_timeout_ms = resolved.connect_timeout_ms;
     state->resolved = true;
     state->opened = false;
     return SAPI_STATUS_OK;
@@ -125,7 +150,7 @@ static sapi_status_t ensure_open(flow_channel_state_t *state, sapi_duration_ms_t
     flow_cfg.name = state->name_buf;
     flow_cfg.oflags = state->oflags;
     flow_cfg.message_size = state->message_size;
-    flow_cfg.open_timeout_ms = open_timeout_ms;
+    flow_cfg.open_timeout_ms = (open_timeout_ms > 0U) ? open_timeout_ms : state->default_timeout_ms;
     status = sapi_flow_open(&state->flow_storage, &flow_cfg, &state->flow_handle);
     if (status == SAPI_STATUS_OK)
     {
