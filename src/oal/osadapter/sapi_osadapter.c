@@ -78,6 +78,21 @@ sapi_status_t sapi_osadapter_register_all(const sapi_osadapter_bundle_t *bundle)
         status = sapi_reboot_register_backend(bundle->reboot);
         if (status != SAPI_STATUS_OK) { return status; }
     }
+    if (bundle->ipc != NULL)
+    {
+        status = sapi_ipc_register_backend(bundle->ipc);
+        if (status != SAPI_STATUS_OK) { return status; }
+    }
+    if (bundle->netlink != NULL)
+    {
+        status = sapi_netlink_register_backend(bundle->netlink);
+        if (status != SAPI_STATUS_OK) { return status; }
+    }
+    if (bundle->flow != NULL)
+    {
+        status = sapi_flow_register_backend(bundle->flow);
+        if (status != SAPI_STATUS_OK) { return status; }
+    }
     if (bundle->sockets != NULL)
     {
         status = sapi_osadapter_register_socket_ops(bundle->sockets);
@@ -86,3 +101,64 @@ sapi_status_t sapi_osadapter_register_all(const sapi_osadapter_bundle_t *bundle)
 
     return SAPI_STATUS_OK;
 }
+
+sapi_status_t sapi_osadapter_memory_register(const sapi_osadapter_memory_t *adapter)
+{
+    return sapi_mem_pool_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_clocksync_register(const sapi_osadapter_clocksync_t *adapter)
+{
+    return sapi_clocksync_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_timer_register(const sapi_osadapter_timer_t *adapter)
+{
+    return sapi_timer_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_mutex_register(const sapi_osadapter_mutex_t *adapter)
+{
+    return sapi_mutex_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_task_register(const sapi_osadapter_task_t *adapter)
+{
+    return sapi_task_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_log_register(const sapi_osadapter_log_t *adapter)
+{
+    return sapi_log_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_nvm_register(const sapi_osadapter_nvm_t *adapter)
+{
+    return sapi_nvm_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_platform_register(const sapi_osadapter_platform_t *adapter)
+{
+    return sapi_platform_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_reboot_register(const sapi_osadapter_reboot_t *adapter)
+{
+    return sapi_reboot_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_ipc_register(const sapi_osadapter_ipc_t *adapter)
+{
+    return sapi_ipc_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_netlink_register(const sapi_osadapter_netlink_t *adapter)
+{
+    return sapi_netlink_register_backend(adapter);
+}
+
+sapi_status_t sapi_osadapter_flow_register(const sapi_osadapter_flow_t *adapter)
+{
+    return sapi_flow_register_backend(adapter);
+}
+
