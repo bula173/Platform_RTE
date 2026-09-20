@@ -298,6 +298,15 @@ endif()
 if(SAFEAPI_ENABLE_WATCHDOG)
     list(APPEND _safeapi_oal_sources src/redundancy/watchdog/sapi_watchdog.c)
 endif()
+
+# OSAdapter master registration and ProtocolAdapters (UDP, TCP)
+list(APPEND _safeapi_oal_sources
+    src/oal/osadapter/sapi_osadapter.c
+    src/oal/protocol/sapi_protocol_adapter.c
+    src/oal/protocol/sapi_protocol_adapter_udp.c
+    src/oal/protocol/sapi_protocol_adapter_tcp.c
+)
+
 if(NOT _safeapi_oal_sources)
     message(FATAL_ERROR "safeAPIFramework: every SAFEAPI_ENABLE_<oal-feature> option "
                          "is OFF - safeapi_oal would have no sources. Enable at least one.")
@@ -570,6 +579,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         install(DIRECTORY include/safeapi_backend
             DESTINATION ${INCLUDE_INSTALL_DIR}
             COMPONENT backend-development
+        )
+    endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_osadapter")
+        install(DIRECTORY include/safeapi_osadapter
+            DESTINATION ${INCLUDE_INSTALL_DIR}
+            COMPONENT osadapter-development
         )
     endif()
 

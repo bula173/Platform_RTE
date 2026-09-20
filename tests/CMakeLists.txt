@@ -65,6 +65,8 @@ if(SAFEAPI_ENABLE_WATCHDOG)
     safeapi_add_test(test_sapi_watchdog   watchdog/test_sapi_watchdog.c        safeapi::oal)
 endif()
 
+safeapi_add_test(test_sapi_osadapter      osadapter/test_sapi_osadapter.c      safeapi::channels)
+
 # Channels
 if(SAFEAPI_ENABLE_CHECKSUM)
     safeapi_add_test(test_sapi_checksum   checksum/test_sapi_checksum.c        safeapi::channels)
