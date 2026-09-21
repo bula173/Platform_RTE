@@ -4,7 +4,7 @@
  * @section system_architecture_layers Layering
  *
  * The framework is organized in three layers. Applications only ever call
- * into SAPI - never directly into the OS/RTOS - so retargeting to a
+ * into Platform_RTE - never directly into the OS/RTOS - so retargeting to a
  * different platform means registering a different backend (ADR-005), not
  * rewriting application code.
  *

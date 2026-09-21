@@ -12,7 +12,7 @@
 
 ## Overview
 
-EN 50128 defines a set of **mandatory**, **highly recommended**, and **recommended** techniques for safety-critical software. This document maps SAPI architecture and features to EN 50128 technique compliance.
+EN 50128 defines a set of **mandatory**, **highly recommended**, and **recommended** techniques for safety-critical software. This document maps Platform_RTE architecture and features to EN 50128 technique compliance.
 
 **EN 50128 Context:**
 
@@ -69,9 +69,9 @@ safeAPIFramework Alignment:
 ✓ Reduces application verification scope (infrastructure proven)
 ```
 
-**How SAPI supports EN 50129:**
+**How Platform_RTE supports EN 50129:**
 
-| EN 50129 Activity | SAPI Support |
+| EN 50129 Activity | Platform_RTE Support |
 |---|---|
 | **Risk Assessment** | Provides FMEA templates, documented fault modes |
 | **Safety Requirements** | SRS.md as template, REQ-ID traceability |
@@ -85,7 +85,7 @@ safeAPIFramework Alignment:
 
 ## EN 50128 Mandatory Techniques for SIL 4
 
-| Technique | Section | SAPI Implementation | Status |
+| Technique | Section | Platform_RTE Implementation | Status |
 |-----------|---------|-------------------|--------|
 | **Requirement Specification** | 7.1 | SRS.md, CLAUDE.md, ADRs | ✅ |
 | **Design & Implementation Standard** | 7.2.1 | MISRA C:2012 (Mandatory & Required) | ✅ |
@@ -100,7 +100,7 @@ safeAPIFramework Alignment:
 
 ---
 
-## EN 50128 Technique Mapping by SAPI Layer
+## EN 50128 Technique Mapping by Platform_RTE Layer
 
 ### 1. OS Abstraction Layer (OAL) Techniques
 
@@ -544,7 +544,7 @@ SAFETY:
 
 ## EN 50128 Technique Coverage Matrix
 
-| EN 50128 Technique | SIL 4 | SAPI Coverage | Module(s) | Status |
+| EN 50128 Technique | SIL 4 | Platform_RTE Coverage | Module(s) | Status |
 |-------------------|-------|---------------|-----------|--------|
 | **Requirement Specification** | M | 100% | SRS.md, ADRs | ✅ |
 | **Design Standards (MISRA C)** | M | 100% | All (cppcheck) | ✅ |
@@ -567,10 +567,10 @@ SAFETY:
 
 ## Mandatory Technique Deployment
 
-### Per SAPI Module
+### Per Platform_RTE Module
 
 ```
-SAPI Module          MISRA   Static   Formal   Tests   Review
+Platform_RTE Module          MISRA   Static   Formal   Tests   Review
                      Audit   Chk      Methods
 ─────────────────────────────────────────────────────────────
 status              ✓       ✓        ✓        ✓       ✓
@@ -707,11 +707,11 @@ CONCLUSION: Deadlock is detected and recovered within bounded time.
 
 ## EN 50126 RAM (Reliability, Availability, Maintainability) Support
 
-EN 50126 defines reliability and maintainability requirements for railway systems. SAPI enables RAM compliance by design:
+EN 50126 defines reliability and maintainability requirements for railway systems. Platform_RTE enables RAM compliance by design:
 
 ### 1. Reliability (Mean Time Between Failures - MTBF)
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Deterministic, bounded behavior:
 ├─ No dynamic allocation (no memory fragmentation)
@@ -727,7 +727,7 @@ Deterministic, bounded behavior:
 
 ### 2. Availability (Uptime, Fault Recovery)
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Automatic recovery mechanisms:
 ├─ Watchdog timeout → Automatic safe-state or failover
@@ -741,7 +741,7 @@ Automatic recovery mechanisms:
 
 ### 3. Maintainability (MTTR - Mean Time To Repair)
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Operational support:
 ├─ Structured logging (audit trail for diagnosis)
@@ -756,7 +756,7 @@ Operational support:
 
 ### 4. Redundancy & Fault Tolerance
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Active redundancy for continuous availability:
 
@@ -780,7 +780,7 @@ Graceful Degradation:
 
 ### 5. Testability & Diagnostics
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Built-in observability:
 ├─ Per-module unit tests (CTest framework)
@@ -794,7 +794,7 @@ Built-in observability:
 
 ### EN 50126 Requirement Mapping
 
-| EN 50126 Requirement | SAPI Feature | Metric |
+| EN 50126 Requirement | Platform_RTE Feature | Metric |
 |---|---|---|
 | **MTBF** | Deterministic design | > 100,000 hours (typical) |
 | **Availability** | Redundancy + watchdog | > 99.9% (2oo3 mode) |
@@ -809,11 +809,11 @@ Built-in observability:
 
 ## EN 50129 Compliance Support
 
-EN 50129 defines the functional safety management framework. SAPI enables compliance by providing:
+EN 50129 defines the functional safety management framework. Platform_RTE enables compliance by providing:
 
 ### 1. Hazard Analysis & Risk Assessment
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Documented fault modes (FMEA section):
 ├─ Single-point failures (node hangs)
@@ -824,11 +824,11 @@ Documented fault modes (FMEA section):
 Enables your FMEA to build on proven foundation.
 ```
 
-**Example:** Your safety case can cite SAPI's documented checkpoint timeout behavior (200ms detection latency) when assessing RBC startup hazards.
+**Example:** Your safety case can cite Platform_RTE's documented checkpoint timeout behavior (200ms detection latency) when assessing RBC startup hazards.
 
 ### 2. Safety Requirements Specification
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 SRS.md template with REQ-ID structure
 ├─ Requirement identifiers (REQ-OAL-TIMER-001, etc.)
@@ -836,12 +836,12 @@ SRS.md template with REQ-ID structure
 ├─ Traceability to tests (test_timer.c)
 └─ Design rationale (ADRs)
 
-Your SRS extends SAPI requirements with application logic.
+Your SRS extends Platform_RTE requirements with application logic.
 ```
 
 ### 3. Design & Implementation Specification
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Architecture Decision Records (ADRs):
 ├─ ADR-001: OS Abstraction Layer (why layered?)
@@ -854,12 +854,12 @@ Architecture Decision Records (ADRs):
 ├─ ADR-008 onwards: New features (checkpoints, watchdog)
 └─ EN 50128 rationale for each decision
 
-Your design spec inherits SAPI architecture.
+Your design spec inherits Platform_RTE architecture.
 ```
 
 ### 4. Validation & Verification Plan
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Module-by-module test suites:
 ├─ Unit tests (per module)
@@ -868,7 +868,7 @@ Module-by-module test suites:
 ├─ Fault injection tests (watchdog, voting)
 └─ Regression tests (prevent breakage)
 
-Your V&V plan extends SAPI verification with application tests.
+Your V&V plan extends Platform_RTE verification with application tests.
 
 Code coverage tools:
 └─ CMake targets for coverage metrics
@@ -876,7 +876,7 @@ Code coverage tools:
 
 ### 5. Safety Case Development
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Structured safety arguments:
 ├─ Argument: No contradictory outputs
@@ -897,12 +897,12 @@ Structured safety arguments:
    ├─ Evidence: Checkpoint timeout isolates slow nodes
    └─ Evidence: No cascading failures (fail-safe)
 
-Your safety case builds on SAPI's proven arguments.
+Your safety case builds on Platform_RTE's proven arguments.
 ```
 
 ### 6. Operational Support & Maintenance
 
-**SAPI Contribution:**
+**Platform_RTE Contribution:**
 ```
 Operational documentation:
 ├─ Watchdog configuration guide (timeout tuning)
@@ -912,12 +912,12 @@ Operational documentation:
 ├─ Configuration management (how to update safely)
 └─ Maintenance procedures (kernel updates, etc.)
 
-Your operational procedures inherit SAPI patterns.
+Your operational procedures inherit Platform_RTE patterns.
 ```
 
 ### EN 50129 Technique Matrix
 
-| EN 50129 Process | SAPI Support | Responsibility |
+| EN 50129 Process | Platform_RTE Support | Responsibility |
 |---|---|---|
 | **Risk Assessment** | Documented fault modes, FMEA | Your app-specific hazards |
 | **SRS Development** | Template SRS, REQ-ID structure | Extend with app requirements |
@@ -925,7 +925,7 @@ Your operational procedures inherit SAPI patterns.
 | **Implementation** | MISRA-compliant code, modules | Implement app logic |
 | **V&V Planning** | Test framework, coverage tools | Add app test cases |
 | **Safety Case** | Argument templates, evidence | Build complete case |
-| **Verification** | SAPI tests pass, MISRA audit | Verify your changes |
+| **Verification** | Platform_RTE tests pass, MISRA audit | Verify your changes |
 | **Validation** | Framework proves fault tolerance | Validate app behavior |
 | **Operational Docs** | Watchdog, redundancy, checkpoints | Add app-specific ops |
 | **Certification** | Ready for notified body review | Your project-specific audit |
@@ -966,7 +966,7 @@ Your operational procedures inherit SAPI patterns.
 - Advisory Rules (applied where feasible)
 - Ensures: Code safety, no undefined behavior, deterministic
 
-**SAPI Architecture**
+**Platform_RTE Architecture**
 - [ADR-001](architecture/) through [ADR-008](architecture/), then
   [ADR-016](architecture/) through [ADR-024](architecture/)
   (ADR-009 through ADR-015 were never written - see ROADMAP.md; this
@@ -996,7 +996,7 @@ When your project **links safeAPIFramework**:
 - Write your own safety case and hazard analysis (FMEA, FTA)
 - Engage a **Notified Body** (TÜV, DEKRA, exida, etc.) for certification
 
-**Benefit:** Your application logic verification scope is reduced because SAPI provides the proven infrastructure layer.
+**Benefit:** Your application logic verification scope is reduced because Platform_RTE provides the proven infrastructure layer.
 
 ---
 

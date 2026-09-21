@@ -94,7 +94,7 @@ jobs:
           retention-days: 7
 
   # This project's docs no longer deploy to their own separate GitHub Pages site — they are
-  # published as a subpage of the single unified site on the top-level bula173/SAPI repo instead
+  # published as a subpage of the single unified site on the top-level bula173/RBC_Template repo instead
   # (its own .github/workflows/docs.yml checks out this repo as a submodule and runs `doxygen
   # Doxyfile` here, same as this workflow's build-docs job does). build-docs above still runs on
   # every push/PR as a CI check and artifact; only the separate deploy-pages step was removed.

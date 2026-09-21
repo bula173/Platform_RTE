@@ -186,7 +186,7 @@ Any project using safeAPIFramework must perform:
 
 #### Memory Assumptions
 - **Assumption:** No dynamic memory allocation post-initialization
-- **Project Must Verify:** Callers provide static buffers to all SAPI functions
+- **Project Must Verify:** Callers provide static buffers to all Platform_RTE functions
 
 - **Assumption:** Buffer sizes are statically known
 - **Project Must Verify:** No buffer overflow due to untrusted input sizes

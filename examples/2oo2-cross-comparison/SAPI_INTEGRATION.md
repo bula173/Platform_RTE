@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document shows how to integrate **safeAPIFramework (SAPI)** modules into the 2oo2 voting examples for production railway systems.
+This document shows how to integrate **safeAPIFramework (Platform_RTE)** modules into the 2oo2 voting examples for production railway systems.
 
-## Current State vs. SAPI Integration
+## Current State vs. Platform_RTE Integration
 
 ### Current Examples (Standalone)
 - ✗ Manual error handling
@@ -13,7 +13,7 @@ This document shows how to integrate **safeAPIFramework (SAPI)** modules into th
 - ✗ Manual timing management
 - ✗ Direct memory access (no IPC abstraction)
 
-### SAPI-Integrated Examples (Production-Ready)
+### Platform_RTE-Integrated Examples (Production-Ready)
 - ✓ Consistent error handling via `sapi_status_t`
 - ✓ Deterministic logging via `sapi_log`
 - ✓ Fixed-width types via `sapi_types.h`
@@ -35,7 +35,7 @@ int perform_voting(cmd_a, cmd_b, result_out) {
 }
 ```
 
-**After (SAPI):**
+**After (Platform_RTE):**
 ```c
 #include "safeapi/status/sapi_status.h"
 
@@ -71,7 +71,7 @@ typedef struct {
 } train_command_t;
 ```
 
-**After (SAPI - SIL 4 Safe):**
+**After (Platform_RTE - SIL 4 Safe):**
 ```c
 #include "safeapi/types/sapi_types.h"
 
@@ -181,7 +181,7 @@ error:
 }
 ```
 
-**After (SAPI - SIL 4 Safe):**
+**After (Platform_RTE - SIL 4 Safe):**
 ```c
 #include "safeapi/appmanager/sapi_appmanager.h"
 
@@ -234,7 +234,7 @@ __sync_synchronize();
 train_command_t received = shared_mem.cmd_b;
 ```
 
-**After (SAPI - Abstracted):**
+**After (Platform_RTE - Abstracted):**
 ```c
 #include "safeapi/ipc/sapi_ipc_request_reply.h"
 
@@ -255,9 +255,9 @@ train_command_t received;
 rc = sapi_ipc_receive(queue_id, &received, sizeof(received), 25);
 ```
 
-## Complete SAPI-Integrated Example
+## Complete Platform_RTE-Integrated Example
 
-### Header File with SAPI
+### Header File with Platform_RTE
 
 ```c
 /* voting.h */
@@ -286,7 +286,7 @@ sapi_status_t voting_compare_and_decide(const train_command_t *cmd_a,
                                          train_command_t *result_out);
 ```
 
-### Implementation with SAPI
+### Implementation with Platform_RTE
 
 ```c
 /* voting.c */
@@ -378,9 +378,9 @@ sapi_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 }
 ```
 
-## SAPI Module Mapping
+## Platform_RTE Module Mapping
 
-| SAPI Module | Voting Use Case |
+| Platform_RTE Module | Voting Use Case |
 |---|---|
 | `sapi_status` | Error codes (INVALID_PARAM, TIMEOUT, etc.) |
 | `sapi_types` | Fixed-width types (uint32_t, sapi_duration_ms_t) |
@@ -394,19 +394,19 @@ sapi_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 
 ## Migration Path
 
-### Step 1: Add SAPI Status Codes
+### Step 1: Add Platform_RTE Status Codes
 ```c
 #include "safeapi/status/sapi_status.h"
 /* Replace: int rc → sapi_status_t rc */
 ```
 
-### Step 2: Add SAPI Types
+### Step 2: Add Platform_RTE Types
 ```c
 #include "safeapi/types/sapi_types.h"
-/* Replace: uint32_t → fixed-width types from SAPI */
+/* Replace: uint32_t → fixed-width types from Platform_RTE */
 ```
 
-### Step 3: Add SAPI Logging
+### Step 3: Add Platform_RTE Logging
 ```c
 #include "safeapi/log/sapi_log.h"
 /* Replace: printf/fprintf → sapi_log_write */
@@ -436,7 +436,7 @@ sapi_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 /* Replace: main loop → sapi_appmanager_run */
 ```
 
-## Benefits of SAPI Integration
+## Benefits of Platform_RTE Integration
 
 ✓ **SIL 4 Compliance**: Proven patterns, no security issues  
 ✓ **Portability**: Switch backends (shared mem → TCP → QNX msgpass)  
@@ -446,10 +446,10 @@ sapi_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 ✓ **Determinism**: RTOS-aware timing and synchronization  
 ✓ **Testing**: Mock backends for unit tests  
 
-## Example: Build with SAPI
+## Example: Build with Platform_RTE
 
 ```bash
-# Cross-compile for QNX with SAPI
+# Cross-compile for QNX with Platform_RTE
 qcc -std=c99 \
     -I../../../include \
     -L../../../build/src/status \
@@ -464,4 +464,4 @@ qcc -std=c99 \
 
 ---
 
-**Next Step**: Create `voting-sapi.c` showing full SAPI integration in cross-comparison example.
+**Next Step**: Create `voting-sapi.c` showing full Platform_RTE integration in cross-comparison example.

@@ -9,7 +9,7 @@ This document exists because EN 50129 requires an explicit CCF analysis
 for any redundant/voted safety architecture. It is not sufficient to
 state "there are two channels" and assume independence - independence has
 to be argued, and its limits stated. This is that argument, scoped to
-what SAPI can affect; the parts of a full CCF case that live outside SAPI
+what Platform_RTE can affect; the parts of a full CCF case that live outside Platform_RTE
 (power, environment, physical layout) are named here as required inputs
 to the project's overall safety case, not resolved by this document.
 
@@ -28,7 +28,7 @@ that constraint, what mitigates CCF risk, and what residual risk remains?
 | CPU-microarchitecture corner case tied to one specific instruction sequence appearing in the compiled output | Reduced by build diversity (different codegen is less likely to hit the same corner case), but not eliminated — the CPU family itself is unchanged | **Partially** — reduced likelihood, not eliminated. Not claimed as fully mitigated. |
 | CPU-silicon-family-wide errata (a defect present in every unit of that x86 family regardless of how the code was compiled) | High — both channels use the same CPU family | **No.** Build diversity does not change the CPU. This is an accepted residual risk under this ADR; true elimination requires hardware architecture diversity (ADR-008 section 2.1's deferred alternative). |
 | Specification/algorithm-level bug (the shared source implements the wrong behavior on purpose or by design error) | High — both channels run the same algorithm regardless of compiler | **No.** `sapi_channel_compare()` compares two runs of the *same* algorithm; if that algorithm is wrong, both channels agree on the wrong answer and no mismatch is raised. This is a fundamental limit of 2-channel comparison, not specific to build diversity, and is explicitly out of scope for `sapi_channel` (ADR-008 section 3). |
-| Shared power/environment fault (e.g. a single power rail or a single point of physical damage affecting both channels) | High if channels share power/enclosure/location | **No — outside SAPI's scope.** Requires independent power supplies, independent clocking, and physical separation at the hardware/installation level; SAPI cannot enforce this and it is not claimed to. |
+| Shared power/environment fault (e.g. a single power rail or a single point of physical damage affecting both channels) | High if channels share power/enclosure/location | **No — outside Platform_RTE's scope.** Requires independent power supplies, independent clocking, and physical separation at the hardware/installation level; Platform_RTE cannot enforce this and it is not claimed to. |
 | Single-channel random hardware fault (e.g. a bit flip or component failure specific to one unit) | Low — this is exactly what channel comparison is designed to catch | **Yes** — `sapi_channel_compare()` / `sapi_channel_compare_and_enter_safestate()` detect any disagreement between the two channels' results and force `SAPI_SAFESTATE_LEVEL_SAFE`, regardless of which channel is at fault or why. |
 
 ## 3. What "build diversity" is and is not
@@ -89,7 +89,7 @@ After applying build diversity and channel comparison:
 - **Reduced but not eliminated**: compiler/codegen-specific systematic
   faults, and CPU-microarchitecture corner cases tied to specific
   generated instruction sequences.
-- **Not mitigated by SAPI at all** (must be addressed elsewhere in the
+- **Not mitigated by Platform_RTE at all** (must be addressed elsewhere in the
   safety case): CPU-silicon-family-wide errata; specification/algorithm-
   level defects shared by both channels; shared power, clocking, or
   physical/environmental faults.

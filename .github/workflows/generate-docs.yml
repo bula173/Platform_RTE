@@ -50,7 +50,7 @@ jobs:
           retention-days: 30
 
       # Deploy step removed: this project's docs are now published as a subpage of the single
-      # unified GitHub Pages site on the top-level bula173/SAPI repo, not this project's own
+      # unified GitHub Pages site on the top-level bula173/RBC_Template repo, not this project's own
       # gh-pages branch — see docs.yml's own note and the root repo's .github/workflows/docs.yml.
 
       - name: Comment on PR with doc link

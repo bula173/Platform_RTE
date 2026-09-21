@@ -1,4 +1,4 @@
-# Watchdog Mechanism - SAPI Design
+# Watchdog Mechanism - Platform_RTE Design
 
 📋 **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
 - API specification: `include/safeapi/watchdog/sapi_watchdog.h` ✅

@@ -1,8 +1,8 @@
 # Platform_RTE
 
-**Product:** Platform_RTE, the Safe Computing Platform core / RTE of the SAPI workspace
+**Product:** Platform_RTE, the Safe Computing Platform core / RTE of the RBC_Template workspace
 (repository `safeAPIFreamwork`). C99, MISRA C:2012, EN 50128 SIL 4 target.
-**Layer:** RTE. **Assessment unit:** SAPI core (part of the RTE composition, see
+**Layer:** RTE. **Assessment unit:** Platform core (part of the RTE composition, see
 [../../docs/safety/CERTIFICATION_PLAN.md](../../docs/safety/CERTIFICATION_PLAN.md)).
 
 ## Responsibility

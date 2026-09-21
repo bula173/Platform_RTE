@@ -268,7 +268,7 @@ STOPPED --> [*]: sapi_watchdog_destroy()
 
 ### 5. Deployment Diagram (Structural)
 
-Shows how SAPI is deployed on hardware.
+Shows how Platform_RTE is deployed on hardware.
 
 **File:** `docs/architecture/diagrams/deployment-2oo3-cluster.puml`
 
@@ -630,7 +630,7 @@ end
 package "Application Layer" {
     [RBC Logic]
 }
-package "Framework Layer (SAPI)" {
+package "Framework Layer (Platform_RTE)" {
     [IPC] [Timer] [Watchdog]
 }
 package "OAL Backend Layer" {

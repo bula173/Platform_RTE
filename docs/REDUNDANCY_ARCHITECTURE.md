@@ -89,7 +89,7 @@ point. That is what the checkpoint provides.
 
 ### 3.3 Fault modes and reactions
 
-| Mode | Condition | Reaction in SAPI |
+| Mode | Condition | Reaction in Platform_RTE |
 |---|---|---|
 | Match | Results equal | Continue; outputs are committed at the checkpoint |
 | Mismatch | Results differ although both are valid | Safe state; in the reference RBC a REBOOT with `own_faulted` flushed to the counterpart site |
@@ -118,7 +118,7 @@ within the last few cycles, while a silent peer still trips the safe state (see 
 
 ## 5. Site redundancy: online and standby
 
-| Model | Description | In SAPI |
+| Model | Description | In Platform_RTE |
 |---|---|---|
 | **Online (active-active)** | All nodes process the same inputs and must agree | Within a site this is the 2oo2 pair. Across sites it would be an active-active design, which is not implemented |
 | **Standby** | One site is ONLINE and outputs; the other is ready to take over | Implemented as cold and warm. Roles are ONLINE, STANDBY and FAULTED, negotiated with `sapi_dual_*` |

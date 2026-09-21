@@ -133,7 +133,7 @@ cmake --build build
 
 ---
 
-### Multi-Architecture Docker Builds (SAPI example app layer)
+### Multi-Architecture Docker Builds (Platform_RTE example app layer)
 
 `cmake/Toolchain-Linux.cmake`'s own `LINUX_CROSS_COMPILE` variable (above) is for a real host
 cross-compiler toolchain (e.g. `aarch64-linux-gnu-gcc` installed on a Linux build machine or CI
@@ -142,7 +142,7 @@ actually been built and tested; the mappings it sets up are reviewed-correct, no
 
 The genuinely working, verified multi-architecture path today is different, and lives among this
 framework's sibling projects in the workspace (`RBC_GP` and the three Python sims, direct
-SAPI-root siblings - see root `CLAUDE.md`): **Docker buildx with QEMU emulation**. Every one of
+workspace-root siblings - see root `CLAUDE.md`): **Docker buildx with QEMU emulation**. Every one of
 those Dockerfiles installs its own toolchain via plain `apt-get`/`pip` with no arch-specific
 package names or triplets - under `docker buildx build --platform <target>`, that just installs
 the *target* arch's own native compiler/interpreter inside an emulated container and compiles

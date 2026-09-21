@@ -178,7 +178,7 @@ different implementation teams.
 | **Example** | One random bit flip in memory | Compiler generates same bug in all copies |
 | **Solution** | 2oo2 voting (detects mismatch) | Different CPUs/compilers (prevent mismatch) |
 
-### SAPI's Role: The API Abstraction Layer
+### Platform_RTE's Role: The API Abstraction Layer
 
 safeAPIFramework provides an **API ABSTRACTION LAYER** that isolates safety-critical application logic from OS/RTOS implementation details:
 
@@ -192,7 +192,7 @@ Complete Safety System:
 └────────────────────┬─────────────────────────────┘
                      │
          ┌───────────▼──────────────────┐
-         │   safeAPIFramework API       │ ← SAPI (THIS PACKAGE)
+         │   safeAPIFramework API       │ ← Platform_RTE (THIS PACKAGE)
          │   (Abstraction Only)         │
          │                              │
          │   Interface definitions for: │
@@ -203,7 +203,7 @@ Complete Safety System:
          │   ✓ Logging, safe-states     │
          │   ✓ Application lifecycle    │
          │                              │
-         │   (SAPI = API only,          │
+         │   (Platform_RTE = API only,          │
          │    NOT implementation)       │
          └───────────┬──────────────────┘
                      │
@@ -230,8 +230,8 @@ Complete Safety System:
 ```
 
 **Critical Design Point:**
-- SAPI defines the **interface contract** (what functions exist, what they must do)
-- SAPI does **NOT provide implementation** for any specific OS or RTOS
+- Platform_RTE defines the **interface contract** (what functions exist, what they must do)
+- Platform_RTE does **NOT provide implementation** for any specific OS or RTOS
 - Users must provide **OS-specific backend implementations** for each target platform
 - This allows your RBC core code to remain unchanged when:
   - Switching from Linux to QNX
@@ -276,7 +276,7 @@ Complete Safety System:
 ```
 Step 1: RBC Application Code
    ├─ Your safety logic (route calculation, MA creation, etc.)
-   └─ Uses SAPI APIs (does NOT call OS directly)
+   └─ Uses Platform_RTE APIs (does NOT call OS directly)
         ↓
 Step 2: Select Hardware Configuration
    ├─ Choose redundancy pattern based on SIL target:
@@ -286,7 +286,7 @@ Step 2: Select Hardware Configuration
    └─ Choose specific CPUs, network topology, watchdog strategy
         ↓
 Step 3: Implement OS-Specific Backend
-   ├─ SAPI expects these OS services:
+   ├─ Platform_RTE expects these OS services:
    │  ├─ Timers (sapi_timer_start, sapi_timer_wait, etc.)
    │  ├─ IPC (sapi_ipc_send, sapi_ipc_receive, etc.)
    │  ├─ Memory (sapi_memory_allocate for init-time, static for runtime)
@@ -323,11 +323,11 @@ Step 5: Verification & Certification
 
 **Key Insight:** 
 
-SAPI provides the **API contract**—your application uses SAPI APIs instead of OS calls. This means:
+Platform_RTE provides the **API contract**—your application uses Platform_RTE APIs instead of OS calls. This means:
 - Same RBC code works on Linux, QNX, or bare-metal (just swap backend)
 - Same RBC code works for SIL 1 through SIL 4 (just swap HW + verification)
 - You control the actual redundancy/voting via hardware configuration
-- SAPI stays small, portable, and easy to certify
+- Platform_RTE stays small, portable, and easy to certify
 - Implementation complexity (OS-specific backends) is decoupled from application safety logic
 
 ### How Failures Determine SIL Requirements
@@ -358,9 +358,9 @@ Fault Analysis:
 
 ### Standards and Techniques
 
-SAPI defines the API interface through which you implement these mandatory EN 50128 techniques:
+Platform_RTE defines the API interface through which you implement these mandatory EN 50128 techniques:
 
-| Technique | How SAPI Helps | You Must Implement |
+| Technique | How Platform_RTE Helps | You Must Implement |
 |-----------|---|---|
 | **Defensive Programming** | API forces explicit error handling | Every OS backend validates inputs |
 | **Diverse Redundancy** | Voting API (2oo2, 2oo3, NMR) | Deploy multiple diverse CPUs |
@@ -370,14 +370,14 @@ SAPI defines the API interface through which you implement these mandatory EN 50
 | **Error Detection & Correction** | Checkpoint, voting APIs | Implement checkpoint logic in your app |
 | **Bounded Time & Space** | No dynamic allocation after init | Static buffers, no recursion |
 | **Formal Verification** | Requirement traceability (REQ-IDs) | Prove timing, prove algorithm correctness |
-| **Traceability** | REQ-ID linking in SAPI headers | Map your application to requirements |
+| **Traceability** | REQ-ID linking in Platform_RTE headers | Map your application to requirements |
 | **Testing & Validation** | Framework is testable | Create test suites for your backends |
 
 **Implementation Reality:**
-- SAPI API surface is ~50KB of headers (small, easy to verify)
+- Platform_RTE API surface is ~50KB of headers (small, easy to verify)
 - OS backends are ~10-50KB each (you write for your target OS)
 - Application logic is your domain-specific code
-- Together they form a SIL X system (SIL level determined by HW config + verification rigor, NOT by SAPI alone)
+- Together they form a SIL X system (SIL level determined by HW config + verification rigor, NOT by Platform_RTE alone)
 
 ---
 
@@ -403,7 +403,7 @@ address (see [safety/CCF_ANALYSIS.md](safety/CCF_ANALYSIS.md)).
 
 ### Pattern catalog
 
-| Pattern | Detects a single fault | Masks it | After a first fault | SAPI status | Typical use |
+| Pattern | Detects a single fault | Masks it | After a first fault | Platform_RTE status | Typical use |
 |---|---|---|---|---|---|
 | **1oo1** | No (watchdog only, with 1oo1+WD) | No | Continues undetected | Implemented | Development, non-vital, SIL 1-2 |
 | **2oo2** | Yes | No | Safe stop | Implemented | Vital single site |
@@ -496,7 +496,7 @@ names that do not exist; use the headers under `include/safeapi/redundancy/` and
 - ❌ No fault tolerance
 - ❌ Single-point failures not detected
 - ✅ Good for SIL 1/2 or non-critical paths
-- ✅ Suitable for testing SAPI modules
+- ✅ Suitable for testing Platform_RTE modules
 
 ---
 
@@ -519,7 +519,7 @@ names that do not exist; use the headers under `include/safeapi/redundancy/` and
 │  │ RBC Logic    │ RBC Logic    │ │
 │  │ (identical)  │ (identical)  │ │
 │  ├──────────────────────────────┤ │
-│  │ SAPI (vital) │ SAPI (vital) │ │
+│  │ Platform_RTE (vital) │ Platform_RTE (vital) │ │
 │  │ (2oo2 mode)  │ (2oo2 mode)  │ │
 │  └──────┬───────────────┬───────┘ │
 │         │ Data Exchange │         │
@@ -588,7 +588,7 @@ Input B = Y  ├──→ FAULT (disagreement)
 │  Site A              Network         Site B │
 │  ┌──────────┐                  ┌──────────┐│
 │  │ RBC A    │  Ethernet/CAN   │ RBC B    ││
-│  │ SAPI (A) │◄─────────────────►│ SAPI (B) ││
+│  │ Platform_RTE (A) │◄─────────────────►│ Platform_RTE (B) ││
 │  └──────────┘  (replicated)     └──────────┘│
 │                                     │
 │        Voting Decision:             │
@@ -946,7 +946,7 @@ State 4: NEW NORMAL
 │       └───────────────────┘          │
 │                                  │
 │  Challenges:                         │
-│  ✓ Endianness (SAPI handles it)  │
+│  ✓ Endianness (Platform_RTE handles it)  │
 │  ✓ Floating point (avoid, use int) │
 │  ✓ Timing (clock sync needed)    │
 │  ✓ Compilation (verify bitwise)  │
@@ -955,7 +955,7 @@ State 4: NEW NORMAL
 ```
 
 #### Safety Notes
-- ✅ SAPI handles endianness conversion
+- ✅ Platform_RTE handles endianness conversion
 - ✅ Network-based communication works
 - ❌ Clock synchronization required
 - ❌ Compilation verification needed (bitwise comparison)
@@ -1172,7 +1172,7 @@ Characteristics:
 ✓ Simplest architecture for SIL 4
 ```
 
-**SAPI Code Example:**
+**Platform_RTE Code Example:**
 
 #### **Pattern 2: Service Unit with Read-Only Access**
 
@@ -1192,7 +1192,7 @@ Vital Channels        Service Unit
 
 **When to use:** When service unit is logging high-frequency vital decisions but can't keep up in real-time.
 
-The vital channel puts each decision into a bounded queue and returns immediately; the service unit drains the queue asynchronously and does the slow work (compression, storage). The queue is application code; SAPI provides no `sapi_queue`.
+The vital channel puts each decision into a bounded queue and returns immediately; the service unit drains the queue asynchronously and does the slow work (compression, storage). The queue is application code; Platform_RTE provides no `sapi_queue`.
 
 ### Service Unit Failure Scenarios
 
@@ -1274,7 +1274,7 @@ def process_vital_results(vital_decision):
     return dashboard_html
 ```
 
-Vital channels use SAPI (strict C), Service Unit uses anything needed.
+Vital channels use Platform_RTE (strict C), Service Unit uses anything needed.
 
 ### Typical Service Unit Functions
 
@@ -1404,7 +1404,7 @@ Cons:
 ┌──────────────────────────────────────┐
 │  Safety-Critical Container (SIL 4)   │
 ├──────────────────────────────────────┤
-│  SAPI Vital Channels                 │
+│  Platform_RTE Vital Channels                 │
 │  Safety logic, voting, outputs       │
 └──────────────────────────────────────┘
            │ API
