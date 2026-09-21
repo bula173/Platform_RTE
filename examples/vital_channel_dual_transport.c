@@ -38,7 +38,7 @@
 #include "safeapi/status/rte_status.h"
 
 /* ============================================================================
- * Transport Backend 1: Shared Memory Queue (Simulated)
+ * Transport OSAdapter 1: Shared Memory Queue (Simulated)
  * ========================================================================== */
 
 typedef struct {
@@ -86,7 +86,7 @@ static rte_status_t shm_recv(shm_queue_t *q, void *data, size_t size)
 }
 
 /* ============================================================================
- * Transport Backend 2: TCP/IP Socket (Simulated)
+ * Transport OSAdapter 2: TCP/IP Socket (Simulated)
  * ========================================================================== */
 
 typedef struct {
@@ -139,7 +139,7 @@ static rte_status_t tcp_recv(tcp_channel_t *ch, void *data, size_t size)
 }
 
 /* ============================================================================
- * Multi-Transport Backend Callbacks (each rte_channel_t uses one of these)
+ * Multi-Transport OSAdapter Callbacks (each rte_channel_t uses one of these)
  * ========================================================================== */
 
 /**
@@ -172,7 +172,7 @@ static multi_transport_channel_t g_channel_1 = {
 };
 
 /**
- * @brief Backend send callback for rte_channel (dispatches to transport)
+ * @brief OSAdapter send callback for rte_channel (dispatches to transport)
  *
  * Called by rte_channel_send() for one link.
  * The callback hides the specific transport implementation.
@@ -198,7 +198,7 @@ static rte_status_t channel_backend_send(void *channel_handle, const void *data,
 }
 
 /**
- * @brief Backend receive callback for rte_channel (dispatches to transport)
+ * @brief OSAdapter receive callback for rte_channel (dispatches to transport)
  *
  * Called by rte_channel_receive() for one link.
  * The callback hides the specific transport implementation.
@@ -251,7 +251,7 @@ typedef struct {
 static rte_status_t example_setup_dual_redundancy(rte_channel_t channels[CHANNEL_COUNT],
                                                      rte_voter_t *voter)
 {
-    static void * const backend_handles[CHANNEL_COUNT] = { &g_channel_0, &g_channel_1 };
+    static void * const osadapter_handles[CHANNEL_COUNT] = { &g_channel_0, &g_channel_1 };
     rte_voter_config_t voter_cfg = {0};
     rte_status_t rc;
     uint32_t i;
@@ -271,7 +271,7 @@ static rte_status_t example_setup_dual_redundancy(rte_channel_t channels[CHANNEL
     for (i = 0; i < CHANNEL_COUNT; i++) {
         rte_channel_config_t chan_cfg = {0};
 
-        chan_cfg.channel_handle = backend_handles[i];
+        chan_cfg.channel_handle = osadapter_handles[i];
         chan_cfg.send = channel_backend_send;
         chan_cfg.recv = channel_backend_recv;
 

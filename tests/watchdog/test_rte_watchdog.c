@@ -1,7 +1,7 @@
 /* Tests for the real rte_watchdog implementation (replaces the previous
  * non-functional stub - see src/watchdog/rte_watchdog.c file header).
  *
- * Uses a mock rte_timer backend whose "now" function returns a
+ * Uses a mock rte_timer OSAdapter whose "now" function returns a
  * test-controlled counter (g_mock_now_ms) instead of a real clock, so
  * firing can be verified deterministically (advance the counter, call
  * rte_watchdog_timer_tick()) without any real sleep/flakiness.
@@ -17,9 +17,9 @@
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
 #include "safeapi/utils/safestate/rte_safestate.h"
 #include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_backend/timer/rte_timer_backend.h"
+#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
 
-/* ---- mock timer backend: caller-controlled clock ---- */
+/* ---- mock timer OSAdapter: caller-controlled clock ---- */
 static rte_timestamp_ms_t g_mock_now_ms = 0U;
 
 static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
@@ -28,7 +28,7 @@ static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
     return RTE_STATUS_OK;
 }
 
-static const rte_timer_backend_t g_mock_timer_backend = {
+static const rte_osadapter_timer_t g_mock_timer_osadapter = {
     NULL, NULL, NULL, NULL, mock_timer_now
 };
 
@@ -461,7 +461,7 @@ int main(void)
 {
     test_create_requires_manager_initialized();
 
-    assert(rte_timer_register_backend(&g_mock_timer_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
     assert(rte_watchdog_manager_initialize() == RTE_STATUS_OK);
 
     test_create_param_validation();

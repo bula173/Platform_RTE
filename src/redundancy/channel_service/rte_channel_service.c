@@ -6,26 +6,26 @@
 #include "safeapi/redundancy/channel_service/rte_channel_service.h"
 #include "safeapi/redundancy/config/rte_redundancy_config.h"
 
-static const rte_channel_service_backend_t *s_backend;
+static const rte_osadapter_channel_service_t *s_osadapter;
 
-static rte_status_t validate_backend(void)
+static rte_status_t validate_osadapter(void)
 {
-    if ((s_backend == NULL) || (s_backend->setup == NULL) || (s_backend->read == NULL) ||
-        (s_backend->send == NULL) || (s_backend->close == NULL))
+    if ((s_osadapter == NULL) || (s_osadapter->setup == NULL) || (s_osadapter->read == NULL) ||
+        (s_osadapter->send == NULL) || (s_osadapter->close == NULL))
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
     return RTE_STATUS_OK;
 }
 
-rte_status_t rte_channel_service_register_backend(const rte_channel_service_backend_t *backend)
+rte_status_t rte_osadapter_channel_service_register(const rte_osadapter_channel_service_t *osadapter)
 {
-    if ((backend == NULL) || (backend->setup == NULL) || (backend->read == NULL) ||
-        (backend->send == NULL) || (backend->close == NULL))
+    if ((osadapter == NULL) || (osadapter->setup == NULL) || (osadapter->read == NULL) ||
+        (osadapter->send == NULL) || (osadapter->close == NULL))
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
@@ -37,12 +37,12 @@ rte_status_t rte_channel_service_setup(rte_channel_service_t *storage, const cha
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    status = validate_backend();
+    status = validate_osadapter();
     if (status != RTE_STATUS_OK)
     {
         return status;
     }
-    return s_backend->setup(storage, channel_name);
+    return s_osadapter->setup(storage, channel_name);
 }
 
 rte_status_t rte_channel_service_setup_by_id(rte_channel_service_t *storage, uint32_t channel_id)
@@ -78,12 +78,12 @@ rte_status_t rte_channel_service_read(rte_channel_service_t *storage,
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    status = validate_backend();
+    status = validate_osadapter();
     if (status != RTE_STATUS_OK)
     {
         return status;
     }
-    return s_backend->read(storage, data, data_size, timeout_ms);
+    return s_osadapter->read(storage, data, data_size, timeout_ms);
 }
 
 rte_status_t rte_channel_service_send(rte_channel_service_t *storage,
@@ -97,12 +97,12 @@ rte_status_t rte_channel_service_send(rte_channel_service_t *storage,
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    status = validate_backend();
+    status = validate_osadapter();
     if (status != RTE_STATUS_OK)
     {
         return status;
     }
-    return s_backend->send(storage, data, data_size, timeout_ms);
+    return s_osadapter->send(storage, data, data_size, timeout_ms);
 }
 
 rte_status_t rte_channel_service_close(rte_channel_service_t *storage)
@@ -113,10 +113,10 @@ rte_status_t rte_channel_service_close(rte_channel_service_t *storage)
     {
         return RTE_STATUS_OK;
     }
-    status = validate_backend();
+    status = validate_osadapter();
     if (status != RTE_STATUS_OK)
     {
         return status;
     }
-    return s_backend->close(storage);
+    return s_osadapter->close(storage);
 }

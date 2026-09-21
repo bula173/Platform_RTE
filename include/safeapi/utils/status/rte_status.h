@@ -31,9 +31,9 @@ typedef enum rte_status_e
     RTE_STATUS_ALREADY_INITIALIZED   = 3,  /**< Object already created/initialized. */
     RTE_STATUS_TIMEOUT               = 4,  /**< Blocking call exceeded its deadline. */
     RTE_STATUS_RESOURCE_EXHAUSTED    = 5,  /**< Static pool/storage/slots full. */
-    RTE_STATUS_NOT_SUPPORTED         = 6,  /**< Valid request, backend cannot perform it. */
-    RTE_STATUS_NOT_IMPLEMENTED       = 7,  /**< Backend is a stub (skeleton state). */
-    RTE_STATUS_HARDWARE_FAULT        = 8,  /**< Backend reported a hardware-level fault. */
+    RTE_STATUS_NOT_SUPPORTED         = 6,  /**< Valid request, OSAdapter cannot perform it. */
+    RTE_STATUS_NOT_IMPLEMENTED       = 7,  /**< OSAdapter is a stub (skeleton state). */
+    RTE_STATUS_HARDWARE_FAULT        = 8,  /**< OSAdapter reported a hardware-level fault. */
     RTE_STATUS_DATA_CORRUPTION       = 9,  /**< Integrity check (e.g. NVM CRC) failed. */
     RTE_STATUS_INTERNAL_ERROR        = 10, /**< Defensive catch-all: should never happen. */
     RTE_STATUS_VALUE_OUT_OF_RANGE    = 11, /**< Checked cast: value does not fit the destination type. */

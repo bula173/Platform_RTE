@@ -188,21 +188,21 @@ Step 5: Report & Sign-Off
 ```c
 rte_status_t rte_ipc_send(rte_ipc_handle_t handle, const void *msg) {
     rte_ipc_impl_t *impl = (rte_ipc_impl_t *)handle;
-    impl->backend->send(msg);  // ← NULL check missing!
+    impl->osadapter->send(msg);  // ← NULL check missing!
     return RTE_STATUS_OK;
 }
 ```
 
-**Issue:** `impl->backend` may be NULL if backend not registered  
+**Issue:** `impl->OSAdapter` may be NULL if OSAdapter not registered  
 **Violation:** MISRA Rule 20.8 (pointer validation)  
-**Risk:** Crash if backend not initialized (SIL 4)  
+**Risk:** Crash if OSAdapter not initialized (SIL 4)  
 **Resolution:** [CORRECTED] Added NULL check:
 ```c
-if (!impl || !impl->backend) return RTE_STATUS_NOT_INITIALIZED;
-impl->backend->send(msg);
+if (!impl || !impl->OSAdapter) return RTE_STATUS_NOT_INITIALIZED;
+impl->osadapter->send(msg);
 ```
 
-**Verification:** Unit test added: test_ipc_send_no_backend()
+**Verification:** Unit test added: test_ipc_send_no_osadapter()
 
 ---
 

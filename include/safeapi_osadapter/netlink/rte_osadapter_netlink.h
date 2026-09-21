@@ -31,9 +31,6 @@ typedef struct rte_osadapter_netlink_s
     rte_status_t (*close)(rte_netlink_handle_t handle);
 } rte_osadapter_netlink_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_netlink_t rte_netlink_backend_t;
-
 /**
  * @brief Registers the OSAdapter network link implementation.
  * @param adapter Pointer to netlink operations vtable.
@@ -41,7 +38,6 @@ typedef rte_osadapter_netlink_t rte_netlink_backend_t;
  */
 rte_status_t rte_osadapter_netlink_register(const rte_osadapter_netlink_t *adapter);
 
-rte_status_t rte_netlink_register_backend(const rte_netlink_backend_t *backend);
 
 #ifdef __cplusplus
 }

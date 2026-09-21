@@ -107,8 +107,8 @@ safe-state entry a single failed checkpoint already triggers.
 
 ### 2.3 `rte_clocksync`: diagnostic only, never the basis of correctness
 
-A small pluggable backend (`rte_clocksync_backend_t` +
-`rte_clocksync_register_backend()`, matching `rte_timer`'s convention
+A small pluggable backend (`rte_osadapter_clocksync_t` +
+`rte_osadapter_clocksync_register()`, matching `rte_timer`'s convention
 exactly) exposing `rte_clocksync_get_offset_ms()` and
 `rte_clocksync_get_quality()`. An integrator implements this against
 whatever real synchronization mechanism their hardware has (PTP, GPS

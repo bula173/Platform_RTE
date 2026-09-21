@@ -273,7 +273,7 @@ Per the integrator's own explicit choice, every sim (`sims/train_sim.py`,
 keeps both open for its whole run (`sims/dual_link.py`) - "which site is
 ONLINE" is inferred purely from which site actually answers (a STANDBY
 site's C has nothing to forward back), not a separate status message.
-This is a hand-ported Python mirror of `rte_posix_backend_netlink.c`'s
+This is a hand-ported Python mirror of `rte_posix_osadapter_netlink.c`'s
 own HELLO/HELLO-ACK UDP handshake (ADR-027) - the sims speak this
 project's real wire transport, not a plain TCP socket (an early attempt
 using `SOCK_STREAM` connected to nothing at all, silently, since this

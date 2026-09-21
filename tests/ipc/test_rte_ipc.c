@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 #include "safeapi/oal/ipc/rte_ipc.h"
-#include "safeapi_backend/ipc/rte_ipc_backend.h"
+#include "safeapi_osadapter/ipc/rte_osadapter_ipc.h"
 
 static unsigned char g_rx_payload[4] = { 1U, 2U, 3U, 4U };
 
@@ -47,13 +47,13 @@ static rte_status_t mock_destroy(rte_ipc_handle_t handle)
     return RTE_STATUS_OK;
 }
 
-/* Partial backend: no slots implemented -> exercises NOT_SUPPORTED paths. */
-static const rte_ipc_backend_t g_partial_backend = {
+/* Partial OSAdapter: no slots implemented -> exercises NOT_SUPPORTED paths. */
+static const rte_osadapter_ipc_t g_partial_osadapter = {
     NULL, NULL, NULL, NULL
 };
 
-/* Full backend: every slot implemented -> exercises success paths. */
-static const rte_ipc_backend_t g_full_backend = {
+/* Full OSAdapter: every slot implemented -> exercises success paths. */
+static const rte_osadapter_ipc_t g_full_osadapter = {
     mock_create, mock_send, mock_receive, mock_destroy
 };
 
@@ -104,18 +104,18 @@ int main(void)
     /* --- rte_ipc_destroy: INVALID_PARAM path --- */
     assert(rte_ipc_destroy(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* --- register_backend --- */
-    assert(rte_ipc_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
-    assert(rte_ipc_register_backend(&g_partial_backend) == RTE_STATUS_OK);
+    /* --- register_osadapter --- */
+    assert(rte_osadapter_ipc_register(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_ipc_register(&g_partial_osadapter) == RTE_STATUS_OK);
 
-    /* --- Partial backend registered: NOT_SUPPORTED paths --- */
+    /* --- Partial OSAdapter registered: NOT_SUPPORTED paths --- */
     assert(rte_ipc_create(&storage, &config, &handle) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_ipc_send((rte_ipc_handle_t)(void *)1, tx_buf, sizeof(tx_buf), 0U) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_ipc_receive((rte_ipc_handle_t)(void *)1, rx_buf, sizeof(rx_buf), 0U) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_ipc_destroy((rte_ipc_handle_t)(void *)1) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* --- Full backend registered: success paths --- */
-    assert(rte_ipc_register_backend(&g_full_backend) == RTE_STATUS_OK);
+    /* --- Full OSAdapter registered: success paths --- */
+    assert(rte_osadapter_ipc_register(&g_full_osadapter) == RTE_STATUS_OK);
 
     handle = NULL;
     assert(rte_ipc_create(&storage, &config, &handle) == RTE_STATUS_OK);

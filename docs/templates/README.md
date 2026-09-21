@@ -120,7 +120,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 ```
 09_ARCHITECTURE_DESIGN.md .............. System and software architecture
 10_DETAILED_DESIGN.md .................. Module-level design specifications
-11_BACKEND_DESIGN.md ................... OS/RTOS-specific backend design
+11_BACKEND_DESIGN.md ................... OS/RTOS-specific OSAdapter design
 12_TRACEABILITY_MATRIX.md .............. Req → Design → Code → Test links
 13_DESIGN_REVIEW_REPORT.md ............ Findings from design review
 ```
@@ -256,7 +256,7 @@ Each template has a section addressing safeAPIFramework usage:
 
 **In HARA (06):**
 - Section 3.1: Hazards specific to safeAPIFramework services
-- Examples: Uninitialized backend, buffer overflow, IPC race conditions, NVM corruption
+- Examples: Uninitialized OSAdapter, buffer overflow, IPC race conditions, NVM corruption
 
 **In CODE_REVIEW_REPORT (15):**
 - Checklist items for safeAPIFramework code review

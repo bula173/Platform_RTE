@@ -42,12 +42,12 @@
  * );
  * @endcode
  *
- * Called when timer expires. Runs in callback context (may be ISR on some backends).
+ * Called when timer expires. Runs in callback context (may be ISR on some OSAdapters).
  * Keep execution time minimal.
  *
  * @section timer_architecture_timing Timer Tick System
  *
- * Framework needs monotonic clock with ~1ms resolution. Backend provides.
+ * Framework needs monotonic clock with ~1ms resolution. OSAdapter provides.
  * Every tick, all active timers decrement countdown. On zero, callback fires.
  *
  * @section timer_architecture_performance O(1) Per Timer

@@ -454,9 +454,9 @@ Features that are valuable for observability, testing, and configuration but not
 
 ---
 
-### Mock Backend Harness
+### Mock OSAdapter Harness
 
-**Purpose:** Build-time selectable mock backends for all OAL services, enabling fast CI/unit testing on the host.
+**Purpose:** Build-time selectable mock OSAdapters for all OAL services, enabling fast CI/unit testing on the host.
 
 **Features:**
 - Fake timer (time control via API)
@@ -615,7 +615,7 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 | **Safe Configuration Manager** | 2 | Good | Medium | Add if runtime config needed |
 | **Checksum & CRC Utils** | 2 | Good | Low | Add for protocol compliance |
 | **Cyclic Scheduler** | 2 | Moderate | Medium | Add if determinism critical |
-| **Mock Backend Harness** | 2 | Good | Low | **Invest for testing** |
+| **Mock OSAdapter Harness** | 2 | Good | Low | **Invest for testing** |
 | Tier 3 features | 3 | Moderate | Varies | Defer unless specified |
 
 ### Implementation Sequence
@@ -627,7 +627,7 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 4. Watchdog & Health Monitor
 5. Diagnostic Ring Buffer
 6. Checksum & CRC Utilities
-7. Mock Backend Harness
+7. Mock OSAdapter Harness
 
 **v0.3.0 (Q4 2026):**
 1. Protected Data / Synchronized Access

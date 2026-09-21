@@ -3,7 +3,7 @@
  * COLDSTANDBY from the peer's own reported channel_degraded bit, and
  * degradation to UNKNOWN on lost peer contact (with ONLINE's own
  * exception). Two live negotiators (A and B) share one pair of
- * rte_dual_channel_t instances over the same mock netlink backend used
+ * rte_dual_channel_t instances over the same mock netlink OSAdapter used
  * by the other dual/ tests - unlike DATA's ACK-wait, STATE beacons are
  * fire-and-forget, so a live two-call round trip (A's own
  * rte_dual_negotiator_execute(), then B's) has no timing race to avoid. */
@@ -13,8 +13,8 @@
 #include "safeapi/redundancy/checksum/rte_checksum.h"
 #include "safeapi/redundancy/dual/rte_dual_negotiator.h"
 #include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_backend/timer/rte_timer_backend.h"
-#include "safeapi_backend/netlink/rte_netlink_backend.h"
+#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
+#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
 
 typedef struct
 {
@@ -64,7 +64,7 @@ static rte_status_t mock_receive(rte_netlink_handle_t handle, void *out_message,
     return RTE_STATUS_OK;
 }
 
-static const rte_netlink_backend_t g_mock_netlink_backend = { NULL, mock_send, mock_receive, NULL };
+static const rte_osadapter_netlink_t g_mock_netlink_osadapter = { NULL, mock_send, mock_receive, NULL };
 
 /* --- mock timer: increments by 10ms every call, so whichever negotiator
  *     is init()ed first gets the earlier (smaller) startup timestamp -
@@ -79,7 +79,7 @@ static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
     return RTE_STATUS_OK;
 }
 
-static const rte_timer_backend_t g_mock_timer_backend = { NULL, NULL, NULL, NULL, mock_timer_now };
+static const rte_osadapter_timer_t g_mock_timer_osadapter = { NULL, NULL, NULL, NULL, mock_timer_now };
 
 /* --- fixture: one single link each way between "A" and "B" --- */
 typedef struct
@@ -347,7 +347,7 @@ static void test_lost_peer_contact_degrades_non_online_own_state_too(void)
  *  directly - same whitebox rationale as force_channel_to_full() above:
  *  this specific interleaving (one frame already staged, a second still
  *  on the wire) cannot be produced through the public API alone with
- *  this test file's single-slot-per-link mock backend, since a normal
+ *  this test file's single-slot-per-link mock OSAdapter, since a normal
  *  sweep always collapses every currently-mailboxed frame down to just
  *  the last one processed. */
 static void test_execute_drains_multiple_buffered_state_frames(void)
@@ -456,7 +456,7 @@ static void test_peer_degraded_yields_coldstandby(void)
     /* A's own DualChannel degrades (simulate its one link going down).
      * Forced directly via force_channel_to_down() rather than a real
      * un-ACKed rte_dual_channel_send(): that would still succeed in
-     * transmitting the DATA frame (the mock netlink backend never
+     * transmitting the DATA frame (the mock netlink OSAdapter never
      * fails a send, only the wait-for-ACK loop times out), consuming
      * a Layer-1 sequence number on the same link STATE beacons travel
      * on and desyncing it from channel_b's expected_sequence - every
@@ -524,8 +524,8 @@ static void test_lost_peer_contact_degrades_to_unknown(void)
 int main(void)
 {
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
-    assert(rte_netlink_register_backend(&g_mock_netlink_backend) == RTE_STATUS_OK);
-    assert(rte_timer_register_backend(&g_mock_timer_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_netlink_register(&g_mock_netlink_osadapter) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
 
     test_invalid_params();
     test_startup_negotiation_decides_online_and_standby();

@@ -18,7 +18,7 @@
  *        the only primitives actually needed are fixed-length block
  *        operations.
  *
- * static inline, header-only, no backend/.c file: these are trivial,
+ * static inline, header-only, no OSAdapter/.c file: these are trivial,
  * stateless wrappers with no OS dependency at all (unlike the seven real
  * OAL services - rte_timer, rte_nvm, rte_memory, etc. - see
  * rte_appmanager.h's own note on that distinction) - same convention as

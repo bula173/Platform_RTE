@@ -92,7 +92,7 @@
  * // Create channel
  * rte_ipc_handle_t tcp_channel;
  * rte_ipc_create_tcp(&tcp_channel, &tcp_config);
- * // OS backend will call on_command_received() when data arrives
+ * // OS OSAdapter will call on_command_received() when data arrives
  * ```
  *
  * @section event_driven_loop Event-Driven Application Loop
@@ -403,7 +403,7 @@
  *
  * @section implementation_requirement OS Integrator Requirements
  *
- * **OS backend must:**
+ * **OS OSAdapter must:**
  * - ✓ Store channel name from configuration
  * - ✓ Call registered callback when data arrives
  * - ✓ Pass channel name to callback

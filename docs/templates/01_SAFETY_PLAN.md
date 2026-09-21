@@ -191,7 +191,7 @@ Deployment & Operation
 |------|-------------|--------|-----------|
 | MISRA violations found late | Medium | High | Early static analysis, code review before implementation |
 | Test coverage inadequate | Low | High | Coverage tools, coverage goals set early |
-| RTOS backend issues | Medium | High | Early backend design review, prototype testing |
+| RTOS OSAdapter issues | Medium | High | Early OSAdapter design review, prototype testing |
 | Schedule overrun | Medium | Medium | Buffer in schedule, early identification of issues |
 
 ### 9.2 Organizational Risks

@@ -9,7 +9,7 @@
  * ADR-001, section 4 (item 6).
  *
  * REQ-OAL-LOG-001: log calls are best-effort and non-blocking; a full
- *                  backend buffer silently drops the newest entries rather
+ *                  OSAdapter buffer silently drops the newest entries rather
  *                  than blocking or erroring the caller's control flow.
  *
  * @defgroup LOG Logging and Diagnostics
@@ -39,10 +39,10 @@ typedef enum rte_log_level_e
 } rte_log_level_t;
 
 /**
- * @brief Initializes the logging backend. Safe to call once at startup.
- * @return RTE_STATUS_OK if no backend is registered yet (a no-op logger
- *         is a valid state) or if the registered backend's init succeeds;
- *         a backend-defined error status otherwise.
+ * @brief Initializes the logging OSAdapter. Safe to call once at startup.
+ * @return RTE_STATUS_OK if no OSAdapter is registered yet (a no-op logger
+ *         is a valid state) or if the registered OSAdapter's init succeeds;
+ *         a osadapter-defined error status otherwise.
  * REQ-OAL-LOG-010
  */
 rte_status_t rte_log_init(void);
@@ -51,7 +51,7 @@ rte_status_t rte_log_init(void);
  * @brief Emits one log message. Non-blocking; never fails the caller's
  *        control flow even if the message is dropped.
  * @param level    Severity level.
- * @param tag      Short diagnostic source tag, backend-defined interpretation, may be NULL.
+ * @param tag      Short diagnostic source tag, osadapter-defined interpretation, may be NULL.
  * @param message  Human-readable message text, may be NULL.
  * REQ-OAL-LOG-011
  */
@@ -61,7 +61,7 @@ void rte_log_write(rte_log_level_t level, const char *tag, const char *message);
  * @brief Renders a rte_log_level_t as a fixed, human-readable tag -
  *        "DEBUG"/"INFO"/"WARNING"/"ERROR" - used as the LEVEL field of
  *        rte_log_write_event()'s structured line and available to any
- *        backend/integrator wanting the same canonical spelling.
+ *        OSAdapter/integrator wanting the same canonical spelling.
  * @param level  Level to render; an unrecognized value (defensive only -
  *               not reachable through the public enum) renders as
  *               "UNKNOWN".
@@ -86,14 +86,14 @@ rte_status_t rte_log_level_from_string(const char *name, rte_log_level_t *out_le
 
 /**
  * @brief Sets the minimum severity that rte_log_write() and
- *        rte_log_write_event() forward to the backend - a call whose
+ *        rte_log_write_event() forward to the OSAdapter - a call whose
  *        level is below min_level is dropped before dispatch (and before
  *        any formatting work). Default is RTE_LOG_LEVEL_DEBUG: nothing is
  *        filtered until this is called.
  *
  * Runtime-settable so an integrator can quiet or open up logging without a
  * rebuild (e.g. a remote "set log level" command). NOT a setup-only action
- * (unlike rte_log_register_backend()) - may be called at any time, from
+ * (unlike rte_osadapter_log_register()) - may be called at any time, from
  * any thread: the threshold is one int-sized value, so a concurrent change
  * racing an in-flight rte_log_write() only ever means that one call sees
  * the old or the new threshold, never a torn value, and at worst one
@@ -130,9 +130,9 @@ rte_log_level_t rte_log_get_level(void);
  *        which remains the right call for an event with no natural
  *        cycle/source/destination (e.g. an NVM write failure).
  *
- * Emits, via the same backend as rte_log_write() (non-blocking,
- * best-effort, same REQ-OAL-LOG-001 contract - a full backend buffer or
- * an unregistered backend silently drops this call, never blocks or
+ * Emits, via the same OSAdapter as rte_log_write() (non-blocking,
+ * best-effort, same REQ-OAL-LOG-001 contract - a full OSAdapter buffer or
+ * an unregistered OSAdapter silently drops this call, never blocks or
  * errors the caller):
  *
  * @code
@@ -141,16 +141,16 @@ rte_log_level_t rte_log_get_level(void);
  *
  * i.e. space-separated `Key=Value` pairs, one per mandatory field, in
  * that fixed order, as the `message` argument of the registered
- * rte_log_backend_t::write(), with `source` passed as that call's `tag`
- * argument - an existing backend needs no changes to receive structured
- * events (e.g. the shipped POSIX backend still prefixes its own
+ * rte_osadapter_log_t::write(), with `source` passed as that call's `tag`
+ * argument - an existing OSAdapter needs no changes to receive structured
+ * events (e.g. the shipped POSIX OSAdapter still prefixes its own
  * "[LEVEL] tag: " for terminal readability; a consumer parsing the
  * *structured* `Key=Value` fields should parse from the `message` value
- * itself, not whatever cosmetic wrapping a specific backend adds around
+ * itself, not whatever cosmetic wrapping a specific OSAdapter adds around
  * it).
  *
  * Timestamp is sourced internally via rte_timer_now() (milliseconds);
- * "0" is emitted if no rte_timer backend is registered or the call
+ * "0" is emitted if no rte_timer OSAdapter is registered or the call
  * otherwise fails - REQ-OAL-LOG-001 means a timer problem must never
  * prevent this call from returning, so a timestamp failure degrades the
  * Timestamp field rather than skipping the whole event.
@@ -298,8 +298,8 @@ void rte_log_write_event_fields(rte_log_level_t level,
                                   rte_log_fields_t *fields);
 
 /*
- * The backend vtable (rte_log_backend_t) and rte_log_register_backend()
- * live in safeapi_backend/log/rte_log_backend.h, not here (ADR-021).
+ * The OSAdapter vtable (rte_osadapter_log_t) and rte_osadapter_log_register()
+ * live in safeapi_osadapter/log/rte_osadapter_log.h, not here (ADR-021).
  * This header is the consumer-facing surface only.
  */
 

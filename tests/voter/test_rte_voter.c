@@ -8,7 +8,7 @@
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
 #include "safeapi/utils/safestate/rte_safestate.h"
 
-/* --- Mock channel backend, mirroring tests/vital_channel's pattern --- */
+/* --- Mock channel OSAdapter, mirroring tests/vital_channel's pattern --- */
 
 typedef struct
 {
@@ -20,7 +20,7 @@ typedef struct
 } mock_channel_t;
 
 /* 9, not RTE_VOTER_MAX_CHANNELS (8): test_register_channel() needs one
- * extra mock backend beyond the max to exercise the
+ * extra mock OSAdapter beyond the max to exercise the
  * RTE_STATUS_RESOURCE_EXHAUSTED path at the 9th registration attempt
  * (channels[8]/g_mock[8]) - an 8-element array here was a real
  * out-of-bounds write, only caught once ASan instrumentation

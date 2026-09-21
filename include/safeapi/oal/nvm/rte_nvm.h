@@ -43,9 +43,9 @@ typedef struct rte_nvm_config_s
  *                    must not be NULL and config->region_size must be > 0.
  * @param out_handle  Receives the opened region's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_nvm_register_backend()); RTE_STATUS_NOT_SUPPORTED if the
- *         registered backend does not implement open.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_nvm_register()); RTE_STATUS_NOT_SUPPORTED if the
+ *         registered OSAdapter does not implement open.
  * REQ-OAL-NVM-010
  */
 rte_status_t rte_nvm_open(rte_nvm_storage_t *storage,
@@ -103,8 +103,8 @@ rte_status_t rte_nvm_sync(rte_nvm_handle_t handle);
 rte_status_t rte_nvm_close(rte_nvm_handle_t handle);
 
 /*
- * The backend vtable (rte_nvm_backend_t) and rte_nvm_register_backend()
- * live in safeapi_backend/nvm/rte_nvm_backend.h, not here (ADR-021).
+ * The OSAdapter vtable (rte_osadapter_nvm_t) and rte_osadapter_nvm_register()
+ * live in safeapi_osadapter/nvm/rte_osadapter_nvm.h, not here (ADR-021).
  * This header is the consumer-facing surface only.
  */
 

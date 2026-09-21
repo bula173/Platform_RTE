@@ -5,13 +5,13 @@
  *
  * The framework is organized in three layers. Applications only ever call
  * into Platform_RTE - never directly into the OS/RTOS - so retargeting to a
- * different platform means registering a different backend (ADR-005), not
+ * different platform means registering a different OSAdapter (ADR-005), not
  * rewriting application code.
  *
  * -# **OS Abstraction Layer (OAL)** - one service per OS/RTOS primitive:
  *    @ref TIMER, @ref NVM, @ref MEMORY, @ref TASK, @ref IPC, @ref NETLINK,
  *    @ref LOG, @ref REBOOT. Every service validates parameters, then
- *    dispatches to an integrator-supplied backend (ADR-005); the framework
+ *    dispatches to an integrator-supplied OSAdapter (ADR-005); the framework
  *    itself ships no OS-specific code.
  * -# **Common utilities** - layer-agnostic building blocks with no OS
  *    dependency: @ref BUFFER, @ref STRING, @ref CAST, @ref TYPES,
@@ -43,7 +43,7 @@
  *
  * @section system_architecture_docs Where to Go Next
  *
- * - Getting started integrating a backend: @ref appmanager_integration
+ * - Getting started integrating an OSAdapter: @ref appmanager_integration
  * - Per-module architecture and user guides: see the "Related Pages" list
  *   (each module under `include/safeapi/<module>/` ships an
  *   ARCHITECTURE.md and USER_GUIDE.md pair).

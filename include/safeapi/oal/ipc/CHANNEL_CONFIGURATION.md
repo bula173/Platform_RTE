@@ -45,12 +45,12 @@
  * };
  *
  * rte_ipc_handle_t shm_channel;
- * rte_ipc_create_shm(&shm_channel, &shm_config);   // OS backend implements this
+ * rte_ipc_create_shm(&shm_channel, &shm_config);   // OS OSAdapter implements this
  * ```
  *
  * **Implementation by OS Integrator (NOT in framework):**
  * ```c
- * // POSIX backend implementation (example, not in framework)
+ * // POSIX OSAdapter implementation (example, not in framework)
  * rte_status_t rte_ipc_create_shm(rte_ipc_handle_t *handle,
  *                                   const rte_ipc_config_shm_t *config)
  * {
@@ -113,12 +113,12 @@
  * };
  *
  * rte_ipc_handle_t fifo_channel;
- * rte_ipc_create_fifo(&fifo_channel, &fifo_config);  // OS backend implements
+ * rte_ipc_create_fifo(&fifo_channel, &fifo_config);  // OS OSAdapter implements
  * ```
  *
  * **Implementation by OS Integrator (example):**
  * ```c
- * // POSIX backend
+ * // POSIX OSAdapter
  * rte_status_t rte_ipc_create_fifo(rte_ipc_handle_t *handle,
  *                                    const rte_ipc_config_fifo_t *config)
  * {
@@ -182,7 +182,7 @@
  * };
  *
  * rte_ipc_handle_t tcp_channel;
- * rte_ipc_create_tcp(&tcp_channel, &tcp_config);  // OS backend implements
+ * rte_ipc_create_tcp(&tcp_channel, &tcp_config);  // OS OSAdapter implements
  * ```
  *
  * **User Configuration Example (Server/Listen):**
@@ -202,7 +202,7 @@
  *
  * **Implementation by OS Integrator (example):**
  * ```c
- * // POSIX/Linux backend
+ * // POSIX/Linux OSAdapter
  * rte_status_t rte_ipc_create_tcp(rte_ipc_handle_t *handle,
  *                                   const rte_ipc_config_tcp_t *config)
  * {
@@ -454,7 +454,7 @@
  * - `rte_ipc_create_tcp()` - Create TCP channel
  * - `rte_ipc_create_udp()` - Create UDP channel
  * - `rte_ipc_send_*()` and `rte_ipc_recv_*()` - I/O operations
- * - Backend dispatcher callbacks (optional, user can write)
+ * - OSAdapter dispatcher callbacks (optional, user can write)
  *
  * **User/Integrator provides:**
  * - Configuration values (IPs, ports, paths)

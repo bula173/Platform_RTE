@@ -362,7 +362,7 @@ rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel, const uint8_t *p
                      * measurable time has passed on rte_timer_now()'s own
                      * tick resolution since this round started. This used
                      * to be treated as "no timer
-                     * backend available, give up after one attempt"
+                     * OSAdapter available, give up after one attempt"
                      * (REQ-OAL-LOG-001-style "never spin on an
                      * unmeasurable interval"), but a real localhost round
                      * trip (connect, send DATA, receive the peer's own

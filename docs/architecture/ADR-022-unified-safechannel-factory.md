@@ -115,7 +115,7 @@ An application now includes exactly one header
 
 Both remain real, tested OAL services with their own ADR-005 backend
 registration - a platform integrator still implements
-`rte_netlink_backend_t`/`rte_ipc_backend_t` exactly as before, and
+`rte_osadapter_netlink_t`/`rte_osadapter_ipc_t` exactly as before, and
 `rte_safechannel.c` itself is the one piece of framework code (besides
 tests) that calls `rte_netlink_open()`/`_send()`/`_receive()`/`_close()`
 directly. Their headers are not moved (they still live under

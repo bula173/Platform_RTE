@@ -23,9 +23,6 @@ typedef struct rte_osadapter_log_s
     void (*write)(rte_log_level_t level, const char *tag, const char *message);
 } rte_osadapter_log_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_log_t rte_log_backend_t;
-
 /**
  * @brief Registers the OSAdapter log implementation.
  * @param adapter Pointer to log operations vtable.
@@ -33,7 +30,6 @@ typedef rte_osadapter_log_t rte_log_backend_t;
  */
 rte_status_t rte_osadapter_log_register(const rte_osadapter_log_t *adapter);
 
-rte_status_t rte_log_register_backend(const rte_log_backend_t *backend);
 
 #ifdef __cplusplus
 }

@@ -3,14 +3,14 @@
  *
  * @section ipc_transport_selection_overview Inter-Process Communication (IPC) Transport Layer
  *
- * The safeAPIFramework uses a **backend vtable pattern** for IPC transport abstraction.
+ * The safeAPIFramework uses a **OSAdapter vtable pattern** for IPC transport abstraction.
  * The application integrator chooses and implements the concrete transport (shared memory,
  * FIFO, TCP/IP, UDP, etc.) without modifying the framework code.
  *
  * The framework provides:
  * - **Base IPC API**: send(), receive(), create(), destroy() (transport-agnostic)
  * - **Patterns**: Request-Reply (RPC), Pub-Sub (broadcast)
- * - **Backend Interface**: rte_ipc_backend_t vtable for plugging in transport
+ * - **OSAdapter Interface**: rte_osadapter_ipc_t vtable for plugging in transport
  *
  * @section ipc_transport_selection_transport_options Available Transport Options
  *
@@ -23,12 +23,12 @@
  * | **QNX MsgPass** | RTOS environments | µs | Local | Deadlock-free | RTOS-specific |
  * | **POSIX MQueue** | POSIX systems | ms | Local | Bounded queues | POSIX |
  *
- * @section ipc_transport_selection_backend_vtable Backend Implementation Pattern
+ * @section ipc_transport_selection_osadapter_vtable OSAdapter Implementation Pattern
  *
- * Each transport implements the backend vtable:
+ * Each transport implements the OSAdapter vtable:
  *
  * ```c
- * typedef struct rte_ipc_backend_s {
+ * typedef struct rte_osadapter_ipc_s {
  *     rte_status_t (*create)(rte_ipc_storage_t *storage,
  *                             const rte_ipc_config_t *config,
  *                             rte_ipc_handle_t *out_handle);
@@ -37,14 +37,14 @@
  *     rte_status_t (*receive)(rte_ipc_handle_t handle, void *out_message,
  *                              size_t buffer_size, rte_duration_ms_t timeout_ms);
  *     rte_status_t (*destroy)(rte_ipc_handle_t handle);
- * } rte_ipc_backend_t;
+ * } rte_osadapter_ipc_t;
  * ```
  *
- * At application startup, register ONE backend:
+ * At application startup, register ONE OSAdapter:
  *
  * ```c
- * rte_ipc_register_backend(&my_transport_backend);  // Once at init
- * // All subsequent rte_ipc_* calls use this backend
+ * rte_osadapter_ipc_register(&my_transport_osadapter);  // Once at init
+ * // All subsequent rte_ipc_* calls use this OSAdapter
  * ```
  *
  * @section ipc_transport_selection_shared_memory Shared Memory Transport
@@ -236,12 +236,12 @@
  *     .queue_depth = 5
  * };
  *
- * // Select backends at startup (but only ONE global backend)
+ * // Select OSAdapters at startup (but only ONE global OSAdapter)
  * // If we want mixed transports, we need per-channel wrapper callbacks
  *
  * // Create channels with selected transports
- * rte_ipc_create(&storage0, &cfg0, &ch0);  // Uses registered backend
- * rte_ipc_create(&storage1, &cfg1, &ch1);  // Uses registered backend
+ * rte_ipc_create(&storage0, &cfg0, &ch0);  // Uses registered OSAdapter
+ * rte_ipc_create(&storage1, &cfg1, &ch1);  // Uses registered OSAdapter
  *
  * // Wrap in vital channel for 2oo2 voting
  * rte_channel_config_t vital_cfg = {
@@ -489,7 +489,7 @@
  *
  * - [ ] Choose transport for your use case (shared memory vs network)
  * - [ ] Decide redundancy pattern (2oo2 vs 2oo3 vs NMR)
- * - [ ] Implement backend callbacks (backend_send/backend_recv)
+ * - [ ] Implement OSAdapter callbacks (backend_send/backend_recv)
  * - [ ] Create transport-specific channels (2 or 3)
  * - [ ] Configure vital_channel with callbacks and channels
  * - [ ] Use rte_channel_send/receive for voting communication

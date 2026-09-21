@@ -67,8 +67,8 @@ document is now a design *record*, not a proposal still to be built)
   inter-channel message (a frame sent/received, a decision like AGREE/
   DISAGREE) — the mandatory fields a message-trail log needs, with room
   for caller-supplied extra `Key=Value` fields beyond those seven.
-  Fixed-arity, no `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same backend
-  as `rte_log_write()` receives it, so no backend changes are required.
+  Fixed-arity, no `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same OSAdapter
+  as `rte_log_write()` receives it, so no OSAdapter changes are required.
   First real consumer: `RBC_GP`'s A/B/C/SITE cyclic executives
   now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
   DISAGREE, and SITE heartbeat this way.
@@ -149,9 +149,9 @@ between every fixed-width type and `size_t` (`cast`), safe-state transitions
 sprintf/atoi/strtok (`string`), and application lifecycle management
 (`appmanager`: single entry point with init→execute→shutdown pattern).
 
-Every OAL service is reached through a **backend registered at startup**
-(`rte_<service>_register_backend()`) rather than a hardcoded
+Every OAL service is reached through a **OSAdapter registered at startup**
+(`rte_<service>_register_osadapter()`) rather than a hardcoded
 implementation — this is how an integrator supplies their own
-implementation (POSIX for host-side dev/test, an RTOS backend for target
+implementation (POSIX for host-side dev/test, an RTOS OSAdapter for target
 hardware) without editing framework source. See
-`docs/architecture/ADR-005-oal-backend-registration.md`.
+`docs/architecture/ADR-005-oal-osadapter-registration.md`.

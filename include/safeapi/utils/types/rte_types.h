@@ -41,7 +41,7 @@ typedef uint64_t rte_timestamp_ms_t;
  * @def SAFEAPI_ALIGNED_
  * @brief Portable alignment specifier used ahead of a storage byte array
  *        (e.g. in SAFEAPI_DECLARE_STORAGE) so its address is suitable for
- *        the backend's internal struct layout. Expands to the best
+ *        the OSAdapter's internal struct layout. Expands to the best
  *        available mechanism for the compiler (C11 _Alignas, MSVC
  *        __declspec, or GCC/Clang __attribute__); expands to nothing on
  *        compilers with no portable alignment control.
@@ -62,7 +62,7 @@ typedef uint64_t rte_timestamp_ms_t;
  * @def SAFEAPI_DECLARE_STORAGE
  * @brief Declares an opaque, fixed-size, aligned storage type for a
  *        service's handle. The real internal layout is private to the
- *        backend implementation; callers only reserve the bytes.
+ *        OSAdapter implementation; callers only reserve the bytes.
  *
  * Usage: SAFEAPI_DECLARE_STORAGE(rte_timer_storage_t, 64U);
  */

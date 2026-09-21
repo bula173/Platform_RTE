@@ -1,5 +1,10 @@
 # ADR-005: OAL Backend Registration via Callbacks
 
+> **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
+> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> original wording as a historical record.
+
 Status: Draft
 Date: 2026-08-02
 Applies to: safeAPIFreamwork, all `include/safeapi/os/*.h` services
@@ -29,7 +34,7 @@ Each service defines a struct of function pointers matching its
 operations, and a single registration entry point:
 
 ```c
-typedef struct rte_timer_backend_s
+typedef struct rte_osadapter_timer_s
 {
     rte_status_t (*create)(rte_timer_storage_t *storage,
                              const rte_timer_config_t *config,
@@ -38,14 +43,14 @@ typedef struct rte_timer_backend_s
     rte_status_t (*stop)(rte_timer_handle_t handle);
     rte_status_t (*destroy)(rte_timer_handle_t handle);
     rte_status_t (*now)(rte_timestamp_ms_t *out_now_ms);
-} rte_timer_backend_t;
+} rte_osadapter_timer_t;
 
-rte_status_t rte_timer_register_backend(const rte_timer_backend_t *backend);
+rte_status_t rte_osadapter_timer_register(const rte_osadapter_timer_t *backend);
 ```
 
 An integrator provides their own implementation by populating a
-`static const rte_timer_backend_t my_posix_timer_backend = { ... };` and
-calling `rte_timer_register_backend(&my_posix_timer_backend)` during
+`static const rte_osadapter_timer_t my_posix_timer_backend = { ... };` and
+calling `rte_osadapter_timer_register(&my_posix_timer_backend)` during
 system startup, before any other `rte_timer_*` call. This is the answer
 to "how does a user provide their own implementation": no framework source
 file needs editing, and multiple backends (POSIX for host-side testing, an

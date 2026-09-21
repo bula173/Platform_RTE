@@ -75,7 +75,7 @@ if(SAFEAPI_ENABLE_CHANNEL_LINK)
     safeapi_add_test(test_rte_channel channel_link/test_rte_channel.c safeapi::channels)
 endif()
 if(SAFEAPI_ENABLE_CHANNEL_LINK AND SAFEAPI_ENABLE_FLOW)
-    safeapi_add_test(test_rte_channel_service_flow_backend channel_service/test_rte_channel_service_flow_backend.c safeapi::channels)
+    safeapi_add_test(test_rte_channel_service_flow_osadapter channel_service/test_rte_channel_service_flow_osadapter.c safeapi::channels)
 endif()
 if(SAFEAPI_ENABLE_VOTER)
     safeapi_add_test(test_rte_voter       voter/test_rte_voter.c              safeapi::channels)
@@ -110,6 +110,6 @@ if(SAFEAPI_ENABLE_APPMANAGER)
     safeapi_add_test(test_rte_appmanager appmanager/test_rte_appmanager.c    safeapi::appmanager)
 endif()
 
-# posix_backend (and its tests) moved to the safeAPIRBC2oo2 project - an
-# OAL backend is an integrator-supplied implementation (ADR-005), not
-# part of this framework. See safeAPIRBC2oo2's tests/posix_backend/.
+# posix_osadapter (and its tests) moved to the safeAPIRBC2oo2 project - an
+# OAL OSAdapter is an integrator-supplied implementation (ADR-005), not
+# part of this framework. See safeAPIRBC2oo2's tests/posix_osadapter/.

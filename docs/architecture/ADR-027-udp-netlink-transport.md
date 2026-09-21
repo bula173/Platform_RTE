@@ -8,7 +8,7 @@ fixed. See §2.5 before treating this migration as fully closed.
 Date: 2026-08-18
 Applies to: `include/safeapi/netlink/rte_netlink.h` (doc contract only -
 no API/ABI change), `safeAPIRBC2oo2`'s
-`src/posix_backend/rte_posix_backend_netlink.c`,
+`src/posix_osadapter/rte_posix_osadapter_netlink.c`,
 `src/application/AB/channel_ab_negotiate.c`/`channel_ab_io.c`/
 `channel_ab_types.h`, `src/application/C/monitor_c_io.c`/
 `monitor_c_types.h`, `src/application/common_config.h`,
@@ -51,8 +51,8 @@ This ADR was executed in two phases, both covered here:
 ### 2.1 New UDP backend, same file, same accessor (REQ-OAL-NETLINK-014)
 
 Per ADR-005/ADR-018 (concrete backends live in the consumer, not the
-framework), `safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_netlink.c`
-was rewritten in place - same `rte_posix_backend_netlink()` accessor, so
+framework), `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_netlink.c`
+was rewritten in place - same `rte_posix_osadapter_netlink()` accessor, so
 registration and every include site needed zero changes. This is an
 outright migration, not an opt-in toggle; no second backend file was kept.
 
@@ -298,7 +298,7 @@ regardless of transport. Not touched by either phase.
 
 ## 3. Verification
 
-- `safeAPIRBC2oo2`'s `tests/posix_backend/test_rte_posix_backend.c`:
+- `safeAPIRBC2oo2`'s `tests/posix_osadapter/test_rte_posix_osadapter.c`:
   three new cases against the real UDP backend over loopback -
   `test_netlink_round_trip` (full handshake + bidirectional exchange,
   proves `open()` returning `OK` means genuinely usable, not just that a
@@ -339,7 +339,7 @@ regardless of transport. Not touched by either phase.
 
 ## 4. Location
 
-- `safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_netlink.c`
+- `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_netlink.c`
   (rewritten)
 - `safeAPIRBC2oo2/src/application/AB/channel_ab_types.h`,
   `channel_ab_negotiate.c` (`neg_consecutive_send_miss` hysteresis);
@@ -353,7 +353,7 @@ regardless of transport. Not touched by either phase.
   `SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` raised to 450ms,
   `SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`,
   `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS`)
-- `safeAPIRBC2oo2/tests/posix_backend/test_rte_posix_backend.c` (new
+- `safeAPIRBC2oo2/tests/posix_osadapter/test_rte_posix_osadapter.c` (new
   netlink cases)
 - `safeAPIRBC2oo2/tests/robot/fault_injection.robot` (new - container
   reboot/network partition matrix, all 6 RBC services), `etc/run_robot_tests.sh`

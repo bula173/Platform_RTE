@@ -49,7 +49,7 @@ Risk-based approach per EN 50128:2011 Section 5:
     │  ───────────────────    │
     │  safeAPIFramework OAL   │
     │  ───────────────────    │
-    │  RTOS / OS Backend      │ (Partly in scope)
+    │  RTOS / OS OSAdapter      │ (Partly in scope)
     └────────┬─────────────────┘
              │
     ┌────────▼──────────────────┐
@@ -69,20 +69,20 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 ### 3.1 Hazards in safeAPIFramework Context
 
-#### H1: Uninitialized Backend Service
-**Description:** safeAPIFramework service called before backend registered  
-**Cause:** Missing backend registration, wrong initialization order  
+#### H1: Uninitialized OSAdapter Service
+**Description:** safeAPIFramework service called before OSAdapter registered  
+**Cause:** Missing OSAdapter registration, wrong initialization order  
 **Effect:** NULL pointer dereference, system crash  
 **SIL:** 4 (Loss of safety-critical function)  
 
 **Prevention:** 
-- [ ] Backend registration in main() before any service use
-- [ ] Runtime check for NULL backend pointer
+- [ ] OSAdapter registration in main() before any service use
+- [ ] Runtime check for NULL OSAdapter pointer
 - [ ] Documentation of initialization sequence
 
 **Detection:**
 - [ ] Code review of main.c and initialization code
-- [ ] Unit test: call service without backend (expect safe error)
+- [ ] Unit test: call service without OSAdapter (expect safe error)
 
 ---
 
@@ -106,12 +106,12 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 #### H3: Race Condition in IPC (Inter-Process Communication)
 **Description:** Concurrent access to IPC queue without synchronization  
-**Cause:** RTOS backend doesn't provide mutex/semaphore, application doesn't synchronize  
+**Cause:** RTOS OSAdapter doesn't provide mutex/semaphore, application doesn't synchronize  
 **Effect:** Message loss, data corruption, undefined behavior  
 **SIL:** 4 (Loss of safe communication)  
 
 **Prevention:**
-- [ ] RTOS backend implements thread-safe IPC
+- [ ] RTOS OSAdapter implements thread-safe IPC
 - [ ] Application code properly synchronizes multi-threaded access
 - [ ] Documentation of thread safety assumptions
 
@@ -129,20 +129,20 @@ Risk-based approach per EN 50128:2011 Section 5:
 **SIL:** 4 (Loss of data integrity)  
 
 **Prevention:**
-- [ ] NVM backend implements atomic writes (journal/checkpoint)
+- [ ] NVM OSAdapter implements atomic writes (journal/checkpoint)
 - [ ] CRC/integrity checks on all NVM data
 - [ ] Application has recovery strategy for corrupted data
 
 **Detection:**
 - [ ] Integration test: NVM write + verify CRC
 - [ ] Failure injection: corrupt NVM data, verify recovery
-- [ ] HARA for NVM backend (RTOS responsibility)
+- [ ] HARA for NVM OSAdapter (RTOS responsibility)
 
 ---
 
 #### H5: Timer Not Initialized / Timeout Expired
 **Description:** Timer service called before initialization, or timeout not met  
-**Cause:** Missing timer_create, backend timeout inadequate  
+**Cause:** Missing timer_create, OSAdapter timeout inadequate  
 **Effect:** Logic malfunction, missed safety-critical deadlines  
 **SIL:** 4 (Potential functional failure)  
 
@@ -180,7 +180,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 | ID | Hazard | Cause | Effect | SIL | Existing Control | Additional Mitigation |
 |:--:|--------|-------|--------|:---:|------------------|----------------------|
-| H1 | Uninitialized Backend | Missing init | Crash | 4 | Code review, unit test | Documentation, runtime check |
+| H1 | Uninitialized OSAdapter | Missing init | Crash | 4 | Code review, unit test | Documentation, runtime check |
 | H2 | Buffer Overflow | Untrusted input | Memory corruption | 4 | Bounded operations | Input validation, static analysis |
 | H3 | Race Condition (IPC) | No synchronization | Data corruption | 4 | RTOS mutex | Thread safety analysis, tests |
 | H4 | NVM Corruption | Power loss | Data loss | 4 | CRC check | Atomic writes, recovery strategy |
@@ -199,7 +199,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 |--------------|---------------|----------------|-----------------|----------------|
 | Returns RTE_STATUS_RESOURCE_EXHAUSTED | No timer slots available | Timer not created, no timeout protection | Pre-allocation of timer pool | Mitigated |
 | Returns RTE_STATUS_INVALID_PARAM | Invalid name/handle pointer | Timer not created, error handling required | Parameter validation | Mitigated |
-| NULL backend | Backend not registered | Crash with NULL dereference | Application ensures backend registered | Mitigated |
+| NULL OSAdapter | OSAdapter not registered | Crash with NULL dereference | Application ensures OSAdapter registered | Mitigated |
 
 **Risk Level:** Low (all failure modes have mitigations)
 
@@ -208,10 +208,10 @@ Risk-based approach per EN 50128:2011 Section 5:
 | Failure Mode | Failure Cause | Failure Effect | Current Control | Risk Priority |
 |--------------|---------------|----------------|-----------------|----------------|
 | Returns RTE_STATUS_DATA_CORRUPTION | NVM sector corrupted | Read returns invalid data | CRC check, application validation | Mitigated |
-| Timeout during read | Slow NVM backend | Operation blocks indefinitely | Timeout in backend | Mitigated |
+| Timeout during read | Slow NVM OSAdapter | Operation blocks indefinitely | Timeout in OSAdapter | Mitigated |
 | Returns RTE_STATUS_HARDWARE_FAULT | Underlying NVM failure | Complete loss of NVM access | Application fallback to defaults | Acceptable |
 
-**Risk Level:** Medium (requires backend implementation quality)
+**Risk Level:** Medium (requires OSAdapter implementation quality)
 
 [Continue for other safeAPIFramework services...]
 
@@ -243,7 +243,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 | ID | Hazard | Severity | Likelihood | Risk Score | SIL | Control Effectiveness |
 |:--:|--------|:--------:|:----------:|:----------:|:---:|:---------------------:|
-| H1 | Uninitialized Backend | 4 (Critical) | R (Rare) | 4 | 1 | Code review → SIL 4 |
+| H1 | Uninitialized OSAdapter | 4 (Critical) | R (Rare) | 4 | 1 | Code review → SIL 4 |
 | H2 | Buffer Overflow | 4 (Critical) | M (Medium) | 12 | 4 | Static analysis + review |
 | H3 | Race Condition | 4 (Critical) | L (Low) | 4 | 1 | Thread safety + tests |
 | H4 | NVM Corruption | 4 (Critical) | L (Low) | 4 | 1 | CRC + recovery |
@@ -272,8 +272,8 @@ Risk-based approach per EN 50128:2011 Section 5:
 - **Fault Injection:** Forced failure scenarios
 - **Performance Testing:** Timeout, resource limits
 
-### 6.4 RTOS Backend Mitigations
-Backend implementation must provide:
+### 6.4 RTOS OSAdapter Mitigations
+OSAdapter implementation must provide:
 - Thread-safe mutexes/semaphores
 - Interrupt-safe operations
 - CRC verification for storage
@@ -289,7 +289,7 @@ Backend implementation must provide:
 
 | ID | Hazard | Original SIL | Control Measures | Residual SIL | Acceptable? |
 |:--:|--------|:------------:|------------------|:------------:|:-----------:|
-| H1 | Uninitialized Backend | 1 | Code review + docs | 4 | ✓ Yes |
+| H1 | Uninitialized OSAdapter | 1 | Code review + docs | 4 | ✓ Yes |
 | H2 | Buffer Overflow | 4 | Static analysis + review + input validation | 4 | ✓ Yes |
 | H3 | Race Condition | 1 | Thread safety analysis + tests | 4 | ✓ Yes |
 | H4 | NVM Corruption | 1 | CRC + atomicity + recovery | 4 | ✓ Yes |
@@ -314,7 +314,7 @@ Backend implementation must provide:
 
 Based on HARA findings, the following safety requirements are derived:
 
-**SR-001:** safeAPIFramework services shall not be called before backend registration  
+**SR-001:** safeAPIFramework services shall not be called before OSAdapter registration  
 **SR-002:** All string operations shall use bounded rte_string_* functions  
 **SR-003:** Multi-threaded access to shared resources shall be protected by RTOS synchronization primitives  
 **SR-004:** All NVM data shall be protected by CRC/integrity checks  

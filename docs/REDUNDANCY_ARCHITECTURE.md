@@ -37,7 +37,7 @@ The older text used "hot standby" for a standby that only replicates state. In t
 | State carried across a promotion, declared by the application | `rte_state_transfer` | `redundancy/state_transfer/` |
 | Topology, replicas, quorum, `standby_mode`, capability check | `rte_redundancy_config` | `redundancy/config/` |
 | Transition to SAFE or REBOOT | `rte_safestate` | `utils/safestate/` |
-| Named channels over pluggable backends | `rte_channel_service` | `redundancy/channel_service/` |
+| Named channels over pluggable OSAdapters | `rte_channel_service` | `redundancy/channel_service/` |
 
 Design decisions: ADR-008 (common-cause mitigation), ADR-017 (checkpoint and clock sync), ADR-019 (app manager hooks and
 checkpoint), ADR-020 (dual transfer negotiation), ADR-025 (voter and cross-comparator split), ADR-034 (staged sends and
@@ -81,7 +81,7 @@ than the cost of a third channel, or add site redundancy to a 2oo2 pair to recov
 | Pattern | When it fits | Note |
 |---|---|---|
 | Shared memory, cache-coherent | Two cores on one die | Lowest jitter; a shared fault domain, so weaker independence |
-| Message passing, symmetric | Separate processes or hosts | What the reference RBC uses (`ab-peer`); the transport is a backend |
+| Message passing, symmetric | Separate processes or hosts | What the reference RBC uses (`ab-peer`); the transport is an OSAdapter |
 | Asymmetric, one coordinator | A local channel plus a remote one | The coordinator becomes a single point to argue about |
 
 Whichever is used, the comparison must be over data that both channels derived from the same input at the same logical

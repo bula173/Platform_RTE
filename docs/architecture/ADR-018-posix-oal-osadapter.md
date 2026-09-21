@@ -1,14 +1,19 @@
 # ADR-018: A Real POSIX/Linux OAL Backend
 
+> **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
+> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> original wording as a historical record.
+
 Status: Superseded (relocated) - Accepted
 Date: 2026-08-05
 Applies to: the POSIX backend's design, and how it plugs into every
 existing OAL service's backend-registration mechanism (ADR-005).
 
-**Relocation note:** the code this ADR describes (`src/posix_backend/`,
-`include/safeapi/posix_backend/`, `tests/posix_backend/`) has been moved
+**Relocation note:** the code this ADR describes (`src/posix_osadapter/`,
+`include/safeapi/posix_osadapter/`, `tests/posix_osadapter/`) has been moved
 out of this repository into the `safeAPIRBC2oo2` project
-(`src/posix_backend/` there). This is a location change only, not a
+(`src/posix_osadapter/` there). This is a location change only, not a
 design reversal - the rationale below is unchanged and still describes
 that code accurately. The move itself is a direct consequence of this
 ADR's own reasoning (ADR-005): an OAL backend is an integrator-supplied
@@ -46,14 +51,14 @@ against its headers.
 
 ### 2.1 One module, one file per service, one aggregator
 
-`src/posix_backend/rte_posix_backend_<service>.c` for each of timer,
+`src/posix_osadapter/rte_posix_osadapter_<service>.c` for each of timer,
 ipc, task, log, nvm, reboot, memory, plus
-`src/posix_backend/rte_posix_backend.c` exposing a single
-`rte_status_t rte_posix_backend_register_all(void)` that calls every
+`src/posix_osadapter/rte_posix_osadapter.c` exposing a single
+`rte_status_t rte_posix_osadapter_register_all(void)` that calls every
 service's `rte_<service>_register_backend()` with this module's
 implementation - one call at startup instead of seven, matching the
 "single entry point" pattern `rte_appmanager` already established
-elsewhere in this codebase. Individual `rte_posix_backend_<service>()`
+elsewhere in this codebase. Individual `rte_posix_osadapter_<service>()`
 accessor functions are also exposed for callers who want to register
 only some services with the real backend and mock/stub the rest (e.g. in
 tests).
@@ -63,7 +68,7 @@ service, because it depends on *all* of them and none of them should
 depend on it (ADR-007's per-feature layout is about independent
 buildable units; a backend implementation legitimately depends on the
 API it implements, so the dependency direction here is
-`posix_backend -> {timer, ipc, task, log, nvm, reboot, memory}`, never
+`posix_osadapter -> {timer, ipc, task, log, nvm, reboot, memory}`, never
 the reverse).
 
 ### 2.2 Fitting inside each service's fixed opaque storage
@@ -138,7 +143,7 @@ own the queue.
 
 ### 2.4 Build integration
 
-`src/posix_backend/CMakeLists.txt` only builds on POSIX-ish platforms
+`src/posix_osadapter/CMakeLists.txt` only builds on POSIX-ish platforms
 (`if(UNIX)` - covers Linux and other POSIX systems this backend also
 happens to work on, e.g. any pthread/POSIX.1-2008-conformant target) and
 links `pthread` plus `rt` where required by the target libc for
@@ -169,7 +174,7 @@ failing to configure.
 
 ## 4. Location
 
-`src/posix_backend/rte_posix_backend_{timer,ipc,task,log,nvm,reboot,memory}.c`
-+ `rte_posix_backend.c` (aggregator) + `include/safeapi/posix_backend/rte_posix_backend.h`,
-target `safeapi::posix_backend`, POSIX-only (`if(UNIX)`), links every OAL
+`src/posix_osadapter/rte_posix_osadapter_{timer,ipc,task,log,nvm,reboot,memory}.c`
++ `rte_posix_osadapter.c` (aggregator) + `include/safeapi/posix_osadapter/rte_posix_osadapter.h`,
+target `safeapi::posix_osadapter`, POSIX-only (`if(UNIX)`), links every OAL
 service target plus `pthread`.

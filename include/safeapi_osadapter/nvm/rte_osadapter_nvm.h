@@ -30,9 +30,6 @@ typedef struct rte_osadapter_nvm_s
     rte_status_t (*close)(rte_nvm_handle_t handle);
 } rte_osadapter_nvm_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_nvm_t rte_nvm_backend_t;
-
 /**
  * @brief Registers the OSAdapter NVM implementation.
  * @param adapter Pointer to NVM operations vtable.
@@ -40,7 +37,6 @@ typedef rte_osadapter_nvm_t rte_nvm_backend_t;
  */
 rte_status_t rte_osadapter_nvm_register(const rte_osadapter_nvm_t *adapter);
 
-rte_status_t rte_nvm_register_backend(const rte_nvm_backend_t *backend);
 
 #ifdef __cplusplus
 }

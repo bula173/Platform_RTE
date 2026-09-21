@@ -109,7 +109,7 @@ updates 4/5/13/21). Manual MISRA C:2012 review of the change
   in the header as best-effort (REQ-OAL-LOG-001): a racing change only
   keeps/drops one in-flight best-effort log line, never a torn read on
   any supported target. Consistent with how this module already treats
-  its `s_backend` pointer (set at startup, read everywhere, no lock).
+  its `s_osadapter` pointer (set at startup, read everywhere, no lock).
 - No change to any other translation unit; static finding total unchanged
   from update 21's **1229** (the touched `.c` was not re-run through the
   tool - flagged, not silently folded in).
@@ -126,14 +126,14 @@ Manual MISRA C:2012 review of the change:
   `src/oal/reboot/rte_reboot.c` (its template) - fixed-width types
   (`uint32_t`), one named constant (`RTE_PLATFORM_RT_PRIORITY_MAX 99U`),
   no dynamic memory, no recursion, single-level pointer use, `const`
-  backend pointer. The early-return validation style (Rule 15.5,
+  OSAdapter pointer. The early-return validation style (Rule 15.5,
   Advisory) is the established, already-deviated pattern for every OAL
-  `*_register_backend()` / dispatch function in this project - not a new
+  `*_register_osadapter()` / dispatch function in this project - not a new
   deviation. One function-pointer call through the registered vtable,
   same as `rte_reboot`/`rte_timer`.
 - **`include/safeapi/oal/platform/rte_platform.h` +
-  `include/safeapi_backend/platform/rte_platform_backend.h`** (new):
-  consumer/backend header split per ADR-021, Doxygen `@file`/`@brief`,
+  `include/safeapi_osadapter/platform/rte_osadapter_platform.h`** (new):
+  consumer/osadapter header split per ADR-021, Doxygen `@file`/`@brief`,
   full `@param`/`@return`, include guards, `extern "C"` wrappers - matches
   the reboot pair verbatim in shape.
 - **`tests/platform/test_rte_platform.c`** (new): `<assert.h>`-based, in
@@ -143,13 +143,13 @@ Manual MISRA C:2012 review of the change:
   20's **1229** (the new `.c` was not run through the tool, so it
   contributes 0 counted findings - flagged here rather than silently
   folded in).
-- Backend side (`safeAPIBackendPosix`, integrator code, not this
+- OSAdapter side (`safeAPIBackendPosix`, integrator code, not this
   framework's SIL scope): the `mlockall`/`SCHED_FIFO` body was **moved**
-  from `rte_posix_backend.c` to a new `rte_posix_backend_platform.c`
+  from `rte_posix_osadapter.c` to a new `rte_posix_osadapter_platform.c`
   behind the vtable, with one behavioural fix (gate `MCL_FUTURE` on
   `getrlimit(RLIMIT_MEMLOCK)`). Its POSIX-API use (`errno`, `strerror`,
   `snprintf`) is pre-existing and unchanged in kind, consistent with the
-  rest of that project's backend files.
+  rest of that project's OSAdapter files.
 
 **2026-08-26, update 20 (dynamic analysis tooling added to the build:
 `SAFEAPI_ENABLE_ASAN`/`SAFEAPI_ENABLE_UBSAN` CMake options + a Valgrind
@@ -166,7 +166,7 @@ all three tools:
   introduced by this session's other work):
   - `tests/voter/test_rte_voter.c`: `g_mock[8]` was one element too
     small - `test_register_channel()` legitimately needs 9 mock channel
-    backends (`channels[9]`, indices 0-8) to exercise the
+    OSAdapters (`channels[9]`, indices 0-8) to exercise the
     `RTE_STATUS_RESOURCE_EXHAUSTED` path one past `RTE_VOTER_MAX_CHANNELS`
     (8). `reset_mocks(9)` was writing `g_mock[8]` out of bounds into
     whatever global happened to follow it in memory
@@ -620,7 +620,7 @@ zero `.c`/`.h` files:
   untouched as files, appmanager's link line updated to the 3 new names.
 - Every consumer of the old per-feature target names was updated:
   `tests/CMakeLists.txt` (19 tests), the top-level `install(TARGETS ...)`
-  list, safeAPIRBC2oo2's `src/posix_backend/CMakeLists.txt` and top-level
+  list, safeAPIRBC2oo2's `src/posix_osadapter/CMakeLists.txt` and top-level
   `CMakeLists.txt`, and the `examples/qnx-rtos-app`/`examples/linux-posix-app`
   integration templates plus `examples/build-qnx.sh`'s doc string.
   Verified via a repository-wide grep for every old `safeapi::<feature>`
@@ -671,7 +671,7 @@ verification:
   for the full explanation and the bounded-retry-count fix
   (`RTE_DUAL_CHANNEL_STALL_POLL_LIMIT`, a fixed cap of 32 - no dynamic
   behavior, no new casts). This module had only ever been exercised
-  through a mock netlink backend (`test_rte_dual_channel.c`) before
+  through a mock netlink OSAdapter (`test_rte_dual_channel.c`) before
   this pass wired it to a real transport for the first time.
 - `safeAPIRBC2oo2/src/application/SITE/site.c`: removed its own direct
   `rte_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
@@ -686,59 +686,59 @@ verification:
   `test_rte_dual_channel`, `test_rte_dual_msgchannel`,
   `test_rte_dual_negotiator`, and the new `test_rte_safechannel`) plus
   a live two-process SITE WEST/EAST run over the real POSIX TCP netlink
-  backend: negotiation completes and steady-state heartbeats continue
+  OSAdapter: negotiation completes and steady-state heartbeats continue
   exchanging role/single-mode status every cycle - see ADR-022 section 4.
 - ADR-022 status: framework module and SITE's migration done;
   `monitor_c` and `channel_ab` migrations remain pending.
 
 **2026-08-06, update 9 (header restructuring only, no behavior change -
-ADR-021 consumer/OS-backend header split completed for the remaining 8
+ADR-021 consumer/OS-osadapter header split completed for the remaining 8
 modules: `nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
 `clocksync`):** no automated re-run performed (same caveat as prior
 updates - still no `cppcheck` in this sandbox session); reasoned manually
 since this change is a pure declaration move, not new logic, identical in
 nature to update 8's `rte_timer` pilot:
 
-- Same pattern as the pilot: each module's `rte_<feature>_backend_t` and
-  `rte_<feature>_register_backend()` *declarations* moved from
+- Same pattern as the pilot: each module's `rte_<feature>_osadapter_t` and
+  `rte_<feature>_register_osadapter()` *declarations* moved from
   `include/safeapi/<feature>/rte_<feature>.h` to the new
-  `include/safeapi_backend/<feature>/rte_<feature>_backend.h`; each
+  `include/safeapi_osadapter/<feature>/rte_<feature>_osadapter.h`; each
   service's `.c` implementation (`src/<feature>/rte_<feature>.c`) is
   byte-for-byte unchanged apart from the added `#include`. No new casts,
   no new control flow.
-- `rte_clocksync.h` was the one header where backend material was
+- `rte_clocksync.h` was the one header where OSAdapter material was
   interleaved with consumer functions (vtable/register between the
   quality enum and the two consumer accessor functions) rather than
   trailing them as in the other 8 - the extraction was still a pure cut,
   no reordering of surrounding consumer declarations.
-- Every call site that referenced a vtable type or `_register_backend()`
+- Every call site that referenced a vtable type or `_register_osadapter()`
   gained the corresponding new `#include`: framework tests
   (`test_rte_nvm`, `test_rte_reboot`, `test_rte_netlink`,
   `test_rte_clocksync`, `test_rte_log`, `test_rte_dual_msgchannel`,
   `test_rte_dual_channel`, `test_rte_dual_negotiator`), the
   `examples/geo_distributed_checkpoint_sync.c` sample, and
-  safeAPIRBC2oo2's umbrella `rte_posix_backend.h` (now includes all 9
-  backend headers alongside their 9 consumer headers). No site needed a
+  safeAPIRBC2oo2's umbrella `rte_posix_osadapter.h` (now includes all 9
+  OSAdapter headers alongside their 9 consumer headers). No site needed a
   logic change; `task`, `ipc`, and `memory` have no dedicated framework
-  unit tests, so only their `.c` implementation and the POSIX backend
+  unit tests, so only their `.c` implementation and the POSIX OSAdapter
   umbrella header needed the new include.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all 16 framework unit tests (all pass, including the 8 directly
   touched by this change) plus a full rebuild and live 8-process run of
   safeAPIRBC2oo2 (0 errors, clean shutdown, identical AGREE/checkpoint
   behavior to before) - see ADR-021 section 2.3.
-- ADR-021 status: all 9 backend-bearing OAL modules now have the
-  consumer/backend header split in place.
+- ADR-021 status: all 9 osadapter-bearing OAL modules now have the
+  consumer/osadapter header split in place.
 
 **2026-08-06, update 8 (header restructuring only, no behavior change -
-ADR-021 consumer/OS-backend header split, `rte_timer` pilot):** no
+ADR-021 consumer/OS-osadapter header split, `rte_timer` pilot):** no
 automated re-run performed (same caveat as prior updates - still no
 `cppcheck` in this sandbox session); reasoned manually since this change
 is a pure declaration move, not new logic:
 
-- `rte_timer_backend_t` and `rte_timer_register_backend()`'s
+- `rte_osadapter_timer_t` and `rte_osadapter_timer_register()`'s
   *declarations* moved from `include/safeapi/timer/rte_timer.h` to the
-  new `include/safeapi_backend/timer/rte_timer_backend.h`; their
+  new `include/safeapi_osadapter/timer/rte_osadapter_timer.h`; their
   *implementation* in `src/timer/rte_timer.c` is byte-for-byte
   unchanged, only its `#include` list gained the new header. No new
   casts, no new control flow, no new dynamic behavior - the existing
@@ -747,14 +747,14 @@ is a pure declaration move, not new logic:
 - Every call site that referenced the vtable type
   (`tests/timer/test_rte_timer.c`, `tests/watchdog/test_rte_watchdog.c`,
   `tests/dual/test_rte_dual_negotiator.c`, `tests/log/test_rte_log.c`,
-  safeAPIRBC2oo2's `rte_posix_backend.h`/`rte_posix_backend_timer.c`)
+  safeAPIRBC2oo2's `rte_posix_osadapter.h`/`rte_posix_osadapter_timer.c`)
   gained the new `#include` and were rebuilt; no site needed a logic
   change.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all four affected framework unit tests (all pass) plus a full rebuild
   and live 8-process run of safeAPIRBC2oo2 (0 errors, clean shutdown) -
   see ADR-021 section 2.3.
-- **Not yet done:** the same split for the other eight backend-bearing
+- **Not yet done:** the same split for the other eight osadapter-bearing
   modules (`nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
   `clocksync`) - ADR-021 is a pilot on `rte_timer` only as of this
   update. This report will gain a further update per module as each is
@@ -856,8 +856,8 @@ reasoned manually:
   conventions by direct code read - no deviation from any of those.
 - New tests (`tests/log/test_rte_log.c`) cover field order/delimiters,
   `NULL` `info`/`extra_fields` handling, `TIMESTAMP` degrading to `"0"`
-  with no `rte_timer` backend registered, and the pre-existing
-  `rte_log_write()`/no-backend silent-no-op contract being unaffected -
+  with no `rte_timer` OSAdapter registered, and the pre-existing
+  `rte_log_write()`/no-osadapter silent-no-op contract being unaffected -
   all passing (manual `gcc` build, exit 0; no `cmake`/`cppcheck` in this
   sandbox, same standing caveat as every other update in this report).
 
@@ -893,7 +893,7 @@ already-open findings instead of introducing new ones:
   request/reply auto-responder echo - see ADR-019 §5.2). This is a
   genuinely new construct for that project (no prior direct pthread
   primitive exposed in application code; `rte_task`/`rte_ipc` already
-  wrap pthreads internally in `posix_backend`, but this is the first
+  wrap pthreads internally in `posix_osadapter`, but this is the first
   direct use in `src/application/`). Framework-level deviation: **N/A**
   (out of this report's scope, per its own stated boundary); flagged here
   as a heads-up for that project's own eventual MISRA pass, not resolved
@@ -938,7 +938,7 @@ this, the Rule 21.6 finding recorded below for `rte_watchdog.c`
 string literals (the same convention already used by `rte_channel.c`).
 `rte_appmanager.c`'s own Rule 21.6 finding is unrelated and still open.
 Verified via a new real test suite (`tests/watchdog/test_rte_watchdog.c`,
-13/13 framework tests passing) using a mock `rte_timer` backend with a
+13/13 framework tests passing) using a mock `rte_timer` OSAdapter with a
 test-controlled clock: confirms a watchdog does NOT fire while kicked
 regularly, DOES fire once its deadline is genuinely passed, and that each
 of the `LOG`/`SAFESTATE`/`CUSTOM` actions dispatch correctly (SAFESTATE
@@ -1016,7 +1016,7 @@ Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
 | Rule | Count | Note |
 |---|---:|---|
 | 15.5 (single point of exit) | 387 | Matches the deviation already documented in section 3 - consistent guard-clause style across the codebase, not new. |
-| 8.7 (internal linkage) | 138 | Needs manual triage - section 2 claims this rule is compliant-by-construction (`static` on every backend/handler table); a real tool disagreeing with that specific claim across 138 sites needs to be reconciled, not assumed to be a tool false-positive. Not yet triaged as part of this update. |
+| 8.7 (internal linkage) | 138 | Needs manual triage - section 2 claims this rule is compliant-by-construction (`static` on every OSAdapter/handler table); a real tool disagreeing with that specific claim across 138 sites needs to be reconciled, not assumed to be a tool false-positive. Not yet triaged as part of this update. |
 | 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
 | 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `rte_appmanager.c` and `rte_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `rte_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `rte_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
 | 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
@@ -1048,15 +1048,15 @@ retrofitted, and are verified here by direct search of the shipped source:
 |---|---|---|
 | Dir 4.12 (mandatory-equivalent per CLAUDE.md) | No dynamic memory allocation | `grep -rn "malloc\|free(\|realloc" include src` -> zero real hits (only a comment describing the policy). Every stateful object uses caller-owned static storage (ADR-001 section 3.4). |
 | Rule 10.1-10.8 | Essential type model / implicit conversions | Every conversion between fixed-width types and `size_t` goes through a checked `rte_cast_*` function (ADR-003); no bare narrowing casts exist elsewhere in `include`/`src` (`grep` for stray native `int`/`long`/`unsigned` outside `rte_types.h`'s byte-array storage macro returned nothing). |
-| Rule 17.2 / CLAUDE.md "no recursion" | No recursion | Manual review: no function in `src/` calls itself directly or indirectly; the call graph is flat (public API -> backend dispatch, one level). |
+| Rule 17.2 / CLAUDE.md "no recursion" | No recursion | Manual review: no function in `src/` calls itself directly or indirectly; the call graph is flat (public API -> OSAdapter dispatch, one level). |
 | Rule 21.6 (required) | No `<stdio.h>` | `grep -rln "stdio.h" include src` -> zero hits. |
 | Rule 21.4 (required, contextual) / CLAUDE.md "no assert in production" | No `<setjmp.h>`/`<assert.h>`/`<errno.h>` in shipped code | `grep -rln "assert.h\|errno.h\|setjmp.h" include src` -> zero hits. (`tests/` uses both `<assert.h>` and, in `test_rte_safestate.c`, `<setjmp.h>` - see section 4.) |
 | Rule 20.13/2.1 | No `goto`, no unreachable code | `grep -rn "goto" include src` -> zero hits. The one intentionally-infinite `for (;;)` (`rte_safestate.c`, the defensive halt) is the last statement in its function, nothing follows it. |
 | Rule 19.2 (advisory) | Avoid `union` | `grep -rn "union" include src` -> zero hits. |
-| Rule 8.7 | Objects/functions used only within one translation unit shall have internal linkage | Every per-service backend pointer (`s_backend`) and the safestate handler table (`s_handlers`) is declared `static`. |
+| Rule 8.7 | Objects/functions used only within one translation unit shall have internal linkage | Every per-service OSAdapter pointer (`s_osadapter`) and the safestate handler table (`s_handlers`) is declared `static`. |
 | Rule 16.1/16.4 (required) | Every `switch` shall have a `default` | Both `switch` statements in the codebase (`rte_safestate.c`, `rte_status.c`) have an explicit `default` clause. |
 | Fixed-width types | Use `<stdint.h>` types, not native `int`/`long` | Every public API uses `uint8_t`.."uint64_t"/`int8_t`.."int64_t"/`size_t`/`bool`; no bare `int`/`long`/`short` appears in any public signature. |
-| `const` correctness | Immutable pointer targets marked `const` | Every read-only buffer/backend-vtable parameter is declared `const` (e.g. `const void *buffer`, `const rte_timer_backend_t *backend`). |
+| `const` correctness | Immutable pointer targets marked `const` | Every read-only buffer/osadapter-vtable parameter is declared `const` (e.g. `const void *buffer`, `const rte_osadapter_timer_t *OSAdapter`). |
 | Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `rte_checkpoint.c`/`rte_clocksync.c`: zero hits. `rte_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `rte_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `rte_checksum.c`). |
 | Explicit status codes, no invented enum values | `rte_checksum.c` fix | The pre-fix file referenced `RTE_STATUS_ERROR`/`RTE_STATUS_INVALID`, neither a member of `rte_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `RTE_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `RTE_STATUS_INVALID_PARAM` for bad arguments, `RTE_STATUS_ALREADY_INITIALIZED` for double-init. |
 
@@ -1098,7 +1098,7 @@ compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`): clean, zero
 warnings.
 
 **Update (2026-08-21): new module, `include/safeapi/mutex/rte_mutex.h` +
-`include/safeapi_backend/mutex/rte_mutex_backend.h` + `src/mutex/rte_mutex.c`
+`include/safeapi_osadapter/mutex/rte_osadapter_mutex.h` + `src/mutex/rte_mutex.c`
 (ADR-033).** Added after an architecture review of `safeAPIRBC2oo2` found
 it calling `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`
 directly on a raw `pthread_mutex_t` application struct field - a real
@@ -1114,8 +1114,8 @@ functions called from a downstream consumer like `safeAPIRBC2oo2`) - no
 new rule category introduced beyond what `rte_timer.c` (this module's
 own template) already carries; in fact strictly fewer findings than
 `rte_timer.c`, since the pointer-cast rules (11.5/11.6/8.9) that
-`rte_timer.c` triggers live only in the POSIX backend implementation
-for mutex (`safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_mutex.c`,
+`rte_timer.c` triggers live only in the POSIX OSAdapter implementation
+for mutex (`safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_mutex.c`,
 outside this repo's own cppcheck scope), not in the dispatch file itself.
 `cmake --build build` + `ctest --test-dir build`: full rebuild, 27/27
 pass. `safeAPIRBC2oo2` (downstream): migrated off `pthread_mutex_t`
@@ -1124,11 +1124,11 @@ entirely (`channel_ab_types.h`/`channel_ab.c`/`channel_ab_checkpoint.c`/
 `safeAPITestEnv` Robot Framework suite (11/11) all re-verified clean.
 
 **Update (2026-08-20): setup-phase lock coverage extended (ADR-032).**
-Fourteen functions across ten files (`rte_timer_register_backend`,
-`rte_ipc_register_backend`, `rte_task_register_backend`,
-`rte_netlink_register_backend`, `rte_nvm_register_backend`,
-`rte_log_register_backend`, `rte_clocksync_register_backend`,
-`rte_reboot_register_backend`, `rte_mem_pool_register_backend`,
+Fourteen functions across ten files (`rte_osadapter_timer_register`,
+`rte_osadapter_ipc_register`, `rte_osadapter_task_register`,
+`rte_osadapter_netlink_register`, `rte_osadapter_nvm_register`,
+`rte_osadapter_log_register`, `rte_osadapter_clocksync_register`,
+`rte_osadapter_reboot_register`, `rte_osadapter_memory_register`,
 `rte_mem_pool_create`, `rte_safestate_register_handler`,
 `rte_ipc_pubsub_topic_create`, `rte_ipc_rr_server_create`,
 `rte_ipc_rr_client_create`) now call
@@ -1142,10 +1142,10 @@ note. `cmake --build build` + `ctest --test-dir build`: full rebuild and
 suite pass. `safeAPIRBC2oo2` (downstream): full rebuild, `ctest`, and
 `smoke.sh` re-verified against its established baseline. No new
 `malloc()`/`free()`/`realloc()` call site was added anywhere - a
-candidate malloc-backed default memory-pool backend was considered and
-rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_memory.c`
+candidate malloc-backed default memory-pool OSAdapter was considered and
+rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_memory.c`
 was confirmed to already implement a complete, malloc-free (static
-arena, bump allocator, intrusive free list) backend - the zero-`malloc`
+arena, bump allocator, intrusive free list) OSAdapter - the zero-`malloc`
 count for this repo's own `include/`/`src/` (section 1a's grep sweep)
 remains unchanged.
 
@@ -1196,13 +1196,13 @@ Being transparent about these rather than silently non-compliant:
   long-running `rte_appmanager_run()` loop from an operator (Ctrl+C) or
   process manager (SIGTERM) - see the function's own doc in
   `rte_appmanager.h` for the full reasoning, including why this module
-  (already not backend-dispatched, unlike the seven ADR-005 OAL services)
+  (already not osadapter-dispatched, unlike the seven ADR-005 OAL services)
   was judged the least-bad place for a narrow, explicitly-named exception
   rather than every downstream POSIX integrator reimplementing the same
   handful of lines. It is compiled out entirely (returns
   `RTE_STATUS_NOT_SUPPORTED`, no `<signal.h>` include at all) on any
   target where `RTE_APPMANAGER_HAVE_POSIX_SIGNALS` is not defined, so a
-  SIL-rated build targeting a real RTOS/bare-metal backend never compiles
+  SIL-rated build targeting a real RTOS/bare-metal OSAdapter never compiles
   this code path in the first place. The handler itself is minimal by
   design (writes one `volatile int`, calls nothing else - see
   `rte_appmanager_signal_handler()`'s own comment) specifically to avoid
@@ -1241,9 +1241,9 @@ same rules:
 - All test files use `<assert.h>` per normal unit-test practice.
 
 **Update 2026-09-18:** new module `rte_flow` (`include/safeapi/oal/flow/`,
-`include/safeapi_backend/flow/`, `src/oal/flow/rte_flow.c` -
+`include/safeapi_osadapter/flow/`, `src/oal/flow/rte_flow.c` -
 OCORA PI-API-compatible name-addressed pub/sub Flow service, ADR-005
-backend seam, `SAFEAPI_ENABLE_FLOW`) added, same validate-then-dispatch
+OSAdapter seam, `SAFEAPI_ENABLE_FLOW`) added, same validate-then-dispatch
 shape as `rte_netlink`. `cmake --build build --target cppcheck` re-run
 after adding it: zero new MISRA findings. `ctest` 31/31 (was 30/30) with
 `test_rte_flow` added following `test_rte_netlink`'s own pattern.
@@ -1300,18 +1300,18 @@ become permanent.
   (the function bodies are short, single-entry/single-loop, no aliasing).
   `ctest`: 32/32 (was 31/31), zero regressions.
 
-- **Update (2026-09-18): new module `rte_channel_service_flow_backend`**
-  (RCA/OCORA Phase 4 - a `rte_channel_service_backend_t` implementation over
+- **Update (2026-09-18): new module `rte_channel_service_flow_osadapter`**
+  (RCA/OCORA Phase 4 - a `rte_osadapter_channel_service_t` implementation over
   `rte_flow`, `include/safeapi/redundancy/channel_service/`,
   `src/redundancy/channel_service/`). `cppcheck --addon=misra` findings, all
   in already-accepted buckets: Rule 15.5 (single-exit, dominant everywhere),
   Rule 11.5 (`void *` -> typed-pointer cast in `channel_state()`, identical
-  pattern to `safeAPIBackendPosix`'s own `rte_posix_backend_channel_service.c`
+  pattern to `safeAPIBackendPosix`'s own `rte_posix_osadapter_channel_service.c`
   `channel_state()` helper), Rule 8.9 (file-scope `static const` vtable
-  initializer, same pattern every other backend registration in this tree
+  initializer, same pattern every other OSAdapter registration in this tree
   uses). `ctest`: 34/34 (was 32/32 after the redundancy_config update above -
-  this update also added `test_rte_channel_service_flow_backend`, 6 cases).
-  **Update (2026-09-18, same day): lazy-open redesign.** `backend_setup()` was changed from
+  this update also added `test_rte_channel_service_flow_osadapter`, 6 cases).
+  **Update (2026-09-18, same day): lazy-open redesign.** `osadapter_setup()` was changed from
   eager (`rte_flow_open()` called immediately) to lazy (resolve+store only; the real open
   happens on the first `read()`/`send()`, bounded by THAT call's own `timeout_ms`) after a real
   bug was found live against `safeAPIRBC2oo2GP`: eager open made `rte_channel_service_setup()`

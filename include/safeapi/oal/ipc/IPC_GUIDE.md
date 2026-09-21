@@ -4,13 +4,13 @@
  * @section ipc_guide_overview Overview
  *
  * The IPC module provides transport-agnostic inter-process/inter-task communication
- * with support for multiple backend implementations (Shared Memory, FIFO, TCP/IP, UDP).
+ * with support for multiple OSAdapter implementations (Shared Memory, FIFO, TCP/IP, UDP).
  *
  * **Documents in this directory:**
  *
  * - @ref ipc_transport_selection - Complete transport selection guide
  *   - Shared Memory, FIFO, TCP/IP, UDP characteristics
- *   - POSIX vs RTOS backends
+ *   - POSIX vs RTOS OSAdapters
  *   - Decision tree for choosing transports
  *
  * - @ref channel_configuration - Configuration framework for users
@@ -30,9 +30,9 @@
  *   - Typical: Track database broadcasts state changes
  *
  * - @ref rte_ipc.h - Base IPC API
- *   - Backend vtable abstraction
+ *   - OSAdapter vtable abstraction
  *   - OS-agnostic interface
- *   - Users can register custom backends
+ *   - Users can register custom OSAdapters
  *
  * @section ipc_guide_layers IPC Architecture Layers
  *
@@ -50,7 +50,7 @@
  *     ├─ POSIX: mmap(), mkfifo(), sockets
  *     ├─ QNX: MsgPass, shared memory
  *     ├─ RTOS: Native messaging, memory mapping
- *     └─ Custom: User-provided backends
+ *     └─ Custom: User-provided OSAdapters
  * ```
  *
  * @section ipc_guide_workflow Typical Workflow for Online/Standby Setup
@@ -73,7 +73,7 @@
  * };
  *
  * rte_ipc_handle_t tcp_channel;
- * rte_ipc_create_tcp(&tcp_channel, &tcp_cfg);  // OS backend implements
+ * rte_ipc_create_tcp(&tcp_channel, &tcp_cfg);  // OS OSAdapter implements
  * ```
  *
  * **Step 3: Wrap in Vital Channel** (See @ref vital_channel_architecture)
@@ -113,9 +113,9 @@
  * - Easy to switch transports at runtime (if needed)
  *
  * **3. Extensibility**
- * - Backend vtable pattern allows new transport types
+ * - OSAdapter vtable pattern allows new transport types
  * - Just add new configuration structure
- * - Dispatcher routes to correct backend
+ * - Dispatcher routes to correct OSAdapter
  * - Existing code unaffected
  *
  * **4. Safety-Critical**
@@ -152,7 +152,7 @@
  * 1. Read @ref ipc_transport_selection to understand transport options
  * 2. Read @ref channel_configuration to learn configuration
  * 3. Check examples/channel_configuration_example.c for working code
- * 4. Implement OS-specific backends (rte_ipc_create_tcp, etc.)
+ * 4. Implement OS-specific OSAdapters (rte_ipc_create_tcp, etc.)
  * 5. Integrate with vital_channel for voting/redundancy
  * 6. Review @ref system_architecture for complete system design
  *

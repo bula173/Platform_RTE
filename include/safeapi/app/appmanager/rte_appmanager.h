@@ -55,7 +55,7 @@
  *
  * @note Unlike the seven OAL services (rte_timer, rte_nvm, rte_memory,
  * rte_task, rte_ipc, rte_log, rte_reboot), this module is not
- * backend-dispatched (ADR-005) - it is a direct, OS-agnostic
+ * osadapter-dispatched (ADR-005) - it is a direct, OS-agnostic
  * implementation, same as rte_safestate. rte_appmanager_install_default_signal_handlers()
  * below is a **deliberate, narrow exception** to that OS-agnosticism: it
  * is a POSIX-only convenience, compiled out (returns

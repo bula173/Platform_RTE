@@ -8,7 +8,7 @@
  * front. See ADR-001, section 3.2.
  *
  * REQ-OAL-MEM-001: all pools are reserved during system initialization;
- *                  reservation after the init phase is backend-defined and
+ *                  reservation after the init phase is osadapter-defined and
  *                  may be refused (RTE_STATUS_NOT_SUPPORTED).
  *
  * @defgroup MEMORY Static Memory Reservation
@@ -45,9 +45,9 @@ typedef struct rte_mem_pool_config_s
  *                    and config->block_count must both be > 0.
  * @param out_handle  Receives the created pool's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_mem_pool_register_backend()); RTE_STATUS_NOT_SUPPORTED if
- *         the registered backend does not implement create.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_memory_register()); RTE_STATUS_NOT_SUPPORTED if
+ *         the registered OSAdapter does not implement create.
  * REQ-OAL-MEM-010
  */
 rte_status_t rte_mem_pool_create(rte_mem_pool_storage_t *storage,
@@ -90,9 +90,9 @@ rte_status_t rte_mem_pool_stats(rte_mem_pool_handle_t handle,
                                    size_t *out_used_blocks);
 
 /*
- * The backend vtable (rte_mem_pool_backend_t) and
- * rte_mem_pool_register_backend() live in
- * safeapi_backend/memory/rte_memory_backend.h, not here (ADR-021). This
+ * The OSAdapter vtable (rte_osadapter_memory_t) and
+ * rte_osadapter_memory_register() live in
+ * safeapi_osadapter/memory/rte_osadapter_memory.h, not here (ADR-021). This
  * header is the consumer-facing surface only.
  */
 

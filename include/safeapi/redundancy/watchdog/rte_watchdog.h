@@ -292,7 +292,7 @@ void rte_watchdog_timeout_handler(uint32_t watchdog_id);
  *
  * This implementation has no OS-specific interrupt/thread of its own
  * (consistent with ADR-005: OS-specific timing belongs in an integrator
- * backend, not in this module). Instead, the integrating application is
+ * OSAdapter, not in this module). Instead, the integrating application is
  * responsible for calling this function regularly - e.g. from a
  * rte_timer periodic callback, or once per iteration of a
  * rte_appmanager execute() cycle - so that any watchdog whose deadline

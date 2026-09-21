@@ -10,14 +10,14 @@
  * that must first find each other (one side listens, the other
  * connects) before any data can flow. Distinct connection-establishment
  * semantics is why this is a new service instead of new fields bolted
- * onto rte_ipc_config_t (ADR-005's backend-agnostic config principle:
+ * onto rte_ipc_config_t (ADR-005's osadapter-agnostic config principle:
  * a config struct should not carry fields that are meaningless for most
- * backends of that service).
+ * OSAdapters of that service).
  *
  * Framework ships the interface and validate-then-dispatch layer only;
- * a concrete backend (e.g. POSIX TCP sockets) is integrator-supplied
+ * a concrete OSAdapter (e.g. POSIX TCP sockets) is integrator-supplied
  * (ADR-005) and lives with the application that registers it - see
- * safeAPIRBC2oo2's src/posix_backend/rte_posix_backend_netlink.c for
+ * safeAPIRBC2oo2's src/posix_osadapter/rte_posix_osadapter_netlink.c for
  * the reference POSIX/TCP implementation this header was designed
  * alongside.
  *
@@ -28,7 +28,7 @@
  *                      shall never block indefinitely by default.
  * REQ-OAL-NETLINK-014: this service provides no message ordering,
  *                      deduplication, or delivery guarantee of its own -
- *                      a backend may be built on an unreliable transport
+ *                      an OSAdapter may be built on an unreliable transport
  *                      (e.g. UDP). Any such guarantee is the caller's
  *                      responsibility (see safeAPIFreamwork's
  *                      rte_dual_msgchannel/rte_dual_channel for a
@@ -57,7 +57,7 @@ typedef struct rte_netlink_impl_s *rte_netlink_handle_t;
 /**
  * @brief Which side of the connection this link instance plays.
  *
- * A TCP-style backend needs exactly one LISTEN side (binds, accepts one
+ * A TCP-style OSAdapter needs exactly one LISTEN side (binds, accepts one
  * peer) and one CONNECT side (dials the listener) per link; which role a
  * given process/role/site plays is an application-level decision (e.g.
  * "site West listens, site East connects"), not something this service
@@ -74,7 +74,7 @@ typedef struct rte_netlink_config_s
 {
     /** Which side of the connection this link instance plays. */
     rte_netlink_role_t role;
-    /** LISTEN: bind address, backend-defined interpretation of NULL
+    /** LISTEN: bind address, osadapter-defined interpretation of NULL
      *  (typically "any"). CONNECT: target host to dial. Must not be NULL
      *  for CONNECT. Caller-owned; only read during rte_netlink_open(). */
     const char         *host;
@@ -97,8 +97,8 @@ typedef struct rte_netlink_config_s
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
  *         RTE_STATUS_TIMEOUT if the link is not established within
  *         config->connect_timeout_ms; RTE_STATUS_NOT_INITIALIZED if no
- *         backend is registered (rte_netlink_register_backend());
- *         RTE_STATUS_NOT_SUPPORTED if the registered backend does not
+ *         OSAdapter is registered (rte_osadapter_netlink_register());
+ *         RTE_STATUS_NOT_SUPPORTED if the registered OSAdapter does not
  *         implement open.
  * REQ-OAL-NETLINK-010
  */
@@ -114,9 +114,9 @@ rte_status_t rte_netlink_open(rte_netlink_storage_t *storage,
  * @param timeout_ms    Maximum time to wait for the send to complete.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT
  *         if the send does not complete in time; RTE_STATUS_HARDWARE_FAULT
- *         if the backend can positively confirm the peer is gone (e.g. a
- *         TCP disconnect, or an unreliable-transport backend's own
- *         best-effort signal - not guaranteed on every backend, see
+ *         if the OSAdapter can positively confirm the peer is gone (e.g. a
+ *         TCP disconnect, or an unreliable-transport OSAdapter's own
+ *         best-effort signal - not guaranteed on every OSAdapter, see
  *         REQ-OAL-NETLINK-014); RTE_STATUS_NOT_INITIALIZED/
  *         RTE_STATUS_NOT_SUPPORTED as in rte_netlink_open().
  * REQ-OAL-NETLINK-011
@@ -135,7 +135,7 @@ rte_status_t rte_netlink_send(rte_netlink_handle_t handle,
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT
  *         if no message arrives in time; RTE_STATUS_HARDWARE_FAULT per
  *         rte_netlink_send()'s own note above; RTE_STATUS_DATA_CORRUPTION
- *         if a backend can detect the received message violated this
+ *         if an OSAdapter can detect the received message violated this
  *         link's wire contract (e.g. wrong length) but not necessarily its
  *         content (content integrity, if needed, is the caller's job - see
  *         REQ-OAL-NETLINK-014); RTE_STATUS_NOT_INITIALIZED/
@@ -157,9 +157,9 @@ rte_status_t rte_netlink_receive(rte_netlink_handle_t handle,
 rte_status_t rte_netlink_close(rte_netlink_handle_t handle);
 
 /*
- * The backend vtable (rte_netlink_backend_t) and
- * rte_netlink_register_backend() live in
- * safeapi_backend/netlink/rte_netlink_backend.h, not here (ADR-021). This
+ * The OSAdapter vtable (rte_osadapter_netlink_t) and
+ * rte_osadapter_netlink_register() live in
+ * safeapi_osadapter/netlink/rte_osadapter_netlink.h, not here (ADR-021). This
  * header is the consumer-facing surface only.
  */
 

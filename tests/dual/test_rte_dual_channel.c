@@ -22,8 +22,8 @@
 #include "safeapi/redundancy/checksum/rte_checksum.h"
 #include "safeapi/redundancy/dual/rte_dual_channel.h"
 #include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_backend/netlink/rte_netlink_backend.h"
-#include "safeapi_backend/timer/rte_timer_backend.h"
+#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
 
 typedef struct
 {
@@ -40,7 +40,7 @@ typedef struct
     /** Distinct from `broken` (which simulates "peer just hasn't
      *  answered yet" - RTE_STATUS_TIMEOUT): simulates a genuinely dead
      *  transport (peer closed/reset the connection), matching what
-     *  src/posix_backend/rte_posix_backend_netlink.c's own
+     *  src/posix_osadapter/rte_posix_osadapter_netlink.c's own
      *  transfer_all() actually returns for ECONNRESET/EPIPE/a clean
      *  EOF - RTE_STATUS_HARDWARE_FAULT - see REQ-DUAL-CHANNEL-008. */
     int              hard_fault;
@@ -93,13 +93,13 @@ static rte_status_t mock_receive(rte_netlink_handle_t handle, void *out_message,
     return RTE_STATUS_OK;
 }
 
-static const rte_netlink_backend_t g_mock_netlink_backend = { NULL, mock_send, mock_receive, NULL };
+static const rte_osadapter_netlink_t g_mock_netlink_osadapter = { NULL, mock_send, mock_receive, NULL };
 
 /* --- mock timer: increments by 5ms every call. Registered so
  *     rte_dual_channel_send()'s own ACK-wait loop can observe real
  *     wall-clock *progress* between polls (REQ-DUAL-CHANNEL-007's own
  *     "elapsed >= ack_timeout_ms" / "recompute remaining from elapsed"
- *     paths) - with no timer backend registered at all, a fast
+ *     paths) - with no timer OSAdapter registered at all, a fast
  *     in-process mock netlink round trip completes so quickly that the
  *     loop's own stall-poll cap (not wall-clock progress) is what ends
  *     it every time, and those two specific paths are never reached. --- */
@@ -128,7 +128,7 @@ static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
     return RTE_STATUS_OK;
 }
 
-static const rte_timer_backend_t g_mock_timer_backend = { NULL, NULL, NULL, NULL, mock_timer_now };
+static const rte_osadapter_timer_t g_mock_timer_osadapter = { NULL, NULL, NULL, NULL, mock_timer_now };
 
 /* --- fixture: two redundant links between "A" (sender_id 1) and "B"
  *     (sender_id 2) --- */
@@ -713,8 +713,8 @@ static void test_send_heartbeat(void)
 int main(void)
 {
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
-    assert(rte_netlink_register_backend(&g_mock_netlink_backend) == RTE_STATUS_OK);
-    assert(rte_timer_register_backend(&g_mock_timer_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_netlink_register(&g_mock_netlink_osadapter) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
 
     test_invalid_params();
     test_send_both_links_ack_full();

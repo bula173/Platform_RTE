@@ -1,12 +1,12 @@
-/** @file test_rte_channel_service_flow_backend.c
- *  @brief Unit tests for rte_channel_service_flow_backend (mocks rte_flow_backend_t
+/** @file test_rte_channel_service_flow_osadapter.c
+ *  @brief Unit tests for rte_channel_service_flow_osadapter (mocks rte_osadapter_flow_t
  *         one layer down, same pattern tests/flow/test_rte_flow.c uses).
  */
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/channel_service/rte_channel_service_flow_backend.h"
-#include "safeapi_backend/flow/rte_flow_backend.h"
+#include "safeapi/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
+#include "safeapi_osadapter/flow/rte_osadapter_flow.h"
 
 static uint32_t g_last_open_oflags;
 static size_t   g_last_open_message_size;
@@ -68,7 +68,7 @@ static rte_status_t mock_close(rte_flow_handle_t handle)
     return RTE_STATUS_OK;
 }
 
-static const rte_flow_backend_t g_mock_flow_backend = {
+static const rte_osadapter_flow_t g_mock_flow_osadapter = {
     mock_open, mock_send, mock_receive, mock_close, NULL, NULL
 };
 
@@ -107,37 +107,37 @@ static rte_status_t resolver_unknown(const char *channel_name, rte_netlink_confi
 static void test_connect_role_maps_to_publisher(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
 
-    assert(rte_channel_service_flow_backend_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
+    assert(rte_channel_service_flow_osadapter_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
     g_open_calls = 0;
-    assert(backend->setup(&storage, "ab-peer") == RTE_STATUS_OK);
+    assert(osadapter->setup(&storage, "ab-peer") == RTE_STATUS_OK);
     assert(g_open_calls == 0); /* lazy - setup() itself never opens, see below */
     {
         uint8_t byte = 0U;
-        assert(backend->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
+        assert(osadapter->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
     }
     assert(g_open_calls == 1);
     assert(g_last_open_oflags == (uint32_t)RTE_FLOW_O_PUBLISHER);
     assert(g_last_open_message_size == 96U);
     assert(strcmp(g_last_open_name, "ab-peer") == 0);
-    (void)backend->close(&storage);
+    (void)osadapter->close(&storage);
 }
 
 static void test_listen_role_maps_to_subscriber(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
     uint8_t byte = 0U;
 
-    assert(rte_channel_service_flow_backend_register_resolver(resolver_listen, NULL) == RTE_STATUS_OK);
+    assert(rte_channel_service_flow_osadapter_register_resolver(resolver_listen, NULL) == RTE_STATUS_OK);
     g_open_calls = 0;
-    assert(backend->setup(&storage, "ab-negotiate") == RTE_STATUS_OK);
+    assert(osadapter->setup(&storage, "ab-negotiate") == RTE_STATUS_OK);
     assert(g_open_calls == 0);
-    assert(backend->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
+    assert(osadapter->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
     assert(g_open_calls == 1);
     assert(g_last_open_oflags == (uint32_t)RTE_FLOW_O_SUBSCRIBER);
-    (void)backend->close(&storage);
+    (void)osadapter->close(&storage);
 }
 
 /** The exact scenario this design fixes, found live against a real GP
@@ -148,85 +148,85 @@ static void test_listen_role_maps_to_subscriber(void)
 static void test_absent_peer_fails_only_io_not_setup(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
     uint8_t byte = 0U;
 
-    assert(rte_channel_service_flow_backend_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
+    assert(rte_channel_service_flow_osadapter_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
     g_open_calls = 0;
-    assert(backend->setup(&storage, "ab-peer") == RTE_STATUS_OK);
+    assert(osadapter->setup(&storage, "ab-peer") == RTE_STATUS_OK);
     assert(g_open_calls == 0);
 
     g_open_should_timeout = true;
-    assert(backend->send(&storage, &byte, 1U, 100U) == RTE_STATUS_TIMEOUT);
-    assert(backend->read(&storage, &byte, 1U, 100U) == RTE_STATUS_TIMEOUT);
+    assert(osadapter->send(&storage, &byte, 1U, 100U) == RTE_STATUS_TIMEOUT);
+    assert(osadapter->read(&storage, &byte, 1U, 100U) == RTE_STATUS_TIMEOUT);
     assert(g_open_calls == 2); /* retried on each call, never cached as a permanent failure */
 
     g_open_should_timeout = false;
     g_send_calls = 0;
-    assert(backend->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
+    assert(osadapter->send(&storage, &byte, 1U, 100U) == RTE_STATUS_OK);
     assert(g_send_calls == 1);
 
-    (void)backend->close(&storage);
+    (void)osadapter->close(&storage);
 }
 
 static void test_send_and_receive_delegate_to_flow(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
     uint8_t out_byte = 0U;
     uint8_t send_byte = 0x7AU;
 
-    assert(rte_channel_service_flow_backend_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
-    assert(backend->setup(&storage, "ab-peer") == RTE_STATUS_OK);
+    assert(rte_channel_service_flow_osadapter_register_resolver(resolver_connect, NULL) == RTE_STATUS_OK);
+    assert(osadapter->setup(&storage, "ab-peer") == RTE_STATUS_OK);
 
     g_send_calls = 0;
-    assert(backend->send(&storage, &send_byte, 1U, 100U) == RTE_STATUS_OK);
+    assert(osadapter->send(&storage, &send_byte, 1U, 100U) == RTE_STATUS_OK);
     assert(g_send_calls == 1);
     assert(g_last_sent_byte == 0x7AU);
 
     g_receive_calls = 0;
-    assert(backend->read(&storage, &out_byte, 1U, 100U) == RTE_STATUS_OK);
+    assert(osadapter->read(&storage, &out_byte, 1U, 100U) == RTE_STATUS_OK);
     assert(g_receive_calls == 1);
     assert(out_byte == 0x42U);
 
     g_close_calls = 0;
-    assert(backend->close(&storage) == RTE_STATUS_OK);
+    assert(osadapter->close(&storage) == RTE_STATUS_OK);
     assert(g_close_calls == 1);
 }
 
 static void test_read_before_setup_rejected(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
     uint8_t out_byte = 0U;
 
     memset(&storage, 0, sizeof(storage));
-    assert(backend->read(&storage, &out_byte, 1U, 100U) == RTE_STATUS_NOT_INITIALIZED);
-    assert(backend->close(&storage) == RTE_STATUS_OK);
+    assert(osadapter->read(&storage, &out_byte, 1U, 100U) == RTE_STATUS_NOT_INITIALIZED);
+    assert(osadapter->close(&storage) == RTE_STATUS_OK);
 }
 
 static void test_resolver_failure_propagates(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
 
-    assert(rte_channel_service_flow_backend_register_resolver(resolver_unknown, NULL) == RTE_STATUS_OK);
-    assert(backend->setup(&storage, "does-not-exist") == RTE_STATUS_INVALID_PARAM);
+    assert(rte_channel_service_flow_osadapter_register_resolver(resolver_unknown, NULL) == RTE_STATUS_OK);
+    assert(osadapter->setup(&storage, "does-not-exist") == RTE_STATUS_INVALID_PARAM);
 }
 
 static void test_null_params_rejected(void)
 {
     rte_channel_service_storage_t storage;
-    const rte_channel_service_backend_t *backend = rte_channel_service_flow_backend();
+    const rte_osadapter_channel_service_t *osadapter = rte_channel_service_flow_osadapter();
 
-    assert(rte_channel_service_flow_backend_register_resolver(NULL, NULL) == RTE_STATUS_INVALID_PARAM);
-    assert(backend->setup(NULL, "ab-peer") == RTE_STATUS_INVALID_PARAM);
-    assert(backend->setup(&storage, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_channel_service_flow_osadapter_register_resolver(NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(osadapter->setup(NULL, "ab-peer") == RTE_STATUS_INVALID_PARAM);
+    assert(osadapter->setup(&storage, NULL) == RTE_STATUS_INVALID_PARAM);
 }
 
 int main(void)
 {
-    assert(rte_flow_register_backend(&g_mock_flow_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_flow_register(&g_mock_flow_osadapter) == RTE_STATUS_OK);
     test_connect_role_maps_to_publisher();
     test_listen_role_maps_to_subscriber();
     test_absent_peer_fails_only_io_not_setup();

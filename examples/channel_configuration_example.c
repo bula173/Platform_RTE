@@ -237,7 +237,7 @@ void example_tcp_based_redundancy(void)
     // into a separate rte_voter_t for the voting itself).
     static channel_wrapper_t online_ch0 = {
         .type = CHANNEL_TYPE_TCP,
-        .impl = (void *)0x1000,  // Placeholder (actual handle from OS backend)
+        .impl = (void *)0x1000,  // Placeholder (actual handle from OS OSAdapter)
         .timeout_ms = 1000,
     };
 

@@ -210,11 +210,11 @@ Complete Safety System:
        ┌─────────────┴──────────────────────┐
        │                                    │
    ┌───▼──────────────────────┐    ┌──────▼──────────────┐
-   │  OS/RTOS Backend          │    │  Hardware           │
+   │  OS/RTOS OSAdapter          │    │  Hardware           │
    │  (Your implementation)    │    │  (Your choice)      │
    │                           │    │                     │
    │  Must implement:          │    │  ✓ 1oo1 single CPU  │
-   │  ✓ Timer backend          │    │  ✓ 2oo2 dual CPUs   │
+   │  ✓ Timer OSAdapter          │    │  ✓ 2oo2 dual CPUs   │
    │  ✓ IPC (sockets, pipes)   │    │  ✓ 2oo3 triple CPUs │
    │  ✓ Memory management      │    │  ✓ Watchdog timers  │
    │  ✓ Watchdog driver        │    │  ✓ Network (UDP/TCP)│
@@ -232,7 +232,7 @@ Complete Safety System:
 **Critical Design Point:**
 - Platform_RTE defines the **interface contract** (what functions exist, what they must do)
 - Platform_RTE does **NOT provide implementation** for any specific OS or RTOS
-- Users must provide **OS-specific backend implementations** for each target platform
+- Users must provide **OS-specific OSAdapter implementations** for each target platform
 - This allows your RBC core code to remain unchanged when:
   - Switching from Linux to QNX
   - Upgrading OS version
@@ -240,7 +240,7 @@ Complete Safety System:
   - Retargeting to different CPU architecture
 
 **You Must Implement:**
-1. **OS/RTOS Backend** — Concrete implementation for your specific OS
+1. **OS/RTOS OSAdapter** — Concrete implementation for your specific OS
    - Timer operations (start, stop, wait)
    - IPC operations (sockets, shared memory, message queues)
    - Memory allocation (static buffers, pools)
@@ -285,7 +285,7 @@ Step 2: Select Hardware Configuration
    │  └─ SIL 4: 2oo2 with redundancy, 2oo3, or others (see "Choosing a pattern")
    └─ Choose specific CPUs, network topology, watchdog strategy
         ↓
-Step 3: Implement OS-Specific Backend
+Step 3: Implement OS-Specific OSAdapter
    ├─ Platform_RTE expects these OS services:
    │  ├─ Timers (rte_timer_start, rte_timer_wait, etc.)
    │  ├─ IPC (rte_ipc_send, rte_ipc_receive, etc.)
@@ -295,10 +295,10 @@ Step 3: Implement OS-Specific Backend
    │  ├─ Storage (rte_nvm_read/write to your storage)
    │  └─ Reboot (rte_reboot_system when safe-state fails)
    │
-   └─ Register your OS backend at startup:
-      ├─ rte_timer_register_backend(posix_timer_ops)
-      ├─ rte_ipc_register_backend(qnx_ipc_ops)
-      ├─ rte_memory_register_backend(custom_memory_ops)
+   └─ Register your OS OSAdapter at startup:
+      ├─ rte_osadapter_timer_register(posix_timer_ops)
+      ├─ rte_osadapter_ipc_register(qnx_ipc_ops)
+      ├─ rte_osadapter_memory_register(custom_memory_ops)
       └─ etc. for each service
         ↓
 Step 4: Implement Hardware Strategy
@@ -324,11 +324,11 @@ Step 5: Verification & Certification
 **Key Insight:** 
 
 Platform_RTE provides the **API contract**—your application uses Platform_RTE APIs instead of OS calls. This means:
-- Same RBC code works on Linux, QNX, or bare-metal (just swap backend)
+- Same RBC code works on Linux, QNX, or bare-metal (just swap OSAdapter)
 - Same RBC code works for SIL 1 through SIL 4 (just swap HW + verification)
 - You control the actual redundancy/voting via hardware configuration
 - Platform_RTE stays small, portable, and easy to certify
-- Implementation complexity (OS-specific backends) is decoupled from application safety logic
+- Implementation complexity (OS-specific OSAdapters) is decoupled from application safety logic
 
 ### How Failures Determine SIL Requirements
 
@@ -362,7 +362,7 @@ Platform_RTE defines the API interface through which you implement these mandato
 
 | Technique | How Platform_RTE Helps | You Must Implement |
 |-----------|---|---|
-| **Defensive Programming** | API forces explicit error handling | Every OS backend validates inputs |
+| **Defensive Programming** | API forces explicit error handling | Every OS OSAdapter validates inputs |
 | **Diverse Redundancy** | Voting API (2oo2, 2oo3, NMR) | Deploy multiple diverse CPUs |
 | **Monitoring & Watchdog** | Watchdog API interface | Integrate OS/hardware watchdog timer |
 | **Safe-State Machine** | Safe-state API (RTE_SAFESTATE) | Verify safe-state logic in your app |
@@ -371,11 +371,11 @@ Platform_RTE defines the API interface through which you implement these mandato
 | **Bounded Time & Space** | No dynamic allocation after init | Static buffers, no recursion |
 | **Formal Verification** | Requirement traceability (REQ-IDs) | Prove timing, prove algorithm correctness |
 | **Traceability** | REQ-ID linking in Platform_RTE headers | Map your application to requirements |
-| **Testing & Validation** | Framework is testable | Create test suites for your backends |
+| **Testing & Validation** | Framework is testable | Create test suites for your OSAdapters |
 
 **Implementation Reality:**
 - Platform_RTE API surface is ~50KB of headers (small, easy to verify)
-- OS backends are ~10-50KB each (you write for your target OS)
+- OS OSAdapters are ~10-50KB each (you write for your target OS)
 - Application logic is your domain-specific code
 - Together they form a SIL X system (SIL level determined by HW config + verification rigor, NOT by Platform_RTE alone)
 
@@ -475,7 +475,7 @@ names that do not exist; use the headers under `include/safeapi/redundancy/` and
 │                  │                    │
 │         ┌────────▼─────────┐         │
 │         │  POSIX/QNX OAL   │         │
-│         │  (backend)       │         │
+│         │  (OSAdapter)       │         │
 │         └────────┬─────────┘         │
 │                  │                    │
 │         ┌────────▼─────────┐         │

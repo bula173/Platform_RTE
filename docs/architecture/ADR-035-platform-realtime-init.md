@@ -7,12 +7,12 @@ Accepted
 ## Context
 
 `safeAPIRBC2oo2GP`'s process startup (`app_main_common.c`, both the AB and
-C variants) called `rte_posix_backend_init_realtime(80U)` directly - a
+C variants) called `rte_posix_osadapter_init_realtime(80U)` directly - a
 symbol exported by `safeAPIBackendPosix`, not by `safeAPIFreamwork`. That
 is a layering violation: ADR-001 §3.5 and ADR-005 require application code
 to reach the OS *only* through the framework's OAL API, with the single
 exception of the composition-root wiring that registers a concrete backend
-(`rte_*_register_backend()`). `rte_posix_backend_init_realtime()` is not
+(`rte_*_register_backend()`). `rte_posix_osadapter_init_realtime()` is not
 registration - it is behaviour (POSIX `mlockall()` + `SCHED_FIFO`) the
 application was invoking by reaching around the framework, and there was
 no OAL API for it to use instead.
@@ -38,9 +38,9 @@ ADR-021:
 
 - `include/safeapi/oal/platform/rte_platform.h` - consumer surface:
   `rte_status_t rte_platform_realtime_init(uint32_t rt_priority);`
-- `include/safeapi_backend/platform/rte_platform_backend.h` - vtable
-  `rte_platform_backend_t { rte_status_t (*realtime_init)(uint32_t); }`
-  and `rte_platform_register_backend()`.
+- `include/safeapi_osadapter/platform/rte_osadapter_platform.h` - vtable
+  `rte_osadapter_platform_t { rte_status_t (*realtime_init)(uint32_t); }`
+  and `rte_osadapter_platform_register()`.
 - `src/oal/platform/rte_platform.c` - range-checks `rt_priority` (0..99),
   then dispatches; `NOT_INITIALIZED` if no backend, `NOT_SUPPORTED` if the
   vtable slot is `NULL`. Registration is setup-phase-gated (ADR-026), the
@@ -60,13 +60,13 @@ backend's old code violated.
 
 ### 2. POSIX implementation moves behind the vtable (`safeAPIBackendPosix`)
 
-- New `src/rte_posix_backend_platform.c`: the `mlockall` / stack
+- New `src/rte_posix_osadapter_platform.c`: the `mlockall` / stack
   pre-fault / `SCHED_FIFO` body moves here from
-  `rte_posix_backend.c::rte_posix_backend_init_realtime()`, as the
-  `realtime_init` vtable function, plus a `rte_posix_backend_platform()`
-  accessor (matching `rte_posix_backend_timer()` etc.).
-- `rte_posix_backend_register_all()` now also registers this backend.
-- The old public `rte_posix_backend_init_realtime()` is **removed** - it
+  `rte_posix_osadapter.c::rte_posix_osadapter_init_realtime()`, as the
+  `realtime_init` vtable function, plus a `rte_posix_osadapter_platform()`
+  accessor (matching `rte_posix_osadapter_timer()` etc.).
+- `rte_posix_osadapter_register_all()` now also registers this backend.
+- The old public `rte_posix_osadapter_init_realtime()` is **removed** - it
   had exactly one caller (GP), now migrated.
 
 **The `RLIMIT_MEMLOCK` fix**: before `mlockall`, the backend now calls
@@ -79,18 +79,18 @@ current footprint resident but no longer poisons later thread creation.
 ### 3. GP calls the framework
 
 `app_main_common.c` (AB and C) replaces
-`rte_posix_backend_init_realtime(80U)` with
+`rte_posix_osadapter_init_realtime(80U)` with
 `rte_platform_realtime_init(80U)` and includes
 `safeapi/oal/platform/rte_platform.h`. It still includes
-`rte_posix_backend.h` for `rte_posix_backend_register_all()` and
-`rte_posix_backend_reboot_set_argv()` - those are the sanctioned
+`rte_posix_osadapter.h` for `rte_posix_osadapter_register_all()` and
+`rte_posix_osadapter_reboot_set_argv()` - those are the sanctioned
 composition-root wiring; the RT call no longer is.
 
 ## Consequences
 
 - Application code no longer invokes any `safeAPIBackendPosix` *behaviour*
-  symbol - only the registration seam. `rte_posix_backend_channel_service_register_resolver()`
-  (in `gateway_c.c` / `ab_gp_channel.c`) and `rte_posix_backend_reboot_set_argv()`
+  symbol - only the registration seam. `rte_posix_osadapter_channel_service_register_resolver()`
+  (in `gateway_c.c` / `ab_gp_channel.c`) and `rte_posix_osadapter_reboot_set_argv()`
   are the remaining direct backend touches; folding those behind
   framework seams is left as follow-up work, out of scope here.
 - One more OAL service to keep in build/test/install wiring. The

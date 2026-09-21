@@ -1,5 +1,5 @@
 /* Tests for rte_safe_ptr (bounds + NULL + corruption-canary checked
- * pointer wrapper - see rte_safe_ptr.h). No backend needed: this module
+ * pointer wrapper - see rte_safe_ptr.h). No OSAdapter needed: this module
  * has no OS dependency of its own, unlike rte_memory's pool allocator. */
 #include <assert.h>
 #include <string.h>

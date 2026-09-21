@@ -43,8 +43,8 @@ typedef enum rte_timer_mode_e
  * @param user_ctx  Opaque context pointer supplied at creation time.
  *
  * REQ-OAL-TIMER-003: the callback executes in a bounded-time, non-blocking
- * context (exact context - task/ISR - is backend-defined and documented by
- * the backend implementation).
+ * context (exact context - task/ISR - is osadapter-defined and documented by
+ * the OSAdapter implementation).
  */
 typedef void (*rte_timer_callback_t)(rte_timer_handle_t handle, void *user_ctx);
 
@@ -65,9 +65,9 @@ typedef struct rte_timer_config_s
  *                    must not be NULL and config->period_ms must be > 0.
  * @param out_handle  Receives the created timer's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_timer_register_backend()); RTE_STATUS_NOT_SUPPORTED if
- *         the registered backend does not implement create.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_timer_register()); RTE_STATUS_NOT_SUPPORTED if
+ *         the registered OSAdapter does not implement create.
  * REQ-OAL-TIMER-010
  */
 rte_status_t rte_timer_create(rte_timer_storage_t *storage,
@@ -92,7 +92,7 @@ rte_status_t rte_timer_start(rte_timer_handle_t handle);
 rte_status_t rte_timer_stop(rte_timer_handle_t handle);
 
 /**
- * @brief Destroys a timer, releasing any backend resources bound to it.
+ * @brief Destroys a timer, releasing any OSAdapter resources bound to it.
  * @param handle  Timer to destroy. Must not be NULL. Invalid to use after this call.
  * @return See rte_timer_start().
  * REQ-OAL-TIMER-013
@@ -110,11 +110,11 @@ rte_status_t rte_timer_destroy(rte_timer_handle_t handle);
 rte_status_t rte_timer_now(rte_timestamp_ms_t *out_now_ms);
 
 /*
- * The backend vtable (rte_timer_backend_t) and rte_timer_register_backend()
- * live in safeapi_backend/timer/rte_timer_backend.h, not here (ADR-021).
+ * The OSAdapter vtable (rte_osadapter_timer_t) and rte_osadapter_timer_register()
+ * live in safeapi_osadapter/timer/rte_osadapter_timer.h, not here (ADR-021).
  * This header is the consumer-facing surface only - a real application
- * never needs to see the backend vtable shape; only the platform
- * integrator wiring a concrete backend does.
+ * never needs to see the OSAdapter vtable shape; only the platform
+ * integrator wiring a concrete OSAdapter does.
  */
 
 #ifdef __cplusplus

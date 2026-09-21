@@ -45,11 +45,11 @@ Extend ADR-026 §2.2's gated list with the same guard, in the same place
 (after NULL/param validation, before any real work), returning the same
 `RTE_STATUS_INVALID_STATE` on a locked setup phase:
 
-- `rte_timer_register_backend`, `rte_ipc_register_backend`,
-  `rte_task_register_backend`, `rte_netlink_register_backend`,
-  `rte_nvm_register_backend`, `rte_log_register_backend`,
-  `rte_clocksync_register_backend`, `rte_reboot_register_backend`,
-  `rte_mem_pool_register_backend` - every `_register_backend()` function
+- `rte_osadapter_timer_register`, `rte_osadapter_ipc_register`,
+  `rte_osadapter_task_register`, `rte_osadapter_netlink_register`,
+  `rte_osadapter_nvm_register`, `rte_osadapter_log_register`,
+  `rte_osadapter_clocksync_register`, `rte_osadapter_reboot_register`,
+  `rte_osadapter_memory_register` - every `_register_backend()` function
   in the framework, with no exceptions (unlike §2.2's constructor list,
   none of these has a documented legitimate post-lock re-registration
   use case - an integrator swapping a live backend mid-run was never a
@@ -75,8 +75,8 @@ see the "Deferred" note below.
 framework as part of this ADR.** This was raised as a candidate (a
 pluggable allocator, falling back to `malloc()` if no backend is
 registered) but rejected once a repository search found
-`safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_memory.c` already
-implements a complete, working `rte_mem_pool_backend_t` using a static
+`safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_memory.c` already
+implements a complete, working `rte_osadapter_memory_t` using a static
 compile-time-sized arena (`g_arena[RTE_POSIX_MEM_ARENA_SIZE]`) with a
 bump allocator and intrusive free list - zero `malloc()`/`free()` calls.
 Adding a malloc-backed default to the framework itself would reintroduce

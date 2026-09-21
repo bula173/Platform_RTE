@@ -14,8 +14,8 @@
  * `safeapi/netlink/rte_netlink.h` or `safeapi/ipc/rte_ipc.h`, or to
  * call `rte_netlink_open()`/`rte_ipc_create()` itself:
  * rte_safechannel_open() opens every configured endpoint internally via
- * the already-registered rte_netlink backend (ADR-005). Direct use of
- * rte_netlink/rte_ipc is a backend-and-channel-layer-only concern from
+ * the already-registered rte_netlink OSAdapter (ADR-005). Direct use of
+ * rte_netlink/rte_ipc is a osadapter-and-channel-layer-only concern from
  * here on (ADR-022 section 2.3) - an application should not need those
  * headers at all.
  *
@@ -184,7 +184,7 @@ typedef struct rte_safechannel_s
 
 /**
  * @brief Opens a channel: opens every configured endpoint via the
- *        registered rte_netlink backend, then initializes the wrapped
+ *        registered rte_netlink OSAdapter, then initializes the wrapped
  *        rte_dual_channel_t or rte_channel_t on top of the
  *        resulting links (ADR-022 section 2.2). Retries each endpoint's
  *        rte_netlink_open() internally up to config's own
@@ -200,7 +200,7 @@ typedef struct rte_safechannel_s
  *         RTE_STATUS_TIMEOUT if any configured endpoint fails to
  *         establish within its connect_timeout_ms (every endpoint opened
  *         so far is closed again before returning - all-or-nothing);
- *         RTE_STATUS_NOT_INITIALIZED if no rte_netlink backend is
+ *         RTE_STATUS_NOT_INITIALIZED if no rte_netlink OSAdapter is
  *         registered.
  */
 rte_status_t rte_safechannel_open(rte_safechannel_t *channel, const rte_safechannel_config_t *config);

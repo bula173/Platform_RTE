@@ -525,7 +525,7 @@ rte_status_t rte_checksum_vital_message_create(
     /* Fill message header */
     msg_out->sequence_number = sequence;
     msg_out->sender_id = sender_id;
-    /* Best-effort: if no timer backend is registered, rte_timer_now()
+    /* Best-effort: if no timer OSAdapter is registered, rte_timer_now()
      * returns RTE_STATUS_NOT_INITIALIZED and leaves now_ms at 0 -
      * timestamp_ms is diagnostic only (see rte_clocksync.h's file-level
      * note: never the basis of comparison correctness), so this is not

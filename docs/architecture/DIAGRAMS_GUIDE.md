@@ -88,8 +88,8 @@ package "Application Layer" {
 }
 
 package "OS Abstraction Layer (OAL)" {
-    component [POSIX Backend] as posix_backend
-    component [QNX Backend] as qnx_backend
+    component [POSIX OSAdapter] as posix_osadapter
+    component [QNX OSAdapter] as qnx_osadapter
 }
 
 ' Dependencies
@@ -117,8 +117,8 @@ rbc_app --> redundancy_mod : uses
 rbc_app --> watchdog_mod : uses
 rbc_app --> ipc_mod : uses
 
-redundancy_mod --> posix_backend : backend
-redundancy_mod --> qnx_backend : backend
+redundancy_mod --> posix_osadapter : OSAdapter
+redundancy_mod --> qnx_osadapter : OSAdapter
 
 @enduml
 ```
@@ -464,7 +464,7 @@ docs/architecture/
 │   ├── activity-checkpoint-barrier.puml
 │   └── README.md (diagram index)
 ├── ADR-001-os-abstraction-layer.md
-├── ADR-005-oal-backend-registration.md
+├── ADR-005-oal-osadapter-registration.md
 └── ...
 ```
 
@@ -633,7 +633,7 @@ package "Application Layer" {
 package "Framework Layer (Platform_RTE)" {
     [IPC] [Timer] [Watchdog]
 }
-package "OAL Backend Layer" {
+package "OAL OSAdapter Layer" {
     [POSIX] [QNX]
 }
 package "OS/Hardware Layer" {

@@ -48,9 +48,9 @@ typedef struct rte_ipc_config_s
  *                    and config->queue_depth must both be > 0.
  * @param out_handle  Receives the created channel's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_ipc_register_backend()); RTE_STATUS_NOT_SUPPORTED if the
- *         registered backend does not implement create.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_ipc_register()); RTE_STATUS_NOT_SUPPORTED if the
+ *         registered OSAdapter does not implement create.
  * REQ-OAL-IPC-010
  */
 rte_status_t rte_ipc_create(rte_ipc_storage_t *storage,
@@ -99,8 +99,8 @@ rte_status_t rte_ipc_receive(rte_ipc_handle_t handle,
 rte_status_t rte_ipc_destroy(rte_ipc_handle_t handle);
 
 /*
- * The backend vtable (rte_ipc_backend_t) and rte_ipc_register_backend()
- * live in safeapi_backend/ipc/rte_ipc_backend.h, not here (ADR-021).
+ * The OSAdapter vtable (rte_osadapter_ipc_t) and rte_osadapter_ipc_register()
+ * live in safeapi_osadapter/ipc/rte_osadapter_ipc.h, not here (ADR-021).
  * This header is the consumer-facing surface only.
  */
 

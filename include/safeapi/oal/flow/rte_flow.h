@@ -17,12 +17,12 @@
  * Deliberately NOT a thin wrapper over rte_netlink (oal/netlink/
  * rte_netlink.h): netlink is connection-oriented point-to-point
  * (LISTEN/CONNECT, host:port) - a Flow is name/topic-addressed
- * publish-subscribe, the same shape a real DDS backend provides
+ * publish-subscribe, the same shape a real DDS OSAdapter provides
  * natively. Forcing Flow through netlink's host:port model would waste
- * a DDS backend's actual pub/sub capability (topic discovery, N
- * subscribers) later. This service has its own backend seam instead
- * (safeapi_backend/flow/rte_flow_backend.h) so a POSIX/TCP backend can
- * emulate pub/sub over point-to-point links today, and a DDS backend
+ * a DDS OSAdapter's actual pub/sub capability (topic discovery, N
+ * subscribers) later. This service has its own OSAdapter seam instead
+ * (safeapi_osadapter/flow/rte_osadapter_flow.h) so a POSIX/TCP OSAdapter can
+ * emulate pub/sub over point-to-point links today, and a DDS OSAdapter
  * can implement it natively later, with zero change to this header or
  * any Functional-Actor code written against it.
  *
@@ -108,7 +108,7 @@ typedef struct rte_flow_attr_s
 {
     size_t   message_size; /**< Fixed size in bytes of every message on this Flow. */
     uint32_t oflags;       /**< The rte_flow_oflag_t bitmask this Flow was opened with. */
-    bool     is_connected; /**< Dynamic: whether the backend currently has at least
+    bool     is_connected; /**< Dynamic: whether the OSAdapter currently has at least
                              *   one live peer (publisher<->subscriber pairing,
                              *   or an established request/response pairing). */
 } rte_flow_attr_t;
@@ -117,7 +117,7 @@ typedef struct rte_flow_attr_s
 typedef struct rte_flow_config_s
 {
     /** Flow name (topic). Backend-defined interpretation; a POSIX/TCP
-     *  backend maps this to a configured host:port pair, a DDS backend
+     *  OSAdapter maps this to a configured host:port pair, a DDS OSAdapter
      *  maps it directly to a DDS topic name. Caller-owned; only read
      *  during rte_flow_open(). Must not be NULL. */
     const char *name;
@@ -140,9 +140,9 @@ typedef struct rte_flow_config_s
  * @param out_handle  Receives the opened Flow's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
  *         RTE_STATUS_TIMEOUT if not opened within config->open_timeout_ms;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_flow_register_backend()); RTE_STATUS_NOT_SUPPORTED if the
- *         registered backend does not implement open.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_flow_register()); RTE_STATUS_NOT_SUPPORTED if the
+ *         registered OSAdapter does not implement open.
  * REQ-OAL-FLOW-010
  */
 rte_status_t rte_flow_open(rte_flow_storage_t *storage,
@@ -168,8 +168,8 @@ rte_status_t rte_flow_close(rte_flow_handle_t handle);
  * @param timeout_ms   Maximum time to wait for the send to complete.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT
  *         if the send does not complete in time; RTE_STATUS_HARDWARE_FAULT
- *         if the backend can positively confirm no peer is reachable (not
- *         guaranteed on every backend, see REQ-OAL-FLOW-004);
+ *         if the OSAdapter can positively confirm no peer is reachable (not
+ *         guaranteed on every OSAdapter, see REQ-OAL-FLOW-004);
  *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
  *         rte_flow_open().
  * REQ-OAL-FLOW-011
@@ -228,9 +228,9 @@ rte_status_t rte_flow_setattr(rte_flow_handle_t handle,
                                  rte_flow_attr_t *out_old_attr);
 
 /*
- * The backend vtable (rte_flow_backend_t) and
- * rte_flow_register_backend() live in
- * safeapi_backend/flow/rte_flow_backend.h, not here (ADR-021 seam,
+ * The OSAdapter vtable (rte_osadapter_flow_t) and
+ * rte_osadapter_flow_register() live in
+ * safeapi_osadapter/flow/rte_osadapter_flow.h, not here (ADR-021 seam,
  * same posture as rte_netlink). This header is the consumer-facing
  * surface only.
  */

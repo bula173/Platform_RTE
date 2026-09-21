@@ -19,7 +19,7 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
 - System safety assurance for [Railway function]
 - Software design, implementation, and verification
 - OS Abstraction Layer based on safeAPIFramework v0.1.0
-- RTOS backend implementation by [Company/Team]
+- RTOS OSAdapter implementation by [Company/Team]
 - Excludes: Hardware design, external railway systems
 
 ### 1.3 Audience
@@ -79,7 +79,7 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
     │  │  ├─ IPC (train communications)│
     │  │  ├─ NVM (configuration)        │
     │  │  └─ Task scheduling            │
-    │  └─ Backend Implementation        │
+    │  └─ OSAdapter Implementation        │
     │     ├─ RTOS: [e.g., VxWorks]     │
     │     ├─ Timer hardware             │
     │     └─ Storage (SD card)          │
@@ -96,7 +96,7 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
 |----------|:---:|--------------|-----------------|
 | Conflict Detection | 4 | Application algorithm | Unsafe movement authority issued |
 | Authority Transmission | 4 | safeAPIFramework IPC | Lost communication |
-| State Persistence | 4 | safeAPIFramework NVM + backend | Configuration loss, inconsistent state |
+| State Persistence | 4 | safeAPIFramework NVM + OSAdapter | Configuration loss, inconsistent state |
 | Watchdog / Monitoring | 4 | Application + RTOS | Failure to detect system fault |
 
 ---
@@ -190,7 +190,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 - [x] Architecture designed per EN 50128 Section 6.2
 - [x] Layered design: Application → OAL → RTOS
 - [x] safeAPIFramework OAL selected and reviewed
-- [x] Backend design documented
+- [x] OSAdapter design documented
 - [x] Design reviewed and approved
 
 **Evidence:**
@@ -309,22 +309,22 @@ Total Requirements: 47
 
 ### 6.2 Example Requirement Trace
 
-**Requirement:** SR-001 safeAPIFramework services shall not be called before backend registration
+**Requirement:** SR-001 safeAPIFramework services shall not be called before OSAdapter registration
 
-**Derived From:** HARA Hazard H1 (Uninitialized backend)
+**Derived From:** HARA Hazard H1 (Uninitialized OSAdapter)
 
 **Design Solution:**
-- Backend registration function: `rte_timer_register_backend(backend)`
-- All services check backend == NULL → return RTE_STATUS_NOT_INITIALIZED
+- OSAdapter registration function: `rte_osadapter_timer_register(OSAdapter)`
+- All services check OSAdapter == NULL → return RTE_STATUS_NOT_INITIALIZED
 - Application initialization sequence documented
 
 **Implementation:**
 - File: src/timer/rte_timer.c, lines 15-20
-- Function: rte_timer_create() checks backend != NULL
+- Function: rte_timer_create() checks OSAdapter != NULL
 
 **Verification:**
-- Unit Test: test_timer_create_no_backend()
-- Verifies: Function returns RTE_STATUS_NOT_INITIALIZED when backend NULL
+- Unit Test: test_timer_create_no_osadapter()
+- Verifies: Function returns RTE_STATUS_NOT_INITIALIZED when OSAdapter NULL
 - Code Review: Confirmed NULL check present
 
 **Evidence:** ✓ COMPLETE
@@ -337,7 +337,7 @@ Total Requirements: 47
 
 | ID | Hazard | SIL Required | Control Measures | Residual Risk | Acceptable? |
 |:--:|--------|:------------:|------------------|:-------------:|:-----------:|
-| H1 | Uninitialized Backend | 4 | Code review, unit test, documentation | Low | ✓ Yes |
+| H1 | Uninitialized OSAdapter | 4 | Code review, unit test, documentation | Low | ✓ Yes |
 | H2 | Buffer Overflow | 4 | MISRA analysis, input validation, testing | Low | ✓ Yes |
 | H3 | Race Condition | 4 | RTOS mutex, thread safety analysis, tests | Low | ✓ Yes |
 | H4 | NVM Corruption | 4 | CRC checks, atomic writes, recovery | Low | ✓ Yes |
@@ -412,7 +412,7 @@ Remaining areas of uncertainty:
 
 | Area | Residual Uncertainty | Mitigation |
 |------|---------------------|-----------|
-| RTOS backend implementation | Quality of backend code | Backend design review, backend testing |
+| RTOS OSAdapter implementation | Quality of OSAdapter code | OSAdapter design review, OSAdapter testing |
 | Timing assumptions | Runtime timing may vary | System testing under load, worst-case analysis |
 | Environmental factors | Extreme conditions (temperature, EMI) | Hardware qualification, system testing |
 

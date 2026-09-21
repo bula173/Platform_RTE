@@ -2,12 +2,12 @@
  * @file rte_platform.c
  * @ingroup PLATFORM
  * @brief Real-time platform configuration service: validates parameters,
- *        then dispatches to the backend registered via
- *        rte_platform_register_backend() (ADR-005, ADR-035).
+ *        then dispatches to the OSAdapter registered via
+ *        rte_osadapter_platform_register() (ADR-005, ADR-035).
  */
 #include "safeapi/oal/platform/rte_platform.h"
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_backend/platform/rte_platform_backend.h"
+#include "safeapi_osadapter/platform/rte_osadapter_platform.h"
 
 /** Local makros */
 /** @brief Highest real-time priority rte_platform_realtime_init() accepts. */
@@ -16,8 +16,8 @@
 /** Local types declarations */
 
 /** Local variables declarations */
-/** @brief Currently registered backend, or NULL if none (ADR-005). */
-static const rte_platform_backend_t *s_backend = NULL;
+/** @brief Currently registered OSAdapter, or NULL if none (ADR-005). */
+static const rte_osadapter_platform_t *s_osadapter = NULL;
 
 /** Global variables declarations */
 
@@ -25,22 +25,22 @@ static const rte_platform_backend_t *s_backend = NULL;
 
 
 /** Global functions */
-rte_status_t rte_platform_register_backend(const rte_platform_backend_t *backend)
+rte_status_t rte_osadapter_platform_register(const rte_osadapter_platform_t *osadapter)
 {
     rte_status_t lifecycle_status;
 
-    if (backend == NULL)
+    if (osadapter == NULL)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+    /* REQ-LIFECYCLE-001 (ADR-026): registering an OSAdapter is a setup-only
      * action - refuse once the application's setup phase has been locked. */
     lifecycle_status = rte_lifecycle_check_setup_allowed();
     if (lifecycle_status != RTE_STATUS_OK)
     {
         return lifecycle_status;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
@@ -50,13 +50,13 @@ rte_status_t rte_platform_realtime_init(uint32_t rt_priority)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->realtime_init == NULL)
+    if (s_osadapter->realtime_init == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->realtime_init(rt_priority);
+    return s_osadapter->realtime_init(rt_priority);
 }

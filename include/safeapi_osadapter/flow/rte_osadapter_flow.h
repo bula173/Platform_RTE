@@ -34,9 +34,6 @@ typedef struct rte_osadapter_flow_s
                               rte_flow_attr_t *out_old_attr);
 } rte_osadapter_flow_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_flow_t rte_flow_backend_t;
-
 /**
  * @brief Registers the OSAdapter Flow implementation.
  * @param adapter Pointer to flow operations vtable.
@@ -44,7 +41,6 @@ typedef rte_osadapter_flow_t rte_flow_backend_t;
  */
 rte_status_t rte_osadapter_flow_register(const rte_osadapter_flow_t *adapter);
 
-rte_status_t rte_flow_register_backend(const rte_flow_backend_t *backend);
 
 #ifdef __cplusplus
 }

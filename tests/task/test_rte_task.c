@@ -2,7 +2,7 @@
  * tests/nvm/test_rte_nvm.c for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/oal/task/rte_task.h"
-#include "safeapi_backend/task/rte_task_backend.h"
+#include "safeapi_osadapter/task/rte_osadapter_task.h"
 
 static void mock_entry(void *user_ctx)
 {
@@ -37,13 +37,13 @@ static rte_status_t mock_destroy(rte_task_handle_t handle)
     return RTE_STATUS_OK;
 }
 
-/* Partial backend: no slots implemented -> exercises NOT_SUPPORTED paths. */
-static const rte_task_backend_t g_partial_backend = {
+/* Partial OSAdapter: no slots implemented -> exercises NOT_SUPPORTED paths. */
+static const rte_osadapter_task_t g_partial_osadapter = {
     NULL, NULL, NULL, NULL
 };
 
-/* Full backend: every slot implemented -> exercises success paths. */
-static const rte_task_backend_t g_full_backend = {
+/* Full OSAdapter: every slot implemented -> exercises success paths. */
+static const rte_osadapter_task_t g_full_osadapter = {
     mock_create, mock_start, mock_suspend, mock_destroy
 };
 
@@ -82,18 +82,18 @@ int main(void)
     assert(rte_task_suspend(NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_task_destroy(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* --- register_backend --- */
-    assert(rte_task_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
-    assert(rte_task_register_backend(&g_partial_backend) == RTE_STATUS_OK);
+    /* --- register_osadapter --- */
+    assert(rte_osadapter_task_register(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_task_register(&g_partial_osadapter) == RTE_STATUS_OK);
 
-    /* --- Partial backend registered: NOT_SUPPORTED paths --- */
+    /* --- Partial OSAdapter registered: NOT_SUPPORTED paths --- */
     assert(rte_task_create(&storage, &config, &handle) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_task_start((rte_task_handle_t)(void *)1) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_task_suspend((rte_task_handle_t)(void *)1) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_task_destroy((rte_task_handle_t)(void *)1) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* --- Full backend registered: success paths --- */
-    assert(rte_task_register_backend(&g_full_backend) == RTE_STATUS_OK);
+    /* --- Full OSAdapter registered: success paths --- */
+    assert(rte_osadapter_task_register(&g_full_osadapter) == RTE_STATUS_OK);
 
     handle = NULL;
     assert(rte_task_create(&storage, &config, &handle) == RTE_STATUS_OK);

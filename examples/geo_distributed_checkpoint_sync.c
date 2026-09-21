@@ -18,7 +18,7 @@
  * site) instead of a real socket/serial link, so it runs standalone with
  * no external dependencies - swap mock_backend_send/recv for a real
  * transport (e.g. built on rte_ipc, TCP, or a serial link) to deploy
- * this for real, per ADR-017 section 2.2 ("no new backend of its own -
+ * this for real, per ADR-017 section 2.2 ("no new OSAdapter of its own -
  * reuses whatever transport is already registered on each channel").
  *
  * Scenario:
@@ -40,7 +40,7 @@
 #include "safeapi/checkpoint/rte_checkpoint.h"
 #include "safeapi/checksum/rte_checksum.h"
 #include "safeapi/clocksync/rte_clocksync.h"
-#include "safeapi_backend/clocksync/rte_clocksync_backend.h"
+#include "safeapi_osadapter/clocksync/rte_osadapter_clocksync.h"
 #include "safeapi/safestate/rte_safestate.h"
 #include "safeapi/voter/rte_voter.h"
 
@@ -99,7 +99,7 @@ static rte_status_t mock_recv(void *channel, void *data, size_t data_size, uint3
 }
 
 /* ============================================================================
- * A minimal rte_clocksync backend - diagnostic only, per its own header's
+ * A minimal rte_clocksync OSAdapter - diagnostic only, per its own header's
  * warning: never the basis for deciding whether results are comparable.
  * ========================================================================== */
 
@@ -139,7 +139,7 @@ int main(void)
     rte_channel_t sites[SITE_COUNT];
     rte_voter_t voter;
     rte_voter_config_t voter_config;
-    rte_clocksync_backend_t clock_backend;
+    rte_osadapter_clocksync_t clock_osadapter;
     int64_t offset_ms = 0;
     rte_clocksync_quality_t quality = RTE_CLOCKSYNC_UNSYNCHRONIZED;
     uint32_t i;
@@ -147,9 +147,9 @@ int main(void)
     (void)rte_checksum_crc64_init(RTE_CRC64_ERTMS);
     (void)rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_SAFE, demo_safestate_handler);
 
-    clock_backend.get_offset_ms = clocksync_get_offset_ms;
-    clock_backend.get_quality = clocksync_get_quality;
-    (void)rte_clocksync_register_backend(&clock_backend);
+    clock_osadapter.get_offset_ms = clocksync_get_offset_ms;
+    clock_osadapter.get_quality = clocksync_get_quality;
+    (void)rte_osadapter_clocksync_register(&clock_osadapter);
     (void)rte_clocksync_get_offset_ms(&offset_ms);
     (void)rte_clocksync_get_quality(&quality);
     printf("Diagnostic clock offset WEST-vs-EAST: %lldms (quality=%d) - NOT used for the vote below\n",

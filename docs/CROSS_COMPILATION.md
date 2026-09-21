@@ -163,7 +163,7 @@ project), so the script builds one `{image, platform}` pair at a time, tagging e
 arch suffix (`:latest-arm64`, `:latest-386`, ...) so they coexist in `docker images`.
 
 This path proves the *application layer* (`RBC_GP`, built via this framework's POSIX OAL
-backend) runs correctly on ARM64/x86/32-bit/64-bit Linux - it does not exercise
+OSAdapter) runs correctly on ARM64/x86/32-bit/64-bit Linux - it does not exercise
 `Toolchain-Linux.cmake`'s own cross-compile branch above, since buildx never cross-compiles.
 
 ---

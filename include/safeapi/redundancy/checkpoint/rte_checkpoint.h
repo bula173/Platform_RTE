@@ -13,7 +13,7 @@
  * like a voting disagreement is elsewhere in this framework - safe-state,
  * not silence.
  *
- * This module adds no new transport backend of its own (ADR-017 section
+ * This module adds no new transport OSAdapter of its own (ADR-017 section
  * 2.2, updated by ADR-025): it reuses a rte_voter_t's own registered
  * rte_channel_t links - each already carrying whatever transport
  * an integrator plugged in (rte_ipc over POSIX/RTOS, or a real network

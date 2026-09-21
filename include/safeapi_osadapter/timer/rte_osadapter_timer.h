@@ -28,9 +28,6 @@ typedef struct rte_osadapter_timer_s
     rte_status_t (*now)(rte_timestamp_ms_t *out_now_ms);
 } rte_osadapter_timer_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_timer_t rte_timer_backend_t;
-
 /**
  * @brief Registers the OSAdapter timer implementation.
  * @param adapter Pointer to timer operations vtable.
@@ -38,7 +35,6 @@ typedef rte_osadapter_timer_t rte_timer_backend_t;
  */
 rte_status_t rte_osadapter_timer_register(const rte_osadapter_timer_t *adapter);
 
-rte_status_t rte_timer_register_backend(const rte_timer_backend_t *backend);
 
 #ifdef __cplusplus
 }

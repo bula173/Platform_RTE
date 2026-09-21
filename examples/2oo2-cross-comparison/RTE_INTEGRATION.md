@@ -120,17 +120,17 @@ usleep(25000);  /* How accurate? Platform? */
 ```c
 #include "safeapi/timer/rte_timer.h"
 
-/* Register deterministic timer backend at startup */
-rte_timer_backend_t backend = {
+/* Register deterministic timer OSAdapter at startup */
+rte_osadapter_timer_t OSAdapter = {
     .set_alarm = qnx_set_alarm,   /* Platform-specific */
     .get_elapsed = qnx_get_elapsed,
 };
-rte_timer_register_backend(&backend);
+rte_osadapter_timer_register(&OSAdapter);
 
 /* In voting loop */
 rte_status_t rc = rte_timer_sleep(25);  /* 25ms, deterministic */
 if (rc != RTE_STATUS_OK) {
-    /* Timer backend not registered or failed */
+    /* Timer OSAdapter not registered or failed */
     return rc;
 }
 ```
@@ -238,12 +238,12 @@ train_command_t received = shared_mem.cmd_b;
 ```c
 #include "safeapi/ipc/rte_ipc_request_reply.h"
 
-/* Backend handles: shared memory, QNX msgpass, TCP, etc. */
-rte_ipc_backend_t backend = {
+/* OSAdapter handles: shared memory, QNX msgpass, TCP, etc. */
+rte_osadapter_ipc_t OSAdapter = {
     .send = backend_send,
     .receive = backend_receive,
 };
-rte_ipc_register_backend(&backend);
+rte_osadapter_ipc_register(&OSAdapter);
 
 /* Process A sends */
 rte_status_t rc = rte_ipc_send(other_process_id,
@@ -415,7 +415,7 @@ rte_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 ### Step 4: Add Deterministic Timing
 ```c
 #include "safeapi/timer/rte_timer.h"
-/* Replace: usleep → rte_timer_sleep (with backend) */
+/* Replace: usleep → rte_timer_sleep (with OSAdapter) */
 ```
 
 ### Step 5: Add Safe Casting
@@ -439,12 +439,12 @@ rte_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 ## Benefits of Platform_RTE Integration
 
 ✓ **SIL 4 Compliance**: Proven patterns, no security issues  
-✓ **Portability**: Switch backends (shared mem → TCP → QNX msgpass)  
+✓ **Portability**: Switch OSAdapters (shared mem → TCP → QNX msgpass)  
 ✓ **Type Safety**: Fixed-width types, no platform surprises  
 ✓ **Observability**: Structured logging across all processes  
 ✓ **Error Handling**: Consistent status codes everywhere  
 ✓ **Determinism**: RTOS-aware timing and synchronization  
-✓ **Testing**: Mock backends for unit tests  
+✓ **Testing**: Mock OSAdapters for unit tests  
 
 ## Example: Build with Platform_RTE
 

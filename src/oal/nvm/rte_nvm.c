@@ -1,20 +1,20 @@
 /**
  * @file rte_nvm.c
  * @ingroup NVM
- * @brief NVM service: validates parameters, then dispatches to the backend
- *        registered via rte_nvm_register_backend() (ADR-005).
+ * @brief NVM service: validates parameters, then dispatches to the OSAdapter
+ *        registered via rte_osadapter_nvm_register() (ADR-005).
  */
 #include "safeapi/oal/nvm/rte_nvm.h"
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_backend/nvm/rte_nvm_backend.h"
+#include "safeapi_osadapter/nvm/rte_osadapter_nvm.h"
 
 /** Local makros */
 
 /** Local types declarations */
 
 /** Local variables declarations */
-/** @brief Currently registered backend, or NULL if none (ADR-005). */
-static const rte_nvm_backend_t *s_backend = NULL;
+/** @brief Currently registered OSAdapter, or NULL if none (ADR-005). */
+static const rte_osadapter_nvm_t *s_osadapter = NULL;
 
 /** Global variables declarations */
 
@@ -22,22 +22,22 @@ static const rte_nvm_backend_t *s_backend = NULL;
 
 
 /** Global functions */
-rte_status_t rte_nvm_register_backend(const rte_nvm_backend_t *backend)
+rte_status_t rte_osadapter_nvm_register(const rte_osadapter_nvm_t *osadapter)
 {
     rte_status_t lifecycle_status;
 
-    if (backend == NULL)
+    if (osadapter == NULL)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+    /* REQ-LIFECYCLE-001 (ADR-026): registering an OSAdapter is a setup-only
      * action - refuse once the application's setup phase has been locked. */
     lifecycle_status = rte_lifecycle_check_setup_allowed();
     if (lifecycle_status != RTE_STATUS_OK)
     {
         return lifecycle_status;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
@@ -54,15 +54,15 @@ rte_status_t rte_nvm_open(rte_nvm_storage_t *storage,
         return RTE_STATUS_INVALID_PARAM;
     }
     *out_handle = NULL;
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->open == NULL)
+    if (s_osadapter->open == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->open(storage, config, out_handle);
+    return s_osadapter->open(storage, config, out_handle);
 }
 
 rte_status_t rte_nvm_read(rte_nvm_handle_t handle,
@@ -74,15 +74,15 @@ rte_status_t rte_nvm_read(rte_nvm_handle_t handle,
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->read == NULL)
+    if (s_osadapter->read == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->read(handle, offset, out_buffer, buffer_size);
+    return s_osadapter->read(handle, offset, out_buffer, buffer_size);
 }
 
 rte_status_t rte_nvm_write(rte_nvm_handle_t handle,
@@ -94,15 +94,15 @@ rte_status_t rte_nvm_write(rte_nvm_handle_t handle,
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->write == NULL)
+    if (s_osadapter->write == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->write(handle, offset, buffer, buffer_size);
+    return s_osadapter->write(handle, offset, buffer, buffer_size);
 }
 
 rte_status_t rte_nvm_sync(rte_nvm_handle_t handle)
@@ -111,15 +111,15 @@ rte_status_t rte_nvm_sync(rte_nvm_handle_t handle)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->sync == NULL)
+    if (s_osadapter->sync == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->sync(handle);
+    return s_osadapter->sync(handle);
 }
 
 rte_status_t rte_nvm_close(rte_nvm_handle_t handle)
@@ -128,13 +128,13 @@ rte_status_t rte_nvm_close(rte_nvm_handle_t handle)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->close == NULL)
+    if (s_osadapter->close == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->close(handle);
+    return s_osadapter->close(handle);
 }

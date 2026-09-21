@@ -93,7 +93,7 @@ Any project using safeAPIFramework must perform:
 - **Requirement:** EN 50128:2011, Section 7.4
 - **What:** Unit and integration tests for all safeAPIFramework components
   - Test coverage: Minimum 80% line coverage (recommend >90% for SIL 3/4)
-  - Test each module's backend interface separately
+  - Test each module's OSAdapter interface separately
   - Test error handling paths (RTE_STATUS_* return values)
   - Test safe-state transitions (RTE_ASSERT, RTE_SAFESTATE, RTE_REBOOT)
 - **Output:** Test report with coverage metrics
@@ -113,7 +113,7 @@ Any project using safeAPIFramework must perform:
 #### E. Hazard Analysis
 - **Requirement:** EN 50128:2011, Section 5
 - **What:** Identify failure modes in safeAPIFramework context:
-  - Backend not registered (NULL pointer dereference)
+  - OSAdapter not registered (NULL pointer dereference)
   - Buffer overflow in string operations
   - Race condition in inter-task communication (IPC)
   - Non-volatile memory (NVM) corruption
@@ -122,16 +122,16 @@ Any project using safeAPIFramework must perform:
 - **Output:** Hazard Register, risk scores, mitigation strategies
 - **Evidence for Safety Case:** HARA report
 
-#### F. Backend Implementation Verification
-- **Requirement:** Special (ADR-005 backend registration)
-- **What:** For each RTOS/OS backend you implement:
+#### F. OSAdapter Implementation Verification
+- **Requirement:** Special (ADR-005 OSAdapter registration)
+- **What:** For each RTOS/OS OSAdapter you implement:
   - Formal design review
   - Implementation code review
   - Unit testing against interface contract
   - Integration testing with safeAPIFramework
-  - Static analysis (your backend code must also be MISRA compliant)
-- **Output:** Backend verification report
-- **Evidence for Safety Case:** Backend documentation, test results
+  - Static analysis (your OSAdapter code must also be MISRA compliant)
+- **Output:** OSAdapter verification report
+- **Evidence for Safety Case:** OSAdapter documentation, test results
 
 ### 2.2 Assessment & Certification (Project Responsibility)
 
@@ -162,7 +162,7 @@ Any project using safeAPIFramework must perform:
 ✅ **Allowed:**
 - Reference implementation in new railway software projects
 - Component in systems undergoing formal EN 50128 development
-- Backend for distributed systems (where project controls each backend)
+- OSAdapter for distributed systems (where project controls each OSAdapter)
 - Basis for training on EN 50128 patterns
 - Non-deployed research & simulation
 
@@ -175,14 +175,14 @@ Any project using safeAPIFramework must perform:
 ### 3.2 Technical Assumptions
 
 #### Architecture Assumptions
-- **Assumption:** OS/RTOS layer provides thread-safe backend implementations
-- **Project Must Verify:** Backend implementations are thread-safe (if multi-threaded)
+- **Assumption:** OS/RTOS layer provides thread-safe OSAdapter implementations
+- **Project Must Verify:** OSAdapter implementations are thread-safe (if multi-threaded)
 
 - **Assumption:** safeAPIFramework services are called from single or properly-synchronized threads
 - **Project Must Verify:** Calling code doesn't violate this assumption
 
-- **Assumption:** Backends are registered before any service is used
-- **Project Must Verify:** Initialization order and backend registration in main()
+- **Assumption:** OSAdapters are registered before any service is used
+- **Project Must Verify:** Initialization order and OSAdapter registration in main()
 
 #### Memory Assumptions
 - **Assumption:** No dynamic memory allocation post-initialization
@@ -196,11 +196,11 @@ Any project using safeAPIFramework must perform:
 - **Project Must Verify:** Static analysis confirms no bare casts in application code
 
 #### Timing Assumptions
-- **Assumption:** Timer backends provide sufficient precision for application
+- **Assumption:** Timer OSAdapters provide sufficient precision for application
 - **Project Must Verify:** Timer jitter is within safety requirements
 
 - **Assumption:** NVM operations complete within timeout bounds
-- **Project Must Verify:** NVM backend latency is characterized
+- **Project Must Verify:** NVM OSAdapter latency is characterized
 
 ### 3.3 Known Limitations
 
@@ -209,7 +209,7 @@ Any project using safeAPIFramework must perform:
 | **Manual MISRA review** | Not certified; possible missed violations | Use certified MISRA tool in your project |
 | **No formal assessment** | No evidence safeAPIFramework is correct | Formal assessment is your project's responsibility |
 | **Limited test coverage** | Reference tests only; not exhaustive | Expand tests in your system context |
-| **No real RTOS backends** | Reference backends are stubs | Implement and verify actual RTOS backends |
+| **No real RTOS OSAdapters** | Reference OSAdapters are stubs | Implement and verify actual RTOS OSAdapters |
 | **No multi-core verification** | Assumes single-threaded or synchronized | Verify thread safety for your RTOS |
 | **No real hardware testing** | Only tested on development machine | Hardware integration testing is your responsibility |
 
@@ -224,7 +224,7 @@ When using safeAPIFramework, your project's Safety Case must include:
 1. System Architecture Document
    - Role of safeAPIFramework in system
    - How OAL isolates application from OS
-   - Backend architecture diagram
+   - OSAdapter architecture diagram
    - Integration points with application logic
 
 2. Traceability Matrix
@@ -244,7 +244,7 @@ When using safeAPIFramework, your project's Safety Case must include:
    - Reference the provided ADRs
    - Document any project-specific modifications
 
-2. Backend Design Document (new)
+2. OSAdapter Design Document (new)
    - Thread safety model
    - Resource management strategy
    - Failure modes and recovery
@@ -320,7 +320,7 @@ safeAPIFramework provides:
 safeAPIFramework does NOT provide:
 - ❌ SIL certification (project's responsibility)
 - ❌ Formal assessment evidence (project must generate)
-- ❌ OS/RTOS backends (project must implement)
+- ❌ OS/RTOS OSAdapters (project must implement)
 - ❌ Safety Case (project must write)
 
 ## Formal Verification Performed
@@ -366,7 +366,7 @@ safeAPIFramework does NOT provide:
 
 [Document your project-specific assumptions:]
 
-1. Backend implementations are thread-safe
+1. OSAdapter implementations are thread-safe
 2. Application uses synchronization for multi-threaded access
 3. Timer precision is ±[X]ms (acceptable for safety logic)
 4. NVM block size is [Y] bytes (application designed for this)

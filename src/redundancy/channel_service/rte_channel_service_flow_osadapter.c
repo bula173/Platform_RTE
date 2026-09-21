@@ -1,33 +1,33 @@
-/** @file rte_channel_service_flow_backend.c
- *  @brief See rte_channel_service_flow_backend.h.
+/** @file rte_channel_service_flow_osadapter.c
+ *  @brief See rte_channel_service_flow_osadapter.h.
  *
  * **Lazy open, not eager** (found live, not designed up front - see the
  * RCA/OCORA Phase 4 verification history in root TODO.md): rte_flow_open()
  * blocks synchronously for its peer's handshake, up to config->open_timeout_ms
  * (REQ-OAL-FLOW-002) - a real behavioral difference from
- * safeAPIBackendPosix's own rte_posix_backend_channel_service, whose
- * backend_setup() fires the connect/HELLO (or binds, for LISTEN) and
+ * safeAPIBackendPosix's own rte_posix_osadapter_channel_service, whose
+ * osadapter_setup() fires the connect/HELLO (or binds, for LISTEN) and
  * returns immediately, deferring the actual peer handshake to the first
- * backend_read() call, retried indefinitely and silently in the background
+ * osadapter_read() call, retried indefinitely and silently in the background
  * from then on. That difference matters for real: an integrator (e.g.
  * safeAPIRBC2oo2GP) may legitimately set up a channel whose peer is not
  * running yet, or never runs in a given deployment (e.g. an optional
- * service) - the POSIX backend tolerates that gracefully (setup() never
- * blocks on it), this backend's naive first version did not (setup() would
+ * service) - the POSIX OSAdapter tolerates that gracefully (setup() never
+ * blocks on it), this OSAdapter's naive first version did not (setup() would
  * block for the full open_timeout_ms, then FAIL setup() outright, taking
  * down the whole integrator process even though the missing peer was
- * expected and harmless). Fixed by matching the POSIX backend's own
- * lazy-connect shape: backend_setup() only resolves and stores
+ * expected and harmless). Fixed by matching the POSIX OSAdapter's own
+ * lazy-connect shape: osadapter_setup() only resolves and stores
  * configuration; the actual rte_flow_open() call happens lazily, on the
- * first backend_read()/backend_send(), using a bounded 0ms probe timeout so
+ * first osadapter_read()/backend_send(), using a bounded 0ms probe timeout so
  * a still-absent peer returns RTE_STATUS_TIMEOUT immediately rather than
  * blocking that cycle's I/O - the caller's own retry loop (e.g.
  * safeAPIRBC2oo2GP's channel_service_setup_with_retry(), or simply calling
  * read()/send() again next cycle) is what re-attempts the open, exactly the
- * same shape the POSIX backend's own backend_read() reconnect-on-demand
+ * same shape the POSIX OSAdapter's own osadapter_read() reconnect-on-demand
  * logic already has.
  */
-#include "safeapi/redundancy/channel_service/rte_channel_service_flow_backend.h"
+#include "safeapi/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
 
 #include <string.h>
 
@@ -36,7 +36,7 @@
 #include "safeapi/redundancy/config/rte_redundancy_config.h"
 
 /* Only the fields ensure_open() needs to rebuild a rte_flow_config_t are
- * stored (not the whole struct) - this backend's storage must fit inside
+ * stored (not the whole struct) - this OSAdapter's storage must fit inside
  * rte_channel_service_storage_t's 128-byte reserved size alongside
  * rte_flow_storage_t (64 bytes) itself. */
 typedef struct
@@ -65,14 +65,14 @@ static flow_channel_state_t *channel_state(rte_channel_service_storage_t *storag
 /** CONNECT->PUBLISHER, LISTEN->SUBSCRIBER, matching safeAPIFlowBackendDDS's
  *  own oflags->netlink-role mapping in reverse (see that project's file
  *  header comment) - kept here, not there, since this module must not
- *  depend on any concrete rte_flow_backend_t implementation. */
+ *  depend on any concrete rte_osadapter_flow_t implementation. */
 static uint32_t oflags_for_role(rte_netlink_role_t role)
 {
     return (role == RTE_NETLINK_ROLE_CONNECT) ? (uint32_t)RTE_FLOW_O_PUBLISHER
                                                 : (uint32_t)RTE_FLOW_O_SUBSCRIBER;
 }
 
-static rte_status_t backend_setup(rte_channel_service_storage_t *storage, const char *channel_name)
+static rte_status_t osadapter_setup(rte_channel_service_storage_t *storage, const char *channel_name)
 {
     flow_channel_state_t *state;
     rte_netlink_config_t resolved;
@@ -125,10 +125,10 @@ static rte_status_t backend_setup(rte_channel_service_storage_t *storage, const 
 
 /** Attempts the deferred rte_flow_open() exactly once, bounded by
  *  open_timeout_ms - the SAME timeout_ms the caller passed to THIS
- *  read()/send() call, matching safeAPIBackendPosix's own backend_read()
+ *  read()/send() call, matching safeAPIBackendPosix's own osadapter_read()
  *  reconnect-on-demand logic exactly (it hands the caller's own read
  *  timeout to its ACK-consumption poll(), not a separate hardcoded value -
- *  see that file's backend_read()). A caller sees RTE_STATUS_TIMEOUT (or
+ *  see that file's osadapter_read()). A caller sees RTE_STATUS_TIMEOUT (or
  *  another rte_flow_open() failure) as an ordinary per-call read()/send()
  *  failure, not a setup()-time one. Using the caller's own timeout (not a
  *  hardcoded 0) matters for real: a genuinely-present peer (e.g. a
@@ -159,7 +159,7 @@ static rte_status_t ensure_open(flow_channel_state_t *state, rte_duration_ms_t o
     return status;
 }
 
-static rte_status_t backend_read(rte_channel_service_storage_t *storage, void *data, size_t data_size,
+static rte_status_t osadapter_read(rte_channel_service_storage_t *storage, void *data, size_t data_size,
                                    rte_duration_ms_t timeout_ms)
 {
     flow_channel_state_t *state;
@@ -205,7 +205,7 @@ static rte_status_t backend_send(rte_channel_service_storage_t *storage, const v
     return rte_flow_send(state->flow_handle, data, data_size, RTE_FLOW_CHANNEL_USER, timeout_ms);
 }
 
-static rte_status_t backend_close(rte_channel_service_storage_t *storage)
+static rte_status_t osadapter_close(rte_channel_service_storage_t *storage)
 {
     flow_channel_state_t *state;
     rte_status_t status;
@@ -226,14 +226,14 @@ static rte_status_t backend_close(rte_channel_service_storage_t *storage)
     return status;
 }
 
-static const rte_channel_service_backend_t g_flow_backend = {
-    backend_setup,
-    backend_read,
+static const rte_osadapter_channel_service_t g_flow_osadapter = {
+    osadapter_setup,
+    osadapter_read,
     backend_send,
-    backend_close
+    osadapter_close
 };
 
-rte_status_t rte_channel_service_flow_backend_register_resolver(rte_channel_service_flow_resolve_fn resolver,
+rte_status_t rte_channel_service_flow_osadapter_register_resolver(rte_channel_service_flow_resolve_fn resolver,
                                                                     void *context)
 {
     if (resolver == NULL)
@@ -242,14 +242,14 @@ rte_status_t rte_channel_service_flow_backend_register_resolver(rte_channel_serv
     }
     s_resolver = resolver;
     s_resolver_context = context;
-    /* Mirrors safeAPIBackendPosix's rte_posix_backend_channel_service_register_resolver()'s
+    /* Mirrors safeAPIBackendPosix's rte_posix_osadapter_channel_service_register_resolver()'s
      * own convention exactly - registering the resolver AND activating this
-     * backend in one call - so an integrator's call site is a one-line swap
-     * between the two backends (see ab_gp_channel.c). */
-    return rte_channel_service_register_backend(&g_flow_backend);
+     * OSAdapter in one call - so an integrator's call site is a one-line swap
+     * between the two OSAdapters (see ab_gp_channel.c). */
+    return rte_osadapter_channel_service_register(&g_flow_osadapter);
 }
 
-const rte_channel_service_backend_t *rte_channel_service_flow_backend(void)
+const rte_osadapter_channel_service_t *rte_channel_service_flow_osadapter(void)
 {
-    return &g_flow_backend;
+    return &g_flow_osadapter;
 }

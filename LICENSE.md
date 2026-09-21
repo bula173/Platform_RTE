@@ -38,7 +38,7 @@ You are granted the right to:
 - Test case improvements
 - Performance optimizations
 - Security fixes
-- safeAPIFramework backend implementations (RTOS-specific)
+- safeAPIFramework OSAdapter implementations (RTOS-specific)
 - New assessment templates or checklist items
 
 **How to share improvements:**
@@ -67,8 +67,8 @@ Title: "Template 06_HARA missing guidance for concurrent IPC hazards"
 Description: "When multiple tasks use IPC simultaneously, race conditions 
 not covered in hazard identification section. Suggest adding..."
 
-Title: "safeAPIFramework timer backend needs timeout mechanism"
-Description: "In our VxWorks backend implementation, we discovered that 
+Title: "safeAPIFramework timer OSAdapter needs timeout mechanism"
+Description: "In our VxWorks OSAdapter implementation, we discovered that 
 blocking timer operations need timeout protection. Here's what we did..."
 ```
 
@@ -84,10 +84,10 @@ blocking timer operations need timeout protection. Here's what we did..."
 
 **Example:**
 ```
-Title: "safeAPIFramework NVM backend needs wear-leveling for high-cycle writes"
+Title: "safeAPIFramework NVM OSAdapter needs wear-leveling for high-cycle writes"
 Description: "In railway real-time systems with frequent config updates, 
 flash wear-out becomes an issue. We implemented wear-leveling in our 
-backend. Suggest adding guidance for integrators on this topic."
+OSAdapter. Suggest adding guidance for integrators on this topic."
 ```
 
 ---
@@ -99,7 +99,7 @@ backend. Suggest adding guidance for integrators on this topic."
 If you deploy safeAPIFramework in a **SIL 4 certified railway system**:
 
 1. **Before Deployment:**
-   - Contributions (bug fixes, backend implementations) should be submitted to the project
+   - Contributions (bug fixes, OSAdapter implementations) should be submitted to the project
    - If not possible, create a GitHub Issue describing your verification approach
 
 2. **After Certification:**
@@ -110,7 +110,7 @@ If you deploy safeAPIFramework in a **SIL 4 certified railway system**:
 3. **Long-term Support:**
    - If safeAPIFramework is integral to your certified system, commit to:
      - Reporting bugs found in production
-     - Contributing backend improvements for your RTOS
+     - Contributing OSAdapter improvements for your RTOS
      - Participating in security patches (6-month window)
 
 ### 4.2 Non-Certified Systems
@@ -155,7 +155,7 @@ If you improve the assessment templates:
 **Examples:**
 - "Added new template for SIL 3 projects (simpler)"
 - "Template 06_HARA missing guidance for X railway domain"
-- "Better examples for integrating safeAPIFramework backend"
+- "Better examples for integrating safeAPIFramework OSAdapter"
 - "Notified Body requested these changes"
 
 ---
@@ -279,7 +279,7 @@ If you embed safeAPIFramework in a commercial product:
 Your product:
 ├── safeAPIFramework (shared community version)
 ├── Your proprietary railway algorithm (yours to keep)
-└── Your RTOS backend (share with community!)
+└── Your RTOS OSAdapter (share with community!)
 ```
 
 ### 10.3 Regulatory Compliance

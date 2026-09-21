@@ -159,17 +159,17 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **ADR:** `docs/architecture/ADR-015-cyclic-scheduler.md` (pending)
 - **Est. Effort:** 2–3 weeks
 
-### Mock Backend Harness
+### Mock OSAdapter Harness
 - **Status:** `proposed`
 - **Priority:** P2 (High, for testing)
 - **Target Release:** 0.2.0
 - **Fit for RBC:** Good — fast CI cycles, deterministic time control
 - **Scope:**
-  - Build-time selectable mock backends for all OAL services
+  - Build-time selectable mock OSAdapters for all OAL services
   - Time control for testing
   - Failure injection support
 - **GitHub Issue:** [#9](https://github.com/bula173/safeAPIFreamwork/issues/9)
-- **ADR:** `docs/architecture/ADR-016-mock-backend-harness.md` (pending)
+- **ADR:** `docs/architecture/ADR-016-mock-osadapter-harness.md` (pending)
 - **Est. Effort:** 2 weeks
 
 ---
@@ -258,7 +258,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - Watchdog & Health Monitor (Tier 1)
 - Diagnostic Ring Buffer (Tier 2)
 - Checksum & CRC Utilities (Tier 2)
-- Mock Backend Harness (Tier 2)
+- Mock OSAdapter Harness (Tier 2)
 - CMake Feature Flags configuration system (Phase 1)
 - **Est. Timeline:** Q3 2026
 

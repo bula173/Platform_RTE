@@ -25,7 +25,7 @@ cmake --preset release     # Production
 cmake --preset ci         # CI/CD strict
 cmake --preset asan       # Memory sanitizer
 cmake --preset qnx        # QNX RTOS cross-compile
-cmake --preset linux-native # POSIX backend
+cmake --preset linux-native # POSIX OSAdapter
 ```
 
 ---
@@ -240,7 +240,7 @@ v0.2.0 (2026-10) [PLANNED]
   - Integration guide
 
 v0.3.0 (2026-12) [PLANNED]
-  - Backend examples (POSIX, QNX)
+  - OSAdapter examples (POSIX, QNX)
   - Cross-compilation toolchains
   - Documentation complete
 

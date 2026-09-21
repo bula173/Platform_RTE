@@ -32,7 +32,7 @@
  * @param data_size     Size of received data
  * @param context       User-provided context (e.g., app state)
  *
- * Called by OS backend when data arrives on the channel.
+ * Called by OS OSAdapter when data arrives on the channel.
  * User implements this to handle incoming data.
  */
 typedef void (*rte_channel_callback_t)(const char *channel_name,
@@ -130,7 +130,7 @@ channel_registry_entry_t *channel_registry_find(const char *name)
 /**
  * @brief Callback: Vital command received on channel
  *
- * This is invoked by the OS backend when data arrives on the
+ * This is invoked by the OS OSAdapter when data arrives on the
  * "online_to_standby_vital" channel. The callback identifies the
  * channel by name and processes the incoming data.
  */
@@ -265,7 +265,7 @@ void on_config_update_received(const char *channel_name,
 /**
  * @brief Simulate data arriving on a channel
  *
- * In real implementation, OS backend would call the callback when
+ * In real implementation, OS OSAdapter would call the callback when
  * actual data arrives. Here we simulate it.
  */
 void simulate_channel_data(const char *channel_name,
@@ -281,7 +281,7 @@ void simulate_channel_data(const char *channel_name,
         return;
     }
 
-    // Invoke callback (this is what OS backend does)
+    // Invoke callback (this is what OS OSAdapter does)
     if (ch->callback) {
         ch->callback(channel_name, data, size, ch->context);
     }
@@ -343,7 +343,7 @@ int main(void)
     printf("\nAll channels registered. Waiting for events...\n");
 
     /* ====================================================================
-     * STEP 2: Simulate events (in real system, OS backend triggers these)
+     * STEP 2: Simulate events (in real system, OS OSAdapter triggers these)
      * ==================================================================== */
 
     printf("\n--- STEP 2: Simulate Channel Events ---\n");
@@ -406,7 +406,7 @@ int main(void)
     printf("========================================\n");
     printf("✓ Each channel has a unique name\n");
     printf("✓ Callbacks are registered at startup\n");
-    printf("✓ OS backend calls callback when data arrives\n");
+    printf("✓ OS osadapter calls callback when data arrives\n");
     printf("✓ Callback identifies channel by name\n");
     printf("✓ No polling needed (event-driven)\n");
     printf("✓ Easy to add/remove channels\n");

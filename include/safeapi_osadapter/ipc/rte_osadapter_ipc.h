@@ -31,9 +31,6 @@ typedef struct rte_osadapter_ipc_s
     rte_status_t (*destroy)(rte_ipc_handle_t handle);
 } rte_osadapter_ipc_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_ipc_t rte_ipc_backend_t;
-
 /**
  * @brief Registers the OSAdapter IPC implementation.
  * @param adapter Pointer to IPC operations vtable.
@@ -41,7 +38,6 @@ typedef rte_osadapter_ipc_t rte_ipc_backend_t;
  */
 rte_status_t rte_osadapter_ipc_register(const rte_osadapter_ipc_t *adapter);
 
-rte_status_t rte_ipc_register_backend(const rte_ipc_backend_t *backend);
 
 #ifdef __cplusplus
 }

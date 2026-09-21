@@ -9,7 +9,7 @@
 
 > **Implementation status (2026-08-25):** This document is aspirational/design-reference only.
 > Despite the "Status: APPROVED" label above and the "Phase 1 ... DONE" claim below, none of the
-> toolchain files, `backends/` tree, or `SAFEAPI_ARCH_*`/`SAFEAPI_LITTLE_ENDIAN`/
+> toolchain files, `OSAdapters/` tree, or `SAFEAPI_ARCH_*`/`SAFEAPI_LITTLE_ENDIAN`/
 > `SAFEAPI_BIG_ENDIAN`/`SAFEAPI_STRICT_ALIGNMENT` macros named in this document exist in the repo
 > today - only `cmake/Toolchain-Linux.cmake` and `cmake/Toolchain-QNX.cmake` do, under different
 > names and without the macros this document proposes (checked directly: no real source file in
@@ -38,7 +38,7 @@ This document defines the supported matrix and provides toolchain files for each
 
 ### 2.1 Operating Systems & RTOS
 
-| OS/RTOS | Target | Status | Backend | Toolchain |
+| OS/RTOS | Target | Status | OSAdapter | Toolchain |
 |---------|--------|--------|---------|-----------|
 | **Linux (POSIX)** | Development/Testing | ✅ Supported | POSIX OAL | GCC, Clang |
 | **QNX Neutrino** | Railway SIL 3/4 | ✅ Supported | QNX OAL | QCC (GCC-based) |
@@ -103,16 +103,16 @@ cmake/
 ├── CompilerWarnings.cmake                 Shared warning flags
 └── CMakeLists-Arch.cmake                  Architecture detection
 
-backends/
-├── posix/                                 Linux/POSIX backend
+OSAdapters/
+├── posix/                                 Linux/POSIX OSAdapter
 │   ├── src/
 │   └── include/
-├── qnx/                                   QNX backend
+├── qnx/                                   QNX OSAdapter
 │   ├── src/
 │   └── include/
-├── vxworks/                               VxWorks backend (stub)
-├── integrity/                             INTEGRITY backend (stub)
-└── freertos/                              FreeRTOS backend (stub)
+├── vxworks/                               VxWorks OSAdapter (stub)
+├── integrity/                             INTEGRITY OSAdapter (stub)
+└── freertos/                              FreeRTOS OSAdapter (stub)
 ```
 
 ---
@@ -140,7 +140,7 @@ set(CMAKE_C_FLAGS "-m64 -march=x86-64" CACHE STRING "")
 set(SAFEAPI_ENDIAN LITTLE CACHE STRING "System endianness")
 add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
 
-# Backend selection
+# OSAdapter selection
 add_compile_definitions(SAFEAPI_BACKEND_POSIX)
 
 # Enable testing
@@ -168,7 +168,7 @@ set(CMAKE_C_FLAGS "-march=armv8-a" CACHE STRING "")
 set(SAFEAPI_ENDIAN LITTLE CACHE STRING "System endianness")
 add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
 
-# Backend
+# OSAdapter
 add_compile_definitions(SAFEAPI_BACKEND_POSIX)
 ```
 
@@ -191,7 +191,7 @@ set(CMAKE_C_FLAGS "-march=armv7-a -mbig-endian -mfpu=neon" CACHE STRING "")
 set(SAFEAPI_ENDIAN BIG CACHE STRING "System endianness")
 add_compile_definitions(SAFEAPI_BIG_ENDIAN)
 
-# Backend
+# OSAdapter
 add_compile_definitions(SAFEAPI_BACKEND_POSIX)
 ```
 
@@ -293,7 +293,7 @@ add_compile_definitions(_VX_CPU=PPC64)
     {
       "name": "linux-x86_64-gcc",
       "displayName": "Linux x86_64 (GCC)",
-      "description": "Linux POSIX backend, x86_64 architecture, GCC compiler",
+      "description": "Linux POSIX OSAdapter, x86_64 architecture, GCC compiler",
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-Linux-x86_64-gcc.cmake"
@@ -302,7 +302,7 @@ add_compile_definitions(_VX_CPU=PPC64)
     {
       "name": "linux-x86_64-clang",
       "displayName": "Linux x86_64 (Clang)",
-      "description": "Linux POSIX backend, x86_64 architecture, Clang compiler",
+      "description": "Linux POSIX OSAdapter, x86_64 architecture, Clang compiler",
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-Linux-x86_64-clang.cmake"
@@ -727,16 +727,16 @@ add_compile_definitions(SAFEAPI_STRICT_ALIGNMENT)  # Railway systems require ali
 
 ### 13.2 Hardware Abstraction
 
-Backend code (in `backends/<rtos>/`) handles:
+OSAdapter code (in `OSAdapters/<rtos>/`) handles:
 - Timer HAL (system clocks may differ)
 - Memory management (different NVM layouts)
 - Task scheduling (different APIs)
 - IPC protocols (different synchronization primitives)
 
-**Example: Timer backend for different CPUs**
+**Example: Timer OSAdapter for different CPUs**
 
 ```c
-// backends/qnx/src/rte_timer_qnx.c
+// OSAdapters/qnx/src/rte_timer_qnx.c
 rte_status_t rte_timer_create_impl(const char *name, rte_timer_handle_t *out) {
     // QNX timer implementation
     #if defined(SAFEAPI_ARCH_PPC)

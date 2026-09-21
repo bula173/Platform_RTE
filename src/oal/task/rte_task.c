@@ -2,19 +2,19 @@
  * @file rte_task.c
  * @ingroup TASK
  * @brief Task service: validates parameters, then dispatches to the
- *        backend registered via rte_task_register_backend() (ADR-005).
+ *        OSAdapter registered via rte_osadapter_task_register() (ADR-005).
  */
 #include "safeapi/oal/task/rte_task.h"
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_backend/task/rte_task_backend.h"
+#include "safeapi_osadapter/task/rte_osadapter_task.h"
 
 /** Local makros */
 
 /** Local types declarations */
 
 /** Local variables declarations */
-/** @brief Currently registered backend, or NULL if none (ADR-005). */
-static const rte_task_backend_t *s_backend = NULL;
+/** @brief Currently registered OSAdapter, or NULL if none (ADR-005). */
+static const rte_osadapter_task_t *s_osadapter = NULL;
 
 /** Global variables declarations */
 
@@ -22,22 +22,22 @@ static const rte_task_backend_t *s_backend = NULL;
 
 
 /** Global functions */
-rte_status_t rte_task_register_backend(const rte_task_backend_t *backend)
+rte_status_t rte_osadapter_task_register(const rte_osadapter_task_t *osadapter)
 {
     rte_status_t lifecycle_status;
 
-    if (backend == NULL)
+    if (osadapter == NULL)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+    /* REQ-LIFECYCLE-001 (ADR-026): registering an OSAdapter is a setup-only
      * action - refuse once the application's setup phase has been locked. */
     lifecycle_status = rte_lifecycle_check_setup_allowed();
     if (lifecycle_status != RTE_STATUS_OK)
     {
         return lifecycle_status;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
@@ -54,15 +54,15 @@ rte_status_t rte_task_create(rte_task_storage_t *storage,
         return RTE_STATUS_INVALID_PARAM;
     }
     *out_handle = NULL;
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->create == NULL)
+    if (s_osadapter->create == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->create(storage, config, out_handle);
+    return s_osadapter->create(storage, config, out_handle);
 }
 
 rte_status_t rte_task_start(rte_task_handle_t handle)
@@ -71,15 +71,15 @@ rte_status_t rte_task_start(rte_task_handle_t handle)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->start == NULL)
+    if (s_osadapter->start == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->start(handle);
+    return s_osadapter->start(handle);
 }
 
 rte_status_t rte_task_suspend(rte_task_handle_t handle)
@@ -88,15 +88,15 @@ rte_status_t rte_task_suspend(rte_task_handle_t handle)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->suspend == NULL)
+    if (s_osadapter->suspend == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->suspend(handle);
+    return s_osadapter->suspend(handle);
 }
 
 rte_status_t rte_task_destroy(rte_task_handle_t handle)
@@ -105,13 +105,13 @@ rte_status_t rte_task_destroy(rte_task_handle_t handle)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->destroy == NULL)
+    if (s_osadapter->destroy == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->destroy(handle);
+    return s_osadapter->destroy(handle);
 }

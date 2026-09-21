@@ -151,7 +151,7 @@ endif()
 # Feature selection (ADR-024): choose which modules get compiled in
 # ---------------------------------------------------------------------------
 # CORE (status/types/buffer/cast/safestate/string, below) is always
-# compiled - it has no OS/backend dependencies of its own and every other
+# compiled - it has no OS/osadapter dependencies of its own and every other
 # module depends on it, directly or transitively. Everything below is
 # opt-out, default ON, matching this project's historical
 # always-build-everything behavior so existing consumers (e.g.
@@ -252,7 +252,7 @@ safeapi_set_warnings(safeapi_core)
 set_target_properties(safeapi_core PROPERTIES EXPORT_NAME core)
 add_library(safeapi::core ALIAS safeapi_core)
 
-# --- safeapi_oal: OS Abstraction Layer, ADR-001/ADR-005 backend-dispatch
+# --- safeapi_oal: OS Abstraction Layer, ADR-001/ADR-005 osadapter-dispatch
 # services. Source list is gated per-module by the SAFEAPI_ENABLE_* options
 # above (ADR-024). Deliberately never includes src/oal/ipc/rte_ipc_pubsub.c or
 # rte_ipc_request_reply.c regardless of SAFEAPI_ENABLE_IPC - those
@@ -342,7 +342,7 @@ if(SAFEAPI_ENABLE_CHANNEL_LINK)
 endif()
 if(SAFEAPI_ENABLE_CHANNEL_LINK AND SAFEAPI_ENABLE_FLOW)
     list(APPEND _safeapi_channels_sources
-        src/redundancy/channel_service/rte_channel_service_flow_backend.c
+        src/redundancy/channel_service/rte_channel_service_flow_osadapter.c
     )
 endif()
 if(SAFEAPI_ENABLE_VOTER)
@@ -567,18 +567,18 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
         COMPONENT development
     )
 
-    # Install OS-backend adaptation headers (ADR-021) as their own component -
-    # a real application never includes anything under safeapi_backend/; only
-    # the platform integrator wiring a concrete backend does. Kept as a
+    # Install OS-osadapter adaptation headers (ADR-021) as their own component -
+    # a real application never includes anything under safeapi_osadapter/; only
+    # the platform integrator wiring a concrete OSAdapter does. Kept as a
     # separate top-level tree (not a subfolder of include/safeapi) so the
     # two audiences are visibly, physically separate, not just conventionally
     # so. Started as a timer-only pilot; timer, reboot and platform (ADR-035)
     # use it today, and more modules move here incrementally. install(DIRECTORY)
     # copies the whole tree, so a newly-split module needs no change here.
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_backend")
-        install(DIRECTORY include/safeapi_backend
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_osadapter")
+        install(DIRECTORY include/safeapi_osadapter
             DESTINATION ${INCLUDE_INSTALL_DIR}
-            COMPONENT backend-development
+            COMPONENT osadapter-development
         )
     endif()
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/include/safeapi_osadapter")

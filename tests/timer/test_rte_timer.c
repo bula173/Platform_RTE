@@ -1,12 +1,12 @@
 /* Tests for the rte_timer validate-then-dispatch API (ADR-005): parameter
- * validation happens regardless of backend state; RTE_STATUS_NOT_INITIALIZED
- * is returned before any backend is registered; a registered mock backend
+ * validation happens regardless of OSAdapter state; RTE_STATUS_NOT_INITIALIZED
+ * is returned before any OSAdapter is registered; a registered mock OSAdapter
  * is reached with the framework-validated arguments; a NULL vtable slot on
- * an otherwise-registered backend yields RTE_STATUS_NOT_SUPPORTED. */
+ * an otherwise-registered OSAdapter yields RTE_STATUS_NOT_SUPPORTED. */
 #include <assert.h>
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
 #include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_backend/timer/rte_timer_backend.h"
+#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
 
 static void dummy_callback(rte_timer_handle_t handle, void *user_ctx)
 {
@@ -59,27 +59,27 @@ static rte_status_t mock_now(rte_timestamp_ms_t *out_now_ms)
     return RTE_STATUS_OK;
 }
 
-static const rte_timer_backend_t g_mock_backend_full __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_full __attribute__((unused)) = {
     mock_create, mock_start, mock_stop, mock_destroy, mock_now
 };
 
-static const rte_timer_backend_t g_mock_backend_no_create __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_no_create __attribute__((unused)) = {
     NULL, NULL, NULL, NULL, NULL
 };
 
-static const rte_timer_backend_t g_mock_backend_no_start __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_no_start __attribute__((unused)) = {
     mock_create, NULL, mock_stop, mock_destroy, mock_now
 };
 
-static const rte_timer_backend_t g_mock_backend_no_stop __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_no_stop __attribute__((unused)) = {
     mock_create, mock_start, NULL, mock_destroy, mock_now
 };
 
-static const rte_timer_backend_t g_mock_backend_no_destroy __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_no_destroy __attribute__((unused)) = {
     mock_create, mock_start, mock_stop, NULL, mock_now
 };
 
-static const rte_timer_backend_t g_mock_backend_no_now __attribute__((unused)) = {
+static const rte_osadapter_timer_t g_mock_osadapter_no_now __attribute__((unused)) = {
     mock_create, mock_start, mock_stop, mock_destroy, NULL
 };
 
@@ -88,7 +88,7 @@ int main(void)
     rte_timer_storage_t storage __attribute__((unused));
     rte_timer_handle_t handle __attribute__((unused)) = NULL;
 
-    /* Null-parameter rejection happens before any backend is consulted. */
+    /* Null-parameter rejection happens before any OSAdapter is consulted. */
     assert(rte_timer_create(NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
 
     /* Invalid config (missing callback) rejected even with valid pointers. */
@@ -111,17 +111,17 @@ int main(void)
     config.callback = dummy_callback;
     config.user_ctx = NULL;
 
-    /* No backend registered yet: valid params, but nothing to dispatch to. */
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to. */
     assert(rte_timer_create(&storage, &config, &handle) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Null-parameter rejection for start/stop/destroy/now happens before
-     * any backend is consulted, independently of one another. */
+     * any OSAdapter is consulted, independently of one another. */
     assert(rte_timer_start(NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_timer_stop(NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_timer_destroy(NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_timer_now(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* No backend registered yet: valid params, but nothing to dispatch to,
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to,
      * for every remaining entry point. */
     rte_timer_handle_t dummy_handle = (rte_timer_handle_t)(void *)1;
     rte_timestamp_ms_t now_ms;
@@ -131,30 +131,30 @@ int main(void)
     assert(rte_timer_now(&now_ms) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Registering NULL is rejected. */
-    assert(rte_timer_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_timer_register(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* A backend with a NULL create slot yields NOT_SUPPORTED. */
-    assert(rte_timer_register_backend(&g_mock_backend_no_create) == RTE_STATUS_OK);
+    /* An OSAdapter with a NULL create slot yields NOT_SUPPORTED. */
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_no_create) == RTE_STATUS_OK);
     assert(rte_timer_create(&storage, &config, &handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A backend with a NULL start/stop/destroy/now slot yields
+    /* An OSAdapter with a NULL start/stop/destroy/now slot yields
      * NOT_SUPPORTED for that entry point specifically, independently of
      * the others. */
-    assert(rte_timer_register_backend(&g_mock_backend_no_start) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_no_start) == RTE_STATUS_OK);
     assert(rte_timer_start(dummy_handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    assert(rte_timer_register_backend(&g_mock_backend_no_stop) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_no_stop) == RTE_STATUS_OK);
     assert(rte_timer_stop(dummy_handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    assert(rte_timer_register_backend(&g_mock_backend_no_destroy) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_no_destroy) == RTE_STATUS_OK);
     assert(rte_timer_destroy(dummy_handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    assert(rte_timer_register_backend(&g_mock_backend_no_now) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_no_now) == RTE_STATUS_OK);
     assert(rte_timer_now(&now_ms) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A fully-populated backend is actually reached, with the same
+    /* A fully-populated OSAdapter is actually reached, with the same
      * already-validated arguments the caller passed in. */
-    assert(rte_timer_register_backend(&g_mock_backend_full) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_osadapter_full) == RTE_STATUS_OK);
     assert(rte_timer_create(&storage, &config, &handle) == RTE_STATUS_OK);
     assert(g_mock_create_calls == 1);
     assert(handle != NULL);
@@ -174,7 +174,7 @@ int main(void)
 
     /* REQ-LIFECYCLE-001 (ADR-026): once the application's setup phase is
      * locked, rte_timer_create() refuses even with a fully-valid config
-     * and a working backend. Only create() is gated (a setup-only call);
+     * and a working OSAdapter. Only create() is gated (a setup-only call);
      * start/stop/destroy/now are runtime operations on an
      * already-created timer and stay unaffected. */
     rte_lifecycle_lock();

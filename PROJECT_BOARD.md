@@ -39,7 +39,7 @@ Quick visual tracker for feature implementation status. For full details, see [R
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 1 week
 
-- [ ] #9 Mock Backend Harness (P2)
+- [ ] #9 Mock OSAdapter Harness (P2)
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 2 weeks
   - Supports: All other features (testing infrastructure)

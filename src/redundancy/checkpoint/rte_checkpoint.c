@@ -25,8 +25,8 @@
  * typical config->max_delay_ms so a single call gets several independent
  * send+receive rounds instead of committing its whole budget to one.
  * Real bug this fixes, found via live Docker testing: a LISTEN-role
- * backend channel can only reply once it has learned its peer's address
- * from an inbound packet (rte_posix_backend_channel_service.c's own
+ * OSAdapter channel can only reply once it has learned its peer's address
+ * from an inbound packet (rte_posix_osadapter_channel_service.c's own
  * has_peer_addr) - on a genuinely cold two-way start neither side has
  * heard from the other yet, so a SINGLE round's send is a structural
  * no-op on the listening side regardless of how long the matching
@@ -257,7 +257,7 @@ rte_status_t rte_channel_checkpoint(rte_voter_t *voter, const rte_checkpoint_con
          * tests do exactly that, which turned this loop into a real
          * busy-spin consuming the full max_delay_ms in real wall-clock
          * time at 100% CPU before this cap was added) - real production
-         * backends block for close to the requested duration, so this
+         * OSAdapters block for close to the requested duration, so this
          * cap is not expected to bind there, only to guarantee it can't
          * regardless of transport behavior. */
         while ((confirmed_count < config->expected_node_count)

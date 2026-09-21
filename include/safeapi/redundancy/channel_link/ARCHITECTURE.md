@@ -41,7 +41,7 @@
  *     +-- If Ch0 != Ch1 -> DISAGREE, trigger SAFE-STATE
  * ```
  *
- * @section vital_channel_architecture_transport_backends Transport Backends
+ * @section vital_channel_architecture_transport_osadapters Transport OSAdapters
  *
  * A vital channel operates on opaque `void*` channel handles. The application provides
  * two callback functions to specify HOW to communicate:
@@ -51,7 +51,7 @@
  *
  * These callbacks abstract away the transport mechanism:
  *
- * | Transport | Backend Implementation |
+ * | Transport | OSAdapter Implementation |
  * |-----------|------------------------|
  * | IPC Request-Reply | Call rte_ipc_rr_send() / rte_ipc_rr_receive() |
  * | IPC Pub-Sub | Call rte_ipc_pubsub_publish() / rte_ipc_pubsub_receive() |
@@ -142,7 +142,7 @@
  * rte_ipc_rr_server_create(&ch1, &config);
  * void *channels[2] = { &ch0, &ch1 };
  *
- * // Step 2: Define backend callbacks (how to invoke transport operations)
+ * // Step 2: Define OSAdapter callbacks (how to invoke transport operations)
  * rte_status_t backend_send(void *ch, const void *data, size_t size) {
  *     return rte_ipc_rr_send((rte_ipc_rr_server_t*)ch, data, size);
  * }

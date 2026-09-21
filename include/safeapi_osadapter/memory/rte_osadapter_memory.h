@@ -28,9 +28,6 @@ typedef struct rte_osadapter_memory_s
                             size_t *out_free_blocks, size_t *out_used_blocks);
 } rte_osadapter_memory_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_memory_t rte_mem_pool_backend_t;
-
 /**
  * @brief Registers the OSAdapter memory implementation.
  * @param adapter Pointer to memory operations vtable.
@@ -38,7 +35,6 @@ typedef rte_osadapter_memory_t rte_mem_pool_backend_t;
  */
 rte_status_t rte_osadapter_memory_register(const rte_osadapter_memory_t *adapter);
 
-rte_status_t rte_mem_pool_register_backend(const rte_mem_pool_backend_t *backend);
 
 #ifdef __cplusplus
 }

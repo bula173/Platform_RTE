@@ -131,7 +131,7 @@ typedef struct rte_dual_negotiator_config_s
 /**
  * @brief Initializes a rte_dual_negotiator_t. Captures this instance's
  *        own startup timestamp once (rte_timer_now(), degrading to 0 if
- *        no timer backend is registered - same best-effort posture as
+ *        no timer OSAdapter is registered - same best-effort posture as
  *        rte_log_write_event()'s Timestamp field) for use on every
  *        beacon this negotiator ever sends - see
  *        rte_dual_state_frame_t's own doc on why this must stay fixed.

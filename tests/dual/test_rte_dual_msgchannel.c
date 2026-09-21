@@ -1,6 +1,6 @@
 /* Tests for rte_dual_msgchannel_t (ADR-020 Layer 1): send/receive
- * roundtrip over a mock rte_netlink backend (two in-memory mailboxes,
- * following tests/netlink/test_rte_netlink.c's own mock-backend
+ * roundtrip over a mock rte_netlink OSAdapter (two in-memory mailboxes,
+ * following tests/netlink/test_rte_netlink.c's own mock-osadapter
  * pattern), sequence continuity rejection, and sender_id masquerade
  * rejection. */
 #include <assert.h>
@@ -8,9 +8,9 @@
 
 #include "safeapi/redundancy/checksum/rte_checksum.h"
 #include "safeapi/redundancy/dual/rte_dual_msgchannel.h"
-#include "safeapi_backend/netlink/rte_netlink_backend.h"
+#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
 
-/* --- mock netlink backend: two single-slot mailboxes, wired A<->B --- */
+/* --- mock netlink OSAdapter: two single-slot mailboxes, wired A<->B --- */
 typedef struct
 {
     uint8_t buf[sizeof(rte_vital_message_t)];
@@ -64,7 +64,7 @@ static rte_status_t mock_receive(rte_netlink_handle_t handle, void *out_message,
     return RTE_STATUS_OK;
 }
 
-static const rte_netlink_backend_t g_mock_netlink_backend = { NULL, mock_send, mock_receive, NULL };
+static const rte_osadapter_netlink_t g_mock_netlink_osadapter = { NULL, mock_send, mock_receive, NULL };
 
 int main(void)
 {
@@ -83,7 +83,7 @@ int main(void)
     uint32_t out_sequence     = 0U;
 
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
-    assert(rte_netlink_register_backend(&g_mock_netlink_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_netlink_register(&g_mock_netlink_osadapter) == RTE_STATUS_OK);
 
     cfg_a.link             = (rte_netlink_handle_t)&link_a;
     cfg_a.sender_id        = 1U;

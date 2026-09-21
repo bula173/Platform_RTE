@@ -10,7 +10,7 @@
  * a raw RTOS semaphore API, etc.) directly to guard its own state - doing
  * so ties that application code to one specific OS/RTOS, defeating the
  * whole point of building on this framework's OAL in the first place (a
- * backend is meant to be swappable without touching application code).
+ * OSAdapter is meant to be swappable without touching application code).
  * Added specifically to close that gap: found live in safeAPIRBC2oo2,
  * which had been using pthread_mutex_t directly (see this ADR's own
  * "Context" section, docs/architecture/ADR-033-sapi-mutex.md).
@@ -19,7 +19,7 @@
  * REQ-OAL-MUTEX-003: non-recursive - locking twice from the same task
  *                     without an intervening unlock is undefined behavior
  *                     (matches pthread's own PTHREAD_MUTEX_DEFAULT/_NORMAL
- *                     semantics on Linux/macOS, the only backend this
+ *                     semantics on Linux/macOS, the only OSAdapter this
  *                     framework ships today) - a caller needing recursive
  *                     locking must track that itself.
  *
@@ -50,9 +50,9 @@ typedef struct rte_mutex_impl_s *rte_mutex_handle_t;
  *                    into. Must not be NULL and must outlive the mutex.
  * @param out_handle  Receives the created mutex's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_mutex_register_backend()); RTE_STATUS_NOT_SUPPORTED if
- *         the registered backend does not implement create;
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_mutex_register()); RTE_STATUS_NOT_SUPPORTED if
+ *         the registered OSAdapter does not implement create;
  *         RTE_STATUS_INVALID_STATE if the application's setup phase is
  *         already locked (ADR-026) - a mutex is a setup-only resource,
  *         same posture as rte_timer_create()/rte_task_create().
@@ -65,7 +65,7 @@ rte_status_t rte_mutex_create(rte_mutex_storage_t *storage, rte_mutex_handle_t *
  * @param handle  Mutex to lock. Must not be NULL.
  * @return RTE_STATUS_OK, RTE_STATUS_INVALID_PARAM, RTE_STATUS_NOT_INITIALIZED,
  *         RTE_STATUS_NOT_SUPPORTED (see rte_mutex_create()), or
- *         RTE_STATUS_INTERNAL_ERROR if the backend itself reports a
+ *         RTE_STATUS_INTERNAL_ERROR if the OSAdapter itself reports a
  *         failure (e.g. a detected deadlock).
  * REQ-OAL-MUTEX-011
  */
@@ -82,7 +82,7 @@ rte_status_t rte_mutex_lock(rte_mutex_handle_t handle);
 rte_status_t rte_mutex_unlock(rte_mutex_handle_t handle);
 
 /**
- * @brief Destroys a mutex, releasing any backend resources bound to it.
+ * @brief Destroys a mutex, releasing any OSAdapter resources bound to it.
  *        Must not be called while any task holds or is waiting on the lock.
  * @param handle  Mutex to destroy. Must not be NULL. Invalid to use after this call.
  * @return See rte_mutex_lock().
@@ -91,11 +91,11 @@ rte_status_t rte_mutex_unlock(rte_mutex_handle_t handle);
 rte_status_t rte_mutex_destroy(rte_mutex_handle_t handle);
 
 /*
- * The backend vtable (rte_mutex_backend_t) and rte_mutex_register_backend()
- * live in safeapi_backend/mutex/rte_mutex_backend.h, not here (ADR-021
- * consumer/backend split). This header is the consumer-facing surface
- * only - a real application never needs to see the backend vtable shape;
- * only the platform integrator wiring a concrete backend does.
+ * The OSAdapter vtable (rte_osadapter_mutex_t) and rte_osadapter_mutex_register()
+ * live in safeapi_osadapter/mutex/rte_osadapter_mutex.h, not here (ADR-021
+ * consumer/osadapter split). This header is the consumer-facing surface
+ * only - a real application never needs to see the OSAdapter vtable shape;
+ * only the platform integrator wiring a concrete OSAdapter does.
  */
 
 #ifdef __cplusplus

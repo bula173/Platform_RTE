@@ -2,19 +2,19 @@
  * @file rte_memory.c
  * @ingroup MEMORY
  * @brief Memory pool service: validates parameters, then dispatches to the
- *        backend registered via rte_mem_pool_register_backend() (ADR-005).
+ *        OSAdapter registered via rte_osadapter_memory_register() (ADR-005).
  */
 #include "safeapi/oal/memory/rte_memory.h"
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_backend/memory/rte_memory_backend.h"
+#include "safeapi_osadapter/memory/rte_osadapter_memory.h"
 
 /** Local makros */
 
 /** Local types declarations */
 
 /** Local variables declarations */
-/** @brief Currently registered backend, or NULL if none (ADR-005). */
-static const rte_mem_pool_backend_t *s_backend = NULL;
+/** @brief Currently registered OSAdapter, or NULL if none (ADR-005). */
+static const rte_osadapter_memory_t *s_osadapter = NULL;
 
 /** Global variables declarations */
 
@@ -22,22 +22,22 @@ static const rte_mem_pool_backend_t *s_backend = NULL;
 
 
 /** Global functions */
-rte_status_t rte_mem_pool_register_backend(const rte_mem_pool_backend_t *backend)
+rte_status_t rte_osadapter_memory_register(const rte_osadapter_memory_t *osadapter)
 {
     rte_status_t lifecycle_status;
 
-    if (backend == NULL)
+    if (osadapter == NULL)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+    /* REQ-LIFECYCLE-001 (ADR-026): registering an OSAdapter is a setup-only
      * action - refuse once the application's setup phase has been locked. */
     lifecycle_status = rte_lifecycle_check_setup_allowed();
     if (lifecycle_status != RTE_STATUS_OK)
     {
         return lifecycle_status;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
@@ -63,15 +63,15 @@ rte_status_t rte_mem_pool_create(rte_mem_pool_storage_t *storage,
     {
         return lifecycle_status;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->create == NULL)
+    if (s_osadapter->create == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->create(storage, config, out_handle);
+    return s_osadapter->create(storage, config, out_handle);
 }
 
 rte_status_t rte_mem_pool_acquire(rte_mem_pool_handle_t handle, void **out_block)
@@ -81,15 +81,15 @@ rte_status_t rte_mem_pool_acquire(rte_mem_pool_handle_t handle, void **out_block
         return RTE_STATUS_INVALID_PARAM;
     }
     *out_block = NULL;
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->acquire == NULL)
+    if (s_osadapter->acquire == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->acquire(handle, out_block);
+    return s_osadapter->acquire(handle, out_block);
 }
 
 rte_status_t rte_mem_pool_release(rte_mem_pool_handle_t handle, void *block)
@@ -98,15 +98,15 @@ rte_status_t rte_mem_pool_release(rte_mem_pool_handle_t handle, void *block)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->release == NULL)
+    if (s_osadapter->release == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->release(handle, block);
+    return s_osadapter->release(handle, block);
 }
 
 rte_status_t rte_mem_pool_stats(rte_mem_pool_handle_t handle,
@@ -119,13 +119,13 @@ rte_status_t rte_mem_pool_stats(rte_mem_pool_handle_t handle,
     }
     *out_free_blocks = 0U;
     *out_used_blocks = 0U;
-    if (s_backend == NULL)
+    if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;
     }
-    if (s_backend->stats == NULL)
+    if (s_osadapter->stats == NULL)
     {
         return RTE_STATUS_NOT_SUPPORTED;
     }
-    return s_backend->stats(handle, out_free_blocks, out_used_blocks);
+    return s_osadapter->stats(handle, out_free_blocks, out_used_blocks);
 }

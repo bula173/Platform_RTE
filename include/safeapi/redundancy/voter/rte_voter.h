@@ -68,7 +68,7 @@ typedef enum {
  * If not registered (rte_voter_config_t::compare == NULL), the default
  * is a full byte compare (`memcmp(a, b, size) == 0`) - the payloads
  * being compared have already had their transport-integrity CRC
- * verified by the channel layer (rte_checksum) if the backend uses
+ * verified by the channel layer (rte_checksum) if the OSAdapter uses
  * rte_checksum_vital_message_verify(); this callback is about
  * semantic/value comparison, not integrity checking.
  *

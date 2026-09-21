@@ -1,7 +1,7 @@
 /* Tests for rte_safechannel_t (ADR-022): the factory itself, not a
  * re-test of rte_dual_channel/rte_channel's own wire semantics
  * (already covered by tests/dual/ and would-be tests/channel_link/).
- * Covers: parameter validation (rejected before the netlink backend is
+ * Covers: parameter validation (rejected before the netlink OSAdapter is
  * ever touched), DUAL_REDUNDANT open/send/receive/close wiring (using
  * the same pre-seed-then-one-call technique tests/dual/test_rte_dual_channel.c
  * established, since a live two-sided round trip needs two real threads),
@@ -12,7 +12,7 @@
 #include <string.h>
 
 #include "safeapi/redundancy/safechannel/rte_safechannel.h"
-#include "safeapi_backend/netlink/rte_netlink_backend.h"
+#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
 
 typedef struct
 {
@@ -50,7 +50,7 @@ static uint32_t g_mock_open_fail_at_index = 0xFFFFFFFFU;
 
 /** 0-based endpoint index at which mock_open() should report success but
  *  hand back a NULL handle - UINT32_MAX (never) unless a test overrides
- *  it. A conforming backend never does this; it exists purely to force
+ *  it. A conforming OSAdapter never does this; it exists purely to force
  *  rte_dual_channel_init()/rte_channel_init() to see a NULL
  *  link after every endpoint has otherwise "opened successfully", the
  *  only way to reach safeApi_safechannel.c's own post-open init-failure
@@ -141,7 +141,7 @@ static rte_status_t mock_receive(rte_netlink_handle_t handle, void *out_message,
     return RTE_STATUS_OK;
 }
 
-static const rte_netlink_backend_t g_mock_backend = { mock_open, mock_send, mock_receive, mock_close };
+static const rte_osadapter_netlink_t g_mock_osadapter = { mock_open, mock_send, mock_receive, mock_close };
 
 /** Moves whatever the channel-under-test's own send() just transmitted
  *  into its own inbox, for a pure self-loopback test (VITAL_VOTED has no
@@ -231,7 +231,7 @@ static void test_open_rejects_bad_params(void)
     cfg.as.dual.endpoints[0].port    = 9000U;
     assert(rte_safechannel_open(&channel, &cfg) == RTE_STATUS_INVALID_PARAM);
 
-    /* None of the above should have ever reached the netlink backend. */
+    /* None of the above should have ever reached the netlink OSAdapter. */
     assert(g_mock_links_used == 0U);
 }
 
@@ -245,7 +245,7 @@ static void test_dual_open_send_receive_close(void)
     uint32_t                   status;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     seed_init(&seed, &g_b_side[0]);
 
     memset(&cfg, 0, sizeof(cfg));
@@ -293,7 +293,7 @@ static void test_dual_open_partial_endpoint_failure_unwinds(void)
     rte_safechannel_config_t cfg;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     g_mock_open_fail_at_index = 1U;
 
     memset(&cfg, 0, sizeof(cfg));
@@ -311,7 +311,7 @@ static void test_dual_open_partial_endpoint_failure_unwinds(void)
 }
 
 /** Forces rte_dual_channel_init() itself to fail after every configured
- *  endpoint has already "opened successfully" (a misbehaving backend
+ *  endpoint has already "opened successfully" (a misbehaving OSAdapter
  *  handing back a NULL handle - see g_mock_open_null_handle_at_index's
  *  own doc), exercising safechannel_open_dual()'s own post-open unwind
  *  path (distinct from test_dual_open_partial_endpoint_failure_unwinds()'s
@@ -322,7 +322,7 @@ static void test_dual_open_dual_channel_init_failure_unwinds(void)
     rte_safechannel_config_t cfg;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     g_mock_open_null_handle_at_index = 0U;
 
     memset(&cfg, 0, sizeof(cfg));
@@ -370,7 +370,7 @@ static void test_vital_open_partial_endpoint_failure_unwinds(void)
     rte_safechannel_config_t cfg;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     g_mock_open_fail_at_index = 1U;
 
     memset(&cfg, 0, sizeof(cfg));
@@ -404,7 +404,7 @@ static void test_vital_open_voter_init_failure_unwinds(void)
     rte_safechannel_config_t cfg;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
 
     memset(&cfg, 0, sizeof(cfg));
     cfg.type                       = RTE_SAFECHANNEL_TYPE_VITAL_VOTED;
@@ -446,7 +446,7 @@ static void test_dual_send_rejects_oversized_payload(void)
     uint8_t                    oversize_payload[300];
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     (void)memset(oversize_payload, 0, sizeof(oversize_payload));
 
     memset(&cfg, 0, sizeof(cfg));
@@ -476,7 +476,7 @@ static void test_dual_receive_clamps_oversized_max_size(void)
     size_t                     out_size = 0U;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
     seed_init(&seed, &g_b_side[0]);
 
     memset(&cfg, 0, sizeof(cfg));
@@ -514,7 +514,7 @@ static void test_dual_status_degraded(void)
     rte_dual_msgchannel_t     seed0;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
 
     memset(&cfg, 0, sizeof(cfg));
     cfg.type                      = RTE_SAFECHANNEL_TYPE_DUAL_REDUNDANT;
@@ -553,7 +553,7 @@ static void test_vital_status_down_and_degraded(void)
     rte_safechannel_config_t cfg;
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
 
     memset(&cfg, 0, sizeof(cfg));
     cfg.type                        = RTE_SAFECHANNEL_TYPE_VITAL_VOTED;
@@ -588,7 +588,7 @@ static void test_vital_open_send_receive_close(void)
     uint8_t                    out_payload[16];
 
     mock_links_reset();
-    (void)rte_netlink_register_backend(&g_mock_backend);
+    (void)rte_osadapter_netlink_register(&g_mock_osadapter);
 
     /* rte_channel_receive() itself hard-requires at least 2
      * successful per-channel receives to ever return RTE_STATUS_OK

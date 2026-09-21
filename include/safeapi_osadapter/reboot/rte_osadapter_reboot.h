@@ -23,9 +23,6 @@ typedef struct rte_osadapter_reboot_s
     rte_status_t (*request)(uint16_t reason_code);
 } rte_osadapter_reboot_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_reboot_t rte_reboot_backend_t;
-
 /**
  * @brief Registers the OSAdapter reboot implementation.
  * @param adapter Pointer to reboot operations vtable.
@@ -33,7 +30,6 @@ typedef rte_osadapter_reboot_t rte_reboot_backend_t;
  */
 rte_status_t rte_osadapter_reboot_register(const rte_osadapter_reboot_t *adapter);
 
-rte_status_t rte_reboot_register_backend(const rte_reboot_backend_t *backend);
 
 #ifdef __cplusplus
 }

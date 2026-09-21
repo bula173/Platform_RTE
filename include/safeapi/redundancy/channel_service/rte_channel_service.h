@@ -8,7 +8,7 @@
  * The application addresses a channel by its configured name and performs
  * setup, read, and send operations from its own execution thread. Transport
  * lifecycle, reconnect, buffering, and synchronization belong to the
- * registered backend.
+ * registered OSAdapter.
  */
 
 #include <stddef.h>
@@ -33,11 +33,11 @@ typedef struct
 typedef rte_channel_service_storage_t rte_channel_service_t;
 
 /**
- * @brief Backend implementation for named channel operations.
+ * @brief OSAdapter implementation for named channel operations.
  *
- * A backend may perform blocking or non-blocking transport work internally,
+ * An OSAdapter may perform blocking or non-blocking transport work internally,
  * but it must return from each operation within the supplied timeout. The
- * backend owns all transport-specific state and recovery behavior.
+ * OSAdapter owns all transport-specific state and recovery behavior.
  */
 typedef struct
 {
@@ -52,9 +52,14 @@ typedef struct
                           size_t data_size,
                           rte_duration_ms_t timeout_ms);
     rte_status_t (*close)(rte_channel_service_storage_t *storage);
-} rte_channel_service_backend_t;
+} rte_osadapter_channel_service_t;
 
-rte_status_t rte_channel_service_register_backend(const rte_channel_service_backend_t *backend);
+/**
+ * @brief Registers the OSAdapter that implements named channels (ADR-005).
+ * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if osadapter is NULL.
+ */
+rte_status_t rte_osadapter_channel_service_register(const rte_osadapter_channel_service_t *osadapter);
+
 rte_status_t rte_channel_service_setup(rte_channel_service_t *storage, const char *channel_name);
 rte_status_t rte_channel_service_setup_by_id(rte_channel_service_t *storage, uint32_t channel_id);
 rte_status_t rte_channel_service_read(rte_channel_service_t *storage,

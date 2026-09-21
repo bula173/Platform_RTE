@@ -1,5 +1,10 @@
 # ADR-021: Consumer / OS-Backend Header Separation
 
+> **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
+> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> original wording as a historical record.
+
 Status: Accepted - applied to all 9 backend-bearing modules
 Date: 2026-08-06
 Applies to: safeAPIFreamwork, every OAL service with a backend vtable
@@ -17,8 +22,8 @@ file. Using `rte_timer.h` as the representative example, a single
 - **Consumer API** - `rte_timer_create/start/stop/destroy/now()`, the
   opaque handle/storage/config types - what a real application (e.g.
   safeAPIRBC2oo2's `channel_ab.c`) includes and calls.
-- **Backend adaptation API** - `rte_timer_backend_t` (the vtable) and
-  `rte_timer_register_backend()` - what a platform/RTOS integrator
+- **Backend adaptation API** - `rte_osadapter_timer_t` (the vtable) and
+  `rte_osadapter_timer_register()` - what a platform/RTOS integrator
   implements once, per target, and nobody else ever calls.
 
 A consuming application has no reason to see the vtable shape at all; it
@@ -62,8 +67,8 @@ structural costs, not ones that recur per feature added later.
   dispatches through it, per ADR-005 section 2.2). This is the one place
   in the framework itself that legitimately needs both.
 - A concrete backend implementation (e.g. safeAPIRBC2oo2's
-  `rte_posix_backend_timer.c`) includes only the backend header (via its
-  own umbrella `rte_posix_backend.h`) - it never needs the bulk of the
+  `rte_posix_osadapter_timer.c`) includes only the backend header (via its
+  own umbrella `rte_posix_osadapter.h`) - it never needs the bulk of the
   consumer header's doc comments describing how an application should
   call the service, only the vtable shape it must fill in.
 - Framework unit tests that register a mock backend (e.g.
@@ -121,5 +126,5 @@ All 9 backend-bearing modules are split as of this update:
 `include/safeapi_backend/<feature>/rte_<feature>_backend.h` (backend)
 exist side by side for `timer`, `nvm`, `memory`, `task`, `ipc`, `log`,
 `reboot`, `netlink`, and `clocksync`. safeAPIRBC2oo2's POSIX backend
-(`include/safeapi/posix_backend/rte_posix_backend.h`) includes both
+(`include/safeapi/posix_osadapter/rte_posix_osadapter.h`) includes both
 headers for every service it implements.

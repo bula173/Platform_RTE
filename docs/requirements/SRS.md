@@ -139,29 +139,29 @@ are ordinary functions, not macros, so they cannot capture the caller's
 
 ## 2. OS Abstraction Layer
 
-Every OAL service below shares the backend-registration contract defined
+Every OAL service below shares the osadapter-registration contract defined
 once in ADR-005 rather than repeating it per service. **Note:**
 `REQ-OAL-BACKEND-001/002/003` below are a documentation-only consolidation
 for readability — unlike every other ID in this SRS, they do **not**
 appear verbatim as a tag in any header comment (see the traceability
 caveat in section 4); the behavior they describe is what each per-service
-`REQ-OAL-<SERVICE>-01X` "register_backend" entry already requires:
+`REQ-OAL-<SERVICE>-01X` "register_osadapter" entry already requires:
 
 > **REQ-OAL-BACKEND-001** (ADR-005 §2.1, applies to every OAL service):
-> `rte_<service>_register_backend()` shall reject a NULL backend with
+> `rte_<service>_register_osadapter()` shall reject a NULL OSAdapter with
 > `RTE_STATUS_INVALID_PARAM`; re-registering shall replace the previous
-> backend.
+> OSAdapter.
 >
 > **REQ-OAL-BACKEND-002** (ADR-005 §2.2, applies to every OAL service
 > except `rte_log`): every public function shall validate its own
-> parameters before consulting the backend; with no backend registered it
-> shall return `RTE_STATUS_NOT_INITIALIZED`; with a backend registered
+> parameters before consulting the OSAdapter; with no OSAdapter registered it
+> shall return `RTE_STATUS_NOT_INITIALIZED`; with an OSAdapter registered
 > but the corresponding vtable slot NULL, it shall return
 > `RTE_STATUS_NOT_SUPPORTED`.
 >
 > **REQ-OAL-BACKEND-003** (ADR-005 §2.5, `rte_log` only): an
-> unregistered backend is not an error; `rte_log_write()` with no
-> backend registered shall silently do nothing.
+> unregistered OSAdapter is not an error; `rte_log_write()` with no
+> OSAdapter registered shall silently do nothing.
 
 ### 2.1 Timer — `rte_timer.h` (ADR-001 §4)
 
@@ -169,13 +169,13 @@ caveat in section 4); the behavior they describe is what each per-service
 |---|---|
 | REQ-OAL-TIMER-001 | No dynamic allocation; caller supplies storage for each timer. |
 | REQ-OAL-TIMER-002 | Callback execution time is the caller's responsibility to bound; the timer service itself must not block. |
-| REQ-OAL-TIMER-003 | The expiry callback executes in a bounded-time, non-blocking context, documented per backend. |
+| REQ-OAL-TIMER-003 | The expiry callback executes in a bounded-time, non-blocking context, documented per OSAdapter. |
 | REQ-OAL-TIMER-010 | `rte_timer_create()` shall bind a timer to caller-owned storage without starting it. |
 | REQ-OAL-TIMER-011 | `rte_timer_start()` shall start or restart a created timer. |
 | REQ-OAL-TIMER-012 | `rte_timer_stop()` shall stop a running timer and be safe to call on an already-stopped timer. |
-| REQ-OAL-TIMER-013 | `rte_timer_destroy()` shall release any backend resources bound to the timer. |
+| REQ-OAL-TIMER-013 | `rte_timer_destroy()` shall release any OSAdapter resources bound to the timer. |
 | REQ-OAL-TIMER-014 | `rte_timer_now()` shall report the current monotonic time base used by all timers. |
-| REQ-OAL-TIMER-015 | `rte_timer_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-TIMER-015 | `rte_osadapter_timer_register()` per REQ-OAL-BACKEND-001. |
 
 ### 2.2 Non-volatile memory — `rte_nvm.h` (ADR-001 §4)
 
@@ -188,18 +188,18 @@ caveat in section 4); the behavior they describe is what each per-service
 | REQ-OAL-NVM-012 | `rte_nvm_write()` shall write data and its integrity metadata. |
 | REQ-OAL-NVM-013 | `rte_nvm_sync()` shall force any buffered writes to durable storage. |
 | REQ-OAL-NVM-014 | `rte_nvm_close()` shall close a region handle. |
-| REQ-OAL-NVM-015 | `rte_nvm_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-NVM-015 | `rte_osadapter_nvm_register()` per REQ-OAL-BACKEND-001. |
 
 ### 2.3 Static memory reservation — `rte_memory.h` (ADR-001 §4)
 
 | ID | Requirement |
 |---|---|
-| REQ-OAL-MEM-001 | All pools are reserved during system initialization; reservation after init is backend-defined and may be refused. |
+| REQ-OAL-MEM-001 | All pools are reserved during system initialization; reservation after init is osadapter-defined and may be refused. |
 | REQ-OAL-MEM-010 | `rte_mem_pool_create()` shall reserve a fixed-size-block pool. |
 | REQ-OAL-MEM-011 | `rte_mem_pool_acquire()` shall return `RTE_STATUS_RESOURCE_EXHAUSTED` when no blocks remain. |
 | REQ-OAL-MEM-012 | `rte_mem_pool_release()` shall return a previously acquired block to its pool. |
 | REQ-OAL-MEM-013 | `rte_mem_pool_stats()` shall report current free/used block counts. |
-| REQ-OAL-MEM-014 | `rte_mem_pool_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-MEM-014 | `rte_osadapter_memory_register()` per REQ-OAL-BACKEND-001. |
 
 #### 2.3.1 Safe pointer wrapper — `rte_safe_ptr.h`
 
@@ -218,12 +218,12 @@ block, ...) - `rte_safe_ptr_t` never allocates anything itself.
 | ID | Requirement |
 |---|---|
 | REQ-OAL-TASK-001 | No dynamic allocation; caller supplies storage and a fixed-size stack/context region. |
-| REQ-OAL-TASK-002 | Priorities are fixed at creation time; dynamic priority inheritance/inversion handling is a backend/RTOS concern, not assumed by this API. |
+| REQ-OAL-TASK-002 | Priorities are fixed at creation time; dynamic priority inheritance/inversion handling is an OSAdapter/RTOS concern, not assumed by this API. |
 | REQ-OAL-TASK-010 | `rte_task_create()` shall create a task in the suspended state. |
 | REQ-OAL-TASK-011 | `rte_task_start()` shall start a created task. |
 | REQ-OAL-TASK-012 | `rte_task_suspend()` shall suspend a running task. |
 | REQ-OAL-TASK-013 | `rte_task_destroy()` shall terminate and destroy a task. |
-| REQ-OAL-TASK-014 | `rte_task_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-TASK-014 | `rte_osadapter_task_register()` per REQ-OAL-BACKEND-001. |
 
 ### 2.5 Inter-process/inter-task communication — `rte_ipc.h` (ADR-001 §4)
 
@@ -235,19 +235,19 @@ block, ...) - `rte_safe_ptr_t` never allocates anything itself.
 | REQ-OAL-IPC-011 | `rte_ipc_send()` shall block at most `timeout_ms`, returning `RTE_STATUS_TIMEOUT` if the queue stays full for the whole timeout. |
 | REQ-OAL-IPC-012 | `rte_ipc_receive()` shall block at most `timeout_ms`, returning `RTE_STATUS_TIMEOUT` if no message arrives. |
 | REQ-OAL-IPC-013 | `rte_ipc_destroy()` shall destroy a message channel. |
-| REQ-OAL-IPC-014 | `rte_ipc_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-IPC-014 | `rte_osadapter_ipc_register()` per REQ-OAL-BACKEND-001. |
 
 ### 2.6 Logging/diagnostics — `rte_log.h` (ADR-001 §4, non-safety-related)
 
 | ID | Requirement |
 |---|---|
-| REQ-OAL-LOG-001 | Log calls are best-effort and non-blocking; a full backend buffer silently drops the newest entries rather than blocking or erroring the caller's control flow. This service shall never sit on a safety execution path. |
+| REQ-OAL-LOG-001 | Log calls are best-effort and non-blocking; a full OSAdapter buffer silently drops the newest entries rather than blocking or erroring the caller's control flow. This service shall never sit on a safety execution path. |
 | REQ-OAL-LOG-010 | `rte_log_init()` shall be safe to call once at startup. |
 | REQ-OAL-LOG-011 | `rte_log_write()` shall be non-blocking and never fail the caller's control flow. |
-| REQ-OAL-LOG-012 | `rte_log_register_backend()` per REQ-OAL-BACKEND-001, with the REQ-OAL-BACKEND-003 exception for the unregistered case. |
+| REQ-OAL-LOG-012 | `rte_osadapter_log_register()` per REQ-OAL-BACKEND-001, with the REQ-OAL-BACKEND-003 exception for the unregistered case. |
 | REQ-OAL-LOG-013 | `rte_log_level_to_string()` shall return a fixed, non-NULL string for every `rte_log_level_t` value, including an unrecognized one ("UNKNOWN"). |
-| REQ-OAL-LOG-014 | `rte_log_write_event()` shall emit `Site=<site> Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]` (space-separated `Key=Value` pairs, fixed order) as the `message` passed to the registered backend's `write()`, with `source` as that call's `tag`; `Timestamp` shall degrade to `0` (never block or skip the event) if no `rte_timer` backend is registered or `rte_timer_now()` fails; the whole call shall be a silent no-op under the same conditions as `rte_log_write()` (REQ-OAL-LOG-001) when no `rte_log` backend is registered. |
-| REQ-OAL-LOG-015 | `rte_log_set_level(min_level)` shall set a process-global minimum severity, below which `rte_log_write()` and `rte_log_write_event()` drop the call before dispatching to the backend (and before any formatting work); `rte_log_get_level()` shall return the current value. The default is `RTE_LOG_LEVEL_DEBUG` (nothing filtered). It is callable at any time from any thread (not setup-only); a `min_level` outside `RTE_LOG_LEVEL_DEBUG..RTE_LOG_LEVEL_ERROR` leaves the threshold unchanged. A concurrent change can only cause one in-flight best-effort log line to be kept or dropped unexpectedly (REQ-OAL-LOG-001), never a torn read. |
+| REQ-OAL-LOG-014 | `rte_log_write_event()` shall emit `Site=<site> Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]` (space-separated `Key=Value` pairs, fixed order) as the `message` passed to the registered OSAdapter's `write()`, with `source` as that call's `tag`; `Timestamp` shall degrade to `0` (never block or skip the event) if no `rte_timer` OSAdapter is registered or `rte_timer_now()` fails; the whole call shall be a silent no-op under the same conditions as `rte_log_write()` (REQ-OAL-LOG-001) when no `rte_log` OSAdapter is registered. |
+| REQ-OAL-LOG-015 | `rte_log_set_level(min_level)` shall set a process-global minimum severity, below which `rte_log_write()` and `rte_log_write_event()` drop the call before dispatching to the OSAdapter (and before any formatting work); `rte_log_get_level()` shall return the current value. The default is `RTE_LOG_LEVEL_DEBUG` (nothing filtered). It is callable at any time from any thread (not setup-only); a `min_level` outside `RTE_LOG_LEVEL_DEBUG..RTE_LOG_LEVEL_ERROR` leaves the threshold unchanged. A concurrent change can only cause one in-flight best-effort log line to be kept or dropped unexpectedly (REQ-OAL-LOG-001), never a torn read. |
 | REQ-OAL-LOG-016 | `rte_log_level_from_string(name, out_level)` shall parse exactly the four canonical spellings `rte_log_level_to_string()` renders (`"DEBUG"`/`"INFO"`/`"WARNING"`/`"ERROR"`, case-sensitive) into `*out_level` and return `RTE_STATUS_OK`; any other `name`, or a NULL `name`/`out_level`, shall return `RTE_STATUS_INVALID_PARAM` and leave `*out_level` unchanged. |
 | REQ-OAL-LOG-017 | A `rte_log_fields_t` builder shall let a caller accumulate space-separated `key=value` pairs — typed via `rte_log_fields_add_str/_u32/_i32/_u64/_i64/_hex_u32/_bool()` — for use as `rte_log_write_event()`'s `extra_fields` (or `info`) argument without hand-rolling `rte_string` chains and without a variadic (MISRA C:2012 Rule 17.1). It shall use only in-struct storage (no allocation), place exactly one separating space between pairs and none at the ends, truncate rather than reject over-long content (REQ-OAL-LOG-001), tolerate a NULL builder / NULL key at every entry point as a silent no-op, and expose the accumulated text as a never-NULL C string via `rte_log_fields_c_str()` (`""` when empty). `rte_log_write_event_fields(...)` shall behave as `rte_log_write_event(...)` with the builder's text as `extra_fields`, an empty or NULL builder being identical to a NULL `extra_fields`. `rte_log_write_event()` shall treat an empty-string `extra_fields` identically to NULL (no field, no trailing space). |
 
@@ -255,16 +255,16 @@ block, ...) - `rte_safe_ptr_t` never allocates anything itself.
 
 | ID | Requirement |
 |---|---|
-| REQ-OAL-REBOOT-001 | `rte_reboot_request()` is not expected to return on success; a return only occurs if the backend cannot perform the reboot. |
-| REQ-OAL-REBOOT-010 | `rte_reboot_request()` shall request a controlled system restart via the registered backend. |
-| REQ-OAL-REBOOT-011 | `rte_reboot_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-REBOOT-001 | `rte_reboot_request()` is not expected to return on success; a return only occurs if the OSAdapter cannot perform the reboot. |
+| REQ-OAL-REBOOT-010 | `rte_reboot_request()` shall request a controlled system restart via the registered OSAdapter. |
+| REQ-OAL-REBOOT-011 | `rte_osadapter_reboot_register()` per REQ-OAL-BACKEND-001. |
 
 ### 2.8 Point-to-point network link — `rte_netlink.h` (ADR-001 §4, ADR-005, ADR-021, ADR-027)
 
 Framework ships the interface and validate-then-dispatch layer only; a
-concrete backend (e.g. POSIX UDP sockets) is integrator-supplied and
+concrete OSAdapter (e.g. POSIX UDP sockets) is integrator-supplied and
 lives with the application that registers it — see `RBC_GP`'s
-`src/posix_backend/rte_posix_backend_netlink.c`. This table was backfilled
+`src/posix_osadapter/rte_posix_osadapter_netlink.c`. This table was backfilled
 alongside ADR-027 (TCP → UDP migration) — the requirement IDs were
 already cited in `rte_netlink.h`'s own header comments beforehand, but
 had no matching table entry here; the wording below reflects the
@@ -276,25 +276,25 @@ now-transport-agnostic contract, not the earlier TCP-specific one.
 | REQ-OAL-NETLINK-002 | `rte_netlink_open()` shall never block longer than `config->connect_timeout_ms`. |
 | REQ-OAL-NETLINK-003 | Send/receive shall accept an explicit timeout and shall never block indefinitely by default. |
 | REQ-OAL-NETLINK-010 | `rte_netlink_open()` shall establish a point-to-point link per `config->role` (LISTEN binds and waits for its one peer; CONNECT dials), returning `RTE_STATUS_TIMEOUT` if not established within `connect_timeout_ms`. |
-| REQ-OAL-NETLINK-011 | `rte_netlink_send()` shall send one fixed-size message, blocking at most `timeout_ms`; `RTE_STATUS_HARDWARE_FAULT` is returned only when the backend can positively confirm the peer is gone — a guarantee no backend can make on every failure mode (e.g. a lost/silently-dropped peer on an unreliable transport), so callers must not treat its absence as proof of liveness. |
-| REQ-OAL-NETLINK-012 | `rte_netlink_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`; `RTE_STATUS_DATA_CORRUPTION` is returned if the backend can detect the received message violated this link's wire contract (e.g. wrong length) but not necessarily its content. |
+| REQ-OAL-NETLINK-011 | `rte_netlink_send()` shall send one fixed-size message, blocking at most `timeout_ms`; `RTE_STATUS_HARDWARE_FAULT` is returned only when the OSAdapter can positively confirm the peer is gone — a guarantee no OSAdapter can make on every failure mode (e.g. a lost/silently-dropped peer on an unreliable transport), so callers must not treat its absence as proof of liveness. |
+| REQ-OAL-NETLINK-012 | `rte_netlink_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`; `RTE_STATUS_DATA_CORRUPTION` is returned if the OSAdapter can detect the received message violated this link's wire contract (e.g. wrong length) but not necessarily its content. |
 | REQ-OAL-NETLINK-013 | `rte_netlink_close()` shall close a link; the handle is invalid to use afterward. |
-| REQ-OAL-NETLINK-014 | This service provides no message ordering, deduplication, or delivery guarantee of its own — a backend may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (`rte_dual_msgchannel`/`rte_dual_channel`, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one). |
+| REQ-OAL-NETLINK-014 | This service provides no message ordering, deduplication, or delivery guarantee of its own — an OSAdapter may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (`rte_dual_msgchannel`/`rte_dual_channel`, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one). |
 
 ### 2.9 Real-time platform configuration — `rte_platform.h` (ADR-035)
 
 Framework ships the interface and validate-then-dispatch layer only; a
-concrete backend (e.g. POSIX `mlockall()` + `SCHED_FIFO`) is
+concrete OSAdapter (e.g. POSIX `mlockall()` + `SCHED_FIFO`) is
 integrator-supplied and lives with `Platform_OS_POSIX`. Exists so
 application startup code can ask for real-time bring-up through the OAL
-rather than calling a backend symbol directly (the layering ADR-001 §3.5
+rather than calling an OSAdapter symbol directly (the layering ADR-001 §3.5
 requires).
 
 | ID | Requirement |
 |---|---|
-| REQ-OAL-PLATFORM-001 | `rte_platform_realtime_init()` is best-effort: a backend that cannot obtain some or all of the requested capabilities (unprivileged host, no RT scheduler, a bounded lockable-memory limit) shall still return `RTE_STATUS_OK`, having applied what it could, and shall not leave the process in a state that prevents later timer/task thread creation. |
-| REQ-OAL-PLATFORM-010 | `rte_platform_realtime_init(rt_priority)` shall reject `rt_priority > 99` with `RTE_STATUS_INVALID_PARAM` before any backend dispatch, then request the registered backend apply memory-residency configuration and (for `rt_priority > 0`) a real-time scheduling policy/priority for the calling process/thread. |
-| REQ-OAL-PLATFORM-011 | `rte_platform_register_backend()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-PLATFORM-001 | `rte_platform_realtime_init()` is best-effort: an OSAdapter that cannot obtain some or all of the requested capabilities (unprivileged host, no RT scheduler, a bounded lockable-memory limit) shall still return `RTE_STATUS_OK`, having applied what it could, and shall not leave the process in a state that prevents later timer/task thread creation. |
+| REQ-OAL-PLATFORM-010 | `rte_platform_realtime_init(rt_priority)` shall reject `rt_priority > 99` with `RTE_STATUS_INVALID_PARAM` before any OSAdapter dispatch, then request the registered OSAdapter apply memory-residency configuration and (for `rt_priority > 0`) a real-time scheduling policy/priority for the calling process/thread. |
+| REQ-OAL-PLATFORM-011 | `rte_osadapter_platform_register()` per REQ-OAL-BACKEND-001. |
 
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
@@ -340,7 +340,7 @@ three requirements are the complete contract it needs.
 
 | ID | Requirement |
 |---|---|
-| REQ-CLOCKSYNC-001 | `rte_clocksync_get_offset_ms()` and `rte_clocksync_get_quality()` shall return `RTE_STATUS_NOT_INITIALIZED` if no backend has been registered. |
+| REQ-CLOCKSYNC-001 | `rte_clocksync_get_offset_ms()` and `rte_clocksync_get_quality()` shall return `RTE_STATUS_NOT_INITIALIZED` if no OSAdapter has been registered. |
 | REQ-CLOCKSYNC-002 | This module shall never be called from, or influence the outcome of, `rte_channel_checkpoint()` or any other vital comparison — checkpoint-ID rendezvous, not clock agreement, is the basis of comparison correctness (ADR-017 §2.3). |
 
 ## 3b. Watchdog — `rte_watchdog.h` (partial)
@@ -494,7 +494,7 @@ require.
 | REQ-DUAL-CHANNEL-004 | DATA traffic (`rte_dual_channel_send()`/`_receive()`) and STATE-beacon traffic (`_send_state_frame()`/`_receive_state_frame()`) share the same redundant links and the same up/down bookkeeping, but a STATE frame is fire-and-forget (no ACK wait) and shall never be counted toward or against DATA's own ACK accounting. |
 | REQ-DUAL-CHANNEL-005 | `rte_dual_channel_receive()` and `_receive_state_frame()` shall poll every configured link on every call, even after an earlier link in the same sweep already staged a frame — stopping early would let one link (e.g. one with consistently shorter latency) starve every other redundant link of its own auto-ACK indefinitely. |
 | REQ-DUAL-CHANNEL-006 | An inbound frame shorter than this layer's own 4-byte `rte_dual_frame_header_t`, or shorter than the full fixed frame its `kind` implies, shall be reported as `RTE_STATUS_DATA_CORRUPTION` rather than silently ignored or misinterpreted. |
-| REQ-DUAL-CHANNEL-007 | `rte_dual_channel_send()`'s per-link ACK-wait loop shall keep polling for further frames within `config->ack_timeout_ms` even when `rte_timer_now()` shows no measurable progress between polls (a real round trip may legitimately complete within a single timer tick) — bounded by a fixed cap (`RTE_DUAL_CHANNEL_STALL_POLL_LIMIT`) on consecutive no-progress polls, so a link with a genuinely non-advancing or absent timer backend still cannot spin unboundedly. Added post-acceptance after a live run over a real transport (ADR-022's SITE migration) surfaced that the prior behavior gave up after exactly one poll — see ADR-020's "Post-acceptance fix" section. |
+| REQ-DUAL-CHANNEL-007 | `rte_dual_channel_send()`'s per-link ACK-wait loop shall keep polling for further frames within `config->ack_timeout_ms` even when `rte_timer_now()` shows no measurable progress between polls (a real round trip may legitimately complete within a single timer tick) — bounded by a fixed cap (`RTE_DUAL_CHANNEL_STALL_POLL_LIMIT`) on consecutive no-progress polls, so a link with a genuinely non-advancing or absent timer OSAdapter still cannot spin unboundedly. Added post-acceptance after a live run over a real transport (ADR-022's SITE migration) surfaced that the prior behavior gave up after exactly one poll — see ADR-020's "Post-acceptance fix" section. |
 | REQ-DUAL-CHANNEL-008 | If no link produces a usable frame/ACK before `rte_dual_channel_send()`/`_receive()` return, and at least one link's own underlying send/receive reported `RTE_STATUS_HARDWARE_FAULT` (a closed/reset connection, not just "nothing arrived within this poll"), that status shall be returned instead of the generic `RTE_STATUS_TIMEOUT` every other "nothing usable this call" case returns. Found via a `RBC_GP` container-topology failover test: `rte_dual_channel_send()`/`_receive()` previously collapsed *every* non-success outcome — a genuinely dead TCP connection (peer container restarted) exactly as much as an ordinary "peer hasn't answered yet" — into the same `RTE_STATUS_TIMEOUT`, so a consumer's own reconnect logic (`channel_ab_negotiate_execute()`, gating link teardown on "status is neither OK nor TIMEOUT") could never distinguish the two and never reconnected, leaving one side listening forever for a peer that had already come back up on a fresh socket. A malformed/corrupted frame (`RTE_STATUS_DATA_CORRUPTION`) on an otherwise-healthy link is deliberately NOT included in this escalation — it does not indicate a broken transport, only a defended-integrity rejection of one bad frame (REQ-DUAL-CHANNEL-006), and continues to fold into the generic `RTE_STATUS_TIMEOUT` as before. |
 
 ### 3e.4 Dual state negotiator — `rte_dual_negotiator.h` (ADR-020 §3)
@@ -515,7 +515,7 @@ holds a `rte_netlink_handle_t` itself.
 
 | ID | Requirement |
 |---|---|
-| REQ-SAFECHANNEL-001 | `rte_safechannel_open()` shall open every configured endpoint itself via the registered `rte_netlink` backend; the caller shall never need to call `rte_netlink_open()` or hold a `rte_netlink_handle_t`. |
+| REQ-SAFECHANNEL-001 | `rte_safechannel_open()` shall open every configured endpoint itself via the registered `rte_netlink` OSAdapter; the caller shall never need to call `rte_netlink_open()` or hold a `rte_netlink_handle_t`. |
 | REQ-SAFECHANNEL-002 | No dynamic allocation; all storage (`rte_safechannel_t`, including its opened links and wrapped `rte_dual_channel_t`/`rte_channel_t`) is caller-owned and fixed-size, sized to `RTE_SAFECHANNEL_MAX_LINKS`. |
 | REQ-SAFECHANNEL-003 | `rte_safechannel_send()`/`_receive()` shall behave identically to the caller regardless of `config.type` — a uniform facade over `rte_dual_channel_t`/`rte_channel_t`. |
 
@@ -525,7 +525,7 @@ CRC-64 computation and a "vital message" envelope (sequence + sender +
 CRC-64) used by `rte_dual_msgchannel` (REQ-DUAL-MSGCHANNEL-003) and
 `rte_checkpoint` for cross-channel/cross-site data integrity. Depends
 only on `rte_timer` (best-effort message timestamping — see
-REQ-CHECKSUM-005's note that a missing timer backend degrades
+REQ-CHECKSUM-005's note that a missing timer OSAdapter degrades
 gracefully, not a hard failure of message creation), not on `rte_log`
 or `rte_safestate` despite once `#include`-ing both unused.
 
@@ -566,7 +566,7 @@ Every `REQ-*` ID in this document appears verbatim in the corresponding
 header's Doxygen comment in `include/safeapi/`, **except**
 `REQ-OAL-BACKEND-001/002/003` in section 2, which are a documentation-only
 consolidation of a pattern repeated across all seven `REQ-OAL-*-01X`
-"register_backend" entries (see the note above section 2.1) and
+"register_osadapter" entries (see the note above section 2.1) and
 intentionally do not appear as literal source tags.
 
 Regenerate the source-side list

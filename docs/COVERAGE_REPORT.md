@@ -70,7 +70,7 @@ for the four previously-untested modules (`tests/memory/`, `tests/task/`,
 `tests/ipc/`, `tests/dual/test_rte_dual_types.c`) and one that was only
 incidentally exercised (`tests/checksum/`); every other
 `tests/<module>/test_rte_<module>.c` was extended with the NULL-parameter,
-backend-not-supported, out-of-range, and enum-default-arm cases it was
+osadapter-not-supported, out-of-range, and enum-default-arm cases it was
 missing. A handful of genuinely unreachable lines (verified by tracing
 every call site, not assumed) are marked `GCOVR_EXCL_LINE`/
 `GCOVR_EXCL_START`/`STOP` in the source with an inline rationale — see
@@ -203,9 +203,9 @@ uncovered functionality:
 
 Every module in this framework follows the same defensive-programming
 pattern per `CLAUDE.md`: validate every pointer against `NULL`, validate
-every backend-vtable slot before calling through it. That means most of the
+every osadapter-vtable slot before calling through it. That means most of the
 "branches" being covered are legitimate, reachable error paths (a caller
-really can pass `NULL`; a backend really can leave a vtable slot unset) —
+really can pass `NULL`; an OSAdapter really can leave a vtable slot unset) —
 not aspirational/unreachable defensive code. Where a `default:` case in a
 `switch` over a fully-enumerated `enum` is defensive-only (not reachable
 through any legitimate public value), tests hit it directly with an

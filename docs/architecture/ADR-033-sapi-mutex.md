@@ -56,8 +56,8 @@ consumer/backend split every other OAL service uses (ADR-021):
   - matches `pthread_mutex_t`'s own default behavior on Linux/macOS, the
   only backend this framework ships today; a caller needing recursive
   locking must track that itself, same as it always would have.
-- `include/safeapi_backend/mutex/rte_mutex_backend.h` - the backend
-  vtable (`rte_mutex_backend_t`) and `rte_mutex_register_backend()`,
+- `include/safeapi_osadapter/mutex/rte_osadapter_mutex.h` - the backend
+  vtable (`rte_osadapter_mutex_t`) and `rte_osadapter_mutex_register()`,
   gated by `rte_lifecycle_check_setup_allowed()` (ADR-026) exactly like
   every other `rte_*_register_backend()` call.
 - `src/mutex/rte_mutex.c` - pure dispatch to the registered backend,
@@ -70,9 +70,9 @@ consumer/backend split every other OAL service uses (ADR-021):
   `_lock()`/`_unlock()`/`_destroy()` are not, since those are genuinely
   runtime/shutdown operations.
 
-The POSIX backend implementation (`rte_posix_backend_mutex.c`, a thin
+The POSIX backend implementation (`rte_posix_osadapter_mutex.c`, a thin
 wrapper over `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`)
-lives in safeAPIRBC2oo2's own `src/posix_backend/`, not in
+lives in safeAPIRBC2oo2's own `src/posix_osadapter/`, not in
 safeAPIFreamwork - matching every other OAL backend's location per
 ADR-018's own "a backend is integrator-supplied, not part of the
 reusable framework" philosophy. This is exactly where `pthread_mutex_t`
@@ -92,8 +92,8 @@ directly).
 
 - Every application built on this framework now has a portable mutex
   available without reaching for platform threading primitives directly.
-- The POSIX backend's own `rte_posix_backend_register_all()` gained one
-  more call (`rte_mutex_register_backend(rte_posix_backend_mutex())`);
+- The POSIX backend's own `rte_posix_osadapter_register_all()` gained one
+  more call (`rte_osadapter_mutex_register(rte_posix_osadapter_mutex())`);
   any other backend integrator adding a new target must do the same.
 - `channel_ab_negotiate.c`'s own direct `select()`/`read()` on
   `STDIN_FILENO` (the interactive `ASK_USER` transfer-policy prompt) was
@@ -120,7 +120,7 @@ directly).
 ## Location
 
 - `include/safeapi/mutex/rte_mutex.h`
-- `include/safeapi_backend/mutex/rte_mutex_backend.h`
+- `include/safeapi_osadapter/mutex/rte_osadapter_mutex.h`
 - `src/mutex/rte_mutex.c`
-- `safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_mutex.c` (sibling
+- `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_mutex.c` (sibling
   project - the POSIX backend implementation itself)

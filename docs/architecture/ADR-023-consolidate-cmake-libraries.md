@@ -4,7 +4,7 @@ Status: Accepted
 Date: 2026-08-07
 Applies to: safeAPIFreamwork's top-level `CMakeLists.txt`,
 `tests/CMakeLists.txt`, every `src/<feature>/CMakeLists.txt`; downstream
-safeAPIRBC2oo2's `CMakeLists.txt` and `src/posix_backend/CMakeLists.txt`;
+safeAPIRBC2oo2's `CMakeLists.txt` and `src/posix_osadapter/CMakeLists.txt`;
 the `examples/*-app` integration templates.
 
 ## 1. Context
@@ -17,7 +17,7 @@ grown to 21 feature targets plus `appmanager` (22 total; the dead,
 excluded-from-build ADR-008 `rte_channel` module is not counted). Most
 of these targets are tiny - `status` is 33 lines of `.c`, `reboot` 34,
 `types` is header-only - and none of them are ever linked "à la carte"
-in practice: every real consumer (safeAPIRBC2oo2's `posix_backend` and
+in practice: every real consumer (safeAPIRBC2oo2's `posix_osadapter` and
 its own top-level `CMakeLists.txt`, every framework unit test) already
 links a large, overlapping subset of them, not one or two in isolation.
 The promised fine-grained linking benefit isn't actually being used
@@ -121,11 +121,11 @@ four new ones instead:
   exactly as linking the old fine-grained set did.
 - `install(TARGETS ...)` in the top-level `CMakeLists.txt`: four names
   instead of twenty.
-- safeAPIRBC2oo2's `src/posix_backend/CMakeLists.txt` (was: `status`,
+- safeAPIRBC2oo2's `src/posix_osadapter/CMakeLists.txt` (was: `status`,
   `types`, `timer`, `ipc`, `netlink`, `task`, `log`, `nvm`, `reboot`,
   `memory`) now links `safeapi::core` and `safeapi::oal`.
 - safeAPIRBC2oo2's top-level `CMakeLists.txt` (was 12 individual names)
-  now links `safeapi::posix_backend`, `safeapi::core`, `safeapi::oal`,
+  now links `safeapi::posix_osadapter`, `safeapi::core`, `safeapi::oal`,
   `safeapi::channels` (for `checksum`), `safeapi::appmanager`.
 - `examples/qnx-rtos-app/CMakeLists.txt` and
   `examples/linux-posix-app/CMakeLists.txt` (integration templates, not
@@ -192,6 +192,6 @@ CMake-only change in this project).
   here only to make clear it was considered and deliberately left alone;
   that module was later removed outright by ADR-025, which superseded it
   with `rte_cross_comparator`)
-- safeAPIRBC2oo2: `CMakeLists.txt`, `src/posix_backend/CMakeLists.txt`
+- safeAPIRBC2oo2: `CMakeLists.txt`, `src/posix_osadapter/CMakeLists.txt`
 - `examples/qnx-rtos-app/CMakeLists.txt`,
   `examples/linux-posix-app/CMakeLists.txt`, `examples/build-qnx.sh`

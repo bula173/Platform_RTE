@@ -3,8 +3,8 @@
  * Destination=<dst> Type=<type> Info=<info>[ <extra_fields>]"
  * space-separated Key=Value line, NULL info/extra_fields handling,
  * level_to_string mapping, Timestamp degrading to "0" rather than
- * failing when no rte_timer backend is registered, and the pre-existing
- * rte_log_write()/no-backend contract being unaffected by this addition.
+ * failing when no rte_timer OSAdapter is registered, and the pre-existing
+ * rte_log_write()/no-osadapter contract being unaffected by this addition.
  *
  * Verified via exact expected-line string comparison rather than
  * tokenizing the emitted line: unlike a pipe-delimited format, a
@@ -18,11 +18,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "safeapi/oal/log/rte_log.h"
-#include "safeapi_backend/log/rte_log_backend.h"
+#include "safeapi_osadapter/log/rte_osadapter_log.h"
 #include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_backend/timer/rte_timer_backend.h"
+#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
 
-/* --- mock log backend: captures the last (level, tag, message) --- */
+/* --- mock log OSAdapter: captures the last (level, tag, message) --- */
 static rte_log_level_t g_last_level;
 static char g_last_tag[64];
 static char g_last_message[RTE_LOG_EVENT_LINE_MAX_LEN + 16];
@@ -50,7 +50,7 @@ static void mock_log_write(rte_log_level_t level, const char *tag, const char *m
     g_write_calls++;
 }
 
-static const rte_log_backend_t g_mock_log_backend = { NULL, mock_log_write };
+static const rte_osadapter_log_t g_mock_log_osadapter = { NULL, mock_log_write };
 
 static int g_mock_init_calls = 0;
 
@@ -60,17 +60,17 @@ static rte_status_t mock_log_init(void)
     return RTE_STATUS_OK;
 }
 
-static const rte_log_backend_t g_mock_log_backend_with_init = { mock_log_init, mock_log_write };
-static const rte_log_backend_t g_mock_log_backend_no_write = { mock_log_init, NULL };
+static const rte_osadapter_log_t g_mock_log_osadapter_with_init = { mock_log_init, mock_log_write };
+static const rte_osadapter_log_t g_mock_log_osadapter_no_write = { mock_log_init, NULL };
 
-/* --- mock timer backend: only `now` populated, fixed value --- */
+/* --- mock timer OSAdapter: only `now` populated, fixed value --- */
 static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
 {
     *out_now_ms = 123456789U;
     return RTE_STATUS_OK;
 }
 
-static const rte_timer_backend_t g_mock_timer_backend = { NULL, NULL, NULL, NULL, mock_timer_now };
+static const rte_osadapter_timer_t g_mock_timer_osadapter = { NULL, NULL, NULL, NULL, mock_timer_now };
 
 int main(void)
 {
@@ -83,41 +83,41 @@ int main(void)
     assert(strcmp(rte_log_level_to_string(RTE_LOG_LEVEL_ERROR), "ERROR") == 0);
     assert(strcmp(rte_log_level_to_string((rte_log_level_t)99), "UNKNOWN") == 0);
 
-    /* No backend registered yet: silent no-op, same contract as
+    /* No OSAdapter registered yet: silent no-op, same contract as
      * rte_log_write() - REQ-OAL-LOG-001. */
     reset_capture();
     rte_log_write_event(RTE_LOG_LEVEL_INFO, "WEST", 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
     assert(g_write_calls == 0);
 
-    /* rte_log_write() with no backend registered: silent no-op, same
+    /* rte_log_write() with no OSAdapter registered: silent no-op, same
      * REQ-OAL-LOG-001 contract as rte_log_write_event() above. */
     reset_capture();
     rte_log_write(RTE_LOG_LEVEL_INFO, "TAG", "message");
     assert(g_write_calls == 0);
 
-    /* rte_log_init() with no backend registered: not an error, just OK. */
+    /* rte_log_init() with no OSAdapter registered: not an error, just OK. */
     assert(rte_log_init() == RTE_STATUS_OK);
 
     /* Registering NULL is rejected. */
-    assert(rte_log_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_log_register(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    assert(rte_log_register_backend(&g_mock_log_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_log_register(&g_mock_log_osadapter) == RTE_STATUS_OK);
 
-    /* Backend registered but its init slot is NULL: still not an error. */
+    /* OSAdapter registered but its init slot is NULL: still not an error. */
     assert(rte_log_init() == RTE_STATUS_OK);
 
-    /* Backend registered but its write slot is NULL: silent no-op. */
-    assert(rte_log_register_backend(&g_mock_log_backend_no_write) == RTE_STATUS_OK);
+    /* OSAdapter registered but its write slot is NULL: silent no-op. */
+    assert(rte_osadapter_log_register(&g_mock_log_osadapter_no_write) == RTE_STATUS_OK);
     reset_capture();
     rte_log_write(RTE_LOG_LEVEL_INFO, "TAG", "message");
     assert(g_write_calls == 0);
 
-    /* A backend with a non-NULL init slot has it actually dispatched. */
-    assert(rte_log_register_backend(&g_mock_log_backend_with_init) == RTE_STATUS_OK);
+    /* An OSAdapter with a non-NULL init slot has it actually dispatched. */
+    assert(rte_osadapter_log_register(&g_mock_log_osadapter_with_init) == RTE_STATUS_OK);
     assert(rte_log_init() == RTE_STATUS_OK);
     assert(g_mock_init_calls == 1);
 
-    /* rte_log_write() dispatches to a registered backend's write slot,
+    /* rte_log_write() dispatches to a registered OSAdapter's write slot,
      * independently of rte_log_write_event()'s own formatting path. */
     reset_capture();
     rte_log_write(RTE_LOG_LEVEL_WARNING, "TAG", "message");
@@ -126,9 +126,9 @@ int main(void)
     assert(strcmp(g_last_tag, "TAG") == 0);
     assert(strcmp(g_last_message, "message") == 0);
 
-    assert(rte_log_register_backend(&g_mock_log_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_log_register(&g_mock_log_osadapter) == RTE_STATUS_OK);
 
-    /* No rte_timer backend registered: Timestamp field degrades to "0"
+    /* No rte_timer OSAdapter registered: Timestamp field degrades to "0"
      * rather than the call being skipped or failing. */
     reset_capture();
     rte_log_write_event(RTE_LOG_LEVEL_INFO, "WEST", 7U, "A/WEST", "B", "AB_SAMPLE", "cycle sample", NULL);
@@ -140,8 +140,8 @@ int main(void)
                     "Info=cycle sample");
     assert(strcmp(g_last_message, expected) == 0);
 
-    /* With a timer backend registered, Timestamp reflects it. */
-    assert(rte_timer_register_backend(&g_mock_timer_backend) == RTE_STATUS_OK);
+    /* With a timer OSAdapter registered, Timestamp reflects it. */
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
     reset_capture();
     rte_log_write_event(RTE_LOG_LEVEL_ERROR, "EAST", 42U, "B/EAST", "A", "DISAGREE", "M24 vs M15", NULL);
     (void)snprintf(expected, sizeof(expected),

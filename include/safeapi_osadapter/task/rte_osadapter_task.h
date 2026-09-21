@@ -27,9 +27,6 @@ typedef struct rte_osadapter_task_s
     rte_status_t (*destroy)(rte_task_handle_t handle);
 } rte_osadapter_task_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_task_t rte_task_backend_t;
-
 /**
  * @brief Registers the OSAdapter task implementation.
  * @param adapter Pointer to task operations vtable.
@@ -37,7 +34,6 @@ typedef rte_osadapter_task_t rte_task_backend_t;
  */
 rte_status_t rte_osadapter_task_register(const rte_osadapter_task_t *adapter);
 
-rte_status_t rte_task_register_backend(const rte_task_backend_t *backend);
 
 #ifdef __cplusplus
 }

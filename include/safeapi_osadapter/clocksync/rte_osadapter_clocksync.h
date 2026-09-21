@@ -24,9 +24,6 @@ typedef struct rte_osadapter_clocksync_s
     rte_status_t (*get_quality)(rte_clocksync_quality_t *out_quality);
 } rte_osadapter_clocksync_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_clocksync_t rte_clocksync_backend_t;
-
 /**
  * @brief Registers the OSAdapter clock synchronization implementation.
  * @param adapter Pointer to clocksync operations vtable.
@@ -34,7 +31,6 @@ typedef rte_osadapter_clocksync_t rte_clocksync_backend_t;
  */
 rte_status_t rte_osadapter_clocksync_register(const rte_osadapter_clocksync_t *adapter);
 
-rte_status_t rte_clocksync_register_backend(const rte_clocksync_backend_t *backend);
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,7 @@
  * test_rte_timer.c for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/oal/nvm/rte_nvm.h"
-#include "safeapi_backend/nvm/rte_nvm_backend.h"
+#include "safeapi_osadapter/nvm/rte_osadapter_nvm.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_read_calls = 0;
@@ -57,11 +57,11 @@ static rte_status_t mock_close(rte_nvm_handle_t handle)
     return RTE_STATUS_OK;
 }
 
-static const rte_nvm_backend_t g_mock_backend __attribute__((unused)) = {
+static const rte_osadapter_nvm_t g_mock_osadapter __attribute__((unused)) = {
     mock_open, NULL, NULL, NULL, NULL
 };
 
-static const rte_nvm_backend_t g_mock_backend_full __attribute__((unused)) = {
+static const rte_osadapter_nvm_t g_mock_osadapter_full __attribute__((unused)) = {
     mock_open, mock_read, mock_write, mock_sync, mock_close
 };
 
@@ -87,11 +87,11 @@ int main(void)
     config.region_name = "train_db";
     config.region_size = 128U;
 
-    /* No backend registered yet. */
+    /* No OSAdapter registered yet. */
     assert(rte_nvm_open(&storage, &config, &handle) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Null-parameter rejection for read/write/sync/close happens before
-     * any backend is consulted, independently of one another. */
+     * any OSAdapter is consulted, independently of one another. */
     unsigned char buf[4] __attribute__((unused));
     assert(rte_nvm_read(NULL, 0U, buf, sizeof(buf)) == RTE_STATUS_INVALID_PARAM);
     assert(rte_nvm_read(handle, 0U, NULL, sizeof(buf)) == RTE_STATUS_INVALID_PARAM);
@@ -102,7 +102,7 @@ int main(void)
     assert(rte_nvm_sync(NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_nvm_close(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* No backend registered yet: valid params, but nothing to dispatch to,
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to,
      * for every remaining entry point. */
     rte_nvm_handle_t dummy_handle = (rte_nvm_handle_t)(void *)1;
     assert(rte_nvm_read(dummy_handle, 0U, buf, sizeof(buf)) == RTE_STATUS_NOT_INITIALIZED);
@@ -110,8 +110,8 @@ int main(void)
     assert(rte_nvm_sync(dummy_handle) == RTE_STATUS_NOT_INITIALIZED);
     assert(rte_nvm_close(dummy_handle) == RTE_STATUS_NOT_INITIALIZED);
 
-    assert(rte_nvm_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
-    assert(rte_nvm_register_backend(&g_mock_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_nvm_register(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_nvm_register(&g_mock_osadapter) == RTE_STATUS_OK);
     assert(rte_nvm_open(&storage, &config, &handle) == RTE_STATUS_OK);
     assert(handle != NULL);
     assert(g_mock_open_calls == 1);
@@ -122,17 +122,17 @@ int main(void)
     assert(rte_nvm_sync(handle) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_nvm_close(handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A backend with a NULL open slot yields NOT_SUPPORTED for open. */
-    static const rte_nvm_backend_t no_open_backend = {
+    /* An OSAdapter with a NULL open slot yields NOT_SUPPORTED for open. */
+    static const rte_osadapter_nvm_t no_open_osadapter = {
         NULL, mock_read, mock_write, mock_sync, mock_close
     };
-    assert(rte_nvm_register_backend(&no_open_backend) == RTE_STATUS_OK);
+    assert(rte_osadapter_nvm_register(&no_open_osadapter) == RTE_STATUS_OK);
     assert(rte_nvm_open(&storage, &config, &handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A fully-populated backend is actually reached for every entry
+    /* A fully-populated OSAdapter is actually reached for every entry
      * point, with the same already-validated arguments the caller
      * passed in. */
-    assert(rte_nvm_register_backend(&g_mock_backend_full) == RTE_STATUS_OK);
+    assert(rte_osadapter_nvm_register(&g_mock_osadapter_full) == RTE_STATUS_OK);
     assert(rte_nvm_open(&storage, &config, &handle) == RTE_STATUS_OK);
     assert(handle != NULL);
     assert(g_mock_open_calls == 2);

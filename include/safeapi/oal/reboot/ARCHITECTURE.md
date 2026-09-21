@@ -4,8 +4,8 @@
  * @section reboot_architecture_overview Design Overview
  *
  * Minimal layer providing single entry point: rte_reboot_request(reason).
- * Integrator registers platform-specific backend via rte_reboot_register_backend().
- * No dynamic allocation; single backend pointer storage.
+ * Integrator registers platform-specific OSAdapter via rte_osadapter_reboot_register().
+ * No dynamic allocation; single OSAdapter pointer storage.
  *
  * @section reboot_architecture_api Public API
  *
@@ -16,20 +16,20 @@
  * Requests controlled system restart. Does not return on success (CPU resets).
  *
  * @code
- * rte_status_t rte_reboot_register_backend(const rte_reboot_backend_t *backend);
+ * rte_status_t rte_osadapter_reboot_register(const rte_osadapter_reboot_t *OSAdapter);
  * @endcode
  *
  * Registers platform-specific reboot implementation. Called at startup.
  *
- * @section reboot_architecture_backend Backend Interface
+ * @section reboot_architecture_osadapter OSAdapter Interface
  *
  * @code
  * typedef struct {
  *     rte_status_t (*request)(uint16_t reason_code);
- * } rte_reboot_backend_t;
+ * } rte_osadapter_reboot_t;
  * @endcode
  *
- * Backend implements platform-specific reset mechanism:
+ * OSAdapter implements platform-specific reset mechanism:
  * - Trigger hardware watchdog
  * - Execute CPU reset instruction
  * - Send command to supervisory processor
@@ -40,9 +40,9 @@
  * @verbatim
  * rte_reboot_request(reason)
  *     │
- *     └─ Retrieve registered backend
- *        ├─ If no backend: return NOT_INITIALIZED
- *        └─ If has backend: call backend->request(reason)
+ *     └─ Retrieve registered OSAdapter
+ *        ├─ If no OSAdapter: return NOT_INITIALIZED
+ *        └─ If has OSAdapter: call osadapter->request(reason)
  *               │
  *               ├─ On success: CPU resets (no return)
  *               └─ On failure: return error code
@@ -50,20 +50,20 @@
  *
  * @section reboot_architecture_reason Reason Code Handling
  *
- * 16-bit reason code identifies why reboot requested. Backend can:
+ * 16-bit reason code identifies why reboot requested. OSAdapter can:
  * - Log to syslog
  * - Persist to NVM/flash (black box)
  * - Send to supervisory processor
  * - Use in post-reboot diagnostics
  *
- * Reason code is backend-interpreted; framework defines none.
+ * Reason code is osadapter-interpreted; framework defines none.
  *
  * @section reboot_architecture_resource Resource Model
  *
- * Single static backend pointer. No allocation. Minimal state:
+ * Single static OSAdapter pointer. No allocation. Minimal state:
  *
  * @verbatim
- * backend_ptr: NULL or pointer to rte_reboot_backend_t
+ * osadapter_ptr: NULL or pointer to rte_osadapter_reboot_t
  * @endverbatim
  *
  * @section reboot_architecture_misra MISRA Compliance

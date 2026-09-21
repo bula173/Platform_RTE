@@ -24,9 +24,6 @@ typedef struct rte_osadapter_platform_s
     rte_status_t (*realtime_init)(uint32_t rt_priority);
 } rte_osadapter_platform_t;
 
-/* Backward compatibility typedef */
-typedef rte_osadapter_platform_t rte_platform_backend_t;
-
 /**
  * @brief Registers the OSAdapter platform implementation.
  * @param adapter Pointer to platform operations vtable.
@@ -34,7 +31,6 @@ typedef rte_osadapter_platform_t rte_platform_backend_t;
  */
 rte_status_t rte_osadapter_platform_register(const rte_osadapter_platform_t *adapter);
 
-rte_status_t rte_platform_register_backend(const rte_platform_backend_t *backend);
 
 #ifdef __cplusplus
 }

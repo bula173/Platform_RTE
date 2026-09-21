@@ -1,5 +1,10 @@
 # ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework
 
+> **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
+> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> original wording as a historical record.
+
 Status: Draft
 Date: 2026-08-02
 Applies to: safeAPIFreamwork, first abstraction layer (RBC core <-> Operating System)

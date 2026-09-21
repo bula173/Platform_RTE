@@ -55,7 +55,7 @@ safeAPIFramework/
 ├── cmake/                         CMake modules & toolchains
 │   ├── CompilerWarnings.cmake     Strict warning flags
 │   ├── SafeAPIHelpers.cmake       Helper functions for downstream
-│   ├── Toolchain-Linux.cmake      POSIX backend toolchain
+│   ├── Toolchain-Linux.cmake      POSIX OSAdapter toolchain
 │   ├── Toolchain-QNX.cmake        QNX RTOS toolchain
 │   └── [other toolchains]
 │
@@ -103,9 +103,9 @@ safeAPIFramework/
 │   ├── build-qnx.sh             QNX build helper
 │   └── generate-docs.sh         Documentation generation
 │
-├── examples/                     Example backends & integrations
-│   ├── posix-backend/           POSIX (Linux/development)
-│   ├── qnx-backend/             QNX RTOS backend
+├── examples/                     Example OSAdapters & integrations
+│   ├── posix-osadapter/           POSIX (Linux/development)
+│   ├── qnx-osadapter/             QNX RTOS OSAdapter
 │   └── rtos-template/           Template for new RTOS
 │
 ├── docs/                         Documentation
@@ -219,7 +219,7 @@ add_library(safeapi::status ALIAS safeapi_status)
 | **coverage** | Test coverage | Code coverage analysis | ON |
 | **clang** | Compiler testing | Clang/LLVM compiler | ON |
 | **gcc** | Compiler testing | GCC compiler | ON |
-| **linux-native** | POSIX backend | Linux development | OFF |
+| **linux-native** | POSIX OSAdapter | Linux development | OFF |
 | **qnx** | QNX RTOS | QNX cross-compile | OFF |
 | **minimal** | Fast build | Headers-only check | OFF |
 
@@ -242,7 +242,7 @@ cmake --preset release && cmake --build --preset release
 
 **cmake/Toolchain-Linux.cmake:**
 ```cmake
-# POSIX/Linux backend (development)
+# POSIX/Linux OSAdapter (development)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 add_compile_definitions(SAFEAPI_BACKEND_POSIX)
@@ -250,7 +250,7 @@ add_compile_definitions(SAFEAPI_BACKEND_POSIX)
 
 **cmake/Toolchain-QNX.cmake:**
 ```cmake
-# QNX RTOS backend (target hardware)
+# QNX RTOS OSAdapter (target hardware)
 set(CMAKE_C_COMPILER $ENV{QNX_HOST}/usr/bin/qcc)
 set(CMAKE_SYSTEM_NAME QNX)
 add_compile_definitions(SAFEAPI_BACKEND_QNX)
@@ -455,10 +455,10 @@ cppcheck-report.*
 
 ```
 v0.1.0 - Initial framework release (skeleton)
-v0.2.0 - Feature: Backend templates
+v0.2.0 - Feature: OSAdapter templates
 v1.0.0 - First production release (SIL 4 certified)
 v1.0.1 - Patch: Security fix
-v1.1.0 - Minor: New RTOS backend
+v1.1.0 - Minor: New RTOS OSAdapter
 v2.0.0 - Major: Architecture redesign (rare)
 ```
 
@@ -576,7 +576,7 @@ Change History:
 ```
 v0.1.0 (2026-08)  - Initial skeleton (DONE)
 v0.2.0 (2026-10)  - Assessment templates complete
-v0.3.0 (2026-12)  - Backend examples (POSIX, QNX)
+v0.3.0 (2026-12)  - OSAdapter examples (POSIX, QNX)
 v1.0.0 (2027-06)  - SIL 4 certified release
 ```
 

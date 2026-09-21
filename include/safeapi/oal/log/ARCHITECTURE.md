@@ -17,7 +17,7 @@
  * @section log_architecture_retrieve Retrieval
  *
  * rte_log_read() - Read most recent entries
- * Access NVM/flash via backend for persistence.
+ * Access NVM/flash via OSAdapter for persistence.
  *
  */
 

@@ -1,20 +1,20 @@
 /**
  * @file rte_log.c
  * @ingroup LOG
- * @brief Logging service: dispatches to the backend registered via
- *        rte_log_register_backend() (ADR-005). No backend registered is
+ * @brief Logging service: dispatches to the OSAdapter registered via
+ *        rte_osadapter_log_register() (ADR-005). No OSAdapter registered is
  *        not an error for this service - see rte_log.h.
  *
  * rte_log_write_event()'s structured-line formatting (added alongside
  * this file's own module) is what introduces this module's only two new
  * dependencies, `safeapi::string` (bounded formatting - ADR-006) and
  * `safeapi::timer` (TIMESTAMP field - rte_timer_now()); rte_log_write()
- * itself and the backend dispatch below are unchanged and still have
+ * itself and the OSAdapter dispatch below are unchanged and still have
  * neither dependency.
  */
 #include "safeapi/oal/log/rte_log.h"
 #include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_backend/log/rte_log_backend.h"
+#include "safeapi_osadapter/log/rte_osadapter_log.h"
 #include "safeapi/utils/string/rte_string.h"
 #include "safeapi/oal/timer/rte_timer.h"
 
@@ -32,10 +32,10 @@ typedef struct
 } rte_log_level_name_t;
 
 /** Local variables declarations */
-/** @brief Currently registered backend, or NULL if none (ADR-005). */
-static const rte_log_backend_t *s_backend = NULL;
+/** @brief Currently registered OSAdapter, or NULL if none (ADR-005). */
+static const rte_osadapter_log_t *s_osadapter = NULL;
 
-/** @brief Minimum severity forwarded to the backend (rte_log_set_level()).
+/** @brief Minimum severity forwarded to the OSAdapter (rte_log_set_level()).
  *         RTE_LOG_LEVEL_DEBUG = nothing filtered - the historical
  *         behaviour before this threshold existed. */
 static rte_log_level_t s_min_level = RTE_LOG_LEVEL_DEBUG;
@@ -77,39 +77,39 @@ static void rte_log_append_event_field_u32(rte_string_t *line, const char *key, 
 
 
 /** Global functions */
-rte_status_t rte_log_register_backend(const rte_log_backend_t *backend)
+rte_status_t rte_osadapter_log_register(const rte_osadapter_log_t *osadapter)
 {
     rte_status_t lifecycle_status;
 
-    if (backend == NULL)
+    if (osadapter == NULL)
     {
         return RTE_STATUS_INVALID_PARAM;
     }
-    /* REQ-LIFECYCLE-001 (ADR-026): registering a backend is a setup-only
+    /* REQ-LIFECYCLE-001 (ADR-026): registering an OSAdapter is a setup-only
      * action - refuse once the application's setup phase has been locked. */
     lifecycle_status = rte_lifecycle_check_setup_allowed();
     if (lifecycle_status != RTE_STATUS_OK)
     {
         return lifecycle_status;
     }
-    s_backend = backend;
+    s_osadapter = osadapter;
     return RTE_STATUS_OK;
 }
 
 rte_status_t rte_log_init(void)
 {
-    if ((s_backend == NULL) || (s_backend->init == NULL))
+    if ((s_osadapter == NULL) || (s_osadapter->init == NULL))
     {
         return RTE_STATUS_OK;
     }
-    return s_backend->init();
+    return s_osadapter->init();
 }
 
 void rte_log_write(rte_log_level_t level, const char *tag, const char *message)
 {
-    if ((s_backend == NULL) || (s_backend->write == NULL))
+    if ((s_osadapter == NULL) || (s_osadapter->write == NULL))
     {
-        /* No backend registered: intentionally a silent no-op, not an
+        /* No OSAdapter registered: intentionally a silent no-op, not an
          * error - REQ-OAL-LOG-001 requires logging to never affect the
          * caller's control flow. */
         return;
@@ -119,7 +119,7 @@ void rte_log_write(rte_log_level_t level, const char *tag, const char *message)
         /* Below the runtime threshold (rte_log_set_level()) - dropped. */
         return;
     }
-    s_backend->write(level, tag, message);
+    s_osadapter->write(level, tag, message);
 }
 
 rte_status_t rte_log_level_from_string(const char *name, rte_log_level_t *out_level)
@@ -202,7 +202,7 @@ void rte_log_write_event(rte_log_level_t level,
     const char *ts_cstr = NULL;
     const char *line_cstr = NULL;
 
-    if ((s_backend == NULL) || (s_backend->write == NULL) || ((int)level < (int)s_min_level))
+    if ((s_osadapter == NULL) || (s_osadapter->write == NULL) || ((int)level < (int)s_min_level))
     {
         /* Same silent-no-op contract as rte_log_write() above - and the
          * same runtime-threshold drop (rte_log_set_level()). Bail before
@@ -219,7 +219,7 @@ void rte_log_write_event(rte_log_level_t level,
     (void)rte_string_concat(&line, (site != NULL) ? site : "");
 
     /* TIMESTAMP: best-effort - stays 0 (its declared initializer) if no
-     * rte_timer backend is registered or the call otherwise fails; a
+     * rte_timer OSAdapter is registered or the call otherwise fails; a
      * timer problem must never prevent this event from being logged
      * (REQ-OAL-LOG-001), so the field is degraded, not the whole call. */
     (void)rte_timer_now(&now_ms);
@@ -248,7 +248,7 @@ void rte_log_write_event(rte_log_level_t level,
     }
 
     (void)rte_string_c_str(&line, &line_cstr);
-    s_backend->write(level, source, (line_cstr != NULL) ? line_cstr : "");
+    s_osadapter->write(level, source, (line_cstr != NULL) ? line_cstr : "");
 }
 
 void rte_log_fields_reset(rte_log_fields_t *fields)

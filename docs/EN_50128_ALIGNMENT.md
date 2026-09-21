@@ -104,18 +104,18 @@ safeAPIFramework Alignment:
 
 ### 1. OS Abstraction Layer (OAL) Techniques
 
-**Backend Registration Pattern (ADR-005)**
+**OSAdapter Registration Pattern (ADR-005)**
 ```
 EN 50128 Technique: Modular Approach (7.2.2), Defensive Programming (7.2.3)
 
 ✓ Decouples application from OS/RTOS
 ✓ Application never calls OS directly
-✓ Enables verification of application independent of backend
-✓ Supports multiple certified backends (POSIX, QNX, baremetal)
-✓ Reduces testing scope per backend (only OAL needs OS-specific tests)
+✓ Enables verification of application independent of OSAdapter
+✓ Supports multiple certified OSAdapters (POSIX, QNX, baremetal)
+✓ Reduces testing scope per OSAdapter (only OAL needs OS-specific tests)
 ```
 
-**Benefit:** Each backend can be independently certified without re-certifying application logic.
+**Benefit:** Each OSAdapter can be independently certified without re-certifying application logic.
 
 ---
 
@@ -848,7 +848,7 @@ Architecture Decision Records (ADRs):
 ├─ ADR-002: Endianness-Safe Buffer Access (why important?)
 ├─ ADR-003: Checked Integer Casting (why no bare casts?)
 ├─ ADR-004: Safe-State Transitions (why irrevocable?)
-├─ ADR-005: Backend Registration (why pluggable?)
+├─ ADR-005: OSAdapter Registration (why pluggable?)
 ├─ ADR-006: Bounded String Operations (why no strcpy?)
 ├─ ADR-007: Per-Feature Modules (why modular?)
 ├─ ADR-008 onwards: New features (checkpoints, watchdog)

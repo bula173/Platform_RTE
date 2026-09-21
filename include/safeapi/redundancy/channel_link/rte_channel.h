@@ -9,11 +9,11 @@
  * `rte_channel_t` instances into a `rte_voter_t`); a new
  * `rte_cross_comparator` does the same for exactly 2 channels. This
  * type is now the unit both of those register: one link, validated
- * dispatch to its backend, nothing more - the same "validate then
- * dispatch to a backend callback" shape as `rte_timer`/`rte_nvm`
- * elsewhere in this codebase, just with the backend supplied directly
- * in the config (no separate register_backend() call, since a channel
- * has exactly one backend for its whole lifetime, unlike a
+ * dispatch to its OSAdapter, nothing more - the same "validate then
+ * dispatch to an OSAdapter callback" shape as `rte_timer`/`rte_nvm`
+ * elsewhere in this codebase, just with the OSAdapter supplied directly
+ * in the config (no separate register_osadapter() call, since a channel
+ * has exactly one OSAdapter for its whole lifetime, unlike a
  * process-global OAL service).
  *
  * @defgroup channel_link Channel Link (single redundant link)
@@ -54,7 +54,7 @@ typedef struct {
 } rte_channel_health_t;
 
 /**
- * @brief Backend send callback: transmits on this channel's underlying
+ * @brief OSAdapter send callback: transmits on this channel's underlying
  *        transport.
  * @param[in] channel_handle  Opaque transport handle (as supplied in
  *                            rte_channel_config_t::channel_handle)
@@ -69,7 +69,7 @@ typedef rte_status_t (*rte_channel_send_fn)(void *channel_handle,
                                                size_t data_size);
 
 /**
- * @brief Backend receive callback: reads from this channel's underlying
+ * @brief OSAdapter receive callback: reads from this channel's underlying
  *        transport.
  * @param[in]  channel_handle  Opaque transport handle
  * @param[out] data            Buffer to receive data
@@ -92,9 +92,9 @@ typedef struct {
      *  Caller-owned; this module never dereferences it. May be NULL if
      *  the send/recv callbacks don't need it. */
     void *channel_handle;
-    /** Backend send function. Must not be NULL. */
+    /** OSAdapter send function. Must not be NULL. */
     rte_channel_send_fn send;
-    /** Backend receive function. Must not be NULL. */
+    /** OSAdapter receive function. Must not be NULL. */
     rte_channel_recv_fn recv;
     /** Optional channel name (e.g. "ChannelAtoB"), for lookup
      *  (rte_voter_get_channel_by_name()) and logging - same
@@ -153,7 +153,7 @@ rte_status_t rte_channel_init(rte_channel_storage_t *storage,
                                        const rte_channel_config_t *config);
 
 /**
- * @brief Sends data on this channel via its backend send callback.
+ * @brief Sends data on this channel via its OSAdapter send callback.
  *
  * @param[in] handle     Vital channel handle. Must not be NULL and must
  *                       have been initialized.
@@ -177,7 +177,7 @@ rte_status_t rte_channel_send(rte_channel_t *handle,
                                        size_t data_size);
 
 /**
- * @brief Receives data on this channel via its backend receive callback.
+ * @brief Receives data on this channel via its OSAdapter receive callback.
  *
  * @param[in]  handle      Vital channel handle. Must not be NULL and
  *                         must have been initialized.

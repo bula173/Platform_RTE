@@ -35,62 +35,62 @@ rte_status_t rte_osadapter_register_all(const rte_osadapter_bundle_t *bundle)
 
     if (bundle->memory != NULL)
     {
-        status = rte_mem_pool_register_backend(bundle->memory);
+        status = rte_osadapter_memory_register(bundle->memory);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->clocksync != NULL)
     {
-        status = rte_clocksync_register_backend(bundle->clocksync);
+        status = rte_osadapter_clocksync_register(bundle->clocksync);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->timer != NULL)
     {
-        status = rte_timer_register_backend(bundle->timer);
+        status = rte_osadapter_timer_register(bundle->timer);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->mutex != NULL)
     {
-        status = rte_mutex_register_backend(bundle->mutex);
+        status = rte_osadapter_mutex_register(bundle->mutex);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->task != NULL)
     {
-        status = rte_task_register_backend(bundle->task);
+        status = rte_osadapter_task_register(bundle->task);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->log != NULL)
     {
-        status = rte_log_register_backend(bundle->log);
+        status = rte_osadapter_log_register(bundle->log);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->nvm != NULL)
     {
-        status = rte_nvm_register_backend(bundle->nvm);
+        status = rte_osadapter_nvm_register(bundle->nvm);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->platform != NULL)
     {
-        status = rte_platform_register_backend(bundle->platform);
+        status = rte_osadapter_platform_register(bundle->platform);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->reboot != NULL)
     {
-        status = rte_reboot_register_backend(bundle->reboot);
+        status = rte_osadapter_reboot_register(bundle->reboot);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->ipc != NULL)
     {
-        status = rte_ipc_register_backend(bundle->ipc);
+        status = rte_osadapter_ipc_register(bundle->ipc);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->netlink != NULL)
     {
-        status = rte_netlink_register_backend(bundle->netlink);
+        status = rte_osadapter_netlink_register(bundle->netlink);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->flow != NULL)
     {
-        status = rte_flow_register_backend(bundle->flow);
+        status = rte_osadapter_flow_register(bundle->flow);
         if (status != RTE_STATUS_OK) { return status; }
     }
     if (bundle->sockets != NULL)
@@ -100,65 +100,5 @@ rte_status_t rte_osadapter_register_all(const rte_osadapter_bundle_t *bundle)
     }
 
     return RTE_STATUS_OK;
-}
-
-rte_status_t rte_osadapter_memory_register(const rte_osadapter_memory_t *adapter)
-{
-    return rte_mem_pool_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_clocksync_register(const rte_osadapter_clocksync_t *adapter)
-{
-    return rte_clocksync_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_timer_register(const rte_osadapter_timer_t *adapter)
-{
-    return rte_timer_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_mutex_register(const rte_osadapter_mutex_t *adapter)
-{
-    return rte_mutex_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_task_register(const rte_osadapter_task_t *adapter)
-{
-    return rte_task_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_log_register(const rte_osadapter_log_t *adapter)
-{
-    return rte_log_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_nvm_register(const rte_osadapter_nvm_t *adapter)
-{
-    return rte_nvm_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_platform_register(const rte_osadapter_platform_t *adapter)
-{
-    return rte_platform_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_reboot_register(const rte_osadapter_reboot_t *adapter)
-{
-    return rte_reboot_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_ipc_register(const rte_osadapter_ipc_t *adapter)
-{
-    return rte_ipc_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_netlink_register(const rte_osadapter_netlink_t *adapter)
-{
-    return rte_netlink_register_backend(adapter);
-}
-
-rte_status_t rte_osadapter_flow_register(const rte_osadapter_flow_t *adapter)
-{
-    return rte_flow_register_backend(adapter);
 }
 

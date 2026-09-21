@@ -33,7 +33,7 @@
 |----------|------|--------|-------|
 | **Architecture Design Document (ADD)** | `09_ARCHITECTURE_DESIGN.md` | ☐ Draft ☐ Review ☐ Approved | System and software architecture |
 | **Detailed Design Document (DDD)** | `10_DETAILED_DESIGN.md` | ☐ Draft ☐ Review ☐ Approved | Module-level design specifications |
-| **Backend Design Document** | `11_BACKEND_DESIGN.md` | ☐ Draft ☐ Review ☐ Approved | OS/RTOS-specific backend design |
+| **OSAdapter Design Document** | `11_BACKEND_DESIGN.md` | ☐ Draft ☐ Review ☐ Approved | OS/RTOS-specific OSAdapter design |
 | **Traceability Matrix** | `12_TRACEABILITY_MATRIX.md` | ☐ Draft ☐ Review ☐ Approved | Req → Design → Code → Test |
 | **Design Review Report** | `13_DESIGN_REVIEW_REPORT.md` | ☐ Draft ☐ Review ☐ Approved | Findings from design review |
 
@@ -94,7 +94,7 @@ Add to minimal set:
 - SafeRS (07)
 - safeAPIFramework Integration (08)
 - Detailed Design (10)
-- Backend Design (11)
+- OSAdapter Design (11)
 - Test Plan (18)
 - Integration Test Report (20)
 - Coverage Analysis (21)
@@ -104,7 +104,7 @@ Add to minimal set:
 ### Complete Set (Belt & Suspenders)
 ```
 All documents (01-29)
-Needed for large/critical systems or complex RTOS backends
+Needed for large/critical systems or complex RTOS OSAdapters
 ```
 
 ---
@@ -119,7 +119,7 @@ Safety Plan (01)
             │       └─→ SafeRS (07)
             └─→ Architecture Design (09)
                     ├─→ Detailed Design (10)
-                    ├─→ Backend Design (11)
+                    ├─→ OSAdapter Design (11)
                     └─→ Traceability Matrix (12)
                             ├─→ Code Review Report (15)
                             ├─→ Static Analysis Report (16)

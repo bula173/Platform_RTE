@@ -12,7 +12,7 @@ see §2.2/§4).
 `memcpy()`/`memcmp()` directly across ~25 of its own application files
 (~90 call sites) - fixed-size struct zeroing, buffer copies for the wire
 codecs, byte-for-byte session comparisons. This framework itself does the
-same in its own `src/`/`posix_backend` files. Direct `<string.h>` calls
+same in its own `src/`/`posix_osadapter` files. Direct `<string.h>` calls
 are not a MISRA rule violation on their own, but this project's own
 posture (this repo's `CLAUDE.md`: "no dynamic memory... prefer a checked
 conversion helper over a bare C-style cast") already favors a single,

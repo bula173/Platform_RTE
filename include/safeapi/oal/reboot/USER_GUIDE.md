@@ -5,14 +5,14 @@
  *
  * The Reboot module requests a controlled system restart. It's the mechanism
  * you call when unrecoverable errors require a fresh start. The integrator
- * provides a backend that actually performs the reset (watchdog, CPU reset,
+ * provides an OSAdapter that actually performs the reset (watchdog, CPU reset,
  * supervisory processor command, etc.).
  *
  * Key idea: When recovery is impossible, restart cleanly rather than hang.
  *
  * @section reboot_user_guide_quick_start Quick Start
  *
- * @subsection reboot_user_guide_qs_backend 1. Register Backend at Startup
+ * @subsection reboot_user_guide_qs_osadapter 1. Register OSAdapter at Startup
  *
  * Integrator supplies platform-specific reboot implementation:
  *
@@ -28,11 +28,11 @@
  *     return RTE_STATUS_NOT_SUPPORTED;  // Only if watchdog unavailable
  * }
  *
- * rte_reboot_backend_t backend = {
+ * rte_osadapter_reboot_t OSAdapter = {
  *     .request = platform_reboot
  * };
  *
- * rte_reboot_register_backend(&backend);
+ * rte_osadapter_reboot_register(&OSAdapter);
  * @endcode
  *
  * @subsection reboot_user_guide_qs_request 2. Request Reboot on Critical Error
@@ -81,7 +81,7 @@
  * #define APP_REASON_FIRMWARE_UPDATE 5
  * @endcode
  *
- * Backend can persist reason code to NVM for post-reboot diagnostics.
+ * OSAdapter can persist reason code to NVM for post-reboot diagnostics.
  *
  * @section reboot_user_guide_examples Practical Examples
  *
@@ -136,7 +136,7 @@
  *
  * @section reboot_user_guide_guidelines Best Practices
  *
- * 1. Register backend at startup
+ * 1. Register OSAdapter at startup
  *    - Before any code can request reboot
  *    - Platform-specific implementation
  *    - Must handle lack of hardware support gracefully
@@ -144,7 +144,7 @@
  * 2. Use specific reason codes
  *    - Not just 0
  *    - Aids post-reboot diagnostics
- *    - Backend can log/persist for analysis
+ *    - OSAdapter can log/persist for analysis
  *
  * 3. Prepare for non-return
  *    - rte_reboot_request() typically doesn't return
@@ -153,7 +153,7 @@
  *
  * 4. Have fallback mechanism
  *    - Use watchdog timeout as fallback
- *    - Ensures reset happens even if backend fails
+ *    - Ensures reset happens even if OSAdapter fails
  *    - Better than hanging indefinitely
  *
  * 5. Only on unrecoverable errors

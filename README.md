@@ -16,13 +16,13 @@ other. It owns:
   ONLINE/STANDBY negotiation, state transfer on promotion, redundancy configuration.
 - **Safe state:** the single place where a transition to SAFE or REBOOT happens. Applications only
   register a cleanup handler.
-- **Communication seam:** named channels and Flows over pluggable backends, checksums and the
+- **Communication seam:** named channels and Flows over pluggable OSAdapters, checksums and the
   vital-message envelope.
 - **OS abstraction (OAL):** timer, NVM, memory, task, mutex, IPC, log, reboot, netlink, platform
-  and clock sync, each reached through a backend registered at startup (ADR-005).
+  and clock sync, each reached through an OSAdapter registered at startup (ADR-005).
 - **Common utilities:** status codes, fixed-width types, checked casts, bounded strings, buffer views.
 
-It does **not** implement any operating-system backend (Platform_OS_POSIX), any transport protocol
+It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), any transport protocol
 (Platform_Protocol_*), any railway logic (RBC_*), or any ERTMS message handling.
 
 ## Interfaces exposed to other products
@@ -36,7 +36,7 @@ It does **not** implement any operating-system backend (Platform_OS_POSIX), any 
 | **Channel service** | `include/safeapi/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
 | **Redundancy configuration** | `include/safeapi/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
 | **State registration** | `include/safeapi/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
-| **Backend seams** | `include/safeapi/oal/<service>/*_backend.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `rte_flow_backend_t`, `rte_protocol_adapter_ops_t` |
+| **OSAdapter seams** | `include/safeapi/oal/<service>/*_osadapter.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `rte_osadapter_flow_t`, `rte_protocol_adapter_ops_t` |
 | **Utilities** | `include/safeapi/utils/` | all | Status, types, cast, buffer, string |
 | **Build artifacts** | `dist/<platform>/`, CMake package `safeAPIFramework`, Conan `safeapiframework/0.1.0` | all C products | Targets `safeapi::core`, `::oal`, `::channels`, `::appmanager` |
 
@@ -45,8 +45,8 @@ See [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) for the per-modul
 
 ## Interfaces required
 
-Only the C standard library and, at run time, one registered backend per OAL service used. A build
-that links no backend cannot run the services; `Platform_OS_POSIX` is the reference backend.
+Only the C standard library and, at run time, one registered OSAdapter per OAL service used. A build
+that links no OSAdapter cannot run the services; `Platform_OS_POSIX` is the reference OSAdapter.
 
 ## Build and verify
 

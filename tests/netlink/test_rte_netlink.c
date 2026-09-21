@@ -2,7 +2,7 @@
  * tests/timer/test_rte_timer.c for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/oal/netlink/rte_netlink.h"
-#include "safeapi_backend/netlink/rte_netlink_backend.h"
+#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_send_calls = 0;
@@ -49,11 +49,11 @@ static rte_status_t mock_close(rte_netlink_handle_t handle)
     return RTE_STATUS_OK;
 }
 
-static const rte_netlink_backend_t g_mock_backend_full __attribute__((unused)) = {
+static const rte_osadapter_netlink_t g_mock_osadapter_full __attribute__((unused)) = {
     mock_open, mock_send, mock_receive, mock_close
 };
 
-static const rte_netlink_backend_t g_mock_backend_no_open __attribute__((unused)) = {
+static const rte_osadapter_netlink_t g_mock_osadapter_no_open __attribute__((unused)) = {
     NULL, NULL, NULL, NULL
 };
 
@@ -64,7 +64,7 @@ int main(void)
     rte_netlink_config_t connect_config __attribute__((unused)) = {0};
     rte_netlink_config_t listen_config __attribute__((unused)) = {0};
 
-    /* Null-parameter rejection happens before any backend is consulted. */
+    /* Null-parameter rejection happens before any OSAdapter is consulted. */
     assert(rte_netlink_open(NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
 
     /* Invalid config (message_size == 0) rejected even with a valid role. */
@@ -76,7 +76,7 @@ int main(void)
     zero_size_config.connect_timeout_ms = 100U;
     assert(rte_netlink_open(&storage, &zero_size_config, &handle) == RTE_STATUS_INVALID_PARAM);
 
-    /* CONNECT role requires a non-NULL host even before a backend exists. */
+    /* CONNECT role requires a non-NULL host even before an OSAdapter exists. */
     connect_config.role = RTE_NETLINK_ROLE_CONNECT;
     connect_config.host = NULL;
     connect_config.port = 9000U;
@@ -91,12 +91,12 @@ int main(void)
     listen_config.message_size = 4U;
     listen_config.connect_timeout_ms = 100U;
 
-    /* No backend registered yet: valid params, but nothing to dispatch to. */
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to. */
     assert(rte_netlink_open(&storage, &connect_config, &handle) == RTE_STATUS_NOT_INITIALIZED);
     assert(rte_netlink_open(&storage, &listen_config, &handle) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Null-parameter rejection for send/receive/close happens before any
-     * backend is consulted, independently of one another. */
+     * OSAdapter is consulted, independently of one another. */
     unsigned char buf[4] __attribute__((unused));
     assert(rte_netlink_send(NULL, "x", 1U, 10U) == RTE_STATUS_INVALID_PARAM);
     assert(rte_netlink_send((rte_netlink_handle_t)(void *)1, NULL, 1U, 10U) == RTE_STATUS_INVALID_PARAM);
@@ -106,7 +106,7 @@ int main(void)
     assert(rte_netlink_receive((rte_netlink_handle_t)(void *)1, buf, 0U, 10U) == RTE_STATUS_INVALID_PARAM);
     assert(rte_netlink_close(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* No backend registered yet: valid params, but nothing to dispatch to,
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to,
      * for every remaining entry point. */
     rte_netlink_handle_t dummy_handle = (rte_netlink_handle_t)(void *)1;
     assert(rte_netlink_send(dummy_handle, "x", 1U, 10U) == RTE_STATUS_NOT_INITIALIZED);
@@ -114,24 +114,24 @@ int main(void)
     assert(rte_netlink_close(dummy_handle) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Registering NULL is rejected. */
-    assert(rte_netlink_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_netlink_register(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* A backend with a NULL open slot yields NOT_SUPPORTED. */
-    assert(rte_netlink_register_backend(&g_mock_backend_no_open) == RTE_STATUS_OK);
+    /* An OSAdapter with a NULL open slot yields NOT_SUPPORTED. */
+    assert(rte_osadapter_netlink_register(&g_mock_osadapter_no_open) == RTE_STATUS_OK);
     assert(rte_netlink_open(&storage, &connect_config, &handle) == RTE_STATUS_NOT_SUPPORTED);
 
     /* send/receive/close with no send/receive/close slot -> NOT_SUPPORTED
      * (using a sentinel handle here since open() didn't produce a real one
-     * with this backend - the dispatch layer doesn't dereference it). */
+     * with this OSAdapter - the dispatch layer doesn't dereference it). */
     handle = (rte_netlink_handle_t)(void *)1;
     assert(rte_netlink_send(handle, "x", 1U, 10U) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_netlink_receive(handle, buf, sizeof(buf), 10U) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_netlink_close(handle) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A fully-populated backend is actually reached for every entry
+    /* A fully-populated OSAdapter is actually reached for every entry
      * point, with the same already-validated arguments the caller
      * passed in. */
-    assert(rte_netlink_register_backend(&g_mock_backend_full) == RTE_STATUS_OK);
+    assert(rte_osadapter_netlink_register(&g_mock_osadapter_full) == RTE_STATUS_OK);
     assert(rte_netlink_open(&storage, &connect_config, &handle) == RTE_STATUS_OK);
     assert(g_mock_open_calls == 1);
     assert(handle != NULL);

@@ -15,10 +15,10 @@
  * - Timer callback generates heartbeats
  * - All operations logged with safe state management
  *
- * No timer/log backend is registered in this minimal example (a real
+ * No timer/log OSAdapter is registered in this minimal example (a real
  * integration wires one per ADR-005 - see safeAPIRBC2oo2's
- * src/posix_backend/ for a full POSIX backend), so rte_log_write() is a
- * documented no-op here (REQ-OAL-LOG-001: a missing backend never blocks
+ * src/posix_osadapter/ for a full POSIX OSAdapter), so rte_log_write() is a
+ * documented no-op here (REQ-OAL-LOG-001: a missing OSAdapter never blocks
  * or fails the caller) and the timer callback is invoked directly rather
  * than through a real rte_timer_create()/_start() - see the main loop
  * below.
@@ -164,7 +164,7 @@ static rte_status_t process_message(const uint8_t *msg, size_t len)
 /**
  * @brief Timer callback - generates periodic heartbeats
  * @param handle       Timer that expired (unused - invoked directly in this
- *                     minimal example, not through a real timer backend)
+ *                     minimal example, not through a real timer OSAdapter)
  * @param user_context Application context
  */
 static void heartbeat_callback(rte_timer_handle_t handle, void *user_context)
@@ -274,10 +274,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* No real timer backend is registered in this minimal example - the
+    /* No real timer OSAdapter is registered in this minimal example - the
      * heartbeat callback is invoked directly from the loop below every
      * 10th iteration instead of through rte_timer_create()/_start(). A
-     * real integration would register a backend (ADR-005) and use the
+     * real integration would register an OSAdapter (ADR-005) and use the
      * real timer API. */
     log_line(RTE_LOG_LEVEL_INFO, "Starting message processing loop (Ctrl+C to exit)");
 

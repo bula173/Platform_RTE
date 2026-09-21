@@ -1,9 +1,9 @@
 /* Tests for the rte_flow validate-then-dispatch API (OCORA PI-API
- * compatibility, ADR-005 backend seam): see tests/netlink/test_rte_netlink.c
+ * compatibility, ADR-005 OSAdapter seam): see tests/netlink/test_rte_netlink.c
  * for the pattern this follows. */
 #include <assert.h>
 #include "safeapi/oal/flow/rte_flow.h"
-#include "safeapi_backend/flow/rte_flow_backend.h"
+#include "safeapi_osadapter/flow/rte_osadapter_flow.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_send_calls = 0;
@@ -82,11 +82,11 @@ static rte_status_t mock_setattr(rte_flow_handle_t handle, const rte_flow_attr_t
     return RTE_STATUS_OK;
 }
 
-static const rte_flow_backend_t g_mock_backend_full __attribute__((unused)) = {
+static const rte_osadapter_flow_t g_mock_osadapter_full __attribute__((unused)) = {
     mock_open, mock_send, mock_receive, mock_close, mock_getattr, mock_setattr
 };
 
-static const rte_flow_backend_t g_mock_backend_no_open __attribute__((unused)) = {
+static const rte_osadapter_flow_t g_mock_osadapter_no_open __attribute__((unused)) = {
     NULL, NULL, NULL, NULL, NULL, NULL
 };
 
@@ -96,7 +96,7 @@ int main(void)
     rte_flow_handle_t handle __attribute__((unused)) = NULL;
     rte_flow_config_t pub_config __attribute__((unused)) = {0};
 
-    /* Null-parameter rejection happens before any backend is consulted. */
+    /* Null-parameter rejection happens before any OSAdapter is consulted. */
     assert(rte_flow_open(NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
 
     /* Invalid config (no name) rejected even with a valid oflags. */
@@ -137,11 +137,11 @@ int main(void)
     pub_config.message_size = 4U;
     pub_config.open_timeout_ms = 100U;
 
-    /* No backend registered yet: valid params, but nothing to dispatch to. */
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to. */
     assert(rte_flow_open(&storage, &pub_config, &handle) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Null-parameter rejection for send/receive/close/getattr/setattr
-     * happens before any backend is consulted, independently of one another. */
+     * happens before any OSAdapter is consulted, independently of one another. */
     unsigned char buf[4] __attribute__((unused));
     rte_flow_attr_t attr __attribute__((unused));
     assert(rte_flow_send(NULL, "x", 1U, RTE_FLOW_CHANNEL_USER, 10U) == RTE_STATUS_INVALID_PARAM);
@@ -159,7 +159,7 @@ int main(void)
     assert(rte_flow_setattr(NULL, &attr, NULL) == RTE_STATUS_INVALID_PARAM);
     assert(rte_flow_setattr((rte_flow_handle_t)(void *)1, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* No backend registered yet: valid params, but nothing to dispatch to,
+    /* No OSAdapter registered yet: valid params, but nothing to dispatch to,
      * for every remaining entry point. */
     rte_flow_handle_t dummy_handle = (rte_flow_handle_t)(void *)1;
     assert(rte_flow_send(dummy_handle, "x", 1U, RTE_FLOW_CHANNEL_USER, 10U) == RTE_STATUS_NOT_INITIALIZED);
@@ -169,15 +169,15 @@ int main(void)
     assert(rte_flow_setattr(dummy_handle, &attr, NULL) == RTE_STATUS_NOT_INITIALIZED);
 
     /* Registering NULL is rejected. */
-    assert(rte_flow_register_backend(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_osadapter_flow_register(NULL) == RTE_STATUS_INVALID_PARAM);
 
-    /* A backend with a NULL open slot yields NOT_SUPPORTED. */
-    assert(rte_flow_register_backend(&g_mock_backend_no_open) == RTE_STATUS_OK);
+    /* An OSAdapter with a NULL open slot yields NOT_SUPPORTED. */
+    assert(rte_osadapter_flow_register(&g_mock_osadapter_no_open) == RTE_STATUS_OK);
     assert(rte_flow_open(&storage, &pub_config, &handle) == RTE_STATUS_NOT_SUPPORTED);
 
     /* send/receive/close/getattr/setattr with no slot -> NOT_SUPPORTED
      * (using a sentinel handle here since open() didn't produce a real one
-     * with this backend - the dispatch layer doesn't dereference it). */
+     * with this OSAdapter - the dispatch layer doesn't dereference it). */
     handle = (rte_flow_handle_t)(void *)1;
     assert(rte_flow_send(handle, "x", 1U, RTE_FLOW_CHANNEL_USER, 10U) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_flow_receive(handle, buf, sizeof(buf), NULL, 10U) == RTE_STATUS_NOT_SUPPORTED);
@@ -185,10 +185,10 @@ int main(void)
     assert(rte_flow_getattr(handle, &attr) == RTE_STATUS_NOT_SUPPORTED);
     assert(rte_flow_setattr(handle, &attr, NULL) == RTE_STATUS_NOT_SUPPORTED);
 
-    /* A fully-populated backend is actually reached for every entry
+    /* A fully-populated OSAdapter is actually reached for every entry
      * point, with the same already-validated arguments the caller
      * passed in. */
-    assert(rte_flow_register_backend(&g_mock_backend_full) == RTE_STATUS_OK);
+    assert(rte_osadapter_flow_register(&g_mock_osadapter_full) == RTE_STATUS_OK);
     assert(rte_flow_open(&storage, &pub_config, &handle) == RTE_STATUS_OK);
     assert(g_mock_open_calls == 1);
     assert(handle != NULL);

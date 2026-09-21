@@ -6,10 +6,10 @@
  * the cyclic processing model typical of RBC implementations. See ADR-001.
  *
  * REQ-OAL-TASK-001: no dynamic allocation; caller supplies storage and a
- *                   fixed-size stack/context region (backend-defined use).
+ *                   fixed-size stack/context region (osadapter-defined use).
  * REQ-OAL-TASK-002: priorities are fixed at creation time; no dynamic
  *                   priority inheritance/inversion handling is assumed by
- *                   this API - that is a backend/RTOS concern.
+ *                   this API - that is an OSAdapter/RTOS concern.
  *
  * @defgroup TASK Task/Thread Scheduling
  * @brief Periodic/cyclic safety task creation with fixed priorities (ADR-001)
@@ -41,7 +41,7 @@ typedef struct rte_task_config_s
     rte_task_entry_t  entry;        /**< Must not be NULL. */
     void              *user_ctx;     /**< Passed to entry on every cycle. */
     rte_duration_ms_t period_ms;    /**< 0 = run once (non-cyclic) task. */
-    uint32_t           priority;     /**< Backend-defined priority scale; documented per backend. */
+    uint32_t           priority;     /**< Backend-defined priority scale; documented per OSAdapter. */
     size_t             stack_size;   /**< Requested stack size in bytes. */
 } rte_task_config_t;
 
@@ -51,9 +51,9 @@ typedef struct rte_task_config_s
  * @param config      Task configuration. Must not be NULL; config->entry must not be NULL.
  * @param out_handle  Receives the created task's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
- *         RTE_STATUS_NOT_INITIALIZED if no backend is registered
- *         (rte_task_register_backend()); RTE_STATUS_NOT_SUPPORTED if the
- *         registered backend does not implement create.
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
+ *         (rte_osadapter_task_register()); RTE_STATUS_NOT_SUPPORTED if the
+ *         registered OSAdapter does not implement create.
  * REQ-OAL-TASK-010
  */
 rte_status_t rte_task_create(rte_task_storage_t *storage,
@@ -86,8 +86,8 @@ rte_status_t rte_task_suspend(rte_task_handle_t handle);
 rte_status_t rte_task_destroy(rte_task_handle_t handle);
 
 /*
- * The backend vtable (rte_task_backend_t) and rte_task_register_backend()
- * live in safeapi_backend/task/rte_task_backend.h, not here (ADR-021).
+ * The OSAdapter vtable (rte_osadapter_task_t) and rte_osadapter_task_register()
+ * live in safeapi_osadapter/task/rte_osadapter_task.h, not here (ADR-021).
  * This header is the consumer-facing surface only.
  */
 

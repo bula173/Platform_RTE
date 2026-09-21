@@ -13,7 +13,7 @@
  *
  * - **IPC_TRANSPORT_SELECTION.md** - Transport options
  *   - Shared Memory, FIFO, TCP/IP, UDP characteristics
- *   - POSIX vs RTOS backend differences
+ *   - POSIX vs RTOS OSAdapter differences
  *   - Decision tree for choosing transports
  *   - Real-world scenarios (railway, automotive, web service)
  *
@@ -24,7 +24,7 @@
  *   - Online/Standby examples
  *
  * - **rte_ipc.h** - Base IPC API (code, not documentation)
- *   - Backend vtable abstraction
+ *   - OSAdapter vtable abstraction
  *   - OS-agnostic interface
  *
  * - **rte_ipc_request_reply.h** - Request-Reply pattern (code)
@@ -80,7 +80,7 @@
  * 1. Start: include/safeapi/ipc/IPC_GUIDE.md
  * 2. Then: include/safeapi/ipc/CHANNEL_CONFIGURATION.md
  * 3. Then: include/safeapi/ipc/IPC_TRANSPORT_SELECTION.md
- * 4. Implement: OS-specific backends (TCP, FIFO, SHM, UDP send/recv)
+ * 4. Implement: OS-specific OSAdapters (TCP, FIFO, SHM, UDP send/recv)
  * 5. Example: examples/channel_configuration_example.c
  *
  * ### For Application Developers

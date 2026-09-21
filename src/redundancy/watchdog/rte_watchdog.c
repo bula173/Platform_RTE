@@ -375,8 +375,8 @@ void rte_watchdog_timer_tick(void)
      * QNX, bare-metal SysTick, etc.). Giving this module its own
      * platform-specific interrupt setup would duplicate what
      * safeapi::timer already exists to abstract, and would break the
-     * "backends are integrator-supplied" philosophy (ADR-005) for a
-     * module whose own header was never given a backend vtable. Instead:
+     * "OSAdapters are integrator-supplied" philosophy (ADR-005) for a
+     * module whose own header was never given an OSAdapter vtable. Instead:
      * whatever already runs periodically in the integrating application
      * (its own rte_timer periodic callback, or just its own main loop)
      * is expected to call this function regularly - each call is an O(N)
