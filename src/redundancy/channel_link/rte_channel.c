@@ -5,8 +5,8 @@
  *        its configured send/recv callbacks, tracking health as a side
  *        effect (ADR-025).
  */
-#include "safeapi/redundancy/channel_link/rte_channel.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
+#include "rte/redundancy/channel_link/rte_channel.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 
 /** Local makros */
 

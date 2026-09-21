@@ -4,9 +4,9 @@
  * @brief Timer service: validates parameters, then dispatches to the
  *        OSAdapter registered via rte_osadapter_timer_register() (ADR-005).
  */
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/timer/rte_timer.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
 
 /** Local makros */
 

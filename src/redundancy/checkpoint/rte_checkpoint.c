@@ -3,15 +3,15 @@
  * @brief Implementation of the bounded checkpoint rendezvous (ADR-017).
  * @ingroup CHECKPOINT
  */
-#include "safeapi/redundancy/checkpoint/rte_checkpoint.h"
+#include "rte/redundancy/checkpoint/rte_checkpoint.h"
 
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "safeapi/utils/buffer/rte_buffer.h"
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/utils/buffer/rte_buffer.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/oal/timer/rte_timer.h"
 
 /** Fixed sender id for checkpoint-arrival markers. rte_checksum's verify
  *  path does not constrain this value; it only matters for diagnostics,
@@ -53,7 +53,7 @@
  * project's own documented real-world finding that a single round can
  * miss under genuine container-host scheduling jitter even once a peer
  * is already known and reachable (see
- * SAFEAPI_EXAMPLE_AB_CHECKPOINT_RELAXED_MAX_DELAY_MS's doc in
+ * RTE_EXAMPLE_AB_CHECKPOINT_RELAXED_MAX_DELAY_MS's doc in
  * safeAPIRBC2oo2GP/src/application/AB/common/common_config.h). Confirmed
  * live: even with the round-based retry loop below, a steady-state
  * budget of 400ms (~1-2 rounds at the flat 250ms cap) still let a single

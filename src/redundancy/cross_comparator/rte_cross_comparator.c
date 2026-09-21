@@ -6,10 +6,10 @@
  */
 #include <string.h>
 
-#include "safeapi/redundancy/cross_comparator/rte_cross_comparator.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/cross_comparator/rte_cross_comparator.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 static bool cross_comparator_data_equal(const rte_cross_comparator_t *cmp,
                                          const void *a, const void *b, size_t size)

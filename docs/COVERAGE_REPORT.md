@@ -21,7 +21,7 @@ to maintain two coverage pipelines in parallel for the same source tree.
 ```
 
 This configures a separate `build-coverage/` tree (so a normal `build/`
-tree is untouched), with every `SAFEAPI_ENABLE_*` feature at its default
+tree is untouched), with every `RTE_ENABLE_*` feature at its default
 `ON` (ADR-024) — coverage is measured against the full, all-features build,
 since that's the build every module's own test actually exercises.
 

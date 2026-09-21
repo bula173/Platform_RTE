@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build safeAPIFramework for native Linux (POSIX OAL)
+# Build RteFramework for native Linux (POSIX OAL)
 #
 # This script builds the framework for the host Linux system.
 # The framework will use POSIX APIs (pthreads, POSIX timers, etc.) for task and timer implementations.
@@ -16,7 +16,7 @@ BUILD_DIR="${SCRIPT_DIR}/build/linux-native"
 BUILD_TYPE="${1:-debug}"
 
 echo "=========================================="
-echo "Building safeAPIFramework for Linux (POSIX)"
+echo "Building RteFramework for Linux (POSIX)"
 echo "=========================================="
 echo "Build Type: $BUILD_TYPE"
 echo "Build Directory: $BUILD_DIR"
@@ -54,7 +54,7 @@ echo "Build complete!"
 echo "=========================================="
 echo ""
 echo "Output:"
-echo "  Headers: ${SCRIPT_DIR}/include/safeapi"
+echo "  Headers: ${SCRIPT_DIR}/include/rte"
 echo "  Libraries: ${BUILD_DIR}"
 echo ""
 echo "Install to system:"

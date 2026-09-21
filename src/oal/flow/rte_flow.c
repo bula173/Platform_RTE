@@ -5,9 +5,9 @@
  *        OSAdapter registered via rte_osadapter_flow_register() (ADR-005).
  *        See rte_netlink.c for the pattern this follows.
  */
-#include "safeapi/oal/flow/rte_flow.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/flow/rte_osadapter_flow.h"
+#include "rte/oal/flow/rte_flow.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/flow/rte_osadapter_flow.h"
 
 /** Local makros */
 

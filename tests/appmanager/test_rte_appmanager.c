@@ -23,11 +23,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "safeapi/app/appmanager/rte_appmanager.h"
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/redundancy/channel_link/rte_channel.h"
-#include "safeapi/redundancy/voter/rte_voter.h"
+#include "rte/app/appmanager/rte_appmanager.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/channel_link/rte_channel.h"
+#include "rte/redundancy/voter/rte_voter.h"
 
 /* ---- shared call-order/count tracking for the fake application under test ---- */
 static int g_init_calls;

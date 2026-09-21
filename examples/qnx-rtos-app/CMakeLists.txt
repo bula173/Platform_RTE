@@ -11,19 +11,19 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "QNX")
     message(FATAL_ERROR "This example requires QNX RTOS. Use: -DCMAKE_TOOLCHAIN_FILE=../../cmake/Toolchain-QNX.cmake")
 endif()
 
-# Find safeAPIFramework
+# Find RteFramework
 # Framework must be built for QNX first
-find_package(safeAPIFramework REQUIRED)
+find_package(RteFramework REQUIRED)
 
 # QNX server executable
 add_executable(railway-server main.c)
 
-# Link safeAPIFramework modules (ADR-023: status/safestate live in
-# safeapi::core, log lives in safeapi::oal - 22 per-feature targets were
+# Link RteFramework modules (ADR-023: status/safestate live in
+# rte::core, log lives in rte::oal - 22 per-feature targets were
 # consolidated into 4 grouped libraries).
 target_link_libraries(railway-server PRIVATE
-    safeapi::core
-    safeapi::oal
+    rte::core
+    rte::oal
 )
 
 # QNX-specific libraries

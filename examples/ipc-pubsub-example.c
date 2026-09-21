@@ -26,9 +26,9 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "safeapi/status.h"
-#include "safeapi/log.h"
-#include "safeapi/ipc/rte_ipc_pubsub.h"
+#include "rte/status.h"
+#include "rte/log.h"
+#include "rte/ipc/rte_ipc_pubsub.h"
 
 /* ============================================================================
  * Message Definitions

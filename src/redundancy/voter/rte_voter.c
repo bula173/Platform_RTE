@@ -8,10 +8,10 @@
  */
 #include <string.h>
 
-#include "safeapi/redundancy/voter/rte_voter.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/voter/rte_voter.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 static bool voter_channel_count_matches_strategy(const rte_voter_t *voter)
 {

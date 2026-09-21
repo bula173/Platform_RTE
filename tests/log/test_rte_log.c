@@ -17,10 +17,10 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi_osadapter/log/rte_osadapter_log.h"
-#include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte_osadapter/log/rte_osadapter_log.h"
+#include "rte/oal/timer/rte_timer.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
 
 /* --- mock log OSAdapter: captures the last (level, tag, message) --- */
 static rte_log_level_t g_last_level;

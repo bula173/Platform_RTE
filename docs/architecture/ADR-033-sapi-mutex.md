@@ -47,22 +47,22 @@ history.
 Add `rte_mutex` as a new OAL-layer service, following the exact same
 consumer/backend split every other OAL service uses (ADR-021):
 
-- `include/safeapi/mutex/rte_mutex.h` - consumer API:
+- `include/rte/mutex/rte_mutex.h` - consumer API:
   `rte_mutex_create()`/`_lock()`/`_unlock()`/`_destroy()`, an opaque
-  `rte_mutex_handle_t` bound to caller-owned `SAFEAPI_DECLARE_STORAGE`
+  `rte_mutex_handle_t` bound to caller-owned `RTE_DECLARE_STORAGE`
   storage (128 bytes - `sizeof(pthread_mutex_t)` is 64 bytes on the
   POSIX backend's own target platforms, generous headroom for a small
   wrapper struct around it). Non-recursive by design (REQ-OAL-MUTEX-003)
   - matches `pthread_mutex_t`'s own default behavior on Linux/macOS, the
   only backend this framework ships today; a caller needing recursive
   locking must track that itself, same as it always would have.
-- `include/safeapi_osadapter/mutex/rte_osadapter_mutex.h` - the backend
+- `include/rte_osadapter/mutex/rte_osadapter_mutex.h` - the backend
   vtable (`rte_osadapter_mutex_t`) and `rte_osadapter_mutex_register()`,
   gated by `rte_lifecycle_check_setup_allowed()` (ADR-026) exactly like
   every other `rte_*_register_backend()` call.
 - `src/mutex/rte_mutex.c` - pure dispatch to the registered backend,
   byte-for-byte the same shape as `src/timer/rte_timer.c`.
-- New `SAFEAPI_ENABLE_MUTEX` CMake option (default ON), no dependency
+- New `RTE_ENABLE_MUTEX` CMake option (default ON), no dependency
   edges on or from any other feature - a leaf OAL module, same as
   `TIMER`/`NVM`/`MEMORY`/`TASK`.
 - `rte_mutex_create()` is setup-phase-gated (a mutex is created once at
@@ -119,8 +119,8 @@ directly).
 
 ## Location
 
-- `include/safeapi/mutex/rte_mutex.h`
-- `include/safeapi_osadapter/mutex/rte_osadapter_mutex.h`
+- `include/rte/mutex/rte_mutex.h`
+- `include/rte_osadapter/mutex/rte_osadapter_mutex.h`
 - `src/mutex/rte_mutex.c`
 - `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_mutex.c` (sibling
   project - the POSIX backend implementation itself)

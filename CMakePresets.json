@@ -1,7 +1,7 @@
 {
   "version": 3,
   "vendor": {
-    "safeapi": {
+    "rte": {
       "description": "Safe API Framework - CMake presets for MISRA C:2012 / SIL 3/4 builds"
     }
   },
@@ -22,8 +22,8 @@
       "displayName": "Debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "SAFEAPI_BUILD_TESTS": "ON",
-        "SAFEAPI_WARNINGS_AS_ERRORS": "ON"
+        "RTE_BUILD_TESTS": "ON",
+        "RTE_WARNINGS_AS_ERRORS": "ON"
       }
     },
     {
@@ -33,8 +33,8 @@
       "displayName": "Release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "SAFEAPI_BUILD_TESTS": "ON",
-        "SAFEAPI_WARNINGS_AS_ERRORS": "ON"
+        "RTE_BUILD_TESTS": "ON",
+        "RTE_WARNINGS_AS_ERRORS": "ON"
       }
     },
     {
@@ -106,8 +106,8 @@
       "displayName": "Minimal (no tests)",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "SAFEAPI_BUILD_TESTS": "OFF",
-        "SAFEAPI_WARNINGS_AS_ERRORS": "OFF"
+        "RTE_BUILD_TESTS": "OFF",
+        "RTE_WARNINGS_AS_ERRORS": "OFF"
       }
     },
     {
@@ -135,7 +135,7 @@
       "displayName": "QNX RTOS",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       }
     },
     {
@@ -145,7 +145,7 @@
       "displayName": "QNX RTOS (Release)",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       }
     }
   ],

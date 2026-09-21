@@ -7,8 +7,8 @@
  * rte_os_socket_ops_t.
  */
 
-#include "safeapi/oal/protocol/rte_protocol_adapter.h"
-#include "safeapi/oal/memory/rte_mem_util.h"
+#include "rte/oal/protocol/rte_protocol_adapter.h"
+#include "rte/oal/memory/rte_mem_util.h"
 
 typedef struct rte_protocol_tcp_state_s
 {

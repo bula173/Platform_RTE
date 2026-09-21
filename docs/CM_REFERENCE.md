@@ -144,7 +144,7 @@ cmake --preset debug
 
 # 2. Build
 cmake --build --preset debug
-# → Compiles src/ → libsafeapi_*.a
+# → Compiles src/ → librte_*.a
 # → Compiles tests/ → test_rte_*
 
 # 3. Test
@@ -270,7 +270,7 @@ v1.0.0 (2027-06) [PLANNED]
 releases/
 ├── v0.1.0/
 │   ├── build-debug/
-│   │   ├── libsafeapi_*.a
+│   │   ├── librte_*.a
 │   │   └── test_rte_*
 │   ├── test-results/
 │   │   └── test-*.xml (8 files)

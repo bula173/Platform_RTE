@@ -6,7 +6,7 @@ work is verified for most restart/partition scenarios but has a
 reproducible reconnect livelock specific to `a-east` restarting, not yet
 fixed. See §2.5 before treating this migration as fully closed.
 Date: 2026-08-18
-Applies to: `include/safeapi/netlink/rte_netlink.h` (doc contract only -
+Applies to: `include/rte/netlink/rte_netlink.h` (doc contract only -
 no API/ABI change), `safeAPIRBC2oo2`'s
 `src/posix_osadapter/rte_posix_osadapter_netlink.c`,
 `src/application/AB/channel_ab_negotiate.c`/`channel_ab_io.c`/
@@ -111,7 +111,7 @@ negotiation link down on the very first miss would reset
 `rte_dual_negotiator_t`'s tie-break state machine (back to
 `RTE_DUAL_STATE_IDLE`) far more often than a real fault warrants. A new
 `ctx->neg_consecutive_send_miss` counter
-(`SAFEAPI_EXAMPLE_NEG_SEND_MISS_THRESHOLD = 3`, `common_config.h`) requires
+(`RTE_EXAMPLE_NEG_SEND_MISS_THRESHOLD = 3`, `common_config.h`) requires
 several consecutive misses before teardown fires; a receive-side hard
 fault (a status that is neither `OK` nor `TIMEOUT`) still tears down
 immediately, no hysteresis - that is never a routine event.
@@ -131,7 +131,7 @@ existing tuning:
   process observed spinning at ~99% CPU) to the framework's own
   `rte_channel_checkpoint()` correctly entering
   `RTE_SAFESTATE_LEVEL_SAFE` (REQ-CHECKPOINT-003, an intentionally
-  non-returning halt) after `SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS`
+  non-returning halt) after `RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS`
   (150ms, tuned for TCP) was blown by this added startup latency - this
   was the framework working exactly as designed, reacting correctly to a
   transport that had genuinely gotten slower to establish.
@@ -147,7 +147,7 @@ existing tuning:
   sequential per-process link-establishment steps (e.g. a process opens
   its peer link before its negotiation link), and each CONNECT-role
   link's own `HELLO` retry period adds to that chain. `common_config.h`'s
-  `SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` was raised 150ms -> 300ms
+  `RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` was raised 150ms -> 300ms
   (still well under the 500ms cycle period) and the backend's own
   `POSIX_NETLINK_UDP_HELLO_PERIOD_MS` retry granularity was tightened
   100ms -> 20ms, so the worst-case startup convergence chain shrinks and
@@ -178,9 +178,9 @@ link's rx task (`channel_ab_io_peer_rx_task_entry()`,
 `channel_ab_io_m136_rx_task_entry()`,
 `monitor_c_io_rx_a_task_entry()`/`_rx_b_task_entry()`) now counts
 consecutive `RTE_STATUS_TIMEOUT` results from its own bounded
-`rte_netlink_receive()` call. `SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`
+`rte_netlink_receive()` call. `RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`
 (`common_config.h`, = 2) consecutive timeouts - meaning
-`SAFEAPI_EXAMPLE_LINK_TIMEOUT_MS` (3000ms) of total silence - closes the
+`RTE_EXAMPLE_LINK_TIMEOUT_MS` (3000ms) of total silence - closes the
 link for reconnect, the same as an outright hard-fault status always did.
 A single successful receive resets the counter to 0.
 
@@ -216,7 +216,7 @@ level up: the *reconnecting* side re-enabled the built-in checkpoint
 completed, immediately racing the first real round trip on a link that
 had just come back - under real Docker bridge-network conditions (not
 loopback), this occasionally still exceeded
-`SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS`, triggering the same
+`RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS`, triggering the same
 intentional `RTE_SAFESTATE_LEVEL_SAFE` halt as §2.3, this time on the
 *reconnecting* side rather than at startup. The budget was raised once
 more (300ms -> 450ms, 90% of the 500ms cycle period) as a first attempt,
@@ -243,7 +243,7 @@ genuine mutual deadlock, reproduced live (`docker restart a-east`, both
 `a-east` and `b-east` spinning at 100% CPU in the pacing busy-wait,
 neither progressing). Fixed by adding a bounded fallback: a
 `checkpoint_reenable_deadline_ms` set at reconnect time
-(`SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` = 600ms) that re-arms
+(`RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` = 600ms) that re-arms
 checkpoint on its own if the deadline passes with nothing received -
 re-enable now fires on whichever of the two signals (data arrived, or
 deadline elapsed) comes first, breaking the circularity while keeping the
@@ -268,7 +268,7 @@ Working theory, not yet confirmed: `open_connect_udp()` mints a fresh
 local ephemeral UDP port on every reconnect attempt (a plain `socket()`
 call, no `SO_REUSEPORT`/fixed local port). If both sides end up
 reconnecting on independent, unsynchronized cadences (each driven by its
-own `SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`-based detection, with no
+own `RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`-based detection, with no
 coordination between them), the LISTEN side can `connect()` to (lock
 onto) a peer address:port that is already stale by the time the CONNECT
 side's *next* reconnect attempt fires from a *different* ephemeral port
@@ -349,16 +349,16 @@ regardless of transport. Not touched by either phase.
 - `safeAPIRBC2oo2/src/application/C/monitor_c_types.h`, `monitor_c_io.c`
   (same staleness/dedup pattern for C's two links)
 - `safeAPIRBC2oo2/src/application/common_config.h`
-  (`SAFEAPI_EXAMPLE_NEG_SEND_MISS_THRESHOLD`,
-  `SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` raised to 450ms,
-  `SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`,
-  `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS`)
+  (`RTE_EXAMPLE_NEG_SEND_MISS_THRESHOLD`,
+  `RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` raised to 450ms,
+  `RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`,
+  `RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS`)
 - `safeAPIRBC2oo2/tests/posix_osadapter/test_rte_posix_osadapter.c` (new
   netlink cases)
 - `safeAPIRBC2oo2/tests/robot/fault_injection.robot` (new - container
   reboot/network partition matrix, all 6 RBC services), `etc/run_robot_tests.sh`
   (`--full` flag to include it)
-- `include/safeapi/netlink/rte_netlink.h` (doc contract: `REQ-OAL-NETLINK-014`,
+- `include/rte/netlink/rte_netlink.h` (doc contract: `REQ-OAL-NETLINK-014`,
   `HARDWARE_FAULT`/`DATA_CORRUPTION` semantics reworded for a
   transport-agnostic contract)
 - `docs/requirements/SRS.md` §2.8 (backfilled `REQ-OAL-NETLINK-001..014`)

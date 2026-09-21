@@ -1,6 +1,6 @@
-# safeAPIFramework Architecture Diagrams
+# RteFramework Architecture Diagrams
 
-This directory contains PlantUML diagrams for the safeAPIFramework architecture.
+This directory contains PlantUML diagrams for the RteFramework architecture.
 
 ## Diagram Index
 
@@ -127,7 +127,7 @@ plantuml -checkonly -c ../plantuml.cfg component-diagram.puml
 
 All diagrams are embedded in:
 - ADR documents (docs/architecture/ADR-*.md)
-- Header files (include/safeapi/*/rte_*.h)
+- Header files (include/rte/*/rte_*.h)
 - Module documentation
 
 See [DIAGRAMS_GUIDE.md](../DIAGRAMS_GUIDE.md) for embedding examples.

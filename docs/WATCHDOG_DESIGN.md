@@ -1,9 +1,9 @@
 # Watchdog Mechanism - Platform_RTE Design
 
 📋 **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
-- API specification: `include/safeapi/watchdog/rte_watchdog.h` ✅
+- API specification: `include/rte/watchdog/rte_watchdog.h` ✅
 - Implementation: `src/watchdog/rte_watchdog.c` (stub code, being developed)
-- Target release: safeAPIFramework v0.3.0
+- Target release: RteFramework v0.3.0
 
 ## Overview
 

@@ -1,4 +1,4 @@
-# safeAPIFramework Project Board
+# RteFramework Project Board
 
 Quick visual tracker for feature implementation status. For full details, see [ROADMAP.md](docs/ROADMAP.md) and [FEATURE_EXPANSION.md](docs/FEATURE_EXPANSION.md).
 
@@ -165,7 +165,7 @@ To visualize this board in GitHub's native Project interface:
 1. Go to https://github.com/bula173/safeAPIFreamwork/projects
 2. Click **New Project**
 3. Select **Table** or **Kanban** view
-4. Name: "safeAPIFramework Roadmap"
+4. Name: "RteFramework Roadmap"
 5. Add custom fields:
    - **Priority:** Single select (P1, P2, P3)
    - **Effort (weeks):** Number

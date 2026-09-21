@@ -70,7 +70,7 @@ jobs:
           mkdir -p artifacts/${{ matrix.preset }}/lib
           mkdir -p artifacts/${{ matrix.preset }}/include
           cp build/src/*/*.a artifacts/${{ matrix.preset }}/lib/ 2>/dev/null || true
-          cp -r include/safeapi artifacts/${{ matrix.preset }}/include/
+          cp -r include/rte artifacts/${{ matrix.preset }}/include/
           ls -la artifacts/${{ matrix.preset }}/
 
       - name: Upload release artifacts

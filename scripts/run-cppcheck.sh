@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run cppcheck with MISRA C:2012 analysis on safeAPIFramework source
+# Run cppcheck with MISRA C:2012 analysis on RteFramework source
 #
 # Usage:
 #   ./scripts/run-cppcheck.sh                    # Run analysis, print to stdout
@@ -11,7 +11,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
-echo "=== safeAPIFramework: MISRA C:2012 Static Analysis ==="
+echo "=== RteFramework: MISRA C:2012 Static Analysis ==="
 echo ""
 
 if ! command -v cppcheck &> /dev/null; then

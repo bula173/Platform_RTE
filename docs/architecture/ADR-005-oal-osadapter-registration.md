@@ -1,13 +1,13 @@
 # ADR-005: OAL Backend Registration via Callbacks
 
 > **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
-> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
-> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `rte_backend/` to
+> `rte_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
 > original wording as a historical record.
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, all `include/safeapi/os/*.h` services
+Applies to: safeAPIFreamwork, all `include/rte/os/*.h` services
 
 ## 1. Context
 
@@ -158,10 +158,10 @@ the start - no separate stub-then-retrofit step.
 
 > **Superseded by ADR-007.** See below for the original paths; each OAL
 > service's backend type/registration function now lives in its own
-> per-feature header (`include/safeapi/<feature>/rte_<feature>.h`) and
+> per-feature header (`include/rte/<feature>/rte_<feature>.h`) and
 > `.c` file (`src/<feature>/rte_<feature>.c`), not a shared `os/` folder.
 
-Every `include/safeapi/os/*.h` gains a `rte_<service>_backend_t` type and
+Every `include/rte/os/*.h` gains a `rte_<service>_backend_t` type and
 a `rte_<service>_register_backend()` declaration; every
 `src/os/rte_*.c` is rewritten to validate-then-dispatch instead of always
 returning `RTE_STATUS_NOT_IMPLEMENTED`.

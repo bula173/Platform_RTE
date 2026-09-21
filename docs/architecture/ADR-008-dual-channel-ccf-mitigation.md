@@ -142,9 +142,9 @@ case will still need to state.
 
 ## 4. Location
 
-`include/safeapi/channel/rte_channel.h` + `src/channel/rte_channel.c`
-(target `safeapi::channel`, links `safeapi::buffer` and
-`safeapi::safestate`), per the per-feature layout (ADR-007).
+`include/rte/channel/rte_channel.h` + `src/channel/rte_channel.c`
+(target `rte::channel`, links `rte::buffer` and
+`rte::safestate`), per the per-feature layout (ADR-007).
 Build-diversity toolchain skeletons at `cmake/toolchain-channel-a.cmake` /
 `cmake/toolchain-channel-b.cmake`. CCF analysis at
 `docs/safety/CCF_ANALYSIS.md`.

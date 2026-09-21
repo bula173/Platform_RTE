@@ -30,19 +30,19 @@
  *   gcc -std=c99 -Wall -Wextra -o geo_checkpoint_sync \
  *       geo_distributed_checkpoint_sync.c \
  *       -I../include -L../build \
- *       -lsafeapi_channels -lsafeapi_oal -lsafeapi_core
+ *       -lrte_channels -lrte_oal -lrte_core
  */
 
 #include <setjmp.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "safeapi/checkpoint/rte_checkpoint.h"
-#include "safeapi/checksum/rte_checksum.h"
-#include "safeapi/clocksync/rte_clocksync.h"
-#include "safeapi_osadapter/clocksync/rte_osadapter_clocksync.h"
-#include "safeapi/safestate/rte_safestate.h"
-#include "safeapi/voter/rte_voter.h"
+#include "rte/checkpoint/rte_checkpoint.h"
+#include "rte/checksum/rte_checksum.h"
+#include "rte/clocksync/rte_clocksync.h"
+#include "rte_osadapter/clocksync/rte_osadapter_clocksync.h"
+#include "rte/safestate/rte_safestate.h"
+#include "rte/voter/rte_voter.h"
 
 /* ============================================================================
  * Simulated transport: one in-memory mailbox per site (WEST=0, EAST=1)

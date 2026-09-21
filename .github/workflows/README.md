@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains automated CI/CD workflows for the safeAPIFramework.
+This directory contains automated CI/CD workflows for the RteFramework.
 
 ## Workflows
 

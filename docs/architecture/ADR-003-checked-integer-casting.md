@@ -2,7 +2,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, `include/safeapi/common/rte_cast.h`
+Applies to: safeAPIFreamwork, `include/rte/common/rte_cast.h`
 
 ## 1. Context
 
@@ -138,8 +138,8 @@ gain a dependency on it.
 ## 4. Location
 
 > **Superseded by ADR-007.** See below for the original path; the current
-> physical layout is `include/safeapi/cast/rte_cast.h` +
-> `src/cast/rte_cast.c`, target `safeapi::cast`.
+> physical layout is `include/rte/cast/rte_cast.h` +
+> `src/cast/rte_cast.c`, target `rte::cast`.
 
-`include/safeapi/common/rte_cast.h` + `src/common/rte_cast.c`, added to
-the existing `safeapi_common` library target (see ADR-002).
+`include/rte/common/rte_cast.h` + `src/common/rte_cast.c`, added to
+the existing `rte_common` library target (see ADR-002).

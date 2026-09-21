@@ -3,8 +3,8 @@
  * @brief Validation and dispatch for the named channel service.
  */
 
-#include "safeapi/redundancy/channel_service/rte_channel_service.h"
-#include "safeapi/redundancy/config/rte_redundancy_config.h"
+#include "rte/redundancy/channel_service/rte_channel_service.h"
+#include "rte/redundancy/config/rte_redundancy_config.h"
 
 static const rte_osadapter_channel_service_t *s_osadapter;
 

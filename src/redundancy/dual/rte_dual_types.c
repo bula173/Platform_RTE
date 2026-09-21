@@ -4,7 +4,7 @@
  * @brief Diagnostics-only string rendering for the rte_dual module's
  *        shared enums (ADR-020).
  */
-#include "safeapi/redundancy/dual/rte_dual_types.h"
+#include "rte/redundancy/dual/rte_dual_types.h"
 
 /** Local makros */
 

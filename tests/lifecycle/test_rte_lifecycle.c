@@ -4,7 +4,7 @@
  * tests/appmanager/test_rte_appmanager.c and each gated module's own
  * test file. */
 #include <assert.h>
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 
 int main(void)
 {

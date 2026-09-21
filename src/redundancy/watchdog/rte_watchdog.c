@@ -17,12 +17,12 @@
  *
  * @ingroup WATCHDOG
  */
-#include "safeapi/redundancy/watchdog/rte_watchdog.h"
+#include "rte/redundancy/watchdog/rte_watchdog.h"
 
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/oal/timer/rte_timer.h"
 
 #include <stdbool.h>
 #include <string.h>
@@ -38,7 +38,7 @@
  * One pool slot's full state. The public rte_watchdog_t handle is a
  * pointer to one of these slots. This module owns the storage itself (a
  * static pool), unlike most other OAL services in this framework, which
- * take caller-owned storage via SAFEAPI_DECLARE_STORAGE - rte_watchdog.h's
+ * take caller-owned storage via RTE_DECLARE_STORAGE - rte_watchdog.h's
  * own documented API (rte_watchdog_create() takes only a config and
  * returns a handle from an implicit "manager", with no caller-storage
  * parameter anywhere in its signature or its own doc examples) was
@@ -374,7 +374,7 @@ void rte_watchdog_timer_tick(void)
      * across every target this framework claims to support - POSIX,
      * QNX, bare-metal SysTick, etc.). Giving this module its own
      * platform-specific interrupt setup would duplicate what
-     * safeapi::timer already exists to abstract, and would break the
+     * rte::timer already exists to abstract, and would break the
      * "OSAdapters are integrator-supplied" philosophy (ADR-005) for a
      * module whose own header was never given an OSAdapter vtable. Instead:
      * whatever already runs periodically in the integrating application

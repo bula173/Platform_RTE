@@ -4,9 +4,9 @@
  * @brief Memory pool service: validates parameters, then dispatches to the
  *        OSAdapter registered via rte_osadapter_memory_register() (ADR-005).
  */
-#include "safeapi/oal/memory/rte_memory.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/memory/rte_osadapter_memory.h"
+#include "rte/oal/memory/rte_memory.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/memory/rte_osadapter_memory.h"
 
 /** Local makros */
 

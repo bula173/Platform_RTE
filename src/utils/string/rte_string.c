@@ -3,8 +3,8 @@
  * @brief Implementation of the bounded string module (ADR-006).
  * @ingroup STRING
  */
-#include "safeapi/utils/string/rte_string.h"
-#include "safeapi/utils/cast/rte_cast.h"
+#include "rte/utils/string/rte_string.h"
+#include "rte/utils/cast/rte_cast.h"
 #include <string.h>
 
 rte_status_t rte_string_init(rte_string_t *str, char *storage, size_t capacity)

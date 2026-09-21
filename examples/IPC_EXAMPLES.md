@@ -1,6 +1,6 @@
 # IPC Communication Patterns - Examples
 
-This directory contains comprehensive examples demonstrating the safeAPIFramework's Inter-Process Communication (IPC) patterns.
+This directory contains comprehensive examples demonstrating the RteFramework's Inter-Process Communication (IPC) patterns.
 
 ---
 
@@ -357,7 +357,7 @@ rte_ipc_pubsub_topic_destroy(&topic);
 
 ## References
 
-- safeapi_ipc_request_reply.h — Full API documentation
-- safeapi_ipc_pubsub.h — Full API documentation
+- rte_ipc_request_reply.h — Full API documentation
+- rte_ipc_pubsub.h — Full API documentation
 - [FEATURE_EXPANSION.md](../docs/FEATURE_EXPANSION.md) — Design details and rationale
 - [ROADMAP.md](../docs/ROADMAP.md) — Implementation timeline

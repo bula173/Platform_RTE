@@ -34,22 +34,22 @@ if(DEFINED LINUX_CROSS_COMPILE)
 
     if(LINUX_CROSS_COMPILE STREQUAL "aarch64-linux-gnu")
         set(CMAKE_SYSTEM_PROCESSOR aarch64)
-        set(SAFEAPI_LINUX_ARCH_FLAGS "-march=armv8-a")
+        set(RTE_LINUX_ARCH_FLAGS "-march=armv8-a")
     elseif(LINUX_CROSS_COMPILE STREQUAL "arm-linux-gnueabihf")
         set(CMAKE_SYSTEM_PROCESSOR arm)
-        set(SAFEAPI_LINUX_ARCH_FLAGS "-march=armv7-a -mfpu=neon -mfloat-abi=hard")
+        set(RTE_LINUX_ARCH_FLAGS "-march=armv7-a -mfpu=neon -mfloat-abi=hard")
     elseif(LINUX_CROSS_COMPILE STREQUAL "x86_64-linux-gnu")
         set(CMAKE_SYSTEM_PROCESSOR x86_64)
-        set(SAFEAPI_LINUX_ARCH_FLAGS "-march=x86-64")
+        set(RTE_LINUX_ARCH_FLAGS "-march=x86-64")
     elseif(LINUX_CROSS_COMPILE STREQUAL "i686-linux-gnu")
         set(CMAKE_SYSTEM_PROCESSOR i686)
-        set(SAFEAPI_LINUX_ARCH_FLAGS "-m32 -march=i686")
+        set(RTE_LINUX_ARCH_FLAGS "-m32 -march=i686")
     else()
         message(WARNING "Toolchain-Linux.cmake: unrecognized LINUX_CROSS_COMPILE "
                          "prefix '${LINUX_CROSS_COMPILE}' - CMAKE_SYSTEM_PROCESSOR "
                          "not set automatically; pass -DCMAKE_SYSTEM_PROCESSOR=... "
                          "yourself if the build needs it.")
-        set(SAFEAPI_LINUX_ARCH_FLAGS "")
+        set(RTE_LINUX_ARCH_FLAGS "")
     endif()
 else()
     # Native Linux build (gcc/clang available on system). CMAKE_HOST_SYSTEM_PROCESSOR
@@ -59,12 +59,12 @@ else()
     # unconditionally, wrong on any non-x86_64 native host, e.g. this project's own
     # arm64 macOS dev machines and Apple Silicon/ARM64 Linux CI runners).
     set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
-    set(SAFEAPI_LINUX_ARCH_FLAGS "")
+    set(RTE_LINUX_ARCH_FLAGS "")
 endif()
 
 # Linux-specific compiler flags
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SAFEAPI_LINUX_ARCH_FLAGS} -fPIC -pthread")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SAFEAPI_LINUX_ARCH_FLAGS} -fPIC -pthread")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RTE_LINUX_ARCH_FLAGS} -fPIC -pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RTE_LINUX_ARCH_FLAGS} -fPIC -pthread")
 
 # Enable position-independent code for shared libraries
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

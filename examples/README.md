@@ -1,6 +1,6 @@
-# safeAPIFramework Examples
+# RteFramework Examples
 
-This directory contains realistic example applications demonstrating the safeAPIFramework on different platforms.
+This directory contains realistic example applications demonstrating the RteFramework on different platforms.
 
 ---
 
@@ -20,7 +20,7 @@ Two complementary railway domain applications demonstrate the framework:
    - Deterministic real-time operation on QNX RTOS
    - Production-ready pattern for safety-critical systems
 
-Both use the same safeAPIFramework core, demonstrating platform portability through the OAL abstraction.
+Both use the same RteFramework core, demonstrating platform portability through the OAL abstraction.
 
 ---
 
@@ -38,11 +38,11 @@ Both use the same safeAPIFramework core, demonstrating platform portability thro
 - Graceful shutdown on Ctrl+C
 
 **Framework Features Demonstrated:**
-- `safeapi::status` — Return status codes instead of exceptions
-- `safeapi::log` — Structured logging
-- `safeapi::safestate` — Safe assertions and state checks
-- `safeapi::timer` — Simulated periodic callbacks
-- `safeapi::buffer` — Buffer management
+- `rte::status` — Return status codes instead of exceptions
+- `rte::log` — Structured logging
+- `rte::safestate` — Safe assertions and state checks
+- `rte::timer` — Simulated periodic callbacks
+- `rte::buffer` — Buffer management
 - POSIX threading integration
 
 ### Building
@@ -125,9 +125,9 @@ Final state:         SHUTDOWN
 - Production-grade safety patterns
 
 **Framework Features Demonstrated:**
-- `safeapi::status` — Explicit error handling for safety-critical code
-- `safeapi::log` — Structured logging in RTOS environment
-- `safeapi::safestate` — Safe assertions and state verification
+- `rte::status` — Explicit error handling for safety-critical code
+- `rte::log` — Structured logging in RTOS environment
+- `rte::safestate` — Safe assertions and state verification
 - QNX native message passing (`MsgSend`, `MsgReceive`)
 - Deterministic scheduling
 - Zero-copy message handling
@@ -177,7 +177,7 @@ cmake -S ../../ -B . \
   -DCMAKE_TOOLCHAIN_FILE=../../cmake/Toolchain-QNX.cmake \
   -DQNX_HOST=$QNX_HOST \
   -DQNX_TARGET=$QNX_TARGET \
-  -DSAFEAPI_BUILD_TESTS=OFF
+  -DRTE_BUILD_TESTS=OFF
 
 cmake --build .
 ```
@@ -191,7 +191,7 @@ cmake --build .
 2. **Deploy to target:**
    ```bash
    scp build/qnx/src/*/*.a target_user@qnx_target:/opt/rbc/lib/
-   scp -r ../../include/safeapi target_user@qnx_target:/opt/rbc/include/
+   scp -r ../../include/rte target_user@qnx_target:/opt/rbc/include/
    scp build/qnx/examples/qnx-rtos-app/railway-server target_user@qnx_target:/opt/rbc/bin/
    ```
 
@@ -282,15 +282,15 @@ Errors:              0
 
 ### Common (Both Platforms)
 
-- **safeapi::status** — Explicit error codes (no exceptions)
-- **safeapi::log** — Structured logging
-- **safeapi::safestate** — Safe assertions and invariant checking
-- **safeapi::types** — Fixed-width integer types (uint32_t, etc.)
+- **rte::status** — Explicit error codes (no exceptions)
+- **rte::log** — Structured logging
+- **rte::safestate** — Safe assertions and invariant checking
+- **rte::types** — Fixed-width integer types (uint32_t, etc.)
 
 ### Linux-Specific
 
-- **safeapi::timer** — POSIX timers (simulated in example)
-- **safeapi::task** — POSIX thread scheduling
+- **rte::timer** — POSIX timers (simulated in example)
+- **rte::task** — POSIX thread scheduling
 - **pthreads** — Native POSIX threads
 
 ### QNX-Specific
@@ -331,8 +331,8 @@ Use QNX `timer_create()` with POSIX API
 ### Add Multi-Task Coordination
 
 **Linux:**
-- Use `safeapi::task` for thread pools
-- Implement message queue with `safeapi::msgqueue` (when available)
+- Use `rte::task` for thread pools
+- Implement message queue with `rte::msgqueue` (when available)
 
 **QNX:**
 - Leverage QNX priority-based preemptive scheduling
@@ -373,7 +373,7 @@ ctest --preset asan
 
 ## References
 
-- [safeAPIFramework Documentation](../docs/)
+- [RteFramework Documentation](../docs/)
 - [CROSS_COMPILATION.md](../docs/CROSS_COMPILATION.md)
 - [QNX Documentation](https://www.qnx.com/developers/docs/)
 - [POSIX Standard](https://pubs.opengroup.org/onlinepubs/9699919799/)

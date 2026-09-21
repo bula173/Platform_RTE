@@ -1,8 +1,8 @@
 # ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework
 
 > **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
-> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
-> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `rte_backend/` to
+> `rte_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
 > original wording as a historical record.
 
 Status: Draft
@@ -99,8 +99,8 @@ since the RBC core it serves is SIL 4:
 - Public functions/types: `rte_<service>_<verb>`, e.g. `rte_timer_create`.
 - Public macros/constants: `RTE_<SERVICE>_<NAME>`.
 - Status/error enum: `rte_status_t`, values `RTE_STATUS_*`.
-- Each service gets one public header under `include/safeapi/os/`.
-- Header guards: `SAFEAPI_OS_<SERVICE>_H`.
+- Each service gets one public header under `include/rte/os/`.
+- Header guards: `RTE_OS_<SERVICE>_H`.
 
 ### 3.4 Handle pattern (no dynamic allocation)
 
@@ -173,10 +173,10 @@ Six services, one header each:
 
 ## 5. Directory / build structure
 
-> **Superseded by ADR-007.** The `include/safeapi/common/` /
-> `include/safeapi/os/` (and matching `src/`/`tests/`) grouping described
+> **Superseded by ADR-007.** The `include/rte/common/` /
+> `include/rte/os/` (and matching `src/`/`tests/`) grouping described
 > below was the original layout. ADR-007 replaced it with one directory
-> per feature (`include/safeapi/timer/`, `src/timer/`, `tests/timer/`,
+> per feature (`include/rte/timer/`, `src/timer/`, `tests/timer/`,
 > etc.), dropping the `common`/`os` grouping folder while keeping the
 > conceptual distinction it represented (see ADR-007 section 2.1). Left
 > here unmodified as the historical record of this decision.
@@ -186,14 +186,14 @@ safeAPIFreamwork/
   CMakeLists.txt                 top-level, options, adds subdirs
   cmake/CompilerWarnings.cmake   shared warning/hardening flags
   docs/architecture/             ADRs (this file)
-  include/safeapi/common/        rte_status.h, rte_types.h
-  include/safeapi/os/            the six service headers
+  include/rte/common/        rte_status.h, rte_types.h
+  include/rte/os/            the six service headers
   src/os/                        stub backend implementations + CMakeLists.txt
   tests/                         CTest scaffold, one test file per service
 ```
 
 Each service is built as its own CMake object/static library target under a
-top-level `safeapi_os` interface library, so a consumer can link the whole
+top-level `rte_os` interface library, so a consumer can link the whole
 OAL or a single service.
 
 ## 6. Consequences

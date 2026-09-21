@@ -1,4 +1,4 @@
-# Safety Application Conditions (SAC) for safeAPIFramework
+# Safety Application Conditions (SAC) for RteFramework
 
 **Document Type:** Safety Application Conditions  
 **Status:** DRAFT - For use in projects implementing EN 50128:2011  
@@ -9,9 +9,9 @@
 
 ## Executive Summary
 
-**safeAPIFramework is NOT a pre-certified, pre-assessed library.**
+**RteFramework is NOT a pre-certified, pre-assessed library.**
 
-It is a **reference template and design pattern** demonstrating EN 50128:2011 alignment. Any project using safeAPIFramework must:
+It is a **reference template and design pattern** demonstrating EN 50128:2011 alignment. Any project using RteFramework must:
 
 1. **Treat it as new software** developed under the project's formal processes
 2. **Perform formal code review** against EN 50128 requirements
@@ -20,13 +20,13 @@ It is a **reference template and design pattern** demonstrating EN 50128:2011 al
 5. **Submit to independent assessment** by a Notified Body (for SIL 3/4)
 6. **Document these conditions** in the project's Safety Case
 
-This SAC defines the conditions under which safeAPIFramework may be used as a foundation for a safety-critical system.
+This SAC defines the conditions under which RteFramework may be used as a foundation for a safety-critical system.
 
 ---
 
 ## 1. Component Status
 
-### 1.1 What safeAPIFramework IS
+### 1.1 What RteFramework IS
 
 - ✅ A reference implementation of EN 50128 design principles
 - ✅ An OS Abstraction Layer (OAL) demonstrating layered architecture
@@ -39,7 +39,7 @@ This SAC defines the conditions under which safeAPIFramework may be used as a fo
   - Module isolation
   - Endianness-safe buffer operations
 
-### 1.2 What safeAPIFramework is NOT
+### 1.2 What RteFramework is NOT
 
 - ❌ A certified or assessed library
 - ❌ Pre-verified for use in any specific railway project
@@ -68,11 +68,11 @@ This SAC defines the conditions under which safeAPIFramework may be used as a fo
 
 ### 2.1 Mandatory Verification Activities (Project Responsibility)
 
-Any project using safeAPIFramework must perform:
+Any project using RteFramework must perform:
 
 #### A. Formal Code Review
 - **Requirement:** EN 50128:2011, Section 7.2
-- **What:** Every source file in safeAPIFramework must be reviewed against:
+- **What:** Every source file in RteFramework must be reviewed against:
   - MISRA C:2012 Mandatory & Required rules
   - EN 50128 Section 6 (technical requirements)
   - CENELEC safety critical coding practices
@@ -83,7 +83,7 @@ Any project using safeAPIFramework must perform:
 
 #### B. Static Analysis Verification
 - **Requirement:** EN 50128:2011, Section 7.3
-- **Minimum:** Run `cppcheck --addon=misra --std=c99` on all safeAPIFramework code
+- **Minimum:** Run `cppcheck --addon=misra --std=c99` on all RteFramework code
 - **Recommended:** Use certified MISRA tool (LDRA, Parasoft, PC-lint Plus, Polyspace)
 - **Not Sufficient:** Running cppcheck alone; must use qualified tool for SIL 3/4
 - **Output:** MISRA compliance report with tool evidence
@@ -91,7 +91,7 @@ Any project using safeAPIFramework must perform:
 
 #### C. Functional Testing
 - **Requirement:** EN 50128:2011, Section 7.4
-- **What:** Unit and integration tests for all safeAPIFramework components
+- **What:** Unit and integration tests for all RteFramework components
   - Test coverage: Minimum 80% line coverage (recommend >90% for SIL 3/4)
   - Test each module's OSAdapter interface separately
   - Test error handling paths (RTE_STATUS_* return values)
@@ -101,7 +101,7 @@ Any project using safeAPIFramework must perform:
 
 #### D. Requirement Traceability
 - **Requirement:** EN 50128:2011, Section 6.4
-- **What:** Link every safeAPIFramework requirement to:
+- **What:** Link every RteFramework requirement to:
   - Design element (ADR or design document)
   - Implementation (code file & line)
   - Test case(s)
@@ -112,7 +112,7 @@ Any project using safeAPIFramework must perform:
 
 #### E. Hazard Analysis
 - **Requirement:** EN 50128:2011, Section 5
-- **What:** Identify failure modes in safeAPIFramework context:
+- **What:** Identify failure modes in RteFramework context:
   - OSAdapter not registered (NULL pointer dereference)
   - Buffer overflow in string operations
   - Race condition in inter-task communication (IPC)
@@ -128,7 +128,7 @@ Any project using safeAPIFramework must perform:
   - Formal design review
   - Implementation code review
   - Unit testing against interface contract
-  - Integration testing with safeAPIFramework
+  - Integration testing with RteFramework
   - Static analysis (your OSAdapter code must also be MISRA compliant)
 - **Output:** OSAdapter verification report
 - **Evidence for Safety Case:** OSAdapter documentation, test results
@@ -178,7 +178,7 @@ Any project using safeAPIFramework must perform:
 - **Assumption:** OS/RTOS layer provides thread-safe OSAdapter implementations
 - **Project Must Verify:** OSAdapter implementations are thread-safe (if multi-threaded)
 
-- **Assumption:** safeAPIFramework services are called from single or properly-synchronized threads
+- **Assumption:** RteFramework services are called from single or properly-synchronized threads
 - **Project Must Verify:** Calling code doesn't violate this assumption
 
 - **Assumption:** OSAdapters are registered before any service is used
@@ -207,7 +207,7 @@ Any project using safeAPIFramework must perform:
 | Limitation | Impact | Mitigation |
 |-----------|--------|-----------|
 | **Manual MISRA review** | Not certified; possible missed violations | Use certified MISRA tool in your project |
-| **No formal assessment** | No evidence safeAPIFramework is correct | Formal assessment is your project's responsibility |
+| **No formal assessment** | No evidence RteFramework is correct | Formal assessment is your project's responsibility |
 | **Limited test coverage** | Reference tests only; not exhaustive | Expand tests in your system context |
 | **No real RTOS OSAdapters** | Reference OSAdapters are stubs | Implement and verify actual RTOS OSAdapters |
 | **No multi-core verification** | Assumes single-threaded or synchronized | Verify thread safety for your RTOS |
@@ -217,12 +217,12 @@ Any project using safeAPIFramework must perform:
 
 ## 4. Required Documentation in Your Safety Case
 
-When using safeAPIFramework, your project's Safety Case must include:
+When using RteFramework, your project's Safety Case must include:
 
 ### 4.1 Component Architecture & Traceability
 ```
 1. System Architecture Document
-   - Role of safeAPIFramework in system
+   - Role of RteFramework in system
    - How OAL isolates application from OS
    - OSAdapter architecture diagram
    - Integration points with application logic
@@ -233,7 +233,7 @@ When using safeAPIFramework, your project's Safety Case must include:
    - Implementation → Tests
 
 3. Requirement Specification (SRS)
-   - List all safeAPIFramework requirements
+   - List all RteFramework requirements
    - Reference to SRS.md + project-specific modifications
    - Verification method for each requirement
 ```
@@ -300,7 +300,7 @@ When using safeAPIFramework, your project's Safety Case must include:
 **Use this template for your project's Safety Case:**
 
 ```markdown
-# safeAPIFramework - Safety Application Conditions
+# RteFramework - Safety Application Conditions
 
 **Project:** [RBC/Signaling System Name]  
 **SIL Target:** [2/3/4]  
@@ -309,15 +309,15 @@ When using safeAPIFramework, your project's Safety Case must include:
 
 ## Usage Declaration
 
-This project uses safeAPIFramework v0.1.0 as the basis for the OS Abstraction Layer (OAL).
+This project uses RteFramework v0.1.0 as the basis for the OS Abstraction Layer (OAL).
 
-safeAPIFramework provides:
+RteFramework provides:
 - ✅ Layered architecture (application ↔ OAL ↔ RTOS)
 - ✅ MISRA C:2012 compliant code patterns
 - ✅ 13 modular services (timer, NVM, IPC, etc.)
 - ✅ Reference design patterns (ADR-001 through ADR-007)
 
-safeAPIFramework does NOT provide:
+RteFramework does NOT provide:
 - ❌ SIL certification (project's responsibility)
 - ❌ Formal assessment evidence (project must generate)
 - ❌ OS/RTOS OSAdapters (project must implement)
@@ -374,8 +374,8 @@ safeAPIFramework does NOT provide:
 
 ## Scope & Limitations
 
-- safeAPIFramework code is verified per this SAC
-- Application code using safeAPIFramework is verified separately
+- RteFramework code is verified per this SAC
+- Application code using RteFramework is verified separately
 - OS/RTOS layer is verified by [vendor/in-house]
 - Hardware is qualified per EN 50128 hardware section
 
@@ -393,7 +393,7 @@ safeAPIFramework does NOT provide:
 
 ## 6. Formal Code Review Checklist
 
-Use this checklist for your formal review of safeAPIFramework:
+Use this checklist for your formal review of RteFramework:
 
 ### MISRA C:2012 Mandatory Rules
 - [ ] Dir 1.1 — Code in C (not C++)

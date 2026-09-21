@@ -1,6 +1,6 @@
 # Cross-Compilation Guide
 
-This document describes how to build safeAPIFramework for different target platforms (Linux, QNX, etc.).
+This document describes how to build RteFramework for different target platforms (Linux, QNX, etc.).
 
 ## Overview
 
@@ -98,9 +98,9 @@ cmake --install build/linux-native --prefix /usr/local
 ```
 
 This installs:
-- Headers: `/usr/local/include/safeapi/`
-- Libraries: `/usr/local/lib/libsafeapi_*.a`
-- CMake config: `/usr/local/lib/cmake/safeAPIFramework/`
+- Headers: `/usr/local/include/rte/`
+- Libraries: `/usr/local/lib/librte_*.a`
+- CMake config: `/usr/local/lib/cmake/RteFramework/`
 
 #### 4. Use in Your Application
 
@@ -109,14 +109,14 @@ Create a `CMakeLists.txt` for your app:
 cmake_minimum_required(VERSION 3.16)
 project(my_rbc_app C)
 
-find_package(safeAPIFramework REQUIRED)
+find_package(RteFramework REQUIRED)
 
 add_executable(my_app main.c)
 target_link_libraries(my_app
-    safeapi::core
-    safeapi::oal
-    safeapi::channels
-    safeapi::appmanager
+    rte::core
+    rte::oal
+    rte::channels
+    rte::appmanager
     pthread
 )
 
@@ -152,7 +152,7 @@ under emulation.
 ```bash
 cd RBC_Test_Env
 etc/scripts/build_multiarch.sh -i rbc2oo2 -p linux/arm64,linux/386
-docker run --rm --entrypoint uname safeapi-rbc2oo2:latest-386 -m   # -> i686/i386
+docker run --rm --entrypoint uname rte-rbc2oo2:latest-386 -m   # -> i686/i386
 ```
 
 Supports `linux/amd64`, `linux/arm64`, `linux/386`, `linux/arm/v7` (Docker Desktop's own
@@ -216,7 +216,7 @@ cmake -S . -B build/qnx \
   -DQNX_HOST=$QNX_HOST \
   -DQNX_TARGET=$QNX_TARGET \
   -DCMAKE_BUILD_TYPE=Debug \
-  -DSAFEAPI_BUILD_TESTS=OFF
+  -DRTE_BUILD_TESTS=OFF
 
 cmake --build build/qnx
 ```
@@ -232,7 +232,7 @@ After building, deploy to your QNX system:
 scp build/qnx/src/*/*.a user@qnx-target:/opt/rbc/lib/
 
 # Copy headers
-scp -r include/safeapi user@qnx-target:/opt/rbc/include/
+scp -r include/rte user@qnx-target:/opt/rbc/include/
 
 # Copy CMake config (optional, if using find_package)
 scp -r build/qnx/cmake user@qnx-target:/opt/rbc/lib/cmake/
@@ -249,14 +249,14 @@ project(my_rbc_qnx C)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/Toolchain-QNX.cmake)
 
 # Find framework
-find_package(safeAPIFramework REQUIRED)
+find_package(RteFramework REQUIRED)
 
 add_executable(my_rbc_app main.c)
 target_link_libraries(my_rbc_app
-    safeapi::core
-    safeapi::oal
-    safeapi::channels
-    safeapi::appmanager
+    rte::core
+    rte::oal
+    rte::channels
+    rte::appmanager
 )
 
 # QNX requires certain libraries
@@ -383,16 +383,16 @@ cmake -S . -B build \
 
 **Reason:** Cross-compiled binaries cannot run on build host.
 
-**Solution:** Tests are disabled automatically for QNX (SAFEAPI_BUILD_TESTS=OFF). For other cross-compiles, disable manually:
+**Solution:** Tests are disabled automatically for QNX (RTE_BUILD_TESTS=OFF). For other cross-compiles, disable manually:
 ```bash
-cmake -S . -B build -DSAFEAPI_BUILD_TESTS=OFF
+cmake -S . -B build -DRTE_BUILD_TESTS=OFF
 ```
 
 ### "Compiler warnings treated as errors"
 
 **Solution:** Build in less-strict mode:
 ```bash
-cmake -S . -B build -DSAFEAPI_WARNINGS_AS_ERRORS=OFF
+cmake -S . -B build -DRTE_WARNINGS_AS_ERRORS=OFF
 ```
 
 Or use a different preset (e.g., `minimal`):

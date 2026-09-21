@@ -6,9 +6,9 @@
  *        the source's signedness, then range-checks against the
  *        destination's limit macros before performing the explicit cast.
  */
-#include "safeapi/utils/cast/rte_cast.h"
+#include "rte/utils/cast/rte_cast.h"
 
-#include "safeapi/utils/safestate/rte_safety_violation.h"
+#include "rte/utils/safestate/rte_safety_violation.h"
 
 rte_status_t rte_cast_i8_to_i16(int8_t in, int16_t *out)
 {

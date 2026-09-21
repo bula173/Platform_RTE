@@ -3,11 +3,11 @@
  * @ingroup DUAL
  * @brief "DualChannel" layer of ADR-020 - see rte_dual_channel.h.
  */
-#include "safeapi/redundancy/dual/rte_dual_channel.h"
+#include "rte/redundancy/dual/rte_dual_channel.h"
 
 #include <string.h>
 
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/oal/timer/rte_timer.h"
 
 /** @brief Cap on consecutive rte_dual_channel_send() ACK-wait polls that
  *         may complete without rte_timer_now() showing any measurable
@@ -493,7 +493,7 @@ rte_status_t rte_dual_channel_send_heartbeat(rte_dual_channel_t *channel, uint32
      * content that still gets read (and checksummed/transmitted) by the
      * rte_dual_msgchannel_send() call below, since it hashes/sends
      * `sizeof(frame)` raw bytes, not just the named fields - found via
-     * Valgrind (SAFEAPI_ENABLE_ASAN/Valgrind CTest memcheck target)
+     * Valgrind (RTE_ENABLE_ASAN/Valgrind CTest memcheck target)
      * flagging a real "use of uninitialised value" inside
      * rte_checksum_crc64(), reached from here. */
     (void)memset(&frame, 0, sizeof(frame));

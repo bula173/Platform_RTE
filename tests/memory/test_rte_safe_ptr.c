@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/oal/memory/rte_safe_ptr.h"
+#include "rte/oal/memory/rte_safe_ptr.h"
 
 static void test_init_rejects_bad_args(void)
 {

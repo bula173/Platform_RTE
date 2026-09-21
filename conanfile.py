@@ -5,8 +5,8 @@ from conan.tools.cmake import CMake, CMakeDeps, CMakeToolchain, cmake_layout
 from conan.tools.files import copy
 
 
-class SafeAPIFrameworkConan(ConanFile):
-    name = "safeapiframework"
+class RTEFrameworkConan(ConanFile):
+    name = "rteframework"
     version = "0.1.0"
     license = "see LICENSE.md"
     description = (
@@ -20,9 +20,9 @@ class SafeAPIFrameworkConan(ConanFile):
     package_type = "static-library"
     settings = "os", "compiler", "build_type", "arch"
 
-    # Mirrors CMakeLists.txt's own SAFEAPI_ENABLE_* options (ADR-024
+    # Mirrors CMakeLists.txt's own RTE_ENABLE_* options (ADR-024
     # feature-selectable build) one-for-one, so a Conan-driven build has the
-    # same granularity as a plain `cmake -DSAFEAPI_ENABLE_...=OFF` one.
+    # same granularity as a plain `cmake -DRTE_ENABLE_...=OFF` one.
     options = {
         "fPIC": [True, False],
         "with_timer": [True, False],
@@ -46,7 +46,7 @@ class SafeAPIFrameworkConan(ConanFile):
     }
     default_options = {name: True for name in options} | {"fPIC": True}
 
-    # SAFEAPI_ENABLE_<X> CMake option name for each with_<x> Conan option
+    # RTE_ENABLE_<X> CMake option name for each with_<x> Conan option
     # above (explicit list, not introspected from self.options - Conan 2's
     # Options object has no public "list the defined option names" API).
     _feature_options = [
@@ -66,7 +66,7 @@ class SafeAPIFrameworkConan(ConanFile):
     )
 
     def _dist_platform_dir(self):
-        # Mirrors SAFEAPI_DIST_PLATFORM_DIR (CMAKE_SYSTEM_NAME-CMAKE_SYSTEM_PROCESSOR,
+        # Mirrors RTE_DIST_PLATFORM_DIR (CMAKE_SYSTEM_NAME-CMAKE_SYSTEM_PROCESSOR,
         # see CMakeLists.txt and root CLAUDE.md's "dist/" convention) - Conan's
         # own os/arch settings use different vocabulary (Macos/armv8 vs CMake's
         # Darwin/arm64), and CMAKE_SYSTEM_PROCESSOR for the same CPU family
@@ -94,11 +94,11 @@ class SafeAPIFrameworkConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
-        tc.cache_variables["SAFEAPI_BUILD_TESTS"] = False
+        tc.cache_variables["RTE_BUILD_TESTS"] = False
         if self.options.get_safe("fPIC") is not None:
             tc.cache_variables["CMAKE_POSITION_INDEPENDENT_CODE"] = bool(self.options.fPIC)
         for opt_name in self._feature_options:
-            cmake_var = "SAFEAPI_ENABLE_" + opt_name[len("with_"):].upper()
+            cmake_var = "RTE_ENABLE_" + opt_name[len("with_"):].upper()
             tc.cache_variables[cmake_var] = bool(getattr(self.options, opt_name))
         tc.generate()
         CMakeDeps(self).generate()
@@ -120,37 +120,37 @@ class SafeAPIFrameworkConan(ConanFile):
         # Conan-conventional <package_folder>/include, /lib directly, so
         # every path below is dist-prefixed. Component graph mirrors
         # target_link_libraries() in CMakeLists.txt / src/appmanager/CMakeLists.txt
-        # exactly, and cmake_target_name matches the safeapi::* names our own
+        # exactly, and cmake_target_name matches the rte::* names our own
         # install(EXPORT ...) already exports - a consumer's
-        # target_link_libraries(x PRIVATE safeapi::core) works identically
+        # target_link_libraries(x PRIVATE rte::core) works identically
         # whether resolved via Conan's CMakeDeps or via this project's own
-        # dist/lib/cmake/safeAPIFramework/safeAPIFrameworkConfig.cmake.
-        self.cpp_info.set_property("cmake_file_name", "safeAPIFramework")
+        # dist/lib/cmake/RteFramework/RteFrameworkConfig.cmake.
+        self.cpp_info.set_property("cmake_file_name", "RteFramework")
 
         plat = self._dist_platform_dir()
         includedir = f"dist/{plat}/include"
         libdir = f"dist/{plat}/lib"
 
-        self.cpp_info.components["core"].set_property("cmake_target_name", "safeapi::core")
-        self.cpp_info.components["core"].libs = ["safeapi_core"]
+        self.cpp_info.components["core"].set_property("cmake_target_name", "rte::core")
+        self.cpp_info.components["core"].libs = ["rte_core"]
         self.cpp_info.components["core"].includedirs = [includedir]
         self.cpp_info.components["core"].libdirs = [libdir]
 
-        self.cpp_info.components["oal"].set_property("cmake_target_name", "safeapi::oal")
-        self.cpp_info.components["oal"].libs = ["safeapi_oal"]
+        self.cpp_info.components["oal"].set_property("cmake_target_name", "rte::oal")
+        self.cpp_info.components["oal"].libs = ["rte_oal"]
         self.cpp_info.components["oal"].includedirs = [includedir]
         self.cpp_info.components["oal"].libdirs = [libdir]
         self.cpp_info.components["oal"].requires = ["core"]
 
-        self.cpp_info.components["channels"].set_property("cmake_target_name", "safeapi::channels")
-        self.cpp_info.components["channels"].libs = ["safeapi_channels"]
+        self.cpp_info.components["channels"].set_property("cmake_target_name", "rte::channels")
+        self.cpp_info.components["channels"].libs = ["rte_channels"]
         self.cpp_info.components["channels"].includedirs = [includedir]
         self.cpp_info.components["channels"].libdirs = [libdir]
         self.cpp_info.components["channels"].requires = ["core", "oal"]
 
         if self.options.with_appmanager:
-            self.cpp_info.components["appmanager"].set_property("cmake_target_name", "safeapi::appmanager")
-            self.cpp_info.components["appmanager"].libs = ["safeapi_appmanager"]
+            self.cpp_info.components["appmanager"].set_property("cmake_target_name", "rte::appmanager")
+            self.cpp_info.components["appmanager"].libs = ["rte_appmanager"]
             self.cpp_info.components["appmanager"].includedirs = [includedir]
             self.cpp_info.components["appmanager"].libdirs = [libdir]
             self.cpp_info.components["appmanager"].requires = ["core", "oal", "channels"]

@@ -21,8 +21,8 @@ ADR-029's transport is **one TCP connection per train instance**:
   ports on `C`, N more for `IL`, and the C<->A and C<->B relay links
   are likewise one dedicated link per `{peer, kind, instance}`
   (`site_config.h`, `gateway_c_train_handler.h`:
-  `relay_channel[GATEWAY_C_PEER_COUNT][SAFEAPI_EXAMPLE_MAX_TRAINS]`).
-- The per-site port span is `4 + 9 * SAFEAPI_EXAMPLE_MAX_TRAINS`
+  `relay_channel[GATEWAY_C_PEER_COUNT][RTE_EXAMPLE_MAX_TRAINS]`).
+- The per-site port span is `4 + 9 * RTE_EXAMPLE_MAX_TRAINS`
   (`common_config.h`, `C_FOR_*_PORT_OFFSET` chain). At `MAX_TRAINS = 2`
   that is ~16 ports inside a 100-port WEST/EAST gap. At `MAX_TRAINS =
   100` it is **~904 ports per site** - it overruns the other site's
@@ -32,8 +32,8 @@ ADR-029's transport is **one TCP connection per train instance**:
   being hit before.
 
 There is a second, independent ceiling. ADR-029 §2.4's cross-site
-state-transfer snapshot (`SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` +
-`SAFEAPI_EXAMPLE_DB_WIRE_SIZE`) encodes the **whole** session table plus
+state-transfer snapshot (`RTE_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` +
+`RTE_EXAMPLE_DB_WIRE_SIZE`) encodes the **whole** session table plus
 the **whole** runtime route table every cycle and rides inside one
 `rte_vital_message_t`, whose payload is **248 bytes** and whose
 `payload_size` field is a `uint8_t` (`rte_checksum.h:237-241`). Today
@@ -48,15 +48,15 @@ wrapping (a socket per train) and the bulk inter-site sync are not.
 
 ## Decision
 
-### 1. `SAFEAPI_EXAMPLE_MAX_TRAINS` is a compile-time ceiling, not the live count
+### 1. `RTE_EXAMPLE_MAX_TRAINS` is a compile-time ceiling, not the live count
 
-`SAFEAPI_EXAMPLE_MAX_TRAINS` becomes **100** - it sizes every fixed
+`RTE_EXAMPLE_MAX_TRAINS` becomes **100** - it sizes every fixed
 session/route array (`session[MAX_TRAINS]`, `peer_sessions[MAX_TRAINS]`,
 the C gateway's per-slot liveness arrays) and stays a compile-time
 constant, honouring the project's no-malloc/no-dynamic-list rule.
 
 The number of trains actually brought up is a **runtime** value,
-`SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2) unless the environment
+`RTE_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2) unless the environment
 variable `RTE_RBC_ACTIVE_TRAINS` overrides it (clamped to
 `1..MAX_TRAINS`). Every per-train loop in `C` and `A/B` runs
 `0 .. active_trains-1`, not `0 .. MAX_TRAINS-1`. This keeps the
@@ -114,7 +114,7 @@ carries.
 
 With Train and IL each one port instead of `MAX_TRAINS`, the per-site
 span drops from `4 + 9 * MAX_TRAINS` to a fixed **~10 ports**. The
-`SAFEAPI_EXAMPLE_C_FOR_*_PORT_OFFSET` chain stops multiplying by
+`RTE_EXAMPLE_C_FOR_*_PORT_OFFSET` chain stops multiplying by
 `MAX_TRAINS`. The WEST (15001) / EAST (15101) 100-port gap and the
 15021/15022 negotiation ports keep enormous headroom at any train
 count. No numeric base changes; only the offset arithmetic simplifies.
@@ -126,11 +126,11 @@ See the **ADR-029 Addendum** appended to that file. In brief:
 - Only `in_use` sessions and `in_use` runtime routes are encoded - a
   silent train contributes nothing.
 - If the active set still exceeds a single vital payload, it is sent as
-  a **bounded window** of `SAFEAPI_EXAMPLE_SITE_XFER_WINDOW` sessions
+  a **bounded window** of `RTE_EXAMPLE_SITE_XFER_WINDOW` sessions
   (and a matching route window) per cycle, round-robin. The full table
   converges on the peer within `ceil(active_trains / WINDOW)` cycles.
-- `SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` /
-  `SAFEAPI_EXAMPLE_DB_WIRE_SIZE` are recomputed from `WINDOW`, not
+- `RTE_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` /
+  `RTE_EXAMPLE_DB_WIRE_SIZE` are recomputed from `WINDOW`, not
   `MAX_TRAINS` / `MAX_ROUTES`, and are asserted `<= 248` at compile
   time.
 - **Promotion semantics** (new REQ-RBC-029A): a STANDBY promoted to
@@ -210,7 +210,7 @@ vital sessions behind it.
   and `A/B` (direct index when `nid_engine` is dense `1..N`; a linear
   scan of `<= 100` entries otherwise - still O(1) per cycle amortised,
   no allocation).
-- **Route pool**: `SAFEAPI_EXAMPLE_MAX_ROUTES` tracks
+- **Route pool**: `RTE_EXAMPLE_MAX_ROUTES` tracks
   `active_trains * MAX_ROUTES_PER_TRAIN` at runtime but is sized for
   the 100-train ceiling; the static site topology
   (`safeAPIRBC2oo2SA`'s `ab_site*_track_layout[]`) must define enough

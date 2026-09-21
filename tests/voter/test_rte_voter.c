@@ -4,9 +4,9 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "safeapi/redundancy/voter/rte_voter.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/voter/rte_voter.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 /* --- Mock channel OSAdapter, mirroring tests/vital_channel's pattern --- */
 
@@ -24,7 +24,7 @@ typedef struct
  * RTE_STATUS_RESOURCE_EXHAUSTED path at the 9th registration attempt
  * (channels[8]/g_mock[8]) - an 8-element array here was a real
  * out-of-bounds write, only caught once ASan instrumentation
- * (SAFEAPI_ENABLE_ASAN) was added to the build. */
+ * (RTE_ENABLE_ASAN) was added to the build. */
 static mock_channel_t g_mock[9];
 
 static rte_status_t mock_send(void *channel_handle, const void *data, size_t data_size)

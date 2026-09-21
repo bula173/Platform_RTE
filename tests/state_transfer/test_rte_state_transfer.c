@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/state_transfer/rte_state_transfer.h"
+#include "rte/redundancy/state_transfer/rte_state_transfer.h"
 
 typedef struct {
     uint32_t a;

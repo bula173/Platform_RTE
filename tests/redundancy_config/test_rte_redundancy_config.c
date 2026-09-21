@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "safeapi/redundancy/config/rte_redundancy_config.h"
+#include "rte/redundancy/config/rte_redundancy_config.h"
 
 static void write_file(const char *path, const char *content)
 {

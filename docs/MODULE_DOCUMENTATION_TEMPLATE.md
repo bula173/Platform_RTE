@@ -7,7 +7,7 @@
  * 1. **USER_GUIDE.md** - "How do I USE this module?" (practical examples)
  * 2. **ARCHITECTURE.md** - "How does it WORK internally?" (design decisions)
  *
- * Place both files in `include/safeapi/MODULE/`
+ * Place both files in `include/rte/MODULE/`
  *
  * @section user_guide_template USER_GUIDE.md Template
  *
@@ -21,7 +21,7 @@
  *  * @section quick_start Quick Start
  *  *
  *  * ### 1. Include Header
- *  * #include "safeapi/MODULE/rte_MODULE.h"
+ *  * #include "rte/MODULE/rte_MODULE.h"
  *  *
  *  * ### 2. Initialize
  *  * Code example of initialization

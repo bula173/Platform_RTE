@@ -5,7 +5,7 @@
  * Compliant with CENELEC EN 50128 SIL 4 and MISRA C:2012.
  */
 
-#include "safeapi_osadapter/rte_osadapter.h"
+#include "rte_osadapter/rte_osadapter.h"
 
 static const rte_os_socket_ops_t *s_socket_ops = NULL;
 

@@ -4,7 +4,7 @@
 **Companion Standards:**
 - EN 50129:2018 - Functional safety management
 - EN 50126:2017 - RAM (Reliability, Availability, Maintainability)
-**Scope:** safeAPIFramework compliance with SIL 4 requirements
+**Scope:** RteFramework compliance with SIL 4 requirements
 **Application Domain:** ERTMS Radio Block Centre (RBC) - SIL 4 function
 **Last Updated:** 2026-08-02
 
@@ -16,9 +16,9 @@ EN 50128 defines a set of **mandatory**, **highly recommended**, and **recommend
 
 **EN 50128 Context:**
 
-EN 50128 is the CENELEC (European Committee for Electrotechnical Standardization) standard for railway software safety, applying to **SIL 2 through SIL 4** railway systems. The **ERTMS Radio Block Centre (RBC)** — safeAPIFramework's reference application — is a SIL 4 function.
+EN 50128 is the CENELEC (European Committee for Electrotechnical Standardization) standard for railway software safety, applying to **SIL 2 through SIL 4** railway systems. The **ERTMS Radio Block Centre (RBC)** — RteFramework's reference application — is a SIL 4 function.
 
-Key EN 50128 principles that shape safeAPIFramework:
+Key EN 50128 principles that shape RteFramework:
 
 1. **Layered Architecture** (Section 6.2.2) — Separate concerns, enable independent verification
 2. **Clear Module Boundaries** (Section 6.2.3) — Reduce complexity, increase maintainability
@@ -61,7 +61,7 @@ EN 50128: Software Safety Implementation
 ├─ Requirements Traceability
 └─ Fault Tolerance & Recovery
 
-safeAPIFramework Alignment:
+RteFramework Alignment:
 ✓ Provides proven software infrastructure (EN 50128)
 ✓ Supports EN 50129 functional safety management
 ✓ Enables hazard analysis through documented fault modes
@@ -426,7 +426,7 @@ EN 50128 Technique: Modular Approach (7.2.2)
 BENEFIT: Reduces verification scope per module
 
 Structure:
-  include/safeapi/<module>/rte_<module>.h
+  include/rte/<module>/rte_<module>.h
   src/<module>/rte_<module>.c
   src/<module>/CMakeLists.txt
   tests/<module>/test_<module>.c
@@ -981,7 +981,7 @@ Your operational procedures inherit Platform_RTE patterns.
 
 ## How Downstream Projects Inherit EN 50128 Alignment
 
-When your project **links safeAPIFramework**:
+When your project **links RteFramework**:
 
 1. **You inherit** the layered architecture (clear separation of concerns)
 2. **You inherit** the MISRA-compliant module interfaces
@@ -990,7 +990,7 @@ When your project **links safeAPIFramework**:
 5. **You can reuse** the test framework structure (per-module CTest)
 
 **Your project's responsibilities:**
-- Implement your application logic using safeAPIFramework services
+- Implement your application logic using RteFramework services
 - Follow the same coding standards (CLAUDE.md, MISRA C:2012)
 - Add your own requirements traceability (extend SRS.md)
 - Write your own safety case and hazard analysis (FMEA, FTA)

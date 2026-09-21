@@ -14,7 +14,7 @@
  * on the production infinite loop.
  *
  * test_correct_sequence_wrong_payload_does_not_count() below is marked
- * no_sanitize("address"): under SAFEAPI_ENABLE_ASAN it deterministically
+ * no_sanitize("address"): under RTE_ENABLE_ASAN it deterministically
  * crashes on that function's own epilogue (EXC_BAD_ACCESS, a WRITE to a
  * TEXT-segment address) immediately after longjmp() has already
  * successfully returned control and both its assert()s have already
@@ -40,10 +40,10 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "safeapi/redundancy/checkpoint/rte_checkpoint.h"
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/redundancy/watchdog/rte_watchdog.h"
+#include "rte/redundancy/checkpoint/rte_checkpoint.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/watchdog/rte_watchdog.h"
 
 #define TEST_CHANNEL_COUNT 2U
 

@@ -17,8 +17,8 @@
 Identify and assess all hazards and failure modes in [System Name] that could lead to unsafe conditions.
 
 ### 1.2 Scope
-- safeAPIFramework OS Abstraction Layer
-- Application logic using safeAPIFramework
+- RteFramework OS Abstraction Layer
+- Application logic using RteFramework
 - Integration with RTOS
 - Excluded: RTOS implementation itself, hardware failures
 
@@ -47,7 +47,7 @@ Risk-based approach per EN 50128:2011 Section 5:
     ├─────────────────────────┤
     │  Application Layer      │
     │  ───────────────────    │
-    │  safeAPIFramework OAL   │
+    │  RteFramework OAL   │
     │  ───────────────────    │
     │  RTOS / OS OSAdapter      │ (Partly in scope)
     └────────┬─────────────────┘
@@ -67,10 +67,10 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 ## 3. Hazard Identification
 
-### 3.1 Hazards in safeAPIFramework Context
+### 3.1 Hazards in RteFramework Context
 
 #### H1: Uninitialized OSAdapter Service
-**Description:** safeAPIFramework service called before OSAdapter registered  
+**Description:** RteFramework service called before OSAdapter registered  
 **Cause:** Missing OSAdapter registration, wrong initialization order  
 **Effect:** NULL pointer dereference, system crash  
 **SIL:** 4 (Loss of safety-critical function)  
@@ -191,7 +191,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 ## 4. Failure Mode & Effects Analysis (FMEA)
 
-### 4.1 FMEA for safeAPIFramework Services
+### 4.1 FMEA for RteFramework Services
 
 #### Service: rte_timer_create()
 
@@ -213,7 +213,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 **Risk Level:** Medium (requires OSAdapter implementation quality)
 
-[Continue for other safeAPIFramework services...]
+[Continue for other RteFramework services...]
 
 ---
 
@@ -255,7 +255,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 ## 6. Risk Control Measures
 
 ### 6.1 Design Mitigations
-- **Layered Architecture:** Application isolated from OS via safeAPIFramework
+- **Layered Architecture:** Application isolated from OS via RteFramework
 - **Explicit Error Handling:** Every function returns status code
 - **Bounded Operations:** No strcpy, sprintf, dynamic allocation
 - **Safe-State Transitions:** RTE_ASSERT, RTE_SAFESTATE, RTE_REBOOT
@@ -314,7 +314,7 @@ OSAdapter implementation must provide:
 
 Based on HARA findings, the following safety requirements are derived:
 
-**SR-001:** safeAPIFramework services shall not be called before OSAdapter registration  
+**SR-001:** RteFramework services shall not be called before OSAdapter registration  
 **SR-002:** All string operations shall use bounded rte_string_* functions  
 **SR-003:** Multi-threaded access to shared resources shall be protected by RTOS synchronization primitives  
 **SR-004:** All NVM data shall be protected by CRC/integrity checks  
@@ -348,4 +348,4 @@ Based on HARA findings, the following safety requirements are derived:
 - EN 50128:2011 Section 5 (Hazard Analysis)
 - EN 50129:2018
 - IEC 60812:2018 (Failure Mode and Effects Analysis)
-- safeAPIFramework Documentation
+- RteFramework Documentation

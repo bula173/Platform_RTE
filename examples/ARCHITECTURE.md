@@ -1,6 +1,6 @@
 # Application Manager Architecture
 
-This document describes the **Application Manager** pattern used in safeAPIFramework examples.
+This document describes the **Application Manager** pattern used in RteFramework examples.
 
 ---
 

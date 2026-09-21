@@ -2,8 +2,8 @@
  * compatibility, ADR-005 OSAdapter seam): see tests/netlink/test_rte_netlink.c
  * for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/oal/flow/rte_flow.h"
-#include "safeapi_osadapter/flow/rte_osadapter_flow.h"
+#include "rte/oal/flow/rte_flow.h"
+#include "rte_osadapter/flow/rte_osadapter_flow.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_send_calls = 0;

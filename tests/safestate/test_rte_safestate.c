@@ -20,7 +20,7 @@
  * header is included. macOS's libc doesn't gate these the same way,
  * which is why this only surfaced building on Linux (found running this
  * test suite in a Linux container while verifying the new
- * SAFEAPI_ENABLE_ASAN/_UBSAN/Valgrind build options). Test-only file -
+ * RTE_ENABLE_ASAN/_UBSAN/Valgrind build options). Test-only file -
  * out of MISRA scope (docs/MISRA_COMPLIANCE_REPORT.md section 4). */
 #define _POSIX_C_SOURCE 200809L
 
@@ -29,7 +29,7 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
-#include "safeapi/utils/safestate/rte_safestate.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 static jmp_buf g_jmp;
 static rte_safestate_level_t g_captured_level;

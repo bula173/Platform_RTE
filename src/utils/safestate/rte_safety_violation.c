@@ -3,7 +3,7 @@
  * @ingroup SAFETYVIOLATION
  * @brief See rte_safety_violation.h for behavior.
  */
-#include "safeapi/utils/safestate/rte_safety_violation.h"
+#include "rte/utils/safestate/rte_safety_violation.h"
 
 static rte_safety_violation_handler_t s_handler = NULL;
 

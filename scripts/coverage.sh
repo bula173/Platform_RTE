@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build safeAPIFramework with gcov instrumentation, run ctest, and produce a
+# Build RteFramework with gcov instrumentation, run ctest, and produce a
 # line/function/branch coverage report with gcovr.
 #
 # Usage:
@@ -16,7 +16,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$PROJECT_ROOT/build/coverage"
 REPORT_DIR="$BUILD_DIR/report"
 
-echo "=== safeAPIFramework: coverage build (gcov + gcovr) ==="
+echo "=== RteFramework: coverage build (gcov + gcovr) ==="
 
 if ! command -v gcovr &> /dev/null; then
     echo "ERROR: gcovr not found. Install with: brew install gcovr  (or: pip install gcovr)"
@@ -29,8 +29,8 @@ echo ""
 echo "-- configure --"
 cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DSAFEAPI_BUILD_TESTS=ON \
-    -DSAFEAPI_ENABLE_COVERAGE=ON
+    -DRTE_BUILD_TESTS=ON \
+    -DRTE_ENABLE_COVERAGE=ON
 
 echo ""
 echo "-- build --"

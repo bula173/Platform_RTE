@@ -3,10 +3,10 @@
  * @ingroup SAFEPTR
  * @brief See rte_safe_ptr.h for behavior.
  */
-#include "safeapi/oal/memory/rte_safe_ptr.h"
+#include "rte/oal/memory/rte_safe_ptr.h"
 
-#include "safeapi/utils/cast/rte_cast.h"
-#include "safeapi/utils/safestate/rte_safety_violation.h"
+#include "rte/utils/cast/rte_cast.h"
+#include "rte/utils/safestate/rte_safety_violation.h"
 
 /** Fixed canary value written by rte_safe_ptr_init() and checked by
  *  every access function - an arbitrary, distinctive bit pattern (not

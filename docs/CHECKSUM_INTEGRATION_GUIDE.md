@@ -1,6 +1,6 @@
 # CRC-64 Checksum Integration Guide
 
-**Module:** `safeapi_checksum`  
+**Module:** `rte_checksum`  
 **Standard:** ERTMS CRC-64-CCITT (polynomial 0x1D4F63B86E40E541)  
 **Safety Level:** EN 50128 compliant (error detection)  
 **SIL Support:** SIL 1-4
@@ -12,8 +12,8 @@
 ### 1. Initialize at Startup
 
 ```c
-#include "safeapi/checksum/rte_checksum.h"
-#include "safeapi/safestate/rte_safestate.h"
+#include "rte/checksum/rte_checksum.h"
+#include "rte/safestate/rte_safestate.h"
 
 int main(void)
 {
@@ -75,8 +75,8 @@ if (status != RTE_STATUS_OK) {
 **Scenario:** Two safety-critical channels (A, B) compute same result; network transmits to backup site.
 
 ```c
-#include "safeapi/checksum/rte_checksum.h"
-#include "safeapi/ipc/rte_ipc.h"
+#include "rte/checksum/rte_checksum.h"
+#include "rte/ipc/rte_ipc.h"
 
 typedef struct {
     uint32_t decision;
@@ -140,7 +140,7 @@ void backup_site_receive_decision(rte_ipc_handle_t network_link)
 The framework provides a pre-built vital message structure with integrated CRC:
 
 ```c
-#include "safeapi/checksum/rte_checksum.h"
+#include "rte/checksum/rte_checksum.h"
 
 // Sender: wrap payload with CRC
 rte_vital_message_t msg;
@@ -264,8 +264,8 @@ rte_status_t perform_2oo3_vote_with_crc(
 ### Check Channel Health
 
 ```c
-#include "safeapi/checksum/rte_checksum.h"
-#include "safeapi/log/rte_log.h"
+#include "rte/checksum/rte_checksum.h"
+#include "rte/log/rte_log.h"
 
 void diagnose_channel_health(void)
 {
@@ -506,6 +506,6 @@ if (result.match == 0) {
 ## References
 
 - **ADR-016:** `docs/architecture/ADR-016-crc64-data-integrity.md`
-- **API Docs:** `include/safeapi/checksum/rte_checksum.h` (Doxygen)
+- **API Docs:** `include/rte/checksum/rte_checksum.h` (Doxygen)
 - **Standards:** EN 50126, EN 50128, ERTMS/ETCS specifications
 - **Polynomial Registry:** http://www.sunshine2k.de/articles/CRC_Polynomial_Selection_Guide.html

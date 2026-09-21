@@ -35,7 +35,7 @@ files as they are for now (no retrofit in this pass; see "Non-goals").
 
 ## Decision
 
-Add a new framework module, `rte_dual` (`include/safeapi/dual/`,
+Add a new framework module, `rte_dual` (`include/rte/dual/`,
 `src/dual/`), with three public types:
 
 1. **`rte_dual_state_t`** - shared vocabulary for "what is this instance

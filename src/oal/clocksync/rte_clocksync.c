@@ -3,9 +3,9 @@
  * @brief Implementation of the pluggable clock-sync OSAdapter (ADR-017).
  * @ingroup CLOCKSYNC
  */
-#include "safeapi/oal/clocksync/rte_clocksync.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/clocksync/rte_osadapter_clocksync.h"
+#include "rte/oal/clocksync/rte_clocksync.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/clocksync/rte_osadapter_clocksync.h"
 
 /** Local makros */
 

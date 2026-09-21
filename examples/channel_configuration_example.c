@@ -19,9 +19,9 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "safeapi/channel_link/rte_channel.h"
-#include "safeapi/voter/rte_voter.h"
-#include "safeapi/status/rte_status.h"
+#include "rte/channel_link/rte_channel.h"
+#include "rte/voter/rte_voter.h"
+#include "rte/status/rte_status.h"
 
 /* ============================================================================
  * Channel Configuration Structures (User fills these in)

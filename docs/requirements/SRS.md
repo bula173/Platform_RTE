@@ -1,10 +1,10 @@
-\page safeapi_srs Software Requirements Specification (SRS)
+\page rte_srs Software Requirements Specification (SRS)
 
 # Safe API Framework — Software Requirements Specification (SRS)
 
 Date: 2026-08-02
 Status: Draft, consolidated from `REQ-*` traceability tags already present
-in the header comments under `include/safeapi/`. This document is the
+in the header comments under `include/rte/`. This document is the
 canonical source those tags cite; if a requirement's wording ever needs to
 change, change it here first, then update the corresponding code comment
 to match. Design rationale for each requirement lives in the referenced
@@ -14,7 +14,7 @@ the ADRs explain *why*.
 Format: `REQ-<AREA>-<MODULE>-<NUMBER>`. `AREA` is `OAL` (OS Abstraction
 Layer) or `COMMON` (layer-agnostic) — a conceptual grouping, not a
 directory: since ADR-007 each module below lives in its own
-`include/safeapi/<feature>/` + `src/<feature>/` pair rather than a shared
+`include/rte/<feature>/` + `src/<feature>/` pair rather than a shared
 `common/`/`os/` folder.
 
 ## 1. Common facilities
@@ -458,7 +458,7 @@ with `1 <= quorum_size <= channel_count`.
 
 ## 3e. Dual-transfer state negotiation — `rte_dual` (ADR-020)
 
-Three files under `include/safeapi/dual/`: `rte_dual_msgchannel.h` (Layer
+Three files under `include/rte/dual/`: `rte_dual_msgchannel.h` (Layer
 1 "Channel", one EN 50159-defended message channel over one
 `rte_netlink_handle_t`), `rte_dual_channel.h` ("DualChannel", 1..N
 redundant Layer-1 links with always-send + bounded-ACK-wait delivery and
@@ -554,16 +554,16 @@ of these.
 | REQ-RBC-002 | `rbc_wire_decode()` shall reject a frame whose leading kind byte is not a recognized `rbc_msg_kind_t` value, returning `false` and leaving `*out_env` unmodified, rather than casting an out-of-range byte into the enum. |
 | REQ-RBC-003 | Every link that can carry more than one distinct envelope within a single report cycle (C's Train/IL/A/B links, A/B's own link from C) shall demultiplex arrivals through a fixed-capacity single-producer/single-consumer queue (`rbc_envelope_queue_t`, `RBC_ENVELOPE_QUEUE_CAPACITY`) drained fully every cycle, not a single-slot "latest value only" primitive - a link carrying interleaved multi-train traffic can legitimately receive more than one distinct event before the next drain. |
 | REQ-RBC-004 | `rbc_envelope_queue_push()` shall return `false` (dropping the new entry) rather than growing dynamically when the queue is full (`RBC_ENVELOPE_QUEUE_CAPACITY` unread entries already pending); the caller shall log the drop rather than fail silently. |
-| REQ-RBC-005 | Any code path that indexes a per-train array (`ctx->sessions[]`, `train_rx_queue[]`, etc.) by a wire-supplied `train_id` shall validate `1 <= train_id <= SAFEAPI_EXAMPLE_MAX_TRAINS` first and drop (logged) an out-of-range value, never indexing out of bounds with unchecked wire input. |
-| REQ-RBC-006 | On a STANDBY-to-ONLINE promotion (`channel_ab_negotiate.c`'s `apply_state_transfer()`), the whole train-session table (`ctx->sessions[]`) shall be overwritten from the transferred snapshot unconditionally - unlike the transferred cycle counter (still gated by `SAFEAPI_EXAMPLE_TRANSFER_POLICY_ENV`), there is no operator-configurable "restart" policy for live train sessions: a promoted site refusing to remember an in-flight Movement Authority would be unsafe, not a preference. |
+| REQ-RBC-005 | Any code path that indexes a per-train array (`ctx->sessions[]`, `train_rx_queue[]`, etc.) by a wire-supplied `train_id` shall validate `1 <= train_id <= RTE_EXAMPLE_MAX_TRAINS` first and drop (logged) an out-of-range value, never indexing out of bounds with unchecked wire input. |
+| REQ-RBC-006 | On a STANDBY-to-ONLINE promotion (`channel_ab_negotiate.c`'s `apply_state_transfer()`), the whole train-session table (`ctx->sessions[]`) shall be overwritten from the transferred snapshot unconditionally - unlike the transferred cycle counter (still gated by `RTE_EXAMPLE_TRANSFER_POLICY_ENV`), there is no operator-configurable "restart" policy for live train sessions: a promoted site refusing to remember an in-flight Movement Authority would be unsafe, not a preference. |
 | REQ-RBC-007 | Cross-compare (`channel_ab_crosscompare.c`) shall vote on the whole per-train session state relevant to the RBC's own decisions (`in_use`/`train_id`/`cycle`/`d_lrbg`/`granted_length`/`ma_seq`/`ma_acked`), not a single scalar value - `ma_pending_send` and the CTC-notification-sent flags are local scratch only and shall be excluded, since they carry no cross-compare-relevant decision content. The compared payload shall be the wire-encoded form, not the raw `train_session_t` struct, since `rte_cross_comparator_execute()` compares via raw `memcmp()` and the struct's mixed-width members admit compiler-inserted padding a raw comparison would treat as significant. |
-| REQ-RBC-008 | `channel_ab_crosscompare_execute()` shall skip (not disagree) cross-comparing a given train for up to `SAFEAPI_EXAMPLE_XCOMPARE_SYNC_SKIP_LIMIT` consecutive cycles while its local and peer session snapshots do not yet field-match, to tolerate the ordinary asynchronous-arrival timing skew between two independently-cycling channels; past that bound it shall fall through to the real comparator so a genuine, persistent divergence (e.g. a relay datagram lost to only one channel) is still detected and reacted to, not silently skipped forever. |
+| REQ-RBC-008 | `channel_ab_crosscompare_execute()` shall skip (not disagree) cross-comparing a given train for up to `RTE_EXAMPLE_XCOMPARE_SYNC_SKIP_LIMIT` consecutive cycles while its local and peer session snapshots do not yet field-match, to tolerate the ordinary asynchronous-arrival timing skew between two independently-cycling channels; past that bound it shall fall through to the real comparator so a genuine, persistent divergence (e.g. a relay datagram lost to only one channel) is still detected and reacted to, not silently skipped forever. |
 | REQ-RBC-009 | `monitor_c_init()` shall NOT block C's own startup waiting for a Train/IL/CTC client to connect (unlike the A/B links, which are this project's own co-deployed, expected-reachable containers) - each such link's background rx task shall start with a NULL handle and establish the connection lazily on its own reconnect-forever loop, since a Train/IL/CTC sim is a genuinely external, opportunistically-connecting client that may not be running yet. |
 
 ## 4. Traceability
 
 Every `REQ-*` ID in this document appears verbatim in the corresponding
-header's Doxygen comment in `include/safeapi/`, **except**
+header's Doxygen comment in `include/rte/`, **except**
 `REQ-OAL-BACKEND-001/002/003` in section 2, which are a documentation-only
 consolidation of a pattern repeated across all seven `REQ-OAL-*-01X`
 "register_osadapter" entries (see the note above section 2.1) and

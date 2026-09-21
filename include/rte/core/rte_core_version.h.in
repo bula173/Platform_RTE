@@ -1,0 +1,45 @@
+/**
+ * @file rte_core_version.h
+ * @brief The framework version physically compiled into this library.
+ *
+ * Generated at configure time (see CMakeLists.txt's own
+ * scripts/compute_version.sh call) from the project's static VERSION plus
+ * the git commit this build was made from. Not hand-edited - a change here
+ * means someone edited the GENERATED copy in the build directory, which a
+ * fresh configure will overwrite.
+ *
+ * rte_core_get_version() returns this same string at runtime - a
+ * consumer's own "what framework version am I actually linked against"
+ * check (e.g. safeAPIRBC2oo2's startup version-match check) reads the
+ * ACTUAL compiled-in value here, not just this macro as seen by the
+ * consumer's own compiler at its own build time - those two can differ if
+ * a stale library archive gets linked (see that consumer's own doc for why
+ * that check exists).
+ */
+#ifndef RTE_CORE_VERSION_H
+#define RTE_CORE_VERSION_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** @brief This build's version: <static-version>+<git-shortsha>[.dirty]. */
+#define RTE_FRAMEWORK_VERSION "@RTE_FRAMEWORK_VERSION@"
+
+/**
+ * @brief Returns the framework version physically compiled into this
+ *        library (always equal to RTE_FRAMEWORK_VERSION above - a
+ *        real function, not just a macro, so a consumer can compare the
+ *        ACTUAL linked library's version against what it was compiled
+ *        against, catching a stale/mismatched static-link scenario a
+ *        macro alone cannot detect).
+ * @return Pointer to a static, null-terminated, non-owned string. Never
+ *         NULL.
+ */
+const char *rte_core_get_version(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* RTE_CORE_VERSION_H */

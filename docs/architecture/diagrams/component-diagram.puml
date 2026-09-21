@@ -15,7 +15,7 @@ package "Application Layer" {
     component [RBC Logic] as rbc_app
 }
 
-package "safeAPIFramework v0.3.0" {
+package "RteFramework v0.3.0" {
     package "Common Utilities" {
         component [status] as status_mod
         component [types] as types_mod

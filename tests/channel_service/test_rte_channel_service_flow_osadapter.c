@@ -5,8 +5,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
-#include "safeapi_osadapter/flow/rte_osadapter_flow.h"
+#include "rte/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
+#include "rte_osadapter/flow/rte_osadapter_flow.h"
 
 static uint32_t g_last_open_oflags;
 static size_t   g_last_open_message_size;

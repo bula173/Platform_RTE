@@ -13,10 +13,10 @@
 ## 1. Introduction
 
 ### 1.1 Purpose
-This Configuration Management Plan defines how safeAPIFramework and project artifacts are managed, controlled, versioned, and released throughout the development lifecycle.
+This Configuration Management Plan defines how RteFramework and project artifacts are managed, controlled, versioned, and released throughout the development lifecycle.
 
 ### 1.2 Scope
-- safeAPIFramework source code (src/, include/, tests/)
+- RteFramework source code (src/, include/, tests/)
 - Project implementation
 - Build system (CMake, presets, toolchain files)
 - Documentation (requirements, design, test reports)
@@ -37,7 +37,7 @@ This Configuration Management Plan defines how safeAPIFramework and project arti
 ### 2.1 Directory Layout
 
 ```
-safeAPIFramework/
+RteFramework/
 ├── .git/                           Version control repository
 ├── .github/                        GitHub workflows, templates
 │   ├── workflows/                  CI/CD automation
@@ -54,12 +54,12 @@ safeAPIFramework/
 │
 ├── cmake/                         CMake modules & toolchains
 │   ├── CompilerWarnings.cmake     Strict warning flags
-│   ├── SafeAPIHelpers.cmake       Helper functions for downstream
+│   ├── RTEHelpers.cmake       Helper functions for downstream
 │   ├── Toolchain-Linux.cmake      POSIX OSAdapter toolchain
 │   ├── Toolchain-QNX.cmake        QNX RTOS toolchain
 │   └── [other toolchains]
 │
-├── include/safeapi/               Public API headers (13 modules)
+├── include/rte/               Public API headers (13 modules)
 │   ├── types/
 │   ├── status/
 │   ├── buffer/
@@ -136,7 +136,7 @@ safeAPIFramework/
 │
 ├── build/                       Build outputs (not version controlled)
 │   ├── compile_commands.json   For static analysis
-│   ├── libsafeapi_*.a          Static libraries
+│   ├── librte_*.a          Static libraries
 │   └── test_rte_*             Test executables
 │
 └── ROADMAP.md                  Future development roadmap
@@ -164,15 +164,15 @@ safeAPIFramework/
 **Root CMakeLists.txt:**
 ```cmake
 cmake_minimum_required(VERSION 3.16)
-project(safeAPIFramework VERSION 0.1.0)
+project(RteFramework VERSION 0.1.0)
 
 # Global settings
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Build options
-option(SAFEAPI_BUILD_TESTS "Build unit tests" ON)
-option(SAFEAPI_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
+option(RTE_BUILD_TESTS "Build unit tests" ON)
+option(RTE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
 
 # Per-module subdirectories (ADR-007)
 foreach(feature status types buffer cast safestate string
@@ -183,7 +183,7 @@ foreach(feature status types buffer cast safestate string
 endforeach()
 
 # Tests
-if(SAFEAPI_BUILD_TESTS)
+if(RTE_BUILD_TESTS)
     enable_testing()
     add_subdirectory(tests)
 endif()
@@ -200,9 +200,9 @@ endif()
 
 **Per-module CMakeLists.txt:**
 ```cmake
-add_library(safeapi_status STATIC rte_status.c)
-target_include_directories(safeapi_status PUBLIC ${CMAKE_SOURCE_DIR}/include)
-add_library(safeapi::status ALIAS safeapi_status)
+add_library(rte_status STATIC rte_status.c)
+target_include_directories(rte_status PUBLIC ${CMAKE_SOURCE_DIR}/include)
+add_library(rte::status ALIAS rte_status)
 ```
 
 ### 3.2 CMake Presets (Build Configurations)
@@ -245,7 +245,7 @@ cmake --preset release && cmake --build --preset release
 # POSIX/Linux OSAdapter (development)
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
-add_compile_definitions(SAFEAPI_BACKEND_POSIX)
+add_compile_definitions(RTE_BACKEND_POSIX)
 ```
 
 **cmake/Toolchain-QNX.cmake:**
@@ -253,7 +253,7 @@ add_compile_definitions(SAFEAPI_BACKEND_POSIX)
 # QNX RTOS OSAdapter (target hardware)
 set(CMAKE_C_COMPILER $ENV{QNX_HOST}/usr/bin/qcc)
 set(CMAKE_SYSTEM_NAME QNX)
-add_compile_definitions(SAFEAPI_BACKEND_QNX)
+add_compile_definitions(RTE_BACKEND_QNX)
 ```
 
 ---
@@ -464,7 +464,7 @@ v2.0.0 - Major: Architecture redesign (rare)
 
 **Tagging:**
 ```bash
-git tag -a v0.1.0 -m "Release: safeAPIFramework v0.1.0"
+git tag -a v0.1.0 -m "Release: RteFramework v0.1.0"
 git push origin v0.1.0
 ```
 

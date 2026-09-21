@@ -4,7 +4,7 @@
  *        see rte_lifecycle.h.
  * @ingroup LIFECYCLE
  */
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 
 /** Local makros */
 

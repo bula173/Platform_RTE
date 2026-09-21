@@ -29,16 +29,16 @@ It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), an
 
 | Interface | Header directory | Consumed by | Notes |
 |---|---|---|---|
-| **PI-API** (`rte_flow_*`) | `include/safeapi/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
-| **Application manager** | `include/safeapi/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
-| **Safe state** | `include/safeapi/utils/safestate/` | all | `RTE_ASSERT`, `RTE_SAFESTATE`, `RTE_REBOOT`, cleanup handler registration |
-| **Redundancy services** | `include/safeapi/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.md` |
-| **Channel service** | `include/safeapi/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
-| **Redundancy configuration** | `include/safeapi/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
-| **State registration** | `include/safeapi/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
-| **OSAdapter seams** | `include/safeapi/oal/<service>/*_osadapter.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `rte_osadapter_flow_t`, `rte_protocol_adapter_ops_t` |
-| **Utilities** | `include/safeapi/utils/` | all | Status, types, cast, buffer, string |
-| **Build artifacts** | `dist/<platform>/`, CMake package `safeAPIFramework`, Conan `safeapiframework/0.1.0` | all C products | Targets `safeapi::core`, `::oal`, `::channels`, `::appmanager` |
+| **PI-API** (`rte_flow_*`) | `include/rte/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
+| **Application manager** | `include/rte/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
+| **Safe state** | `include/rte/utils/safestate/` | all | `RTE_ASSERT`, `RTE_SAFESTATE`, `RTE_REBOOT`, cleanup handler registration |
+| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.md` |
+| **Channel service** | `include/rte/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
+| **Redundancy configuration** | `include/rte/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
+| **State registration** | `include/rte/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
+| **OSAdapter seams** | `include/rte/oal/<service>/*_osadapter.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `rte_osadapter_flow_t`, `rte_protocol_adapter_ops_t` |
+| **Utilities** | `include/rte/utils/` | all | Status, types, cast, buffer, string |
+| **Build artifacts** | `dist/<platform>/`, CMake package `RteFramework`, Conan `rteframework/0.1.0` | all C products | Targets `rte::core`, `::oal`, `::channels`, `::appmanager` |
 
 Every public function has a Doxygen block with pre-conditions, post-conditions and requirement IDs.
 See [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) for the per-module guides.
@@ -67,7 +67,7 @@ and `platform/toolchains/`. Coding rules: [CLAUDE.md](CLAUDE.md). Conformance ev
 ## Layout
 
 ```text
-include/safeapi/<area>/<feature>/   public header per feature (ADR-007)
+include/rte/<area>/<feature>/   public header per feature (ADR-007)
 src/<feature>/                      implementation, built into 4 library targets (ADR-023)
 tests/<feature>/                    one CTest file per feature
 docs/                               guides, ADRs, requirements (SRS), safety, templates

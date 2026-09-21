@@ -16,7 +16,7 @@
 This Safety Plan defines the overall strategy, organization, and approach for developing [System Name] to meet EN 50128:2011 SIL 4 safety requirements.
 
 ### 1.2 Scope
-- **In Scope:** All software components, including safeAPIFramework baseline
+- **In Scope:** All software components, including RteFramework baseline
 - **Out of Scope:** Hardware design, RTOS implementation (if externally supplied)
 
 ### 1.3 Normative References
@@ -121,11 +121,11 @@ Deployment & Operation
 ✓ No recursion  
 ✓ Pointer validation required  
 
-### 5.3 safeAPIFramework Baseline
+### 5.3 RteFramework Baseline
 - **Version:** 0.1.0
 - **Usage:** OS Abstraction Layer (OAL)
 - **Verification:** Per SAFETY_APPLICATION_CONDITIONS.md
-- **Modifications:** [List any modifications to safeAPIFramework code]
+- **Modifications:** [List any modifications to RteFramework code]
 
 ---
 
@@ -160,7 +160,7 @@ Deployment & Operation
 - Safety standards (EN 50128, EN 50129)
 - Customer specifications
 - HARA findings (safety-driven requirements)
-- Architectural patterns (safeAPIFramework)
+- Architectural patterns (RteFramework)
 
 ---
 
@@ -286,6 +286,6 @@ Assessment Package includes:
 - EN 50128:2011
 - EN 50129:2018
 - MISRA C:2012
-- safeAPIFramework Documentation
+- RteFramework Documentation
 - Project Charter
 - [Other standards specific to your system]

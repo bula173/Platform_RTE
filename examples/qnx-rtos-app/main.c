@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief QNX RTOS example application demonstrating safeAPIFramework
+ * @brief QNX RTOS example application demonstrating RteFramework
  *
  * This example shows a railway control server running on QNX RTOS with deterministic
  * real-time guarantees. It demonstrates:
@@ -9,7 +9,7 @@
  *   - Deterministic message processing
  *   - Safe state management
  *   - Structured logging in RTOS environment
- *   - Integration with safeAPIFramework OAL
+ *   - Integration with RteFramework OAL
  *
  * Use case: Train control server
  * - Receives train position updates via QNX message passing
@@ -29,10 +29,10 @@
 #include <sys/netmgr.h>
 #include <sys/siginfo.h>
 
-#include "safeapi/status.h"
-#include "safeapi/types.h"
-#include "safeapi/log.h"
-#include "safeapi/safestate.h"
+#include "rte/status.h"
+#include "rte/types.h"
+#include "rte/log.h"
+#include "rte/safestate.h"
 
 /* ============================================================================
  * QNX Configuration

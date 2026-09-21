@@ -53,7 +53,7 @@ jobs:
           cmake -S ../../ -B . \
             -DCMAKE_TOOLCHAIN_FILE=../../cmake/Toolchain-Linux.cmake \
             -DLINUX_CROSS_COMPILE=arm-linux-gnueabihf \
-            -DSAFEAPI_BUILD_TESTS=OFF
+            -DRTE_BUILD_TESTS=OFF
           echo "✓ ARM Linux cross-compile configuration successful"
           # Don't build (binaries won't run on x86_64 runner)
 

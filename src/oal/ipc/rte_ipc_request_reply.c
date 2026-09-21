@@ -4,9 +4,9 @@
  * @ingroup IPC
  */
 
-#include "safeapi/oal/ipc/rte_ipc_request_reply.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/log.h"
+#include "rte/oal/ipc/rte_ipc_request_reply.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/log.h"
 
 /* Implementation stubs - actual implementation would use base IPC layer */
 

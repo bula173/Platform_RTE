@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief Linux POSIX example application demonstrating safeAPIFramework
+ * @brief Linux POSIX example application demonstrating RteFramework
  *
  * This example shows a simple railway message processor running on Linux with POSIX OAL.
  * It demonstrates:
@@ -30,13 +30,13 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "safeapi/status/rte_status.h"
-#include "safeapi/types/rte_types.h"
-#include "safeapi/buffer/rte_buffer.h"
-#include "safeapi/string/rte_string.h"
-#include "safeapi/log/rte_log.h"
-#include "safeapi/timer/rte_timer.h"
-#include "safeapi/safestate/rte_safestate.h"
+#include "rte/status/rte_status.h"
+#include "rte/types/rte_types.h"
+#include "rte/buffer/rte_buffer.h"
+#include "rte/string/rte_string.h"
+#include "rte/log/rte_log.h"
+#include "rte/timer/rte_timer.h"
+#include "rte/safestate/rte_safestate.h"
 
 /* ============================================================================
  * Application Configuration

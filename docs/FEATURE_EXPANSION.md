@@ -1,8 +1,8 @@
-# safeAPIFramework Feature Expansion
+# RteFramework Feature Expansion
 
 ## Document Purpose
 
-This document details proposed feature additions to the safeAPIFramework and outlines a configuration system allowing users to select which features to include. It serves as the specification reference for roadmap items and complements the detailed ADRs in `docs/architecture/`.
+This document details proposed feature additions to the RteFramework and outlines a configuration system allowing users to select which features to include. It serves as the specification reference for roadmap items and complements the detailed ADRs in `docs/architecture/`.
 
 All features are designed for **EN 50126/50128/50129** compliance, supporting **SIL 4** railway applications.
 
@@ -508,16 +508,16 @@ Allow users to include only the features their application needs, reducing binar
 
 **Example:**
 ```cmake
-option(SAFEAPI_ENABLE_HSM "Enable Hierarchical State Machine" ON)
-option(SAFEAPI_ENABLE_MSGQUEUE "Enable Event/Message Queue" ON)
-option(SAFEAPI_ENABLE_WATCHDOG "Enable Watchdog & Health Monitor" ON)
-option(SAFEAPI_ENABLE_PROTECTED_DATA "Enable Protected Data Sync" OFF)
-option(SAFEAPI_ENABLE_DIAGNOSTICS "Enable Diagnostic Ring Buffer" ON)
-option(SAFEAPI_ENABLE_CONFIG "Enable Safe Config Manager" OFF)
-option(SAFEAPI_ENABLE_CHECKSUM "Enable CRC/Checksum Utils" OFF)
-option(SAFEAPI_ENABLE_SCHEDULER "Enable Cyclic Scheduler" OFF)
+option(RTE_ENABLE_HSM "Enable Hierarchical State Machine" ON)
+option(RTE_ENABLE_MSGQUEUE "Enable Event/Message Queue" ON)
+option(RTE_ENABLE_WATCHDOG "Enable Watchdog & Health Monitor" ON)
+option(RTE_ENABLE_PROTECTED_DATA "Enable Protected Data Sync" OFF)
+option(RTE_ENABLE_DIAGNOSTICS "Enable Diagnostic Ring Buffer" ON)
+option(RTE_ENABLE_CONFIG "Enable Safe Config Manager" OFF)
+option(RTE_ENABLE_CHECKSUM "Enable CRC/Checksum Utils" OFF)
+option(RTE_ENABLE_SCHEDULER "Enable Cyclic Scheduler" OFF)
 
-if(SAFEAPI_ENABLE_HSM)
+if(RTE_ENABLE_HSM)
     add_subdirectory(src/hsm)
 endif()
 ```
@@ -525,9 +525,9 @@ endif()
 **Usage:**
 ```bash
 cmake -S . -B build \
-  -DSAFEAPI_ENABLE_HSM=ON \
-  -DSAFEAPI_ENABLE_WATCHDOG=ON \
-  -DSAFEAPI_ENABLE_MOCKS=ON
+  -DRTE_ENABLE_HSM=ON \
+  -DRTE_ENABLE_WATCHDOG=ON \
+  -DRTE_ENABLE_MOCKS=ON
 cmake --build build
 ```
 
@@ -563,7 +563,7 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 
 ### Approach 3: Hybrid — Static Config Header + CMake (Phase 3)
 
-**Mechanism:** A generated or hand-written `safeapi_config.h` defines static `#define SAFEAPI_ENABLE_HSM 1` flags, which control both compilation and registration. Best for locked certification workflows.
+**Mechanism:** A generated or hand-written `rte_config.h` defines static `#define RTE_ENABLE_HSM 1` flags, which control both compilation and registration. Best for locked certification workflows.
 
 **Pros:**
 - Static configuration, fully traceable
@@ -576,12 +576,12 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 
 **Example:**
 ```c
-// safeapi_config.h (generated or hand-written)
-#define SAFEAPI_ENABLE_HSM 1
-#define SAFEAPI_ENABLE_MSGQUEUE 1
-#define SAFEAPI_ENABLE_WATCHDOG 1
-#define SAFEAPI_ENABLE_PROTECTED_DATA 0
-#define SAFEAPI_ENABLE_DIAGNOSTICS 1
+// rte_config.h (generated or hand-written)
+#define RTE_ENABLE_HSM 1
+#define RTE_ENABLE_MSGQUEUE 1
+#define RTE_ENABLE_WATCHDOG 1
+#define RTE_ENABLE_PROTECTED_DATA 0
+#define RTE_ENABLE_DIAGNOSTICS 1
 ```
 
 ---

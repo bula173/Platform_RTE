@@ -5,9 +5,9 @@
  *        the OSAdapter registered via rte_osadapter_netlink_register()
  *        (ADR-005). See rte_ipc.c for the pattern this follows.
  */
-#include "safeapi/oal/netlink/rte_netlink.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte/oal/netlink/rte_netlink.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 /** Local makros */
 

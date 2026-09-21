@@ -9,8 +9,8 @@
 
 > **Implementation status (2026-08-25):** This document is aspirational/design-reference only.
 > Despite the "Status: APPROVED" label above and the "Phase 1 ... DONE" claim below, none of the
-> toolchain files, `OSAdapters/` tree, or `SAFEAPI_ARCH_*`/`SAFEAPI_LITTLE_ENDIAN`/
-> `SAFEAPI_BIG_ENDIAN`/`SAFEAPI_STRICT_ALIGNMENT` macros named in this document exist in the repo
+> toolchain files, `OSAdapters/` tree, or `RTE_ARCH_*`/`RTE_LITTLE_ENDIAN`/
+> `RTE_BIG_ENDIAN`/`RTE_STRICT_ALIGNMENT` macros named in this document exist in the repo
 > today - only `cmake/Toolchain-Linux.cmake` and `cmake/Toolchain-QNX.cmake` do, under different
 > names and without the macros this document proposes (checked directly: no real source file in
 > `include/` or `src/` reads or would benefit from those macros - endianness is already handled
@@ -24,7 +24,7 @@
 
 ## 1. Overview
 
-safeAPIFramework supports multiple **combinations** of:
+RteFramework supports multiple **combinations** of:
 - **Operating Systems** (Linux, QNX, VxWorks, INTEGRITY, FreeRTOS, bare-metal)
 - **Architectures** (x86_64, x86, ARM32, ARM64, PowerPC, MIPS)
 - **Endianness** (little-endian, big-endian)
@@ -137,11 +137,11 @@ set(CMAKE_RANLIB ranlib)
 set(CMAKE_C_FLAGS "-m64 -march=x86-64" CACHE STRING "")
 
 # Endianness detection
-set(SAFEAPI_ENDIAN LITTLE CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
+set(RTE_ENDIAN LITTLE CACHE STRING "System endianness")
+add_compile_definitions(RTE_LITTLE_ENDIAN)
 
 # OSAdapter selection
-add_compile_definitions(SAFEAPI_BACKEND_POSIX)
+add_compile_definitions(RTE_BACKEND_POSIX)
 
 # Enable testing
 enable_testing()
@@ -165,11 +165,11 @@ set(CMAKE_RANLIB llvm-ranlib)
 set(CMAKE_C_FLAGS "-march=armv8-a" CACHE STRING "")
 
 # Endianness
-set(SAFEAPI_ENDIAN LITTLE CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
+set(RTE_ENDIAN LITTLE CACHE STRING "System endianness")
+add_compile_definitions(RTE_LITTLE_ENDIAN)
 
 # OSAdapter
-add_compile_definitions(SAFEAPI_BACKEND_POSIX)
+add_compile_definitions(RTE_BACKEND_POSIX)
 ```
 
 ### 4.3 Linux with GCC (Big-Endian ARM32)
@@ -188,11 +188,11 @@ set(CMAKE_CXX_COMPILER arm-linux-gnueabihf-g++)
 set(CMAKE_C_FLAGS "-march=armv7-a -mbig-endian -mfpu=neon" CACHE STRING "")
 
 # Endianness (CRITICAL for railway systems)
-set(SAFEAPI_ENDIAN BIG CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_BIG_ENDIAN)
+set(RTE_ENDIAN BIG CACHE STRING "System endianness")
+add_compile_definitions(RTE_BIG_ENDIAN)
 
 # OSAdapter
-add_compile_definitions(SAFEAPI_BACKEND_POSIX)
+add_compile_definitions(RTE_BACKEND_POSIX)
 ```
 
 ### 4.4 QNX RTOS (x86_64)
@@ -218,12 +218,12 @@ set(CMAKE_CXX_COMPILER $ENV{QNX_HOST}/usr/bin/qcc)
 
 # QNX-specific settings
 set(CMAKE_FIND_ROOT_PATH $ENV{QNX_TARGET})
-set(SAFEAPI_ENDIAN LITTLE CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_BACKEND_QNX)
-add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
+set(RTE_ENDIAN LITTLE CACHE STRING "System endianness")
+add_compile_definitions(RTE_BACKEND_QNX)
+add_compile_definitions(RTE_LITTLE_ENDIAN)
 
 # SIL 3/4 compliance
-add_compile_definitions(SAFEAPI_SIL_34=1)
+add_compile_definitions(RTE_SIL_34=1)
 ```
 
 ### 4.5 QNX RTOS (PowerPC32, Big-Endian - Railway)
@@ -250,13 +250,13 @@ set(CMAKE_CXX_COMPILER $ENV{QNX_HOST}/usr/bin/qcc)
 
 # PowerPC32 big-endian (critical for railway systems!)
 set(CMAKE_C_FLAGS "-Vgcc_notarmle -march=ppc" CACHE STRING "")
-set(SAFEAPI_ENDIAN BIG CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_BACKEND_QNX)
-add_compile_definitions(SAFEAPI_BIG_ENDIAN)
-add_compile_definitions(SAFEAPI_SIL_34=1)
+set(RTE_ENDIAN BIG CACHE STRING "System endianness")
+add_compile_definitions(RTE_BACKEND_QNX)
+add_compile_definitions(RTE_BIG_ENDIAN)
+add_compile_definitions(RTE_SIL_34=1)
 
 # Railway-specific: strict memory alignment
-add_compile_definitions(SAFEAPI_STRICT_ALIGNMENT)
+add_compile_definitions(RTE_STRICT_ALIGNMENT)
 ```
 
 ### 4.6 VxWorks (PowerPC64, Big-Endian - Stub)
@@ -272,10 +272,10 @@ set(CMAKE_SYSTEM_PROCESSOR ppc64)
 # WindRiver VxWorks compiler (requires installation)
 # set(CMAKE_C_COMPILER $ENV{WIND_BASE}/gnu/4.8.5-vxworks-7.x/bin/ccppc)
 
-set(SAFEAPI_ENDIAN BIG CACHE STRING "System endianness")
-add_compile_definitions(SAFEAPI_BACKEND_VXWORKS)
-add_compile_definitions(SAFEAPI_BIG_ENDIAN)
-add_compile_definitions(SAFEAPI_SIL_34=1)
+set(RTE_ENDIAN BIG CACHE STRING "System endianness")
+add_compile_definitions(RTE_BACKEND_VXWORKS)
+add_compile_definitions(RTE_BIG_ENDIAN)
+add_compile_definitions(RTE_SIL_34=1)
 
 # VxWorks-specific settings
 add_compile_definitions(_VX_CPU=PPC64)
@@ -360,7 +360,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX-x86_64.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       },
       "environment": {
         "QNX_HOST": "${env:QNX_HOST}",
@@ -374,7 +374,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX-ARM64.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       },
       "environment": {
         "QNX_HOST": "${env:QNX_HOST}",
@@ -388,7 +388,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX-ARM32.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       },
       "environment": {
         "QNX_HOST": "${env:QNX_HOST}",
@@ -402,7 +402,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-QNX-PowerPC32.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       },
       "environment": {
         "QNX_HOST": "${env:QNX_HOST}",
@@ -425,7 +425,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-FreeRTOS-ARM32.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       }
     },
     {
@@ -435,7 +435,7 @@ add_compile_definitions(_VX_CPU=PPC64)
       "inherits": "debug",
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/Toolchain-FreeRTOS-ARM64.cmake",
-        "SAFEAPI_BUILD_TESTS": "OFF"
+        "RTE_BUILD_TESTS": "OFF"
       }
     }
   ]
@@ -487,21 +487,21 @@ All toolchain files define endianness at compile time:
 
 ```cmake
 # Little-endian (most common)
-add_compile_definitions(SAFEAPI_LITTLE_ENDIAN)
+add_compile_definitions(RTE_LITTLE_ENDIAN)
 
 # Big-endian (PowerPC, some ARM, MIPS)
-add_compile_definitions(SAFEAPI_BIG_ENDIAN)
+add_compile_definitions(RTE_BIG_ENDIAN)
 ```
 
 ### 7.2 Code Usage
 
-**In safeAPIFramework code:**
+**In RteFramework code:**
 
 ```c
-#if defined(SAFEAPI_LITTLE_ENDIAN)
+#if defined(RTE_LITTLE_ENDIAN)
     // Little-endian optimizations
     uint32_t value = buffer[0] | (buffer[1] << 8) | ...;
-#elif defined(SAFEAPI_BIG_ENDIAN)
+#elif defined(RTE_BIG_ENDIAN)
     // Big-endian optimizations
     uint32_t value = (buffer[0] << 24) | (buffer[1] << 16) | ...;
 #endif
@@ -529,28 +529,28 @@ rte_status_t rte_buffer_write_uint32(rte_buffer_t buf, uint32_t value);
 # Detect architecture from toolchain file
 if(DEFINED CMAKE_SYSTEM_PROCESSOR)
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|x86_64-*")
-        set(SAFEAPI_ARCH "x86_64")
-        add_compile_definitions(SAFEAPI_ARCH_X86_64=1)
+        set(RTE_ARCH "x86_64")
+        add_compile_definitions(RTE_ARCH_X86_64=1)
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|ARMv8-A")
-        set(SAFEAPI_ARCH "arm64")
-        add_compile_definitions(SAFEAPI_ARCH_ARM64=1)
+        set(RTE_ARCH "arm64")
+        add_compile_definitions(RTE_ARCH_ARM64=1)
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "armv7|armv7l|armv7-a")
-        set(SAFEAPI_ARCH "arm32")
-        add_compile_definitions(SAFEAPI_ARCH_ARM32=1)
+        set(RTE_ARCH "arm32")
+        add_compile_definitions(RTE_ARCH_ARM32=1)
     elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "ppc|powerpc|PPC64")
-        set(SAFEAPI_ARCH "powerpc")
-        add_compile_definitions(SAFEAPI_ARCH_PPC=1)
+        set(RTE_ARCH "powerpc")
+        add_compile_definitions(RTE_ARCH_PPC=1)
     endif()
 endif()
 
-message(STATUS "Detected architecture: ${SAFEAPI_ARCH}")
+message(STATUS "Detected architecture: ${RTE_ARCH}")
 ```
 
 ### 8.2 Memory Alignment (Critical for Big-Endian Systems)
 
 ```c
 // Some railway systems require strict alignment
-#if defined(SAFEAPI_STRICT_ALIGNMENT)
+#if defined(RTE_STRICT_ALIGNMENT)
     // Enforce padding for structure members
     typedef struct {
         uint8_t flag;
@@ -720,9 +720,9 @@ Many railway ERTMS systems use **PowerPC big-endian**:
 
 ```cmake
 # Toolchain: Toolchain-QNX-PowerPC32.cmake
-set(SAFEAPI_ENDIAN BIG)
-add_compile_definitions(SAFEAPI_BIG_ENDIAN)
-add_compile_definitions(SAFEAPI_STRICT_ALIGNMENT)  # Railway systems require alignment
+set(RTE_ENDIAN BIG)
+add_compile_definitions(RTE_BIG_ENDIAN)
+add_compile_definitions(RTE_STRICT_ALIGNMENT)  # Railway systems require alignment
 ```
 
 ### 13.2 Hardware Abstraction
@@ -739,10 +739,10 @@ OSAdapter code (in `OSAdapters/<rtos>/`) handles:
 // OSAdapters/qnx/src/rte_timer_qnx.c
 rte_status_t rte_timer_create_impl(const char *name, rte_timer_handle_t *out) {
     // QNX timer implementation
-    #if defined(SAFEAPI_ARCH_PPC)
+    #if defined(RTE_ARCH_PPC)
         // PowerPC-specific: use decrementer timer
         timer_config.source = TIMER_SOURCE_DEC;
-    #elif defined(SAFEAPI_ARCH_ARM64)
+    #elif defined(RTE_ARCH_ARM64)
         // ARM64-specific: use generic timer
         timer_config.source = TIMER_SOURCE_ARM_GENERIC;
     #endif

@@ -4,9 +4,9 @@
  * @brief Task service: validates parameters, then dispatches to the
  *        OSAdapter registered via rte_osadapter_task_register() (ADR-005).
  */
-#include "safeapi/oal/task/rte_task.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/task/rte_osadapter_task.h"
+#include "rte/oal/task/rte_task.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/task/rte_osadapter_task.h"
 
 /** Local makros */
 

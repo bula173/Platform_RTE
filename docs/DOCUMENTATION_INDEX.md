@@ -5,7 +5,7 @@
  *
  * Documentation is organized by feature, co-located with headers for easy discovery:
  *
- * ### IPC Module (`include/safeapi/ipc/`)
+ * ### IPC Module (`include/rte/ipc/`)
  *
  * - **IPC_GUIDE.md** - Start here for IPC overview
  *   - Architecture layers, workflow, design principles
@@ -35,7 +35,7 @@
  *   - One-to-many broadcasting
  *   - Asynchronous, decoupled
  *
- * ### Vital Channel Module (`include/safeapi/vital_channel/`)
+ * ### Vital Channel Module (`include/rte/vital_channel/`)
  *
  * - **ARCHITECTURE.md** - Vital channel design
  *   - Voting logic (2oo2, 2oo3, NMR)
@@ -72,32 +72,32 @@
  *
  * ### For System Architects
  * 1. Start: docs/architecture/SYSTEM_OVERVIEW.md
- * 2. Then: include/safeapi/vital_channel/ARCHITECTURE.md
- * 3. Then: include/safeapi/vital_channel/CHANNEL_TOPOLOGIES.md
- * 4. Then: include/safeapi/ipc/IPC_GUIDE.md
+ * 2. Then: include/rte/vital_channel/ARCHITECTURE.md
+ * 3. Then: include/rte/vital_channel/CHANNEL_TOPOLOGIES.md
+ * 4. Then: include/rte/ipc/IPC_GUIDE.md
  *
  * ### For Integrators (Implementing for Your OS)
- * 1. Start: include/safeapi/ipc/IPC_GUIDE.md
- * 2. Then: include/safeapi/ipc/CHANNEL_CONFIGURATION.md
- * 3. Then: include/safeapi/ipc/IPC_TRANSPORT_SELECTION.md
+ * 1. Start: include/rte/ipc/IPC_GUIDE.md
+ * 2. Then: include/rte/ipc/CHANNEL_CONFIGURATION.md
+ * 3. Then: include/rte/ipc/IPC_TRANSPORT_SELECTION.md
  * 4. Implement: OS-specific OSAdapters (TCP, FIFO, SHM, UDP send/recv)
  * 5. Example: examples/channel_configuration_example.c
  *
  * ### For Application Developers
- * 1. Start: include/safeapi/vital_channel/CHANNEL_TOPOLOGIES.md
+ * 1. Start: include/rte/vital_channel/CHANNEL_TOPOLOGIES.md
  *    - Find your topology (2oo2 local, 2oo3 distributed, etc.)
- * 2. Then: include/safeapi/ipc/CHANNEL_CONFIGURATION.md
+ * 2. Then: include/rte/ipc/CHANNEL_CONFIGURATION.md
  *    - Configure your channels (IPs, ports, paths)
  * 3. Then: docs/architecture/SYSTEM_OVERVIEW.md (section on App Manager)
  *    - Implement your main loop
  * 4. Code: See examples/channel_configuration_example.c
  *
  * ### For Safety/Compliance Engineers
- * 1. Start: include/safeapi/vital_channel/ARCHITECTURE.md
+ * 1. Start: include/rte/vital_channel/ARCHITECTURE.md
  *    - Understand voting logic and safe-state
- * 2. Then: include/safeapi/vital_channel/CHANNEL_TOPOLOGIES.md
+ * 2. Then: include/rte/vital_channel/CHANNEL_TOPOLOGIES.md
  *    - Review redundancy patterns
- * 3. Then: include/safeapi/ipc/IPC_TRANSPORT_SELECTION.md
+ * 3. Then: include/rte/ipc/IPC_TRANSPORT_SELECTION.md
  *    - Understand transport reliability characteristics
  * 4. Reference: docs/architecture/SYSTEM_OVERVIEW.md
  *    - Understand timeout handling and error propagation
@@ -107,7 +107,7 @@
  * Each module follows this structure:
  *
  * ```
- * include/safeapi/MODULE/
+ * include/rte/MODULE/
  *   ├─ MODULE.h              (API - code + Doxygen comments)
  *   ├─ ARCHITECTURE.md       (How it works - technical design)
  *   ├─ GUIDE.md              (Overview + navigation)

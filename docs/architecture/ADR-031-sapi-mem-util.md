@@ -2,8 +2,8 @@
 
 Status: Accepted
 Date: 2026-08-20
-Applies to: new `include/safeapi/memory/rte_mem_util.h` (header-only, no
-`src/`, no `SAFEAPI_ENABLE_*` option, no `tests/` executable of its own -
+Applies to: new `include/rte/memory/rte_mem_util.h` (header-only, no
+`src/`, no `RTE_ENABLE_*` option, no `tests/` executable of its own -
 see §2.2/§4).
 
 ## 1. Context
@@ -49,7 +49,7 @@ rule, so there is no genuine need for a variable-length string
 primitive; adding one now would be speculative scope this ADR's own
 triggering request never asked for).
 
-### 2.2 Header-only, no `SAFEAPI_ENABLE_*` option
+### 2.2 Header-only, no `RTE_ENABLE_*` option
 
 Same rationale as ADR-030 §2.3 (`rte_notify.h`): these are `static
 inline` wrappers with no OS dependency and no runtime state of their own
@@ -90,5 +90,5 @@ own `.c`/dependency-graph entry per ADR-024.
 
 ## 5. Location
 
-- `include/safeapi/memory/rte_mem_util.h` (new, header-only).
-- No `src/`, no `tests/`, no `SAFEAPI_ENABLE_*` CMake option - see §2.2.
+- `include/rte/memory/rte_mem_util.h` (new, header-only).
+- No `src/`, no `tests/`, no `RTE_ENABLE_*` CMake option - see §2.2.

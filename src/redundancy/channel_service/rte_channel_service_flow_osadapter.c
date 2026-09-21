@@ -27,13 +27,13 @@
  * same shape the POSIX OSAdapter's own osadapter_read() reconnect-on-demand
  * logic already has.
  */
-#include "safeapi/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
+#include "rte/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
 
 #include <string.h>
 
-#include "safeapi/oal/flow/rte_flow.h"
-#include "safeapi/oal/memory/rte_mem_util.h"
-#include "safeapi/redundancy/config/rte_redundancy_config.h"
+#include "rte/oal/flow/rte_flow.h"
+#include "rte/oal/memory/rte_mem_util.h"
+#include "rte/redundancy/config/rte_redundancy_config.h"
 
 /* Only the fields ensure_open() needs to rebuild a rte_flow_config_t are
  * stored (not the whole struct) - this OSAdapter's storage must fit inside

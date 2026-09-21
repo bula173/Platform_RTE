@@ -10,7 +10,7 @@ per-train demux when that work begins.
 
 Role C ("the Gateway") is the non-vital I/O relay between the external
 Train / IL / CTC simulators and the 2oo2 A/B decision channels. Today it
-is **one binary** (`safeapi_gateway_c`), one process per site
+is **one binary** (`rte_gateway_c`), one process per site
 (`c-west`, `c-east`), whose cyclic executive (`gateway_c.c`) calls three
 independent handlers in sequence:
 
@@ -46,11 +46,11 @@ channel between them.
   its own subset via `rte_channel_service_setup()`, so an over-broad
   resolver is harmless). Plus `gateway_c_config.c`, `gateway_c_util.c`,
   `common/{app_main_common,site_config}.c`.
-- `safeapi_gateway_c_train` = `main_c_train.c` + `gateway_c_train_handler.c`
+- `rte_gateway_c_train` = `main_c_train.c` + `gateway_c_train_handler.c`
   + `gateway_c::common`
-- `safeapi_gateway_c_il` = `main_c_il.c` + `gateway_c_il_handler.c` +
+- `rte_gateway_c_il` = `main_c_il.c` + `gateway_c_il_handler.c` +
   `gateway_c_logctl.c` + `gateway_c::common`
-- `safeapi_gateway_c_ctc` = `main_c_ctc.c` + `gateway_c_ctc_handler.c` +
+- `rte_gateway_c_ctc` = `main_c_ctc.c` + `gateway_c_ctc_handler.c` +
   `gateway_c::common`
 
 Each `main_c_<svc>.c` is ~15 lines: it defines a
@@ -59,7 +59,7 @@ handler_shutdown, handler_check_link_down, pre_handlers }` - and calls
 `gateway_c_main(argc, argv, &SVC)`. `pre_handlers` is
 `gateway_c_logctl_poll` for IL, `NULL` otherwise.
 
-The old `safeapi_gateway_c` binary and the `safeapi_monitor_c` symlink
+The old `rte_gateway_c` binary and the `rte_monitor_c` symlink
 are **removed**. `gateway_c.c` is deleted (its contents split between
 `gateway_c_common.c` and the three `main_c_<svc>.c`).
 
@@ -69,20 +69,20 @@ and `src/AB/ctc/ab_ga_ctc.c`), so the IL and CTC gateway services live in
 GA too: `safeAPIRBC2oo2GA/src/C/il/{gateway_c_il_handler,gateway_c_logctl,main_c_il}.c`
 and `safeAPIRBC2oo2GA/src/C/ctc/{gateway_c_ctc_handler,main_c_ctc}.c` (one
 subfolder per handler, mirroring `src/AB/{il,ctc}/`). GA builds
-`safeapi_gateway_c_il` / `_ctc`; GP keeps only `safeapi_gateway_c_train`.
+`rte_gateway_c_il` / `_ctc`; GP keeps only `rte_gateway_c_train`.
 `gateway_c_common` is transport/lifecycle - platform scope - so it stays
 in GP, defined *before* GP's `add_subdirectory(safeAPIRBC2oo2GA)` so GA
 can link it; a standalone GA build (conan) just builds the `.so` and
 skips the two executables. Because GA is add_subdirectory()'d by GP, the
 two GA-built binaries install into GP's own `dist/<platform>/bin/`
 alongside the train binary (GP `install(TARGETS ...)` cross-dir, exactly
-as it already does for `safeapi_rbc2oo2_ga`), so the SA installer and
+as it already does for `rte_rbc2oo2_ga`), so the SA installer and
 `setupLocalTestEnv.sh` still see all three in one place - no change
 needed on either.
 
 ### 2. Per-site, but one container per site hosting the service processes
 
-Each service runs **per-site** (`safeapi_gateway_c_train WEST`, ...) -
+Each service runs **per-site** (`rte_gateway_c_train WEST`, ...) -
 the A/B relay links are per-site and this keeps `ab_gp_channel.c`
 **completely unchanged** (A/B still connects to a listener on the same
 port; that it is now a different process on the C host is invisible).
@@ -156,7 +156,7 @@ three binaries.
   gateway" are unchanged.
 - `ab_gp_channel.c` and every A/B-side file: **no change** (the port
   contract is identical).
-- Clean seam for ADR-036: `safeapi_gateway_c_train` becomes the single
+- Clean seam for ADR-036: `rte_gateway_c_train` becomes the single
   place train-session multiplexing/demux lands.
 
 ## Location

@@ -1,6 +1,6 @@
 # Railway Control Server (QNX RTOS)
 
-A production-grade railway control server demonstrating safeAPIFramework on QNX RTOS with deterministic real-time guarantees.
+A production-grade railway control server demonstrating RteFramework on QNX RTOS with deterministic real-time guarantees.
 
 ## Overview
 
@@ -120,7 +120,7 @@ cmake -S . -B . \
   -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain-QNX.cmake \
   -DQNX_HOST=$QNX_HOST \
   -DQNX_TARGET=$QNX_TARGET \
-  -DSAFEAPI_BUILD_TESTS=OFF
+  -DRTE_BUILD_TESTS=OFF
 cmake --build .
 cd ../..
 
@@ -142,7 +142,7 @@ ssh user@qnx-target "mkdir -p /opt/rbc/bin /opt/rbc/lib /opt/rbc/include"
 
 # 2. Deploy framework
 scp build/qnx/src/*/*.a user@qnx-target:/opt/rbc/lib/
-scp -r ../../include/safeapi user@qnx-target:/opt/rbc/include/
+scp -r ../../include/rte user@qnx-target:/opt/rbc/include/
 
 # 3. Deploy server binary
 scp examples/qnx-rtos-app/railway-server user@qnx-target:/opt/rbc/bin/
@@ -487,5 +487,5 @@ done
 - [QNX Message Passing](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.user_guide/topic/message_passing_overview.html)
 - [QNX Microkernel](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.arch/topic/qnx_microkernel_intro.html)
 - [QNX Real-Time](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.rtguide/)
-- [safeapi::log](../../include/safeapi/oal/log/rte_log.h)
-- [safeapi::status](../../include/safeapi/utils/status/rte_status.h)
+- [rte::log](../../include/rte/oal/log/rte_log.h)
+- [rte::status](../../include/rte/utils/status/rte_status.h)

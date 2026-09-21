@@ -42,7 +42,7 @@ decisions:
 
 ## Decision
 
-### 1. `SAFEAPI_EXAMPLE_RELAY_KIND_UTIL` - the 4th relay kind
+### 1. `RTE_EXAMPLE_RELAY_KIND_UTIL` - the 4th relay kind
 
 `rte_example_relay_kind_t` gains `..._UTIL = 3`; `..._RELAY_KIND_COUNT`
 becomes 4. It reuses **everything** the train/il/ctc kinds already have:
@@ -111,7 +111,7 @@ C99 A/B side and the C++ C side - `#ifdef __cplusplus extern "C"` guarded.
 ### 3. STATUS topic - payload schema
 
 `topic_id = 1`. Each publisher sends `PUBLISH{STATUS, "<k=v ...>"}` every
-`SAFEAPI_EXAMPLE_STATUS_PERIOD_MS` and once at startup. Keys are the
+`RTE_EXAMPLE_STATUS_PERIOD_MS` and once at startup. Keys are the
 publisher's own view:
 
 | source | payload |
@@ -171,22 +171,22 @@ startup + every `STATUS_PERIOD_MS`:
   `LANGUAGES`; the status target compiles as C++ and links
   `gateway_c_common` across an `extern "C"` boundary
   (`gateway_c_common.h` already C-linkage-clean; add the guard).
-- New binary `safeapi_gateway_c_status` (GP - it is platform/transport
+- New binary `rte_gateway_c_status` (GP - it is platform/transport
   infra, like the train gateway). The `c-<site>` container entrypoint
   (`gateway_c_entrypoint.sh`, safeAPIRBC2oo2SA) launches **four**
   services now.
 
 ### 7. Cadence
 
-`#define SAFEAPI_EXAMPLE_STATUS_PERIOD_MS 5000U`
-`#define SAFEAPI_EXAMPLE_STATUS_STALE_MS  15000U` (3 missed → down).
+`#define RTE_EXAMPLE_STATUS_PERIOD_MS 5000U`
+`#define RTE_EXAMPLE_STATUS_STALE_MS  15000U` (3 missed → down).
 
 ## Verification
 
 - Every unit prints a `STATUS self` line within ~1 s of start, then every
   ~5 s (log-scrape in a new `robot/` check, both local + docker).
 - The status service prints `RBC <site> health ...` every ~5 s; its
-  fields match reality: kill `safeapi_gateway_c_il` → `ComServer=down`
+  fields match reality: kill `rte_gateway_c_il` → `ComServer=down`
   and `IL_West=down` within `STATUS_STALE_MS`; `docker network disconnect`
   the sim from EAST → `IL_East=down` / `CTC_East=down` in WEST's summary.
 - `ConnectedTrains` tracks the active roster (ADR-036) as trains

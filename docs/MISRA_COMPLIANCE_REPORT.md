@@ -7,7 +7,7 @@ Date: 2026-09-09 (see "update 24" note below)
 `rte_log_fields_add_str/_u32/_i32/_u64/_i64/_hex_u32/_bool()` /
 `rte_log_fields_c_str()` / `rte_log_write_event_fields()`,
 REQ-OAL-LOG-017):** manual review of the change
-(`include/safeapi/oal/log/rte_log.h`, `src/oal/log/rte_log.c`,
+(`include/rte/oal/log/rte_log.h`, `src/oal/log/rte_log.c`,
 `tests/log/test_rte_log.c`); `cppcheck --enable=all --addon=misra
 --std=c99` run on `src/oal/log/rte_log.c`.
 
@@ -31,10 +31,10 @@ REQ-OAL-LOG-017):** manual review of the change
   `extra_fields` is now treated exactly like NULL (`(extra_fields != NULL)
   && (extra_fields[0] != '\0')`), so an empty builder round-trips with no
   trailing space. Behaviour for a non-empty `extra_fields` is unchanged.
-- `rte_log.h` now `#include`s `safeapi/utils/string/rte_string.h` (for
+- `rte_log.h` now `#include`s `rte/utils/string/rte_string.h` (for
   the `rte_string_t` member) and `<stdbool.h>` (for `_add_bool`) — the
   `.c` already depended on `rte_string`; the header dependency is new but
-  matches the module doc, which already names `safeapi::string` as the
+  matches the module doc, which already names `rte::string` as the
   event-formatting path's dependency.
 - cppcheck on `rte_log.c` after the change: only `unusedFunction` style
   noise (single-TU public-API analysis), no `warning`/`error`/`misra-*`
@@ -51,7 +51,7 @@ REQ-OAL-LOG-017):** manual review of the change
 --addon=misra --std=c99` was available and run on
 `src/utils/string/rte_string.c` this pass (unlike updates 22/21). Manual
 review plus tool run of the change
-(`src/utils/string/rte_string.c`, `include/safeapi/utils/string/rte_string.h`,
+(`src/utils/string/rte_string.c`, `include/rte/utils/string/rte_string.h`,
 `tests/string/test_rte_string.c`):
 
 - New shared static tail `rte_string_append_bytes()` mirrors
@@ -85,7 +85,7 @@ review plus tool run of the change
 `rte_log`):** no automated `cppcheck` run - not installed in this
 environment (same "state plainly when no tool was available" posture as
 updates 4/5/13/21). Manual MISRA C:2012 review of the change
-(`src/oal/log/rte_log.c`, `include/safeapi/oal/log/rte_log.h`):
+(`src/oal/log/rte_log.c`, `include/rte/oal/log/rte_log.h`):
 
 - New threshold `static rte_log_level_t s_min_level` (default
   `RTE_LOG_LEVEL_DEBUG` = historical no-filter behaviour). Gate in
@@ -121,7 +121,7 @@ tool is not installed in the environment this change was made in (same
 "state plainly when no tool was available" posture as updates 4/5/13).
 Manual MISRA C:2012 review of the change:
 
-- **`src/oal/platform/rte_platform.c`** (new, in `safeapi_oal`): a
+- **`src/oal/platform/rte_platform.c`** (new, in `rte_oal`): a
   validate-then-dispatch service structurally identical to
   `src/oal/reboot/rte_reboot.c` (its template) - fixed-width types
   (`uint32_t`), one named constant (`RTE_PLATFORM_RT_PRIORITY_MAX 99U`),
@@ -131,14 +131,14 @@ Manual MISRA C:2012 review of the change:
   `*_register_osadapter()` / dispatch function in this project - not a new
   deviation. One function-pointer call through the registered vtable,
   same as `rte_reboot`/`rte_timer`.
-- **`include/safeapi/oal/platform/rte_platform.h` +
-  `include/safeapi_osadapter/platform/rte_osadapter_platform.h`** (new):
+- **`include/rte/oal/platform/rte_platform.h` +
+  `include/rte_osadapter/platform/rte_osadapter_platform.h`** (new):
   consumer/osadapter header split per ADR-021, Doxygen `@file`/`@brief`,
   full `@param`/`@return`, include guards, `extern "C"` wrappers - matches
   the reboot pair verbatim in shape.
 - **`tests/platform/test_rte_platform.c`** (new): `<assert.h>`-based, in
   the already-out-of-scope `tests/` tree (section 4).
-- No change to any existing `safeapi_core`/`safeapi_oal`/`safeapi_channels`
+- No change to any existing `rte_core`/`rte_oal`/`rte_channels`
   translation unit; the static finding total is unchanged from update
   20's **1229** (the new `.c` was not run through the tool, so it
   contributes 0 counted findings - flagged here rather than silently
@@ -152,7 +152,7 @@ Manual MISRA C:2012 review of the change:
   rest of that project's OSAdapter files.
 
 **2026-08-26, update 20 (dynamic analysis tooling added to the build:
-`SAFEAPI_ENABLE_ASAN`/`SAFEAPI_ENABLE_UBSAN` CMake options + a Valgrind
+`RTE_ENABLE_ASAN`/`RTE_ENABLE_UBSAN` CMake options + a Valgrind
 `ctest -T memcheck` target - see `.claude/skills/run-safeAPIFreamwork/SKILL.md`'s
 new "Sanitizers (ASan/UBSan) and Valgrind" section):** this update is
 about *dynamic* analysis (real execution under instrumentation), not
@@ -161,7 +161,7 @@ still moved (1228 -> 1229, +1) purely from the one-line `memset()` fix
 below, not from anything sanitizer-related. Full ctest suite run under
 all three tools:
 
-- **AddressSanitizer + LeakSanitizer** (`-DSAFEAPI_ENABLE_ASAN=ON`):
+- **AddressSanitizer + LeakSanitizer** (`-DRTE_ENABLE_ASAN=ON`):
   29/29 clean *after* two fixes, both real, both pre-existing (not
   introduced by this session's other work):
   - `tests/voter/test_rte_voter.c`: `g_mock[8]` was one element too
@@ -189,7 +189,7 @@ all three tools:
     `__attribute__((no_sanitize("address")))` on just that one function,
     with the full reasoning recorded in the file's own header comment
     for anyone who hits it again.
-- **UndefinedBehaviorSanitizer** (`-DSAFEAPI_ENABLE_UBSAN=ON`,
+- **UndefinedBehaviorSanitizer** (`-DRTE_ENABLE_UBSAN=ON`,
   `-fno-sanitize-recover=undefined` so a detected UB aborts the offending
   test rather than reporting and continuing): 29/29 clean, no fix
   needed.
@@ -257,7 +257,7 @@ unchanged):
     confirmed against the surrounding functions' own finding lines) -
     not a new finding *type* introduced by this code.
   - **`rte_safety_violation` module** (new
-    `include/safeapi/utils/safestate/rte_safety_violation.h` +
+    `include/rte/utils/safestate/rte_safety_violation.h` +
     `src/utils/safestate/rte_safety_violation.c` - single fixed handler
     slot, REQ-COMMON-SAFETYVIOLATION-001/002) plus instrumenting the
     three existing primitive families with
@@ -394,7 +394,7 @@ unchanged):
   as update 15's own RBC-adjacent (ADR-028) entry: all new/changed code
   follows this codebase's already-established conventions - no dynamic
   allocation (the train-session table and every new queue are fixed-size
-  arrays sized by `SAFEAPI_EXAMPLE_MAX_TRAINS`/`RBC_ENVELOPE_QUEUE_CAPACITY`,
+  arrays sized by `RTE_EXAMPLE_MAX_TRAINS`/`RBC_ENVELOPE_QUEUE_CAPACITY`,
   never grown), fixed-width types throughout the new `rbc_envelope_t`/
   `train_session_t` structs, explicit bounds-checking on every
   wire-supplied `train_id` before it indexes an array
@@ -419,7 +419,7 @@ unchanged):
   found two further live bugs, both root-caused with `gdb` and fixed by
   constant retunes only - no new code paths, no new MISRA-relevant
   pattern. See ADR-029 section 2.6 for the full story:
-  `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` (600ms -> 15000ms,
+  `RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` (600ms -> 15000ms,
   `common_config.h`) and `RBC_ENVELOPE_QUEUE_CAPACITY` (8 -> 16,
   `rbc_wire_types.h`). Both remain fixed-width (`uint32_t`/`#define`
   unsigned-suffixed literals), no dynamic allocation introduced, no
@@ -486,7 +486,7 @@ unchanged):
   (rule 8.6 - an external identifier without a single external
   definition site cppcheck can resolve; not yet triaged real-vs-deviation,
   same "not yet triaged" status as every other rule in section 1a/5's
-  list below), and `include/safeapi/lifecycle/rte_lifecycle.h` has
+  list below), and `include/rte/lifecycle/rte_lifecycle.h` has
   **zero** - only an informational (non-MISRA) `missingIncludeSystem`
   note from `<assert.h>` not being resolvable in this sandbox, which
   cppcheck's own message text explains is expected and harmless
@@ -589,7 +589,7 @@ unchanged):
 - The real `-Wcast-qual` fix this update made
   (`rte_voter_get_aggregated_health()`'s first parameter widened
   to `const rte_channel_t *`, `src/channel_link/rte_channel.c`/
-  `include/safeapi/channel_link/rte_channel.h`) removes a compiler
+  `include/rte/channel_link/rte_channel.h`) removes a compiler
   warning, not a cppcheck/MISRA finding - it doesn't change any count
   above, but is worth noting here since it was found via the same
   strict-warnings build this report's own tooling depends on.
@@ -605,10 +605,10 @@ automated re-run performed (same caveat as prior updates - still no
 specific change, see below); reasoned manually since this change touches
 zero `.c`/`.h` files:
 
-- The 21 per-feature static libraries (`safeapi_status` through
-  `safeapi_safechannel`) are now compiled into 3 grouped libraries -
-  `safeapi_core`, `safeapi_oal`, `safeapi_channels` - plus
-  `safeapi_appmanager` unchanged as a 4th. Every `.c`/`.h` file stays at
+- The 21 per-feature static libraries (`rte_status` through
+  `rte_safechannel`) are now compiled into 3 grouped libraries -
+  `rte_core`, `rte_oal`, `rte_channels` - plus
+  `rte_appmanager` unchanged as a 4th. Every `.c`/`.h` file stays at
   its exact ADR-007 path; only which `.a` its object code lands in
   changed. No new casts, no new control flow, no new dynamic behavior -
   every existing MISRA finding tied to a specific source file is
@@ -623,7 +623,7 @@ zero `.c`/`.h` files:
   list, safeAPIRBC2oo2's `src/posix_osadapter/CMakeLists.txt` and top-level
   `CMakeLists.txt`, and the `examples/qnx-rtos-app`/`examples/linux-posix-app`
   integration templates plus `examples/build-qnx.sh`'s doc string.
-  Verified via a repository-wide grep for every old `safeapi::<feature>`
+  Verified via a repository-wide grep for every old `rte::<feature>`
   name in both repos after the change - the only remaining hits are in
   `src/channel/CMakeLists.txt`, which was already excluded from the build
   before this change and stays that way.
@@ -649,7 +649,7 @@ performed (same caveat as prior updates - still no `cppcheck` in this
 sandbox session); reasoned manually plus full test-suite + live-run
 verification:
 
-- `rte_safechannel` (`include/safeapi/safechannel/rte_safechannel.h`,
+- `rte_safechannel` (`include/rte/safechannel/rte_safechannel.h`,
   `src/safechannel/rte_safechannel.c`): new module, same conventions as
   every other feature - no dynamic allocation (fixed
   `RTE_SAFECHANNEL_MAX_LINKS`-sized arrays), explicit casts at every
@@ -701,8 +701,8 @@ nature to update 8's `rte_timer` pilot:
 
 - Same pattern as the pilot: each module's `rte_<feature>_osadapter_t` and
   `rte_<feature>_register_osadapter()` *declarations* moved from
-  `include/safeapi/<feature>/rte_<feature>.h` to the new
-  `include/safeapi_osadapter/<feature>/rte_<feature>_osadapter.h`; each
+  `include/rte/<feature>/rte_<feature>.h` to the new
+  `include/rte_osadapter/<feature>/rte_<feature>_osadapter.h`; each
   service's `.c` implementation (`src/<feature>/rte_<feature>.c`) is
   byte-for-byte unchanged apart from the added `#include`. No new casts,
   no new control flow.
@@ -737,8 +737,8 @@ automated re-run performed (same caveat as prior updates - still no
 is a pure declaration move, not new logic:
 
 - `rte_osadapter_timer_t` and `rte_osadapter_timer_register()`'s
-  *declarations* moved from `include/safeapi/timer/rte_timer.h` to the
-  new `include/safeapi_osadapter/timer/rte_osadapter_timer.h`; their
+  *declarations* moved from `include/rte/timer/rte_timer.h` to the
+  new `include/rte_osadapter/timer/rte_osadapter_timer.h`; their
   *implementation* in `src/timer/rte_timer.c` is byte-for-byte
   unchanged, only its `#include` list gained the new header. No new
   casts, no new control flow, no new dynamic behavior - the existing
@@ -773,7 +773,7 @@ manually against the four new files (`rte_dual_types`, `rte_dual_frames`,
 - No recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>`/`<setjmp.h>`,
   fixed-width types throughout, `const` on every read-only parameter -
   consistent with the rest of the codebase; `grep -rln
-  "stdio.h\|assert.h\|errno.h\|setjmp.h" src/dual include/safeapi/dual`
+  "stdio.h\|assert.h\|errno.h\|setjmp.h" src/dual include/rte/dual`
   returns zero hits.
 - The one `switch` in the new code (`rte_dual_channel.c`'s frame-kind
   dispatch in `dual_channel_poll_link_once()`) has an explicit `default`
@@ -833,15 +833,15 @@ reasoned manually:
   `rte_log_level_to_string()`. Deliberately **not** a variadic function -
   MISRA C:2012 Rule 17.1 (required) prohibits `<stdarg.h>`; the optional
   "more fields" requirement is instead a single fixed `extra_fields`
-  parameter that the caller pre-formats with `safeapi::string`'s own
+  parameter that the caller pre-formats with `rte::string`'s own
   bounded helpers (same primitives this function uses internally to build
   the rest of the line) - `grep -rn "stdarg.h" include src` confirms zero
   hits, unchanged by this addition.
 - Fixed-size stack buffers only (`char line_storage[RTE_LOG_EVENT_LINE_MAX_LEN]`,
   a small numeric-formatting scratch buffer) - no dynamic allocation, same
   as every other module (Dir 4.12 in section 2).
-- New dependencies for this module only: `safeapi::string` (bounded
-  concatenation/formatting) and `safeapi::timer` (`rte_timer_now()` for
+- New dependencies for this module only: `rte::string` (bounded
+  concatenation/formatting) and `rte::timer` (`rte_timer_now()` for
   the TIMESTAMP field) - both already-reviewed leaf OAL/common modules
   (section 2); no new external header, no new banned construct introduced
   by depending on them.
@@ -870,8 +870,8 @@ already-open findings instead of introducing new ones:
   used for `execute`) and a checkpoint stage that calls
   `rte_channel_checkpoint()` (already-reviewed under ADR-017, no change
   to that module - see 2.3 of ADR-019). New `#include
-  "safeapi/checkpoint/rte_checkpoint.h"` and a new link dependency on
-  `safeapi::checkpoint`; no new banned construct (no dynamic memory, no
+  "rte/checkpoint/rte_checkpoint.h"` and a new link dependency on
+  `rte::checkpoint`; no new banned construct (no dynamic memory, no
   recursion, no new `<stdio.h>`/`errno`/`assert` use beyond what section
   1a's un-triaged `rte_appmanager.c` `21.6` finding already covers). Both
   modules remain inside this report's pre-existing "Known gap" paragraph
@@ -946,10 +946,10 @@ verified via the same setjmp/longjmp-diverting-handler technique as
 `tests/safestate/test_rte_safestate.c`, since `RTE_SAFESTATE_LEVEL_SAFE`
 is documented to never return). Also fixed a real, previously-latent
 linking bug this work surfaced: `src/watchdog/CMakeLists.txt` only linked
-`safeapi_status`/`safeapi_log`, even though the (stub) implementation's
-public header already implied a dependency on `safeapi_timer`; a
-standalone consumer of `safeapi::watchdog` alone (e.g. the new unit test)
-would have failed to link. Now links `safeapi_safestate`/`safeapi_timer`
+`rte_status`/`rte_log`, even though the (stub) implementation's
+public header already implied a dependency on `rte_timer`; a
+standalone consumer of `rte::watchdog` alone (e.g. the new unit test)
+would have failed to link. Now links `rte_safestate`/`rte_timer`
 too.
 
 **2026-08-05, later same day - update 2:** the automated checker described
@@ -1060,11 +1060,11 @@ retrofitted, and are verified here by direct search of the shipped source:
 | Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `rte_checkpoint.c`/`rte_clocksync.c`: zero hits. `rte_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `rte_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `rte_checksum.c`). |
 | Explicit status codes, no invented enum values | `rte_checksum.c` fix | The pre-fix file referenced `RTE_STATUS_ERROR`/`RTE_STATUS_INVALID`, neither a member of `rte_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `RTE_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `RTE_STATUS_INVALID_PARAM` for bad arguments, `RTE_STATUS_ALREADY_INITIALIZED` for double-init. |
 
-**Update (2026-08-20): new module, `include/safeapi/notify/rte_notify.h`
+**Update (2026-08-20): new module, `include/rte/notify/rte_notify.h`
 (ADR-034).** Header-only, no `src/` file to run the normal cppcheck pass
 against - reviewed manually instead. Rule 11.1 (function-pointer/other-type
 conversion) is the rule this module exists specifically to avoid violating:
-`SAFEAPI_DECLARE_CALLBACK_LIST` declares only a `{callback_fn_type fn; void
+`RTE_DECLARE_CALLBACK_LIST` declares only a `{callback_fn_type fn; void
 *context;}` storage shape with the callback field kept at its own real,
 concrete function-pointer type throughout - no `void *`-typed function
 pointer, no cast between function-pointer types anywhere in the header (see
@@ -1079,7 +1079,7 @@ recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes
 only `<stdint.h>`. Standalone compile check (`gcc -std=c99 -Wall -Wextra
 -Wpedantic`) of a worked instantiation: clean, zero warnings.
 
-**Update (2026-08-20): new module, `include/safeapi/memory/rte_mem_util.h`
+**Update (2026-08-20): new module, `include/rte/memory/rte_mem_util.h`
 (ADR-031).** Header-only, no `src/` file to run the normal cppcheck pass
 against - reviewed manually instead. `rte_mem_set()`/`rte_mem_copy()`/
 `rte_mem_compare()` are thin `static inline` wrappers over `memset()`/
@@ -1097,8 +1097,8 @@ issue at every call site rather than in just one place. Standalone
 compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`): clean, zero
 warnings.
 
-**Update (2026-08-21): new module, `include/safeapi/mutex/rte_mutex.h` +
-`include/safeapi_osadapter/mutex/rte_osadapter_mutex.h` + `src/mutex/rte_mutex.c`
+**Update (2026-08-21): new module, `include/rte/mutex/rte_mutex.h` +
+`include/rte_osadapter/mutex/rte_osadapter_mutex.h` + `src/mutex/rte_mutex.c`
 (ADR-033).** Added after an architecture review of `safeAPIRBC2oo2` found
 it calling `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`
 directly on a raw `pthread_mutex_t` application struct field - a real
@@ -1240,10 +1240,10 @@ same rules:
   intentionally confined to test-only tooling.
 - All test files use `<assert.h>` per normal unit-test practice.
 
-**Update 2026-09-18:** new module `rte_flow` (`include/safeapi/oal/flow/`,
-`include/safeapi_osadapter/flow/`, `src/oal/flow/rte_flow.c` -
+**Update 2026-09-18:** new module `rte_flow` (`include/rte/oal/flow/`,
+`include/rte_osadapter/flow/`, `src/oal/flow/rte_flow.c` -
 OCORA PI-API-compatible name-addressed pub/sub Flow service, ADR-005
-OSAdapter seam, `SAFEAPI_ENABLE_FLOW`) added, same validate-then-dispatch
+OSAdapter seam, `RTE_ENABLE_FLOW`) added, same validate-then-dispatch
 shape as `rte_netlink`. `cmake --build build --target cppcheck` re-run
 after adding it: zero new MISRA findings. `ctest` 31/31 (was 30/30) with
 `test_rte_flow` added following `test_rte_netlink`'s own pattern.
@@ -1283,7 +1283,7 @@ become permanent.
 
 - **Update (2026-09-18): new module `rte_redundancy_config`** (RCA/OCORA
   initiative - JSON-loaded 2oo2/2oo2_redundant/2oo3/NMR voting-topology
-  config, `include/safeapi/redundancy/config/`, `src/redundancy/config/`).
+  config, `include/rte/redundancy/config/`, `src/redundancy/config/`).
   `cppcheck --addon=misra` findings, all in the same already-accepted
   buckets as the rest of the tree: Rule 15.5 (single-exit/guard-clause
   style, dominant everywhere), Rule 21.6 (`<stdio.h>` - `fopen`/`fread`/
@@ -1302,7 +1302,7 @@ become permanent.
 
 - **Update (2026-09-18): new module `rte_channel_service_flow_osadapter`**
   (RCA/OCORA Phase 4 - a `rte_osadapter_channel_service_t` implementation over
-  `rte_flow`, `include/safeapi/redundancy/channel_service/`,
+  `rte_flow`, `include/rte/redundancy/channel_service/`,
   `src/redundancy/channel_service/`). `cppcheck --addon=misra` findings, all
   in already-accepted buckets: Rule 15.5 (single-exit, dominant everywhere),
   Rule 11.5 (`void *` -> typed-pointer cast in `channel_state()`, identical
@@ -1323,7 +1323,7 @@ become permanent.
   lazy-open, 1 new case covering "absent peer fails only I/O calls, not setup()").
 
 - **Update (2026-09-18, same day): new module `rte_state_transfer`** (RCA/OCORA hot/warm/cold
-  standby initiative - `include/safeapi/redundancy/state_transfer/`,
+  standby initiative - `include/rte/redundancy/state_transfer/`,
   `src/redundancy/state_transfer/`), plus a new `standby_mode` field on
   `rte_redundancy_config_t` (`"hot"`/`"warm"`/`"cold"`, default `"cold"`). Same already-accepted
   rule buckets as every other module in this tree (15.5 single-exit, 21.16 `memcmp`/pointer

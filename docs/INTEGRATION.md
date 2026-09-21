@@ -1,6 +1,6 @@
-# Integrating safeAPIFramework into Your Project
+# Integrating RteFramework into Your Project
 
-This guide shows how to use safeAPIFramework as a dependency in your own C/embedded project, and how to reuse its CMake configurations and tools.
+This guide shows how to use RteFramework as a dependency in your own C/embedded project, and how to reuse its CMake configurations and tools.
 
 ## Table of Contents
 
@@ -17,8 +17,8 @@ This guide shows how to use safeAPIFramework as a dependency in your own C/embed
 ### Option A: System-wide Install (recommended for packaged deployments)
 
 ```sh
-# Build safeAPIFramework
-cd safeAPIFramework
+# Build RteFramework
+cd RteFramework
 cmake --preset debug
 cmake --build --preset debug
 ctest --preset debug
@@ -27,21 +27,21 @@ ctest --preset debug
 sudo cmake --install build
 
 # Or install to custom location
-cmake --install build --prefix ~/opt/safeAPIFramework
+cmake --install build --prefix ~/opt/RteFramework
 ```
 
 ### Option B: Local/Embedded Install (recommended for development)
 
-Include safeAPIFramework as a subdirectory or Git submodule:
+Include RteFramework as a subdirectory or Git submodule:
 
 ```sh
 # In your project root
-git submodule add https://github.com/user/safeAPIFramework.git deps/safeAPIFramework
+git submodule add https://github.com/user/RteFramework.git deps/RteFramework
 ```
 
 Then in your `CMakeLists.txt`:
 ```cmake
-add_subdirectory(deps/safeAPIFramework)
+add_subdirectory(deps/RteFramework)
 ```
 
 ---
@@ -56,76 +56,76 @@ In your **CMakeLists.txt**:
 cmake_minimum_required(VERSION 3.16)
 project(MyApp)
 
-# Find safeAPIFramework
-find_package(safeAPIFramework 0.1.0 REQUIRED)
+# Find RteFramework
+find_package(RteFramework 0.1.0 REQUIRED)
 
 # Create your executable
 add_executable(myapp main.c other.c)
 
-# Link against the safeAPIFramework libraries you need
+# Link against the RteFramework libraries you need
 target_link_libraries(myapp
-    safeapi::core
-    safeapi::oal
+    rte::core
+    rte::oal
 )
 
 # Include headers
-target_include_directories(myapp PRIVATE ${safeAPIFramework_INCLUDE_DIR})
+target_include_directories(myapp PRIVATE ${RteFramework_INCLUDE_DIR})
 ```
 
 ### Linking Specific Modules
 
-safeAPIFramework exports 4 libraries (ADR-023 - previously one per
+RteFramework exports 4 libraries (ADR-023 - previously one per
 feature; consolidated because no consumer ever linked a single feature
 in isolation):
 
-- `safeapi::core` — zero-OS-dependency primitives: status codes, fixed-width
+- `rte::core` — zero-OS-dependency primitives: status codes, fixed-width
   types, endianness-safe buffers, checked integer casting, safe-state
   transitions, bounded string operations
-- `safeapi::oal` — OS Abstraction Layer services: timer, non-volatile
+- `rte::oal` — OS Abstraction Layer services: timer, non-volatile
   memory, static memory reservation, task scheduling, inter-process
   communication, network links, logging, controlled reboot, watchdog
-  (depends on `safeapi::core`)
-- `safeapi::channels` — safety-comms/channel layer: CRC-64 checksums,
+  (depends on `rte::core`)
+- `rte::channels` — safety-comms/channel layer: CRC-64 checksums,
   voting channels, clock sync, checkpoint rendezvous, dual-transfer
   redundant links, the unified `rte_safechannel` factory (depends on
-  `safeapi::core` and `safeapi::oal`)
-- `safeapi::appmanager` — application lifecycle hooks and built-in
+  `rte::core` and `rte::oal`)
+- `rte::appmanager` — application lifecycle hooks and built-in
   checkpoint integration (depends on all three above)
 
 Each library's `target_link_libraries()` is `PUBLIC`, so linking one
 name pulls in everything it depends on transitively - e.g. linking just
-`safeapi::channels` is enough to also get `core` and `oal` symbols.
+`rte::channels` is enough to also get `core` and `oal` symbols.
 
 Example: use only what you need
 ```cmake
-target_link_libraries(myapp safeapi::oal)
+target_link_libraries(myapp rte::oal)
 ```
 
 ---
 
 ## Reusing CMake Modules
 
-safeAPIFramework includes reusable CMake modules. After `find_package()`, you can use them:
+RteFramework includes reusable CMake modules. After `find_package()`, you can use them:
 
 ### CompilerWarnings.cmake
 
-Applies strict compiler warnings matching safeAPIFramework standards:
+Applies strict compiler warnings matching RteFramework standards:
 
 ```cmake
-find_package(safeAPIFramework REQUIRED)
+find_package(RteFramework REQUIRED)
 include(CompilerWarnings)
 
 add_executable(myapp main.c)
 apply_compiler_warnings(myapp)  # Adds -Wall -Wextra -Wpedantic -Werror
 ```
 
-### SafeAPIHelpers.cmake
+### RTEHelpers.cmake
 
 Provides helper functions:
 
 ```cmake
-find_package(safeAPIFramework REQUIRED)
-include(SafeAPIHelpers)
+find_package(RteFramework REQUIRED)
+include(RTEHelpers)
 
 # Enable MISRA C:2012 checking via cppcheck
 rte_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
@@ -149,8 +149,8 @@ rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 Generate a template `CMakePresets.json` for your project:
 
 ```cmake
-find_package(safeAPIFramework REQUIRED)
-include(SafeAPIHelpers)
+find_package(RteFramework REQUIRED)
+include(RTEHelpers)
 
 rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 ```
@@ -164,11 +164,11 @@ ctest --preset debug
 
 ### Option B: Manual Preset Setup
 
-Copy preset configurations from safeAPIFramework's `CMakePresets.json` and adapt them to your project.
+Copy preset configurations from RteFramework's `CMakePresets.json` and adapt them to your project.
 
 ### Option C: Submodule Approach
 
-If you embedded safeAPIFramework as `deps/safeAPIFramework/`, you can reference its presets in your own `CMakePresets.json`:
+If you embedded RteFramework as `deps/RteFramework/`, you can reference its presets in your own `CMakePresets.json`:
 
 ```json
 {
@@ -189,7 +189,7 @@ If you embedded safeAPIFramework as `deps/safeAPIFramework/`, you can reference 
 
 ## Example Project
 
-Here's a complete example that uses safeAPIFramework:
+Here's a complete example that uses RteFramework:
 
 ### Project structure:
 ```
@@ -200,7 +200,7 @@ myproject/
 │   ├── main.c
 │   └── app.c
 └── deps/
-    └── safeAPIFramework/  (git submodule)
+    └── RteFramework/  (git submodule)
 ```
 
 ### CMakeLists.txt:
@@ -214,11 +214,11 @@ project(myproject
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# Include safeAPIFramework as subdirectory
-add_subdirectory(deps/safeAPIFramework)
+# Include RteFramework as subdirectory
+add_subdirectory(deps/RteFramework)
 
-# Load safeAPIFramework's CMake modules
-include(SafeAPIHelpers)
+# Load RteFramework's CMake modules
+include(RTEHelpers)
 include(CompilerWarnings)
 
 # Create executable
@@ -227,14 +227,14 @@ add_executable(myapp
     src/app.c
 )
 
-# Link safeAPIFramework components
+# Link RteFramework components
 target_link_libraries(myapp
-    safeapi::core
-    safeapi::oal
+    rte::core
+    rte::oal
 )
 
-# Include safeAPIFramework headers
-target_include_directories(myapp PRIVATE deps/safeAPIFramework/include)
+# Include RteFramework headers
+target_include_directories(myapp PRIVATE deps/RteFramework/include)
 
 # Apply strict warnings
 rte_apply_strict_warnings(TARGET myapp)
@@ -270,39 +270,39 @@ cmake --build --preset debug
 
 ---
 
-## Finding safeAPIFramework
+## Finding RteFramework
 
 If you installed to a non-standard location:
 
 ```bash
 # Export CMAKE_PREFIX_PATH so find_package() can locate it
-export CMAKE_PREFIX_PATH=~/opt/safeAPIFramework:$CMAKE_PREFIX_PATH
+export CMAKE_PREFIX_PATH=~/opt/RteFramework:$CMAKE_PREFIX_PATH
 
 cmake --preset debug
 ```
 
 Or pass it to CMake:
 ```bash
-cmake --preset debug -DCMAKE_PREFIX_PATH=~/opt/safeAPIFramework
+cmake --preset debug -DCMAKE_PREFIX_PATH=~/opt/RteFramework
 ```
 
 ---
 
 ## Troubleshooting
 
-### `find_package(safeAPIFramework) not found`
+### `find_package(RteFramework) not found`
 
-1. Check installation: `ls $(CMAKE_PREFIX_PATH)/lib/cmake/safeAPIFramework`
-2. Ensure `safeAPIFrameworkConfig.cmake` is present
+1. Check installation: `ls $(CMAKE_PREFIX_PATH)/lib/cmake/RteFramework`
+2. Ensure `RteFrameworkConfig.cmake` is present
 3. Check `CMAKE_PREFIX_PATH` environment variable
-4. Try: `cmake --trace-expand | grep -i safeapi`
+4. Try: `cmake --trace-expand | grep -i rte`
 
 ### Linking issues with specific components
 
-Ensure you link the correct `safeapi::` target. Check available targets:
+Ensure you link the correct `rte::` target. Check available targets:
 ```cmake
-find_package(safeAPIFramework REQUIRED)
-message(STATUS "safeAPIFramework libraries: ${safeAPIFramework_LIBRARIES}")
+find_package(RteFramework REQUIRED)
+message(STATUS "RteFramework libraries: ${RteFramework_LIBRARIES}")
 ```
 
 ### MISRA violations in downstream project
@@ -310,7 +310,7 @@ message(STATUS "safeAPIFramework libraries: ${safeAPIFramework_LIBRARIES}")
 Suppress specific rules via `.cppcheck-suppressions`:
 ```
 # In your project's .cppcheck-suppressions file
-misra-c2012-15.5  # If using guard clauses like safeAPIFramework
+misra-c2012-15.5  # If using guard clauses like RteFramework
 ```
 
 ---

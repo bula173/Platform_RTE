@@ -9,7 +9,7 @@
  */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/redundancy/dual/rte_dual_types.h"
+#include "rte/redundancy/dual/rte_dual_types.h"
 
 int main(void)
 {

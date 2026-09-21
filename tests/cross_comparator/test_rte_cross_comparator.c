@@ -4,9 +4,9 @@
 #include <setjmp.h>
 #include <string.h>
 
-#include "safeapi/redundancy/cross_comparator/rte_cross_comparator.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
+#include "rte/redundancy/cross_comparator/rte_cross_comparator.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 typedef struct
 {

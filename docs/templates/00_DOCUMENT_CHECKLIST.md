@@ -25,7 +25,7 @@
 | **System Requirements Specification (SRS)** | `05_SRS_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | All functional & safety requirements |
 | **Hazard Analysis & Risk Assessment (HARA)** | `06_HARA_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | Failure modes and risk assessment |
 | **Safety Requirements Specification (SafeRS)** | `07_SAFE_REQUIREMENTS_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | Derived safety requirements |
-| **safeAPIFramework Integration Plan** | `08_SAFEAPI_INTEGRATION_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | How safeAPIFramework is used |
+| **RteFramework Integration Plan** | `08_RTE_INTEGRATION_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | How RteFramework is used |
 
 ### Phase 3: Design (Design Phase)
 
@@ -56,7 +56,7 @@
 |----------|------|--------|-------|
 | **Safety Case** | `22_SAFETY_CASE.md` | ☐ Draft ☐ Review ☐ Approved | Main argument for system safety |
 | **Functional Safety Assessment** | `23_FUNCTIONAL_SAFETY_ASSESSMENT.md` | ☐ Draft ☐ Review ☐ Approved | SIL verification evidence |
-| **safeAPIFramework Verification Report** | `24_SAFEAPI_VERIFICATION.md` | ☐ Draft ☐ Review ☐ Approved | How safeAPIFramework was verified |
+| **RteFramework Verification Report** | `24_RTE_VERIFICATION.md` | ☐ Draft ☐ Review ☐ Approved | How RteFramework was verified |
 | **Deviation Management Report** | `25_DEVIATION_MANAGEMENT.md` | ☐ Draft ☐ Review ☐ Approved | All MISRA/EN 50128 deviations |
 | **Assessment Readiness Checklist** | `26_ASSESSMENT_READINESS.md` | ☐ Draft ☐ Review ☐ Approved | Pre-assessment verification |
 
@@ -84,7 +84,7 @@ Required absolute minimum:
 7. Unit Test Report (19)
 8. Traceability Matrix (12)
 9. Safety Case (22)
-10. safeAPIFramework Verification (24)
+10. RteFramework Verification (24)
 ```
 
 ### Standard Set (Recommended)
@@ -92,7 +92,7 @@ Required absolute minimum:
 Add to minimal set:
 - V&V Plan (02)
 - SafeRS (07)
-- safeAPIFramework Integration (08)
+- RteFramework Integration (08)
 - Detailed Design (10)
 - OSAdapter Design (11)
 - Test Plan (18)
@@ -221,7 +221,7 @@ When ready for assessment, package should include:
 ├── 05_SRS.md
 ├── 06_HARA.md
 ├── 07_SAFE_REQUIREMENTS.md
-├── 08_SAFEAPI_INTEGRATION_PLAN.md
+├── 08_RTE_INTEGRATION_PLAN.md
 ├── 09_ARCHITECTURE_DESIGN.md
 ├── 10_DETAILED_DESIGN.md
 ├── 11_BACKEND_DESIGN.md
@@ -237,7 +237,7 @@ When ready for assessment, package should include:
 ├── 21_COVERAGE_ANALYSIS.md
 ├── 22_SAFETY_CASE.md
 ├── 23_FUNCTIONAL_SAFETY_ASSESSMENT.md
-├── 24_SAFEAPI_VERIFICATION.md
+├── 24_RTE_VERIFICATION.md
 ├── 25_DEVIATION_MANAGEMENT.md
 ├── 26_ASSESSMENT_READINESS.md
 ├── SOURCE_CODE/
@@ -265,7 +265,7 @@ When ready for assessment, package should include:
 - [ ] SRS complete and reviewed
 - [ ] HARA identifies all critical failure modes
 - [ ] Safety requirements derived and traced
-- [ ] safeAPIFramework integration approach documented
+- [ ] RteFramework integration approach documented
 
 ### Design Phase ✓
 - [ ] Architecture reviewed and approved

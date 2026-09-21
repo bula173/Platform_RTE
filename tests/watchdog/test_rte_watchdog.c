@@ -13,11 +13,11 @@
  */
 #include <assert.h>
 #include <setjmp.h>
-#include "safeapi/redundancy/watchdog/rte_watchdog.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
+#include "rte/redundancy/watchdog/rte_watchdog.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/oal/timer/rte_timer.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
 
 /* ---- mock timer OSAdapter: caller-controlled clock ---- */
 static rte_timestamp_ms_t g_mock_now_ms = 0U;

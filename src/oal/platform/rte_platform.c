@@ -5,9 +5,9 @@
  *        then dispatches to the OSAdapter registered via
  *        rte_osadapter_platform_register() (ADR-005, ADR-035).
  */
-#include "safeapi/oal/platform/rte_platform.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/platform/rte_osadapter_platform.h"
+#include "rte/oal/platform/rte_platform.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/platform/rte_osadapter_platform.h"
 
 /** Local makros */
 /** @brief Highest real-time priority rte_platform_realtime_init() accepts. */

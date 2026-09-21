@@ -1,7 +1,7 @@
 /* Tests for rte_clocksync (ADR-017). */
 #include <assert.h>
-#include "safeapi/oal/clocksync/rte_clocksync.h"
-#include "safeapi_osadapter/clocksync/rte_osadapter_clocksync.h"
+#include "rte/oal/clocksync/rte_clocksync.h"
+#include "rte_osadapter/clocksync/rte_osadapter_clocksync.h"
 
 static int64_t g_mock_offset_ms;
 static rte_clocksync_quality_t g_mock_quality;

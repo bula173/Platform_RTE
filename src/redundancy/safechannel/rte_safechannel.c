@@ -4,9 +4,9 @@
  *        rte_dual_channel_t or a rte_voter_t over N rte_channel_t
  *        links (ADR-025) - see rte_safechannel.h and ADR-022.
  */
-#include "safeapi/redundancy/safechannel/rte_safechannel.h"
+#include "rte/redundancy/safechannel/rte_safechannel.h"
 
-#include "safeapi/redundancy/checksum/rte_checksum.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
 
 #include <string.h>
 

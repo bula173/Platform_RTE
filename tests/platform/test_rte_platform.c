@@ -1,7 +1,7 @@
 /* Tests for the rte_platform validate-then-dispatch API (ADR-005/ADR-035). */
 #include <assert.h>
-#include "safeapi/oal/platform/rte_platform.h"
-#include "safeapi_osadapter/platform/rte_osadapter_platform.h"
+#include "rte/oal/platform/rte_platform.h"
+#include "rte_osadapter/platform/rte_osadapter_platform.h"
 
 static int g_realtime_init_calls;
 static uint32_t g_last_priority;

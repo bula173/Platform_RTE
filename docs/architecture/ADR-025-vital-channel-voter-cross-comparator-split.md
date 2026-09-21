@@ -2,13 +2,13 @@
 
 Status: Accepted
 Date: 2026-08-16
-Applies to: `include/safeapi/vital_channel/` -> `include/safeapi/channel_link/`,
-new `include/safeapi/voter/`, new `include/safeapi/cross_comparator/`,
+Applies to: `include/rte/vital_channel/` -> `include/rte/channel_link/`,
+new `include/rte/voter/`, new `include/rte/cross_comparator/`,
 `src/vital_channel/` -> `src/channel_link/`, new `src/voter/`, new
 `src/cross_comparator/`, `src/checkpoint/`, `src/safechannel/`,
 `src/appmanager/`, the top-level `CMakeLists.txt` and
 `tests/CMakeLists.txt`, and the retirement of the old, dead ADR-008
-`include/safeapi/channel/` / `src/channel/` / `tests/channel/`.
+`include/rte/channel/` / `src/channel/` / `tests/channel/`.
 
 ## 1. Context
 
@@ -60,7 +60,7 @@ redesign had to account for a ripple effect, not just the type itself:
   with all links passed at once.
 
 Separately, the framework already had a long-dead, never-compiled
-ADR-008 module at `include/safeapi/channel/` / `src/channel/` (excluded
+ADR-008 module at `include/rte/channel/` / `src/channel/` (excluded
 from every build since before ADR-023, per that ADR's own §2.1/§5)
 whose intended purpose - a simple 2-channel comparator - is exactly
 what `rte_cross_comparator` now provides for real, tested and
@@ -82,7 +82,7 @@ responsibility boundary described above.
 
 ### 2.1 `rte_channel` (renamed from `rte_vital_channel`, single link)
 
-`include/safeapi/channel_link/rte_channel.h` /
+`include/rte/channel_link/rte_channel.h` /
 `src/channel_link/rte_channel.c` - reduced to exactly one redundant
 link: an opaque `channel_handle` plus `send`/`recv` callbacks, with its
 own `rte_channel_health_t` (send/recv counts, error counts,
@@ -109,7 +109,7 @@ a word free for use in prose without a specific-directory implication.
 
 ### 2.2 `rte_voter` (new) - N-way voting, with the majority-vote bug fixed
 
-`include/safeapi/voter/rte_voter.h` / `src/voter/rte_voter.c` -
+`include/rte/voter/rte_voter.h` / `src/voter/rte_voter.c` -
 registers up to `RTE_VOTER_MAX_CHANNELS` (8) `rte_channel_t`
 instances and performs 2oo2/2oo3/NMR voting over them.
 
@@ -144,7 +144,7 @@ not a general-purpose iteration API.
 
 ### 2.3 `rte_cross_comparator` (new) - 2-way peer comparison
 
-`include/safeapi/cross_comparator/rte_cross_comparator.h` /
+`include/rte/cross_comparator/rte_cross_comparator.h` /
 `src/cross_comparator/rte_cross_comparator.c` - structurally similar
 to `rte_voter` but fixed at exactly 2 registered channels and no
 strategy/quorum configuration (only "both agree" is meaningful at
@@ -209,7 +209,7 @@ the old direct field reads
 `rte_channel_send()`/`rte_channel_receive()` on each individual
 channel. `rte_appmanager_checkpoint_config_t`'s field was renamed from
 `vital_channel` to `voter` to match
-(`include/safeapi/appmanager/rte_appmanager.h`,
+(`include/rte/appmanager/rte_appmanager.h`,
 `src/appmanager/rte_appmanager.c`).
 
 ### 2.6 Rewiring `rte_safechannel`'s voted path
@@ -236,7 +236,7 @@ simplified signature.
 
 ### 2.7 Retirement of the old ADR-008 `channel` module
 
-`include/safeapi/channel/`, `src/channel/`, and `tests/channel/` (the
+`include/rte/channel/`, `src/channel/`, and `tests/channel/` (the
 dead, never-built ADR-008 2-channel comparator ADR-023 §2.1/§5 had
 already flagged as excluded from every build) are removed outright.
 `rte_cross_comparator` (§2.3) covers its intended use case for real,
@@ -245,17 +245,17 @@ ADR-023 deferred for that module.
 
 ### 2.8 Build configuration (ADR-024)
 
-`SAFEAPI_ENABLE_VITAL_CHANNEL` renamed to `SAFEAPI_ENABLE_CHANNEL_LINK`.
+`RTE_ENABLE_VITAL_CHANNEL` renamed to `RTE_ENABLE_CHANNEL_LINK`.
 Two new options added, both default `ON`:
 
 ```
-SAFEAPI_ENABLE_VOTER            needs CHANNEL_LINK, LOG
-SAFEAPI_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
+RTE_ENABLE_VOTER            needs CHANNEL_LINK, LOG
+RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
 ```
 
-`SAFEAPI_ENABLE_CHECKPOINT`, `SAFEAPI_ENABLE_SAFECHANNEL`, and
-`SAFEAPI_ENABLE_APPMANAGER` each gained a dependency on
-`SAFEAPI_ENABLE_VOTER` (previously only on `VITAL_CHANNEL`/
+`RTE_ENABLE_CHECKPOINT`, `RTE_ENABLE_SAFECHANNEL`, and
+`RTE_ENABLE_APPMANAGER` each gained a dependency on
+`RTE_ENABLE_VOTER` (previously only on `VITAL_CHANNEL`/
 `CHANNEL_LINK`). See ADR-024 §2.1 for the updated full dependency graph.
 
 ## 3. Consequences
@@ -307,8 +307,8 @@ SAFEAPI_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
 
 ## 4. Verification
 
-- `cmake -S . -B build -DSAFEAPI_BUILD_TESTS=ON && cmake --build build`:
-  clean build, zero warnings (default `SAFEAPI_WARNINGS_AS_ERRORS=ON`).
+- `cmake -S . -B build -DRTE_BUILD_TESTS=ON && cmake --build build`:
+  clean build, zero warnings (default `RTE_WARNINGS_AS_ERRORS=ON`).
 - `ctest --test-dir build --output-on-failure`: all 26 test executables
   pass, including new `test_rte_voter`/`test_rte_cross_comparator` and
   the rewired `test_rte_channel` (formerly `test_rte_vital_channel`),
@@ -325,19 +325,19 @@ SAFEAPI_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
   log checks - the live, rewired `rte_channel_t`/`rte_voter_t`
   checkpoint path.
 - Manual repository-wide grep for `rte_vital_channel`/
-  `SAFEAPI_ENABLE_VITAL_CHANNEL` confirmed no remaining reference to a
+  `RTE_ENABLE_VITAL_CHANNEL` confirmed no remaining reference to a
   symbol or option name that no longer exists in any file the build
   actually compiles (`src/`, `include/`, `tests/`, `CMakeLists.txt`,
   `tests/CMakeLists.txt`).
 
 ## 5. Location
 
-- `include/safeapi/channel_link/`, `src/channel_link/`, `tests/channel_link/`
-- `include/safeapi/voter/`, `src/voter/`, `tests/voter/`
-- `include/safeapi/cross_comparator/`, `src/cross_comparator/`, `tests/cross_comparator/`
-- `src/checkpoint/rte_checkpoint.c`, `include/safeapi/checkpoint/rte_checkpoint.h`
-- `src/safechannel/rte_safechannel.c`, `include/safeapi/safechannel/rte_safechannel.h`
-- `src/appmanager/rte_appmanager.c`, `include/safeapi/appmanager/rte_appmanager.h`
+- `include/rte/channel_link/`, `src/channel_link/`, `tests/channel_link/`
+- `include/rte/voter/`, `src/voter/`, `tests/voter/`
+- `include/rte/cross_comparator/`, `src/cross_comparator/`, `tests/cross_comparator/`
+- `src/checkpoint/rte_checkpoint.c`, `include/rte/checkpoint/rte_checkpoint.h`
+- `src/safechannel/rte_safechannel.c`, `include/rte/safechannel/rte_safechannel.h`
+- `src/appmanager/rte_appmanager.c`, `include/rte/appmanager/rte_appmanager.h`
 - `CMakeLists.txt` (top-level), `tests/CMakeLists.txt`
 - `docs/architecture/ADR-024-configurable-feature-build.md` (dependency
   graph, §2.1, updated)

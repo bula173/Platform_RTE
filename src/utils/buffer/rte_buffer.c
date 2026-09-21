@@ -3,7 +3,7 @@
  * @brief Implementation of the cross-layer data buffer abstraction (ADR-002).
  * @ingroup BUFFER
  */
-#include "safeapi/utils/buffer/rte_buffer.h"
+#include "rte/utils/buffer/rte_buffer.h"
 #include <string.h>
 
 rte_status_t rte_buffer_init(rte_buffer_t *buf, void *storage, size_t capacity)

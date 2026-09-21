@@ -2,8 +2,8 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: `include/safeapi/common/rte_string.h`, additions to
-`include/safeapi/common/rte_buffer.h`
+Applies to: `include/rte/common/rte_string.h`, additions to
+`include/rte/common/rte_buffer.h`
 
 ## 1. Context
 
@@ -159,11 +159,11 @@ append-write/random-access-read asymmetry already implicit in
 ## 4. Location
 
 > **Superseded by ADR-007.** See below for the original path; the current
-> physical layout is `include/safeapi/string/rte_string.h` +
-> `src/string/rte_string.c`, target `safeapi::string` (links
-> `safeapi::buffer` and `safeapi::cast`).
+> physical layout is `include/rte/string/rte_string.h` +
+> `src/string/rte_string.c`, target `rte::string` (links
+> `rte::buffer` and `rte::cast`).
 
-`include/safeapi/common/rte_string.h` + `src/common/rte_string.c`
-(added to `safeapi_common`). Endian helpers added directly to
+`include/rte/common/rte_string.h` + `src/common/rte_string.c`
+(added to `rte_common`). Endian helpers added directly to
 `rte_buffer.h`/`rte_buffer.c` (ADR-002) rather than a new file, since
 they operate on `rte_buffer_t` itself.

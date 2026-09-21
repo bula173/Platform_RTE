@@ -6,9 +6,9 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/redundancy/dual/rte_dual_msgchannel.h"
-#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/redundancy/dual/rte_dual_msgchannel.h"
+#include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 /* --- mock netlink OSAdapter: two single-slot mailboxes, wired A<->B --- */
 typedef struct

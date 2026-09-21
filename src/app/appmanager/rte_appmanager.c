@@ -24,12 +24,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "safeapi/app/appmanager/rte_appmanager.h"
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/redundancy/checkpoint/rte_checkpoint.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/app/appmanager/rte_appmanager.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/redundancy/checkpoint/rte_checkpoint.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte/oal/timer/rte_timer.h"
 
 /* rte_appmanager_install_default_signal_handlers()'s POSIX detection -
  * see this file's own implementation below and the function's doc in

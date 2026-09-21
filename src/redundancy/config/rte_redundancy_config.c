@@ -9,7 +9,7 @@
  * docs/rca/RCA-OCORA-PI-API.md Section 3a) - this is deployment-configuration
  * loading, not a cyclic safety operation.
  */
-#include "safeapi/redundancy/config/rte_redundancy_config.h"
+#include "rte/redundancy/config/rte_redundancy_config.h"
 
 #include <stdio.h>
 #include <string.h>

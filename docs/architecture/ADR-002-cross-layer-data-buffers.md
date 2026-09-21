@@ -2,7 +2,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, `include/safeapi/common/rte_buffer.h`
+Applies to: safeAPIFreamwork, `include/rte/common/rte_buffer.h`
 
 ## 1. Context
 
@@ -105,9 +105,9 @@ ADR-001's shared status table rather than growing the enum for this.
 ## 4. Location
 
 > **Superseded by ADR-007.** See below for the original path; the current
-> physical layout is `include/safeapi/buffer/rte_buffer.h` +
-> `src/buffer/rte_buffer.c`, target `safeapi::buffer`.
+> physical layout is `include/rte/buffer/rte_buffer.h` +
+> `src/buffer/rte_buffer.c`, target `rte::buffer`.
 
-`include/safeapi/common/rte_buffer.h` + `src/common/rte_buffer.c`, built
-as a new `safeapi_common` static library target, independent of
-`safeapi_os` (no OS dependency — pure data manipulation).
+`include/rte/common/rte_buffer.h` + `src/common/rte_buffer.c`, built
+as a new `rte_common` static library target, independent of
+`rte_os` (no OS dependency — pure data manipulation).

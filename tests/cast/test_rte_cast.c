@@ -12,7 +12,7 @@
  */
 #include <assert.h>
 #include <stdint.h>
-#include "safeapi/utils/cast/rte_cast.h"
+#include "rte/utils/cast/rte_cast.h"
 
 #define SENTINEL_BYTE 0x5A
 

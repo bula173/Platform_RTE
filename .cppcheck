@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="1">
-    <!-- cppcheck configuration for safeAPIFramework MISRA C:2012 compliance checking -->
+    <!-- cppcheck configuration for RteFramework MISRA C:2012 compliance checking -->
 
     <!-- Source paths to check -->
     <dir name="include"/>

@@ -4,9 +4,9 @@
  * @brief IPC service: validates parameters, then dispatches to the OSAdapter
  *        registered via rte_osadapter_ipc_register() (ADR-005).
  */
-#include "safeapi/oal/ipc/rte_ipc.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/ipc/rte_osadapter_ipc.h"
+#include "rte/oal/ipc/rte_ipc.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/ipc/rte_osadapter_ipc.h"
 
 /** Local makros */
 

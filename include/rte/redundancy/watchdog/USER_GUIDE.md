@@ -1,0 +1,262 @@
+/**
+ * @page watchdog_user_guide Watchdog Module - User Guide
+ *
+ * @section watchdog_user_guide_overview What is the Watchdog?
+ *
+ * The Watchdog module detects when a system or task has stopped responding.
+ * You create a watchdog with a timeout period, then periodically "kick" it.
+ * If the watchdog times out without a kick, it triggers a recovery action
+ * (log event, enter safe-state, reboot, custom callback, or failover).
+ *
+ * Key principle: If you can't prove the system is alive, assume it's dead.
+ *
+ * @section watchdog_user_guide_types Watchdog Types
+ *
+ * Four types for different monitoring scenarios:
+ *
+ * @verbatim
+ * RTE_WATCHDOG_SYSTEM   - Entire system liveness (main loop heartbeat)
+ * RTE_WATCHDOG_TASK     - Specific task/thread heartbeat
+ * RTE_WATCHDOG_CHANNEL  - IPC/redundancy channel health
+ * RTE_WATCHDOG_CHECKPOINT - Execution checkpoint barrier
+ * @endverbatim
+ *
+ * @section watchdog_user_guide_actions Recovery Actions
+ *
+ * When watchdog times out, it can trigger different actions:
+ *
+ * @verbatim
+ * LOG           - Log the event only
+ * SAFESTATE     - Enter SAFE state via RTE_SAFESTATE()
+ * REBOOT        - Trigger system reboot via RTE_REBOOT()
+ * FAILOVER      - Failover to backup (distributed systems)
+ * CUSTOM        - Custom callback provided by application
+ * @endverbatim
+ *
+ * @section watchdog_user_guide_quick_start Quick Start
+ *
+ * @subsection watchdog_user_guide_qs_include 1. Include Header
+ *
+ * @code
+ * #include "rte/watchdog/rte_watchdog.h"
+ * @endcode
+ *
+ * @subsection watchdog_user_guide_qs_create 2. Create Watchdog
+ *
+ * @code
+ * // Allocate storage for watchdog state
+ * rte_watchdog_storage_t wd_storage;
+ *
+ * // Configure watchdog
+ * rte_watchdog_config_t config = {
+ *     .type = RTE_WATCHDOG_SYSTEM,
+ *     .name = "main_watchdog",
+ *     .timeout_ms = 100,              // Timeout after 100ms without kick
+ *     .action = RTE_WATCHDOG_ACTION_SAFESTATE,
+ *     .custom_action = NULL,          // Not used for non-CUSTOM actions
+ *     .context = NULL
+ * };
+ *
+ * rte_watchdog_t wd;
+ * rte_watchdog_create(&wd_storage, &config, &wd);
+ * @endcode
+ *
+ * @subsection watchdog_user_guide_qs_start 3. Start Watchdog
+ *
+ * @code
+ * rte_watchdog_start(wd);
+ * // Watchdog now counting down from 100ms
+ * @endcode
+ *
+ * @subsection watchdog_user_guide_qs_kick 4. Kick Watchdog Regularly
+ *
+ * @code
+ * while (running) {
+ *     // Do work...
+ *     process_messages();
+ *     handle_timers();
+ *     compute_output();
+ *
+ *     // Prove we're alive
+ *     rte_status_t rc = rte_watchdog_kick(wd);
+ *     if (rc != RTE_STATUS_OK) {
+ *         // Watchdog already fired (recovery in progress)
+ *         // Cannot kick anymore
+ *         break;
+ *     }
+ *
+ *     // Sleep to maintain cycle time
+ *     sleep_ms(50);  // Kick every 50ms (before 100ms timeout)
+ * }
+ * @endcode
+ *
+ * @section watchdog_user_guide_examples Practical Examples
+ *
+ * @subsection watchdog_user_guide_example_system Example 1: System Watchdog (Main Loop Heartbeat)
+ *
+ * @code
+ * // Application state
+ * typedef struct {
+ *     rte_watchdog_t system_wd;
+ *     uint32_t cycle_count;
+ *     uint32_t errors;
+ * } app_t;
+ *
+ * void app_init(app_t *app) {
+ *     rte_watchdog_storage_t *storage = malloc(sizeof(*storage));
+ *     rte_watchdog_config_t config = {
+ *         .type = RTE_WATCHDOG_SYSTEM,
+ *         .name = "app_main_loop",
+ *         .timeout_ms = 100,
+ *         .action = RTE_WATCHDOG_ACTION_SAFESTATE,
+ *         .context = app
+ *     };
+ *     rte_watchdog_create(storage, &config, &app->system_wd);
+ *     rte_watchdog_start(app->system_wd);
+ * }
+ *
+ * void app_main_loop(app_t *app) {
+ *     while (running) {
+ *         uint64_t cycle_start = get_time_ms();
+ *
+ *         // Process cycle
+ *         process_inputs();
+ *         compute_logic();
+ *         send_outputs();
+ *         app->cycle_count++;
+ *
+ *         // Kick watchdog before sleeping (must be within 100ms)
+ *         rte_status_t rc = rte_watchdog_kick(app->system_wd);
+ *         if (rc != RTE_STATUS_OK) {
+ *             // Watchdog fired, recovery in progress
+ *             log_error("Watchdog fired, terminating");
+ *             break;
+ *         }
+ *
+ *         // Sleep to maintain 50ms cycle
+ *         uint64_t elapsed = get_time_ms() - cycle_start;
+ *         if (elapsed < 50) {
+ *             sleep_ms(50 - elapsed);
+ *         } else {
+ *             log_warning("Cycle overrun: %llu ms", elapsed);
+ *         }
+ *     }
+ * }
+ * @endcode
+ *
+ * @subsection watchdog_user_guide_example_custom Example 2: Custom Callback on Timeout
+ *
+ * @code
+ * void my_watchdog_handler(void *context) {
+ *     app_t *app = (app_t *)context;
+ *     log_critical("Watchdog timeout detected");
+ *     log_critical("  Cycles executed: %u", app->cycle_count);
+ *     log_critical("  Errors so far: %u", app->errors);
+ *     // Custom handler can do cleanup, then should not return
+ *     // (or return and let framework handle escalation)
+ * }
+ *
+ * void app_with_custom_handler(app_t *app) {
+ *     rte_watchdog_config_t config = {
+ *         .type = RTE_WATCHDOG_SYSTEM,
+ *         .name = "app_custom_wd",
+ *         .timeout_ms = 200,
+ *         .action = RTE_WATCHDOG_ACTION_CUSTOM,
+ *         .custom_action = my_watchdog_handler,
+ *         .context = app
+ *     };
+ *     rte_watchdog_t wd;
+ *     rte_watchdog_create(&wd_storage, &config, &wd);
+ *     rte_watchdog_start(wd);
+ * }
+ * @endcode
+ *
+ * @section watchdog_user_guide_timeout_tuning Timeout Selection
+ *
+ * Choose timeout based on your main loop cycle time with safety margin:
+ *
+ * @verbatim
+ * Cycle Time        Recommended Timeout    Reasoning
+ * ──────────────────────────────────────────────────────────
+ * 10 ms             30-50 ms                Allow 3-5× margin
+ * 50 ms             150-250 ms              Allow 3-5× margin
+ * 100 ms            300-500 ms              Allow 3-5× margin
+ * 1 second          3-5 seconds             Allow 3-5× margin
+ * @endverbatim
+ *
+ * Safety margin accounts for:
+ * - Jitter in cycle timing
+ * - Occasional heavy workloads
+ * - System clock drift
+ *
+ * Too tight (1-2×): False positives on normal variation
+ * Too loose (10×+): Late detection of actual hangs
+ *
+ * @section watchdog_user_guide_patterns Common Patterns
+ *
+ * @subsection watchdog_user_guide_pattern_conditional Pattern 1: Conditional Kick (Fail-Safe Default)
+ *
+ * Only kick if operation succeeds:
+ *
+ * @code
+ * rte_status_t rc = critical_operation();
+ * if (rc != RTE_STATUS_OK) {
+ *     log_error("Operation failed: %s", rte_status_to_string(rc));
+ *     // Don't kick - let watchdog timeout if condition persists
+ *     return rc;
+ * }
+ *
+ * // Operation succeeded - safe to kick
+ * rte_watchdog_kick(wd);
+ * @endcode
+ *
+ * This pattern makes watchdog a health indicator: if operation fails repeatedly,
+ * watchdog will eventually timeout and trigger recovery.
+ *
+ * @subsection watchdog_user_guide_pattern_status Pattern 2: Check Watchdog Status
+ *
+ * Monitor watchdog health:
+ *
+ * @code
+ * rte_watchdog_status_t status;
+ * rte_watchdog_get_status(wd, &status);
+ *
+ * printf("Watchdog: kicks=%u fires=%u time_until=%u ms\n",
+ *        status.kicks, status.fires, status.time_until_fire);
+ *
+ * if (status.fires > 0) {
+ *     log_warning("Watchdog has fired %u times", status.fires);
+ * }
+ * @endcode
+ *
+ * @section watchdog_user_guide_guidelines Best Practices
+ *
+ * 1. Set timeout to 2-5× your cycle time
+ *    - Measured, not guessed
+ *    - Account for worst-case jitter
+ *
+ * 2. Kick watchdog near end of loop
+ *    - After all critical work done
+ *    - Before sleep (ensures all work completed)
+ *
+ * 3. Use conditional kick pattern
+ *    - Only kick on success
+ *    - Watchdog becomes health indicator
+ *    - Automatic recovery on transient failures
+ *
+ * 4. Stop watchdog on intentional shutdown
+ *    - @code rte_watchdog_stop(wd); @endcode
+ *    - Prevents false timeouts during graceful shutdown
+ *
+ * 5. Test watchdog behavior
+ *    - Intentionally omit kicks
+ *    - Verify timeout and recovery action work
+ *    - Part of safety verification
+ *
+ * @section watchdog_user_guide_see_also See Also
+ *
+ * - @ref watchdog_architecture for internal design
+ * - @ref safestate_user_guide for safe-state integration
+ * - @ref status_user_guide for status codes
+ *
+ */

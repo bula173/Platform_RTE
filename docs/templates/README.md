@@ -1,6 +1,6 @@
 # SIL 4 Assessment Document Templates
 
-This directory contains **ready-to-use templates** for all documents required to conduct a formal EN 50128:2011 SIL 4 assessment using safeAPIFramework.
+This directory contains **ready-to-use templates** for all documents required to conduct a formal EN 50128:2011 SIL 4 assessment using RteFramework.
 
 ---
 
@@ -19,7 +19,7 @@ This directory contains **ready-to-use templates** for all documents required to
 ### For Architects
 1. Read: [`06_HARA_TEMPLATE.md`](06_HARA_TEMPLATE.md)
 2. Identify hazards specific to your system
-3. Reference the safeAPIFramework hazards as examples
+3. Reference the RteFramework hazards as examples
 
 ### For QA/Testing Teams
 1. Read: [`15_CODE_REVIEW_REPORT.md`](15_CODE_REVIEW_REPORT.md)
@@ -113,7 +113,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 05_SRS_TEMPLATE.md ..................... System Requirements Specification
 06_HARA_TEMPLATE.md .................... Hazard Analysis & Risk Assessment
 07_SAFE_REQUIREMENTS_TEMPLATE.md ....... Derived Safety Requirements
-08_SAFEAPI_INTEGRATION_PLAN.md ......... How safeAPIFramework is used
+08_RTE_INTEGRATION_PLAN.md ......... How RteFramework is used
 ```
 
 ### Phase 3: Design (Design Phase)
@@ -141,7 +141,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 ```
 22_SAFETY_CASE.md ..................... Main argument for system safety
 23_FUNCTIONAL_SAFETY_ASSESSMENT.md .... SIL verification evidence
-24_SAFEAPI_VERIFICATION.md ............ How safeAPIFramework was verified
+24_RTE_VERIFICATION.md ............ How RteFramework was verified
 25_DEVIATION_MANAGEMENT.md ............ All MISRA/EN 50128 deviations
 26_ASSESSMENT_READINESS.md ............ Pre-assessment verification checklist
 ```
@@ -247,31 +247,31 @@ When ready to submit to a Notified Body, package should include:
 
 ---
 
-## safeAPIFramework-Specific Sections
+## RteFramework-Specific Sections
 
-Each template has a section addressing safeAPIFramework usage:
+Each template has a section addressing RteFramework usage:
 
 **In SAFETY_PLAN (01):**
-- Section 5.3: safeAPIFramework baseline and modifications
+- Section 5.3: RteFramework baseline and modifications
 
 **In HARA (06):**
-- Section 3.1: Hazards specific to safeAPIFramework services
+- Section 3.1: Hazards specific to RteFramework services
 - Examples: Uninitialized OSAdapter, buffer overflow, IPC race conditions, NVM corruption
 
 **In CODE_REVIEW_REPORT (15):**
-- Checklist items for safeAPIFramework code review
+- Checklist items for RteFramework code review
 
 **In SAFETY_CASE (22):**
-- Section 5.3: safeAPIFramework verification strategy
-- Evidence of how safeAPIFramework mitigates hazards
+- Section 5.3: RteFramework verification strategy
+- Evidence of how RteFramework mitigates hazards
 
 ---
 
 ## External References
 
-- **SAFETY_APPLICATION_CONDITIONS.md** — Describes how to use safeAPIFramework in a safety project
+- **SAFETY_APPLICATION_CONDITIONS.md** — Describes how to use RteFramework in a safety project
 - **EN50128_ALIGNMENT.md** — Detailed mapping of framework design to EN 50128 sections
-- **INTEGRATION.md** — How to integrate safeAPIFramework into your project
+- **INTEGRATION.md** — How to integrate RteFramework into your project
 
 ---
 
@@ -285,7 +285,7 @@ Each template has a section addressing safeAPIFramework usage:
 | Hazard identification | Read HARA template + EN 50128:2011 Section 5 |
 | Code quality | Read Code Review template + MISRA C:2012 rules |
 | Testing strategy | Read Safety Plan Section 4.3 + EN 50128:2011 Section 7.4 |
-| safeAPIFramework usage | Read SAFETY_APPLICATION_CONDITIONS.md |
+| RteFramework usage | Read SAFETY_APPLICATION_CONDITIONS.md |
 | Overall SIL 4 path | Read Safety Case template + EN50128_ALIGNMENT.md |
 
 ### Template Support
@@ -294,7 +294,7 @@ These templates are provided as-is with:
 - Real-world examples for guidance
 - Detailed sections showing expected output format
 - References to EN 50128:2011 sections for compliance
-- safeAPIFramework context and examples
+- RteFramework context and examples
 
 For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document itself (~200 pages).
 
@@ -302,11 +302,11 @@ For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document 
 
 ## Version & License
 
-**safeAPIFramework Templates Version:** 0.1  
-**For Use With:** safeAPIFramework v0.1.0+  
+**RteFramework Templates Version:** 0.1  
+**For Use With:** RteFramework v0.1.0+  
 **Last Updated:** 2026-08-02  
 
-**License:** These templates are provided for use in projects using safeAPIFramework. Modify freely for your project context.
+**License:** These templates are provided for use in projects using RteFramework. Modify freely for your project context.
 
 ---
 
@@ -317,7 +317,7 @@ For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document 
 - **Hazard Analysis:** [06_HARA_TEMPLATE.md](06_HARA_TEMPLATE.md)
 - **Code Review:** [15_CODE_REVIEW_REPORT.md](15_CODE_REVIEW_REPORT.md)
 - **Safety Approval:** [22_SAFETY_CASE.md](22_SAFETY_CASE.md)
-- **safeAPIFramework Usage:** [../SAFETY_APPLICATION_CONDITIONS.md](../SAFETY_APPLICATION_CONDITIONS.md)
+- **RteFramework Usage:** [../SAFETY_APPLICATION_CONDITIONS.md](../SAFETY_APPLICATION_CONDITIONS.md)
 
 ---
 

@@ -7,16 +7,16 @@
  *
  * rte_log_write_event()'s structured-line formatting (added alongside
  * this file's own module) is what introduces this module's only two new
- * dependencies, `safeapi::string` (bounded formatting - ADR-006) and
- * `safeapi::timer` (TIMESTAMP field - rte_timer_now()); rte_log_write()
+ * dependencies, `rte::string` (bounded formatting - ADR-006) and
+ * `rte::timer` (TIMESTAMP field - rte_timer_now()); rte_log_write()
  * itself and the OSAdapter dispatch below are unchanged and still have
  * neither dependency.
  */
-#include "safeapi/oal/log/rte_log.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/log/rte_osadapter_log.h"
-#include "safeapi/utils/string/rte_string.h"
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/oal/log/rte_log.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/log/rte_osadapter_log.h"
+#include "rte/utils/string/rte_string.h"
+#include "rte/oal/timer/rte_timer.h"
 
 #include <string.h>
 

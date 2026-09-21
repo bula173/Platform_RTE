@@ -1,8 +1,8 @@
 # ADR-021: Consumer / OS-Backend Header Separation
 
 > **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
-> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
-> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `rte_backend/` to
+> `rte_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
 > original wording as a historical record.
 
 Status: Accepted - applied to all 9 backend-bearing modules
@@ -36,23 +36,23 @@ reader actually needs, and makes it easy for consumer code to
 
 ### 2.1 Two top-level include trees
 
-- `include/safeapi/<feature>/rte_<feature>.h` - consumer-facing only.
+- `include/rte/<feature>/rte_<feature>.h` - consumer-facing only.
   Everything a real application includes and links against
-  (`safeapi::<feature>`). Never declares a backend vtable type or a
+  (`rte::<feature>`). Never declares a backend vtable type or a
   `_register_backend()` function.
-- `include/safeapi_backend/<feature>/rte_<feature>_backend.h` -
+- `include/rte_backend/<feature>/rte_<feature>_backend.h` -
   backend-facing only. Declares the `rte_<feature>_backend_t` vtable and
   `rte_<feature>_register_backend()`. Includes the consumer header for
   the shared types the vtable's function pointers reference (e.g.
   `rte_timer_storage_t`, `rte_timer_config_t`). A real application
-  should never need to include anything under `safeapi_backend/`; only
+  should never need to include anything under `rte_backend/`; only
   the one piece of integration code that registers a concrete backend
   does.
 
-A separate top-level tree (not a subfolder of `include/safeapi/<feature>/`)
+A separate top-level tree (not a subfolder of `include/rte/<feature>/`)
 was chosen over a same-directory `_backend.h` suffix so the two audiences
 are physically, not just conventionally, separated - an integrator can
-grep or browse `include/safeapi_backend/` to see exactly the surface they
+grep or browse `include/rte_backend/` to see exactly the surface they
 need to implement, without any consumer-only material mixed in, and vice
 versa. The cost is a second top-level directory and a second
 `install(DIRECTORY ...)` rule per distributable tree; both are one-time,
@@ -102,15 +102,15 @@ behavior to before the split.
 
 - Positive: a consuming application's transitive include graph no longer
   pulls in backend vtable shapes it never uses; browsing
-  `include/safeapi/` answers "what can my application call," and
-  `include/safeapi_backend/` answers "what must my platform integration
+  `include/rte/` answers "what can my application call," and
+  `include/rte_backend/` answers "what must my platform integration
   implement," with no cross-contamination.
 - Positive: makes the ADR-005 backend-registration pattern more visible
   as its own concern, not an implementation detail buried at the bottom
   of the consumer header.
-- Negative: every existing `#include "safeapi/<feature>/rte_<feature>.h"`
+- Negative: every existing `#include "rte/<feature>/rte_<feature>.h"`
   in a file that ALSO uses the backend vtable now needs a second
-  `#include "safeapi_backend/<feature>/rte_<feature>_backend.h"` line -
+  `#include "rte_backend/<feature>/rte_<feature>_backend.h"` line -
   a one-time, mechanical, per-file update; a file that only calls the
   consumer API is unaffected.
 - Negative: two `install(DIRECTORY ...)` rules and two logical install
@@ -122,9 +122,9 @@ behavior to before the split.
 ## 4. Status
 
 All 9 backend-bearing modules are split as of this update:
-`include/safeapi/<feature>/rte_<feature>.h` (consumer) and
-`include/safeapi_backend/<feature>/rte_<feature>_backend.h` (backend)
+`include/rte/<feature>/rte_<feature>.h` (consumer) and
+`include/rte_backend/<feature>/rte_<feature>_backend.h` (backend)
 exist side by side for `timer`, `nvm`, `memory`, `task`, `ipc`, `log`,
 `reboot`, `netlink`, and `clocksync`. safeAPIRBC2oo2's POSIX backend
-(`include/safeapi/posix_osadapter/rte_posix_osadapter.h`) includes both
+(`include/rte/posix_osadapter/rte_posix_osadapter.h`) includes both
 headers for every service it implements.

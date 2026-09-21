@@ -1,7 +1,7 @@
 /* Tests for rte_string (ADR-006). */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/utils/string/rte_string.h"
+#include "rte/utils/string/rte_string.h"
 
 static void test_copy_and_cstr(void)
 {

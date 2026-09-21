@@ -45,14 +45,14 @@
  *
  * - Getting started integrating an OSAdapter: @ref appmanager_integration
  * - Per-module architecture and user guides: see the "Related Pages" list
- *   (each module under `include/safeapi/<module>/` ships an
+ *   (each module under `include/rte/<module>/` ships an
  *   ARCHITECTURE.md and USER_GUIDE.md pair).
  * - IPC transport choice: @ref ipc_transport_selection,
  *   @ref channel_configuration
  * - Channel topologies: @ref vital_channel_topologies
  * - Architecture Decision Records (design rationale, one per major
  *   decision): `docs/architecture/ADR-*.md`
- * - Requirements traceability: @ref safeapi_srs
+ * - Requirements traceability: @ref rte_srs
  * - MISRA C:2012 conformance status: `docs/MISRA_COMPLIANCE_REPORT.md`
  * - Cross-compilation (Linux, QNX, etc.): `docs/CROSS_COMPILATION.md`
 

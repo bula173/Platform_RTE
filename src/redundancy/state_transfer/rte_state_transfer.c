@@ -1,9 +1,9 @@
 /** @file rte_state_transfer.c
  *  @brief See rte_state_transfer.h.
  */
-#include "safeapi/redundancy/state_transfer/rte_state_transfer.h"
+#include "rte/redundancy/state_transfer/rte_state_transfer.h"
 
-#include "safeapi/oal/memory/rte_mem_util.h"
+#include "rte/oal/memory/rte_mem_util.h"
 
 rte_status_t rte_state_transfer_registry_init(rte_state_transfer_registry_t *registry)
 {

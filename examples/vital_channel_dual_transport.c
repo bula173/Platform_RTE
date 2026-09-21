@@ -23,8 +23,8 @@
  * Compile:
  *   gcc -std=c99 -Wall -Wextra -o vital_dual_transport \
  *       vital_channel_dual_transport.c \
- *       -I../include -L../build -lsafeapi_channels -lsafeapi_oal \
- *       -lsafeapi_core
+ *       -I../include -L../build -lrte_channels -lrte_oal \
+ *       -lrte_core
  */
 
 #include <stdint.h>
@@ -33,9 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "safeapi/channel_link/rte_channel.h"
-#include "safeapi/voter/rte_voter.h"
-#include "safeapi/status/rte_status.h"
+#include "rte/channel_link/rte_channel.h"
+#include "rte/voter/rte_voter.h"
+#include "rte/status/rte_status.h"
 
 /* ============================================================================
  * Transport OSAdapter 1: Shared Memory Queue (Simulated)

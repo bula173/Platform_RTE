@@ -2,8 +2,8 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, `include/safeapi/common/rte_safestate.h`,
-`include/safeapi/os/rte_reboot.h`
+Applies to: safeAPIFreamwork, `include/rte/common/rte_safestate.h`,
+`include/rte/os/rte_reboot.h`
 
 ## 1. Context
 
@@ -182,12 +182,12 @@ This is the 7th OAL service, extending the six defined in ADR-001 section 4.
 ## 5. Location
 
 > **Superseded by ADR-007.** See below for the original paths; the current
-> physical layout is `include/safeapi/safestate/rte_safestate.h` +
-> `src/safestate/rte_safestate.c` (target `safeapi::safestate`) and
-> `include/safeapi/reboot/rte_reboot.h` + `src/reboot/rte_reboot.c`
-> (target `safeapi::reboot`).
+> physical layout is `include/rte/safestate/rte_safestate.h` +
+> `src/safestate/rte_safestate.c` (target `rte::safestate`) and
+> `include/rte/reboot/rte_reboot.h` + `src/reboot/rte_reboot.c`
+> (target `rte::reboot`).
 
-`include/safeapi/common/rte_safestate.h` + `src/common/rte_safestate.c`
-(added to `safeapi_common`, see ADR-002/ADR-003).
-`include/safeapi/os/rte_reboot.h` + `src/os/rte_reboot.c` (added to
-`safeapi_os`, see ADR-001).
+`include/rte/common/rte_safestate.h` + `src/common/rte_safestate.c`
+(added to `rte_common`, see ADR-002/ADR-003).
+`include/rte/os/rte_reboot.h` + `src/os/rte_reboot.c` (added to
+`rte_os`, see ADR-001).

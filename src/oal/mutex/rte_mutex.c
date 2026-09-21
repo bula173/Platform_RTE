@@ -4,9 +4,9 @@
  * @brief Mutex service: validates parameters, then dispatches to the
  *        OSAdapter registered via rte_osadapter_mutex_register() (ADR-033).
  */
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/mutex/rte_mutex.h"
-#include "safeapi_osadapter/mutex/rte_osadapter_mutex.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/mutex/rte_mutex.h"
+#include "rte_osadapter/mutex/rte_osadapter_mutex.h"
 
 /** Local makros */
 

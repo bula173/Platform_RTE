@@ -11,8 +11,8 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/safechannel/rte_safechannel.h"
-#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte/redundancy/safechannel/rte_safechannel.h"
+#include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 typedef struct
 {

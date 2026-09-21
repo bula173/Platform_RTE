@@ -1,8 +1,8 @@
-# SafeAPIFramework Integration in 2oo2 Examples
+# RTEFramework Integration in 2oo2 Examples
 
 ## Overview
 
-This document shows how to integrate **safeAPIFramework (Platform_RTE)** modules into the 2oo2 voting examples for production railway systems.
+This document shows how to integrate **RteFramework (Platform_RTE)** modules into the 2oo2 voting examples for production railway systems.
 
 ## Current State vs. Platform_RTE Integration
 
@@ -37,7 +37,7 @@ int perform_voting(cmd_a, cmd_b, result_out) {
 
 **After (Platform_RTE):**
 ```c
-#include "safeapi/status/rte_status.h"
+#include "rte/status/rte_status.h"
 
 rte_status_t perform_voting(const train_command_t *cmd_a,
                               const train_command_t *cmd_b,
@@ -73,7 +73,7 @@ typedef struct {
 
 **After (Platform_RTE - SIL 4 Safe):**
 ```c
-#include "safeapi/types/rte_types.h"
+#include "rte/types/rte_types.h"
 
 typedef struct {
     uint32_t train_id;            /* Always 32-bit, everywhere */
@@ -95,7 +95,7 @@ fprintf(stderr, "MISMATCH detected\n");                     /* Non-blocking? */
 
 **After (SIL 4 Safe):**
 ```c
-#include "safeapi/log/rte_log.h"
+#include "rte/log/rte_log.h"
 
 /* Safe, non-blocking logging */
 char log_buf[128];
@@ -118,7 +118,7 @@ usleep(25000);  /* How accurate? Platform? */
 
 **After (SIL 4 Safe):**
 ```c
-#include "safeapi/timer/rte_timer.h"
+#include "rte/timer/rte_timer.h"
 
 /* Register deterministic timer OSAdapter at startup */
 rte_osadapter_timer_t OSAdapter = {
@@ -145,7 +145,7 @@ if (signal > 2) { /* ... */ }                  /* Always false */
 
 **After (Checked Casting):**
 ```c
-#include "safeapi/cast/rte_cast.h"
+#include "rte/cast/rte_cast.h"
 
 uint8_t signal;
 rte_status_t rc = rte_cast_uint32_to_uint8(cmd->signal_state, &signal);
@@ -183,7 +183,7 @@ error:
 
 **After (Platform_RTE - SIL 4 Safe):**
 ```c
-#include "safeapi/appmanager/rte_appmanager.h"
+#include "rte/appmanager/rte_appmanager.h"
 
 rte_status_t voting_process_init(void *context) {
     /* One-time initialization */
@@ -236,7 +236,7 @@ train_command_t received = shared_mem.cmd_b;
 
 **After (Platform_RTE - Abstracted):**
 ```c
-#include "safeapi/ipc/rte_ipc_request_reply.h"
+#include "rte/ipc/rte_ipc_request_reply.h"
 
 /* OSAdapter handles: shared memory, QNX msgpass, TCP, etc. */
 rte_osadapter_ipc_t OSAdapter = {
@@ -263,11 +263,11 @@ rc = rte_ipc_receive(queue_id, &received, sizeof(received), 25);
 /* voting.h */
 #include <stdint.h>
 
-#include "safeapi/types/rte_types.h"
-#include "safeapi/status/rte_status.h"
-#include "safeapi/timer/rte_timer.h"
-#include "safeapi/log/rte_log.h"
-#include "safeapi/cast/rte_cast.h"
+#include "rte/types/rte_types.h"
+#include "rte/status/rte_status.h"
+#include "rte/timer/rte_timer.h"
+#include "rte/log/rte_log.h"
+#include "rte/cast/rte_cast.h"
 
 typedef struct {
     uint32_t train_id;
@@ -396,43 +396,43 @@ rte_status_t voting_compare_and_decide(const train_command_t *cmd_a,
 
 ### Step 1: Add Platform_RTE Status Codes
 ```c
-#include "safeapi/status/rte_status.h"
+#include "rte/status/rte_status.h"
 /* Replace: int rc → rte_status_t rc */
 ```
 
 ### Step 2: Add Platform_RTE Types
 ```c
-#include "safeapi/types/rte_types.h"
+#include "rte/types/rte_types.h"
 /* Replace: uint32_t → fixed-width types from Platform_RTE */
 ```
 
 ### Step 3: Add Platform_RTE Logging
 ```c
-#include "safeapi/log/rte_log.h"
+#include "rte/log/rte_log.h"
 /* Replace: printf/fprintf → rte_log_write */
 ```
 
 ### Step 4: Add Deterministic Timing
 ```c
-#include "safeapi/timer/rte_timer.h"
+#include "rte/timer/rte_timer.h"
 /* Replace: usleep → rte_timer_sleep (with OSAdapter) */
 ```
 
 ### Step 5: Add Safe Casting
 ```c
-#include "safeapi/cast/rte_cast.h"
+#include "rte/cast/rte_cast.h"
 /* Replace: (uint8_t)x → rte_cast_uint32_to_uint8(x, &result) */
 ```
 
 ### Step 6: Add Checksum Validation
 ```c
-#include "safeapi/checksum/rte_checksum.h"
+#include "rte/checksum/rte_checksum.h"
 /* Add: integrity checks on train commands */
 ```
 
 ### Step 7: Add Lifecycle Management
 ```c
-#include "safeapi/appmanager/rte_appmanager.h"
+#include "rte/appmanager/rte_appmanager.h"
 /* Replace: main loop → rte_appmanager_run */
 ```
 
@@ -457,9 +457,9 @@ qcc -std=c99 \
     -L../../../build/src/timer \
     voting.c process_a.c \
     -o west_process_a \
-    -lsafeapi_status \
-    -lsafeapi_log \
-    -lsafeapi_timer
+    -lrte_status \
+    -lrte_log \
+    -lrte_timer
 ```
 
 ---

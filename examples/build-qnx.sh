@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build safeAPIFramework for QNX RTOS target
+# Build RteFramework for QNX RTOS target
 #
 # QNX RTOS is a real-time operating system commonly used in automotive and industrial systems.
 # This script cross-compiles the framework for a QNX target.
@@ -38,7 +38,7 @@ if [ -z "$QNX_HOST" ] || [ -z "$QNX_TARGET" ]; then
 fi
 
 echo "=========================================="
-echo "Building safeAPIFramework for QNX RTOS"
+echo "Building RteFramework for QNX RTOS"
 echo "=========================================="
 echo "Build Type: $BUILD_TYPE"
 echo "Build Directory: $BUILD_DIR"
@@ -83,16 +83,16 @@ echo "Build complete!"
 echo "=========================================="
 echo ""
 echo "Output:"
-echo "  Headers: ${SCRIPT_DIR}/include/safeapi"
+echo "  Headers: ${SCRIPT_DIR}/include/rte"
 echo "  Libraries: ${BUILD_DIR}"
 echo ""
 echo "Next steps:"
 echo "  1. Deploy to QNX target:"
 echo "     scp ${BUILD_DIR}/*.a ${BUILD_DIR}/src/appmanager/*.a target_user@qnx_target:/opt/app/lib/"
-echo "     scp -r ${SCRIPT_DIR}/include/safeapi target_user@qnx_target:/opt/app/include/"
+echo "     scp -r ${SCRIPT_DIR}/include/rte target_user@qnx_target:/opt/app/include/"
 echo ""
 echo "  2. In QNX application CMakeLists.txt (ADR-023: 4 consolidated"
-echo "     libraries - safeapi::core, safeapi::oal, safeapi::channels,"
-echo "     safeapi::appmanager - instead of one per feature):"
-echo "     find_package(safeAPIFramework REQUIRED)"
-echo "     target_link_libraries(my_app safeapi::core safeapi::oal ...)"
+echo "     libraries - rte::core, rte::oal, rte::channels,"
+echo "     rte::appmanager - instead of one per feature):"
+echo "     find_package(RteFramework REQUIRED)"
+echo "     target_link_libraries(my_app rte::core rte::oal ...)"

@@ -1,4 +1,4 @@
-# safeAPIFramework Roadmap
+# RteFramework Roadmap
 
 ## Overview
 
@@ -79,7 +79,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **GitHub Issues:** #32–#35 (4 sub-features)
 - **Documentation:** [WATCHDOG_DESIGN.md](WATCHDOG_DESIGN.md) ✓
 - **API Files:** 
-  - `include/safeapi/watchdog/rte_watchdog.h` ✓
+  - `include/rte/watchdog/rte_watchdog.h` ✓
   - `src/watchdog/rte_watchdog.c` (stubs) ✓
 - **MISRA Considerations:** Deterministic, no dynamic allocation, O(1) operations
 - **SIL 4 Safety:** Meets EN 50128 liveness requirement
@@ -217,7 +217,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P1 (Enables feature selection)
 - **Target Release:** 0.2.0
 - **Scope:**
-  - `SAFEAPI_ENABLE_<FEATURE>` options for each module
+  - `RTE_ENABLE_<FEATURE>` options for each module
   - Conditional compilation and linking
   - Default-ON for current modules, default-OFF for new features
 - **GitHub Issue:** [#14](https://github.com/bula173/safeAPIFreamwork/issues/14)
@@ -241,7 +241,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P2 (For certification workflows)
 - **Target Release:** 0.4.0 or later
 - **Scope:**
-  - Generated `safeapi_config.h` with static feature flags
+  - Generated `rte_config.h` with static feature flags
   - CMake verification of consistency
   - Locked configuration before testing
 - **GitHub Issue:** [#16](https://github.com/bula173/safeAPIFreamwork/issues/16)

@@ -10,11 +10,11 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/redundancy/dual/rte_dual_negotiator.h"
-#include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
-#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/redundancy/dual/rte_dual_negotiator.h"
+#include "rte/oal/timer/rte_timer.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
+#include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 typedef struct
 {

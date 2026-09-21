@@ -3,7 +3,7 @@
  * @brief Implementation of rte_status_to_string().
  * @ingroup STATUS
  */
-#include "safeapi/utils/status/rte_status.h"
+#include "rte/utils/status/rte_status.h"
 
 /** Local makros */
 

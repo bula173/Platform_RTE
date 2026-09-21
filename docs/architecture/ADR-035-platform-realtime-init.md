@@ -36,16 +36,16 @@ A minimal validate-then-dispatch service in the same shape as
 `rte_reboot` (ADR-004/005) and split consumer/backend headers per
 ADR-021:
 
-- `include/safeapi/oal/platform/rte_platform.h` - consumer surface:
+- `include/rte/oal/platform/rte_platform.h` - consumer surface:
   `rte_status_t rte_platform_realtime_init(uint32_t rt_priority);`
-- `include/safeapi_osadapter/platform/rte_osadapter_platform.h` - vtable
+- `include/rte_osadapter/platform/rte_osadapter_platform.h` - vtable
   `rte_osadapter_platform_t { rte_status_t (*realtime_init)(uint32_t); }`
   and `rte_osadapter_platform_register()`.
 - `src/oal/platform/rte_platform.c` - range-checks `rt_priority` (0..99),
   then dispatches; `NOT_INITIALIZED` if no backend, `NOT_SUPPORTED` if the
   vtable slot is `NULL`. Registration is setup-phase-gated (ADR-026), the
   same as every other `*_register_backend()`.
-- Gated by `SAFEAPI_ENABLE_PLATFORM` (default ON, ADR-024), depends only
+- Gated by `RTE_ENABLE_PLATFORM` (default ON, ADR-024), depends only
   on CORE.
 
 The name is `platform`, not `realtime`, so the one service can absorb
@@ -81,7 +81,7 @@ current footprint resident but no longer poisons later thread creation.
 `app_main_common.c` (AB and C) replaces
 `rte_posix_osadapter_init_realtime(80U)` with
 `rte_platform_realtime_init(80U)` and includes
-`safeapi/oal/platform/rte_platform.h`. It still includes
+`rte/oal/platform/rte_platform.h`. It still includes
 `rte_posix_osadapter.h` for `rte_posix_osadapter_register_all()` and
 `rte_posix_osadapter_reboot_set_argv()` - those are the sanctioned
 composition-root wiring; the RT call no longer is.
@@ -94,7 +94,7 @@ composition-root wiring; the RT call no longer is.
   are the remaining direct backend touches; folding those behind
   framework seams is left as follow-up work, out of scope here.
 - One more OAL service to keep in build/test/install wiring. The
-  `install(DIRECTORY include/safeapi_backend ...)` rule already copies the
+  `install(DIRECTORY include/rte_backend ...)` rule already copies the
   whole tree, so no install change was needed.
 - The bounded-`RLIMIT_MEMLOCK` path trades some determinism (future
   allocations may fault) for the process actually being able to run. This

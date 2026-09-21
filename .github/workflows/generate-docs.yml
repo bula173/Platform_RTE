@@ -9,8 +9,8 @@ on:
       - master
       - main
     paths:
-      - 'include/safeapi/**/*.h'
-      - 'include/safeapi/**/*.md'
+      - 'include/rte/**/*.h'
+      - 'include/rte/**/*.md'
       - 'Doxyfile'
       - '.github/workflows/generate-docs.yml'
   pull_request:
@@ -18,8 +18,8 @@ on:
       - master
       - main
     paths:
-      - 'include/safeapi/**/*.h'
-      - 'include/safeapi/**/*.md'
+      - 'include/rte/**/*.h'
+      - 'include/rte/**/*.md'
       - 'Doxyfile'
 
 jobs:

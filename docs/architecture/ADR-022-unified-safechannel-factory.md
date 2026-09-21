@@ -26,7 +26,7 @@ Investigating the current state surfaced two different problems, not one:
   to open the netlink link(s) itself and hand over already-open
   `rte_netlink_handle_t` values in its config. That gap is exactly why
   safeAPIRBC2oo2's `channel_ab_types.h`, `monitor_c_types.h`, and
-  `site.c` all include `safeapi/netlink/rte_netlink.h` directly and call
+  `site.c` all include `rte/netlink/rte_netlink.h` directly and call
   `rte_netlink_open()`/`_send()`/`_receive()`/`_close()` themselves - the
   "channel" layer that was supposed to make this unnecessary doesn't
   reach far enough down.
@@ -43,14 +43,14 @@ than by ADR-020 itself.
 
 ### 2.1 A new module, `rte_safechannel`, not a repurposed `rte_channel`
 
-The obvious name, `rte_channel`, is already taken: `include/safeapi/channel/rte_channel.h`
+The obvious name, `rte_channel`, is already taken: `include/rte/channel/rte_channel.h`
 is a live (if currently excluded-from-build) ADR-008 module with an
 unrelated purpose - compile-time build-diversity identity and byte
 comparison for a 2oo2 architecture, not a transport/handle abstraction.
 Reusing that name for this ADR's factory would recreate exactly the kind
 of "which `rte_channel` do you mean" confusion this whole thread is
 trying to remove. The new module is `rte_safechannel`
-(`include/safeapi/safechannel/rte_safechannel.h`,
+(`include/rte/safechannel/rte_safechannel.h`,
 `src/safechannel/rte_safechannel.c`), function prefix `rte_safechannel_*`.
 ADR-008's module is left as-is; its own disposition (fix-and-readopt vs.
 retire) remains the open, separate decision it already was.
@@ -108,8 +108,8 @@ rte_safechannel_link_status_t rte_safechannel_get_status(const rte_safechannel_t
 ```
 
 An application now includes exactly one header
-(`safeapi/safechannel/rte_safechannel.h`) and never includes
-`safeapi/netlink/rte_netlink.h` or `safeapi/ipc/rte_ipc.h` at all.
+(`rte/safechannel/rte_safechannel.h`) and never includes
+`rte/netlink/rte_netlink.h` or `rte/ipc/rte_ipc.h` at all.
 
 ### 2.3 Consequence for `rte_ipc`/`rte_netlink`'s status
 
@@ -119,7 +119,7 @@ registration - a platform integrator still implements
 `rte_safechannel.c` itself is the one piece of framework code (besides
 tests) that calls `rte_netlink_open()`/`_send()`/`_receive()`/`_close()`
 directly. Their headers are not moved (they still live under
-`include/safeapi/`, since a backend implementer is a legitimate consumer
+`include/rte/`, since a backend implementer is a legitimate consumer
 of the consumer-facing type/handle definitions, not just the backend
 header) but the *expectation* is now explicit: application code goes
 through `rte_safechannel`; direct `rte_netlink`/`rte_ipc` use is a
@@ -218,7 +218,7 @@ on this specific path.
 
 Framework module (`rte_safechannel` + tests): done. SITE's WEST/EAST
 heartbeat migration: done - `site.c` no longer includes
-`safeapi/netlink/rte_netlink.h` or holds a `rte_netlink_handle_t`;
+`rte/netlink/rte_netlink.h` or holds a `rte_netlink_handle_t`;
 its one heartbeat link is a `RTE_SAFECHANNEL_TYPE_DUAL_REDUNDANT`
 `rte_safechannel_t`. This migration was also what surfaced and drove
 the fix to `rte_dual_channel_send()`'s ACK-wait loop documented in

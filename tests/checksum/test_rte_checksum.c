@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include "safeapi/redundancy/checksum/rte_checksum.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
 
 /* Runs in a forked child: verifies pre-init behavior of
  * rte_checksum_crc64() (REQ-CHECKSUM-002), then initializes with

@@ -12,10 +12,10 @@ Actively growing framework with SIL 4 safety focus.
 - Note: `rte_ipc`'s pub/sub and request-reply variants
   (`src/ipc/rte_ipc_pubsub.c`, `rte_ipc_request_reply.c`) are TODO-only
   stubs, excluded from the build (see their own file headers and
-  `CMakeLists.txt`'s `SAFEAPI_ENABLE_IPC` comment) — only the base queue
+  `CMakeLists.txt`'s `RTE_ENABLE_IPC` comment) — only the base queue
   API (`rte_ipc_create`/`_send`/`_receive`/`_destroy`) is implemented.
 
-**IMPLEMENTED:** Watchdog (`include/safeapi/watchdog/rte_watchdog.h`,
+**IMPLEMENTED:** Watchdog (`include/rte/watchdog/rte_watchdog.h`,
 `src/watchdog/rte_watchdog.c`)
 - Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM)
   dispatched on timeout, real timer integration, full test coverage
@@ -135,7 +135,7 @@ document is now a design *record*, not a proposal still to be built)
   - Distributed gossip topology
 - `docs/FEATURE_EXPANSION.md` — Feature roadmap & design specs
 
-OAL services, each in its own `include/safeapi/<feature>/` +
+OAL services, each in its own `include/rte/<feature>/` +
 `src/<feature>/` directory (ADR-007): timer, non-volatile memory (NVM),
 static memory reservation, task/thread scheduling, inter-process/inter-task
 communication (IPC), logging/diagnostics, and controlled reboot.

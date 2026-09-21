@@ -20,7 +20,7 @@ timer service" meant filtering one file out of a flat directory of seven.
 Every feature gets its own directory, mirrored across all three trees:
 
 ```
-include/safeapi/<feature>/rte_<feature>.h
+include/rte/<feature>/rte_<feature>.h
 src/<feature>/rte_<feature>.c          (+ CMakeLists.txt)
 tests/<feature>/test_rte_<feature>.c
 ```
@@ -33,7 +33,7 @@ Features: `status`, `types` (header-only, no `.c`/test), `buffer`, `cast`,
 
 Rather than nesting feature folders one level deeper under `common/`/`os/`
 (e.g. `src/common/buffer/`), the grouping folder is removed entirely and
-every feature sits directly under `src/`, `include/safeapi/`, `tests/` as
+every feature sits directly under `src/`, `include/rte/`, `tests/` as
 a sibling of every other feature. The common-vs-OAL distinction that
 motivated the original grouping is still real and still documented (every
 ADR still explains which features have an OS dependency and which don't;
@@ -49,17 +49,17 @@ matters (e.g. auditing "does anything in `common` accidentally depend on
 
 **Superseded by ADR-023** (2026-08-07): the 21 per-feature targets this
 section describes were later collapsed into 4 grouped static libraries
-(`safeapi_core`/`oal`/`channels`/`appmanager`) because the fine-grained
+(`rte_core`/`oal`/`channels`/`appmanager`) because the fine-grained
 linking this section promised was never actually exercised by any real
 consumer. The directory-per-feature layout described in section 2.1
 above is unaffected and remains current.
 
 Each `src/<feature>/CMakeLists.txt` builds a small static library
-`safeapi_<feature>`, aliased `safeapi::<feature>`. Most features have zero
+`rte_<feature>`, aliased `rte::<feature>`. Most features have zero
 inter-feature dependencies and link nothing but the shared include path;
 `rte_string` is the one exception (it calls `rte_buffer_*` and
-`rte_cast_*` functions directly) and links `safeapi::buffer` and
-`safeapi::cast` publicly. This was already implicit in ADR-001 section 3.5's
+`rte_cast_*` functions directly) and links `rte::buffer` and
+`rte::cast` publicly. This was already implicit in ADR-001 section 3.5's
 "consumer can link the whole OAL or a single service" goal — this ADR is
 what actually delivers it, down to individual-feature granularity rather
 than whole-layer granularity.
@@ -92,7 +92,7 @@ than whole-layer granularity.
   and each earlier ADR's Location section carries a one-line pointer here.
 - Negative: `tests/CMakeLists.txt` and the top-level `CMakeLists.txt` both
   needed updating to the new per-feature target names
-  (`safeapi::<feature>` instead of `safeapi::common`/`safeapi::os`) - done
+  (`rte::<feature>` instead of `rte::common`/`rte::os`) - done
   as part of this change, verified by a full rebuild and test run.
 
 ## 4. Location

@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "safeapi/utils/safestate/rte_safety_violation.h"
+#include "rte/utils/safestate/rte_safety_violation.h"
 
 static rte_safety_violation_kind_t g_captured_kind;
 static const char *g_captured_file;

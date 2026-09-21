@@ -1,8 +1,8 @@
 /* Tests for the rte_nvm validate-then-dispatch API (ADR-005): see
  * test_rte_timer.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/oal/nvm/rte_nvm.h"
-#include "safeapi_osadapter/nvm/rte_osadapter_nvm.h"
+#include "rte/oal/nvm/rte_nvm.h"
+#include "rte_osadapter/nvm/rte_osadapter_nvm.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_read_calls = 0;

@@ -1,7 +1,7 @@
 /* Tests for the rte_reboot validate-then-dispatch API (ADR-004/ADR-005). */
 #include <assert.h>
-#include "safeapi/oal/reboot/rte_reboot.h"
-#include "safeapi_osadapter/reboot/rte_osadapter_reboot.h"
+#include "rte/oal/reboot/rte_reboot.h"
+#include "rte_osadapter/reboot/rte_osadapter_reboot.h"
 
 static int g_request_calls;
 static uint16_t g_last_reason;

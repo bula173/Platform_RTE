@@ -4,9 +4,9 @@
  * is reached with the framework-validated arguments; a NULL vtable slot on
  * an otherwise-registered OSAdapter yields RTE_STATUS_NOT_SUPPORTED. */
 #include <assert.h>
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi/oal/timer/rte_timer.h"
-#include "safeapi_osadapter/timer/rte_osadapter_timer.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/oal/timer/rte_timer.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
 
 static void dummy_callback(rte_timer_handle_t handle, void *user_ctx)
 {

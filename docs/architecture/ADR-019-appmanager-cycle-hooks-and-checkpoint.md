@@ -117,7 +117,7 @@ When `config->checkpoint != NULL`, `rte_appmanager_run()` builds a
 `rte_checkpoint_config_t` each cycle using
 `state.iteration_count` as `checkpoint_id` — `rte_checkpoint.h` already
 documents this field as "e.g. a per-cycle counter"
-(`include/safeapi/checkpoint/rte_checkpoint.h`), and AppManager already
+(`include/rte/checkpoint/rte_checkpoint.h`), and AppManager already
 tracks `iteration_count` for its own stats (`rte_appmanager_get_stats()`),
 so no new counter is introduced — and calls
 `rte_channel_checkpoint(config->checkpoint->vital_channel, &built_config)`
@@ -194,9 +194,9 @@ still call `rte_channel_checkpoint()` directly from its own
 
 ## 4. Location
 
-`include/safeapi/appmanager/rte_appmanager.h` +
-`src/appmanager/rte_appmanager.c` (existing target `safeapi::appmanager`,
-gains a link dependency on `safeapi::checkpoint` for the optional
+`include/rte/appmanager/rte_appmanager.h` +
+`src/appmanager/rte_appmanager.c` (existing target `rte::appmanager`,
+gains a link dependency on `rte::checkpoint` for the optional
 checkpoint path only).
 
 ## 5. Addendum: retrofitting `safeAPIRBC2oo2/src/application/AB/channel_ab.c`
@@ -226,7 +226,7 @@ strategy's own guarantee, it only makes a degenerate 1-channel NMR
 instance constructible for callers (like this checkpoint transport) that
 are not doing cross-channel voting at all, just using `rte_channel`
 as `rte_checkpoint`'s required abstraction over "a channel with a
-backend". See `include/safeapi/channel_link/rte_channel.h`'s own
+backend". See `include/rte/channel_link/rte_channel.h`'s own
 `@pre channel_count` doc for the exact conditions.
 
 ### 5.2 One physical link, two message protocols, and a missing reply

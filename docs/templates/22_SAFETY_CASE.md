@@ -18,7 +18,7 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
 ### 1.2 Scope
 - System safety assurance for [Railway function]
 - Software design, implementation, and verification
-- OS Abstraction Layer based on safeAPIFramework v0.1.0
+- OS Abstraction Layer based on RteFramework v0.1.0
 - RTOS OSAdapter implementation by [Company/Team]
 - Excludes: Hardware design, external railway systems
 
@@ -74,7 +74,7 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
     │  └─ State machine controller      │
     ├──────────────────────────────────┤
     │  OS Abstraction Layer (OAL)      │
-    │  ├─ safeAPIFramework v0.1.0      │
+    │  ├─ RteFramework v0.1.0      │
     │  │  ├─ Timer service             │
     │  │  ├─ IPC (train communications)│
     │  │  ├─ NVM (configuration)        │
@@ -95,8 +95,8 @@ This Safety Case is the master argument demonstrating that [System Name] meets S
 | Function | SIL | Controlled By | Failure Effect |
 |----------|:---:|--------------|-----------------|
 | Conflict Detection | 4 | Application algorithm | Unsafe movement authority issued |
-| Authority Transmission | 4 | safeAPIFramework IPC | Lost communication |
-| State Persistence | 4 | safeAPIFramework NVM + OSAdapter | Configuration loss, inconsistent state |
+| Authority Transmission | 4 | RteFramework IPC | Lost communication |
+| State Persistence | 4 | RteFramework NVM + OSAdapter | Configuration loss, inconsistent state |
 | Watchdog / Monitoring | 4 | Application + RTOS | Failure to detect system fault |
 
 ---
@@ -189,7 +189,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 **Completeness:** ✓
 - [x] Architecture designed per EN 50128 Section 6.2
 - [x] Layered design: Application → OAL → RTOS
-- [x] safeAPIFramework OAL selected and reviewed
+- [x] RteFramework OAL selected and reviewed
 - [x] OSAdapter design documented
 - [x] Design reviewed and approved
 
@@ -268,7 +268,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 | Integration Tests | Module interactions | All key interactions tested | N/A | ✓ PASS |
 | System Tests | End-to-end scenarios | Critical scenarios verified | N/A | ✓ PASS |
 
-### 5.3 safeAPIFramework Verification
+### 5.3 RteFramework Verification
 
 Per SAFETY_APPLICATION_CONDITIONS.md:
 
@@ -309,7 +309,7 @@ Total Requirements: 47
 
 ### 6.2 Example Requirement Trace
 
-**Requirement:** SR-001 safeAPIFramework services shall not be called before OSAdapter registration
+**Requirement:** SR-001 RteFramework services shall not be called before OSAdapter registration
 
 **Derived From:** HARA Hazard H1 (Uninitialized OSAdapter)
 

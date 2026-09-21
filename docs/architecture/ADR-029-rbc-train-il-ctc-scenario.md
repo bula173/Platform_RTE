@@ -76,7 +76,7 @@ behavior (no dynamic growth, CLAUDE.md).
 
 **C does not block its own startup waiting for a Train/IL/CTC client.**
 Unlike A/B (this project's own co-deployed containers, expected to be
-reachable within `SAFEAPI_EXAMPLE_CONNECT_TIMEOUT_MS`), a Train/IL/CTC
+reachable within `RTE_EXAMPLE_CONNECT_TIMEOUT_MS`), a Train/IL/CTC
 sim is a genuinely external, opportunistically-connecting client that may
 not even be running yet. `monitor_c_init()` starts each of these links'
 background rx tasks with a NULL handle and lets that task's own
@@ -89,12 +89,12 @@ would fail `monitor_c_init()` outright with `RTE_STATUS_TIMEOUT`.
 ### 2.3 A/B: the train-session table
 
 `train_session_t` (`channel_ab_types.h`) - a fixed
-`SAFEAPI_EXAMPLE_MAX_TRAINS`-entry array (`sessions[]`) on
+`RTE_EXAMPLE_MAX_TRAINS`-entry array (`sessions[]`) on
 `channel_ab_context_t` - is the actual decision state: `in_use`,
 `train_id`, `cycle`/`d_lrbg` (last position report), `granted_length`
 (the running sum of every ROUTE_ADD so far - "first simple pass" per the
 integrator: no real route topology, every ROUTE_ADD is worth a fixed
-`SAFEAPI_EXAMPLE_MA_ROUTE_LENGTH_M`), `ma_seq`, `ma_acked`, plus two
+`RTE_EXAMPLE_MA_ROUTE_LENGTH_M`), `ma_seq`, `ma_acked`, plus two
 local-only scratch flags (`ma_pending_send`, and the sticky
 `ctc_connected_sent`/`ctc_ma_granted_sent` - see their own doc for why
 these must be sticky rather than a per-cycle transient flag: a
@@ -122,7 +122,7 @@ beacon, ADR-020) now carries the WHOLE `sessions[]` table, not the old
 single-scalar `{cycle, dlrbg, decision}` snapshot. `apply_state_transfer()`
 copies it into a promoted STANDBY's own `ctx->sessions[]`
 **unconditionally** - unlike the transferred `cycle` counter (still
-policy-gated by `SAFEAPI_EXAMPLE_TRANSFER_POLICY_ENV`, since it is
+policy-gated by `RTE_EXAMPLE_TRANSFER_POLICY_ENV`, since it is
 purely this channel's own iteration count), there is no "restart"
 concept for a live Movement Authority: a promoted site refusing to
 remember an in-flight MA would be actively unsafe, not an operator
@@ -145,11 +145,11 @@ padding bytes a raw `memcmp()` would treat as significant.
 Getting an actual end-to-end AGREE (not just code that compiles) required
 finding and fixing three distinct, non-obvious timing bugs, each rooted
 in the same underlying cause: this project's original constants
-(`SAFEAPI_EXAMPLE_AB_CYCLE_SKEW_TOLERANCE`,
+(`RTE_EXAMPLE_AB_CYCLE_SKEW_TOLERANCE`,
 `_AB_DUAL_TRANSFER_TIMEOUT_MS`, `_LINK_STALE_TIMEOUT_COUNT`) were all
 tuned around C's old near-every-cycle (~600ms) self-generated M136 -
 once a real Train reports on its own realistic cadence
-(`SAFEAPI_EXAMPLE_SIM_PERIOD_SECONDS`, 2000ms default) against the AB
+(`RTE_EXAMPLE_SIM_PERIOD_SECONDS`, 2000ms default) against the AB
 cyclic executive's own faster 500ms pacing, "fresh data every cycle"
 stopped being true and every one of these margins turned out to be too
 tight. Found live, in this order:
@@ -162,7 +162,7 @@ tight. Found live, in this order:
    ONLINE, unconditionally - the same "always every cycle" convention
    `PEER_MSG_KIND_SITE_STATE` already used - rather than gating it on
    `have_channel_data`.
-2. **`SAFEAPI_EXAMPLE_AB_CYCLE_SKEW_TOLERANCE` (3) and
+2. **`RTE_EXAMPLE_AB_CYCLE_SKEW_TOLERANCE` (3) and
    `_AB_DUAL_TRANSFER_TIMEOUT_MS` (3000ms) were far too tight** for the
    new ~2s real cadence, causing spurious "peer answered for a
    too-different cycle" skips and `dual_transfer_watchdog` firing
@@ -178,12 +178,12 @@ tight. Found live, in this order:
    sides genuinely agree, they just have not both processed the SAME
    update yet. `channel_ab_crosscompare_execute()` now skips (not
    disagrees) a train whose session does not yet field-for-field match
-   its peer's, but only for `SAFEAPI_EXAMPLE_XCOMPARE_SYNC_SKIP_LIMIT`
+   its peer's, but only for `RTE_EXAMPLE_XCOMPARE_SYNC_SKIP_LIMIT`
    (10) consecutive cycles - past that, it falls through to the real
    comparator, which correctly DISAGREEs. This distinction matters
    because a discrete event (ROUTE_ADD/M146) has no "next one" to
    fall back on if its single relay datagram is lost to only one
-   channel (`SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT` was ALSO raised,
+   channel (`RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT` was ALSO raised,
    2 -> 4, after finding this exact loss occur during an ordinary
    staleness-reconnect window) - unlike M136's own cyclic, self-superseding
    value, a lost ROUTE_ADD is a genuine, permanent divergence once it
@@ -221,16 +221,16 @@ without that flag):
    continue). This is correct behavior for a genuinely dead peer, but
    `channel_ab_io.c`'s own re-enable-after-reconnect logic
    (`checkpoint_pending_reenable`) was force-re-arming the checkpoint
-   after a fixed `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` (600ms)
+   after a fixed `RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` (600ms)
    fallback that only proves the LOCAL socket is usable again, not that
    the PEER's own independent reconnect (bounded by the unrelated
-   `SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT * SAFEAPI_EXAMPLE_LINK_TIMEOUT_MS`
+   `RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT * RTE_EXAMPLE_LINK_TIMEOUT_MS`
    ~= 12s window) has also finished - under real Docker load the two
    sides' reconnects are not synchronized, so the checkpoint was routinely
    re-armed and immediately given only its own intentionally tight 450ms
-   `SAFEAPI_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` fault budget against a
+   `RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` fault budget against a
    link that could not yet possibly answer. **Fixed** by raising
-   `SAFEAPI_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` to 15000ms (comfortably
+   `RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS` to 15000ms (comfortably
    past that ~12s worst case) - see that constant's own doc
    (`common_config.h`) for the full reasoning. `AB_CHECKPOINT_MAX_DELAY_MS`
    itself is deliberately left unchanged: catching a genuinely dead peer
@@ -253,7 +253,7 @@ without that flag):
 
 **New open item found while verifying the above** (not yet fixed):
 when `monitor_c_check_channel_down_reboot()` actually reboots a site's C
-process (`SAFEAPI_EXAMPLE_CHANNEL_DOWN_REBOOT_MS`, pre-existing ADR-028
+process (`RTE_EXAMPLE_CHANNEL_DOWN_REBOOT_MS`, pre-existing ADR-028
 mechanism, still firing under sustained real reconnect instability on
 this test host), every Train/IL sim's `dual_link.py` socket to that site
 has no way to notice - from the client's own point of view nothing
@@ -373,10 +373,10 @@ parts of §2 change; everything else in this ADR stands.
 
 ### A. §2.3 session table - fixed size stays, live count is runtime
 
-`SAFEAPI_EXAMPLE_MAX_TRAINS` becomes 100 and remains the compile-time
+`RTE_EXAMPLE_MAX_TRAINS` becomes 100 and remains the compile-time
 size of every `session[]` / `peer_sessions[]` array (no-malloc rule
 intact). The number of trains a process actually services is a **runtime**
-value - `SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2), overridable by the
+value - `RTE_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2), overridable by the
 `RTE_RBC_ACTIVE_TRAINS` environment variable, clamped `1..MAX_TRAINS`.
 Per-train loops in `C` and `A/B` iterate `0 .. active-1`. It is not a
 wire field; each process reads it independently. Trains are identified
@@ -385,7 +385,7 @@ coupling is dropped (see ADR-036 §5).
 
 ### B. §2.4 cross-site transfer - the full snapshot no longer fits one vital frame
 
-`SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` + `SAFEAPI_EXAMPLE_DB_WIRE_SIZE`
+`RTE_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` + `RTE_EXAMPLE_DB_WIRE_SIZE`
 encoded the whole session + whole runtime-route table every cycle inside
 one `rte_vital_message_t` (248-byte payload, `uint8_t` size field). At
 100 trains that is ~8.3 kB. Revised encoding:
@@ -393,8 +393,8 @@ one `rte_vital_message_t` (248-byte payload, `uint8_t` size field). At
 - Only `in_use` sessions and `in_use` runtime routes are encoded; a
   silent train contributes nothing.
 - The active set is transmitted as a round-robin **window** of
-  `SAFEAPI_EXAMPLE_SITE_XFER_WINDOW` sessions (+ a matching route
-  window) per cycle. `SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` /
+  `RTE_EXAMPLE_SITE_XFER_WINDOW` sessions (+ a matching route
+  window) per cycle. `RTE_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` /
   `_DB_WIRE_SIZE` are recomputed from `WINDOW` and
   `_Static_assert`-ed `<= 248`.
 - The peer's session table converges within

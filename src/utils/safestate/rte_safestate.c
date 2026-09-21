@@ -3,8 +3,8 @@
  * @brief Implementation of the safe-state transition facility (ADR-004).
  * @ingroup SAFESTATE
  */
-#include "safeapi/utils/safestate/rte_safestate.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/safestate/rte_safestate.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 
 /** Local makros */
 

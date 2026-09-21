@@ -51,8 +51,8 @@
  */
 
 #include <string.h>
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/oal/timer/rte_timer.h"
 
 /* ============================================================================
  * CRC-64 Lookup Tables (Pre-computed)

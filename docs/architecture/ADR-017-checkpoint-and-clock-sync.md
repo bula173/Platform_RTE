@@ -34,7 +34,7 @@ designed-but-not-built:
   ID, max delay, expected node count) in prose and example code, but
   `grep -rn "rte_channel_checkpoint\|rte_checkpoint_config_t" include
   src` returns nothing — it was never implemented.
-- `include/safeapi/watchdog/rte_watchdog.h` already has a
+- `include/rte/watchdog/rte_watchdog.h` already has a
   `RTE_WATCHDOG_CHECKPOINT` enumerator, unused by any real checkpoint
   logic.
 - ADR-001's layered diagram names an empty "L1 Safety Communication Layer
@@ -151,10 +151,10 @@ checkpoint ID within the timeout does.
 
 ## 4. Location
 
-`include/safeapi/checkpoint/rte_checkpoint.h` +
-`src/checkpoint/rte_checkpoint.c` (target `safeapi::checkpoint`, links
-`safeapi::vital_channel`, `safeapi::checksum`, `safeapi::watchdog`,
-`safeapi::safestate`). `include/safeapi/clocksync/rte_clocksync.h` +
-`src/clocksync/rte_clocksync.c` (target `safeapi::clocksync`, links
-`safeapi::status`/`safeapi::types` only — no dependency on checkpoint or
+`include/rte/checkpoint/rte_checkpoint.h` +
+`src/checkpoint/rte_checkpoint.c` (target `rte::checkpoint`, links
+`rte::vital_channel`, `rte::checksum`, `rte::watchdog`,
+`rte::safestate`). `include/rte/clocksync/rte_clocksync.h` +
+`src/clocksync/rte_clocksync.c` (target `rte::clocksync`, links
+`rte::status`/`rte::types` only — no dependency on checkpoint or
 vital_channel).

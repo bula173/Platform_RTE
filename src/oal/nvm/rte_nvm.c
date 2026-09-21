@@ -4,9 +4,9 @@
  * @brief NVM service: validates parameters, then dispatches to the OSAdapter
  *        registered via rte_osadapter_nvm_register() (ADR-005).
  */
-#include "safeapi/oal/nvm/rte_nvm.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/nvm/rte_osadapter_nvm.h"
+#include "rte/oal/nvm/rte_nvm.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/nvm/rte_osadapter_nvm.h"
 
 /** Local makros */
 

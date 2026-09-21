@@ -20,8 +20,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "safeapi/redundancy/checksum/rte_checksum.h"
-#include "safeapi/utils/status/rte_status.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
+#include "rte/utils/status/rte_status.h"
 
 /* Static, not malloc'd (this project's own no-dynamic-memory rule applies
  * workspace-wide, not just to the shipped library - see CLAUDE.md) - large

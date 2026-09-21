@@ -4,9 +4,9 @@
  * @brief Reboot service: dispatches to the OSAdapter registered via
  *        rte_osadapter_reboot_register() (ADR-005).
  */
-#include "safeapi/oal/reboot/rte_reboot.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
-#include "safeapi_osadapter/reboot/rte_osadapter_reboot.h"
+#include "rte/oal/reboot/rte_reboot.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte_osadapter/reboot/rte_osadapter_reboot.h"
 
 /** Local makros */
 

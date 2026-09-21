@@ -3,7 +3,7 @@
  * @ingroup DUAL
  * @brief "Channel" layer of ADR-020 - see rte_dual_msgchannel.h.
  */
-#include "safeapi/redundancy/dual/rte_dual_msgchannel.h"
+#include "rte/redundancy/dual/rte_dual_msgchannel.h"
 
 /** Local makros */
 

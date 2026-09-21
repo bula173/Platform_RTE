@@ -180,7 +180,7 @@ different implementation teams.
 
 ### Platform_RTE's Role: The API Abstraction Layer
 
-safeAPIFramework provides an **API ABSTRACTION LAYER** that isolates safety-critical application logic from OS/RTOS implementation details:
+RteFramework provides an **API ABSTRACTION LAYER** that isolates safety-critical application logic from OS/RTOS implementation details:
 
 ```
 Complete Safety System:
@@ -192,7 +192,7 @@ Complete Safety System:
 └────────────────────┬─────────────────────────────┘
                      │
          ┌───────────▼──────────────────┐
-         │   safeAPIFramework API       │ ← Platform_RTE (THIS PACKAGE)
+         │   RteFramework API       │ ← Platform_RTE (THIS PACKAGE)
          │   (Abstraction Only)         │
          │                              │
          │   Interface definitions for: │
@@ -446,7 +446,7 @@ design. Redundancy is a configuration (`rte_redundancy_config`) and the applicat
 Descriptions of the nine hardware configurations. Terminology: in this reference "hot standby" means a standby that replicates
 state from the primary; in the project's terms that is **warm** (see [REDUNDANCY_ARCHITECTURE.md](REDUNDANCY_ARCHITECTURE.md),
 terminology). API sketches and deployment scripts that the earlier configuration guide carried were removed because they used
-names that do not exist; use the headers under `include/safeapi/redundancy/` and the examples.
+names that do not exist; use the headers under `include/rte/redundancy/` and the examples.
 
 ### Configuration 1: Single System (Non-Redundant)
 
@@ -469,7 +469,7 @@ names that do not exist; use the headers under `include/safeapi/redundancy/` and
 │   └────────────┬─────────────────┘  │
 │                │                     │
 │         ┌──────▼──────────┐          │
-│         │  safeAPIFramework│          │
+│         │  RteFramework│          │
 │         │  (13 modules)   │          │
 │         └────────┬────────┘          │
 │                  │                    │

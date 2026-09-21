@@ -1,8 +1,8 @@
 /* Tests for the rte_task validate-then-dispatch API (ADR-005): see
  * tests/nvm/test_rte_nvm.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/oal/task/rte_task.h"
-#include "safeapi_osadapter/task/rte_osadapter_task.h"
+#include "rte/oal/task/rte_task.h"
+#include "rte_osadapter/task/rte_osadapter_task.h"
 
 static void mock_entry(void *user_ctx)
 {

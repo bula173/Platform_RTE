@@ -3,9 +3,9 @@
  * @ingroup DUAL
  * @brief Dual state negotiator of ADR-020 - see rte_dual_negotiator.h.
  */
-#include "safeapi/redundancy/dual/rte_dual_negotiator.h"
+#include "rte/redundancy/dual/rte_dual_negotiator.h"
 
-#include "safeapi/oal/timer/rte_timer.h"
+#include "rte/oal/timer/rte_timer.h"
 
 /**
  * @brief Older-timestamp-wins tie-break, own_id/peer_id as the

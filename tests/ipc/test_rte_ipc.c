@@ -2,8 +2,8 @@
  * tests/nvm/test_rte_nvm.c for the pattern this follows. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/oal/ipc/rte_ipc.h"
-#include "safeapi_osadapter/ipc/rte_osadapter_ipc.h"
+#include "rte/oal/ipc/rte_ipc.h"
+#include "rte_osadapter/ipc/rte_osadapter_ipc.h"
 
 static unsigned char g_rx_payload[4] = { 1U, 2U, 3U, 4U };
 

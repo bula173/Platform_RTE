@@ -1,6 +1,6 @@
 # Railway Message Processor (Linux POSIX)
 
-A simple but realistic railway communication application demonstrating safeAPIFramework on Linux with POSIX OAL.
+A simple but realistic railway communication application demonstrating RteFramework on Linux with POSIX OAL.
 
 ## Overview
 
@@ -98,7 +98,7 @@ Final state:         SHUTDOWN
 ```
 main.c
 ├── Includes
-│   ├── Framework headers (safeapi/*)
+│   ├── Framework headers (rte/*)
 │   ├── Standard C library
 │   └── POSIX headers
 │
@@ -199,7 +199,7 @@ uint8_t sequence[] = {0x01, 0x02, 0x03, 0x04};
 
 ### Add Real Timer
 
-Replace simulation with `safeapi::timer`:
+Replace simulation with `rte::timer`:
 ```c
 rte_timer_t timer;
 rte_timer_create(&timer, RTE_TIMER_PERIODIC, 1000); // 1 second
@@ -211,7 +211,7 @@ rte_timer_destroy(&timer);
 
 ### Add Task Pool
 
-Extend with `safeapi::task` (when available):
+Extend with `rte::task` (when available):
 ```c
 rte_task_t task1, task2;
 rte_task_create(&task1, message_processor, NULL);
@@ -276,6 +276,6 @@ For hard real-time performance, see the QNX RTOS example.
 
 ## References
 
-- [safeapi::log](../../include/safeapi/oal/log/rte_log.h)
-- [safeapi::status](../../include/safeapi/utils/status/rte_status.h)
-- [safeapi::safestate](../../include/safeapi/utils/safestate/rte_safestate.h)
+- [rte::log](../../include/rte/oal/log/rte_log.h)
+- [rte::status](../../include/rte/utils/status/rte_status.h)
+- [rte::safestate](../../include/rte/utils/safestate/rte_safestate.h)

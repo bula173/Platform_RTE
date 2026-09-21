@@ -5,8 +5,8 @@
  * to contain has moved to rte_voter - see tests/voter/test_rte_voter.c. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/redundancy/channel_link/rte_channel.h"
-#include "safeapi/utils/lifecycle/rte_lifecycle.h"
+#include "rte/redundancy/channel_link/rte_channel.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 
 static int g_send_calls;
 static int g_recv_calls;

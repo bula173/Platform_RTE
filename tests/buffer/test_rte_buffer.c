@@ -2,7 +2,7 @@
  * view, and defensive validity checks. */
 #include <assert.h>
 #include <string.h>
-#include "safeapi/utils/buffer/rte_buffer.h"
+#include "rte/utils/buffer/rte_buffer.h"
 
 int main(void)
 {

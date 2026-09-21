@@ -5,7 +5,7 @@
  * Compliant with CENELEC EN 50128 SIL 4 and MISRA C:2012.
  */
 
-#include "safeapi/oal/protocol/rte_protocol_adapter.h"
+#include "rte/oal/protocol/rte_protocol_adapter.h"
 
 static const rte_protocol_adapter_ops_t *s_udp_adapter = NULL;
 static const rte_protocol_adapter_ops_t *s_tcp_adapter = NULL;

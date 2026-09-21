@@ -1,8 +1,8 @@
 # ADR-018: A Real POSIX/Linux OAL Backend
 
 > **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
-> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `safeapi_backend/` to
-> `safeapi_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `rte_backend/` to
+> `rte_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
 > original wording as a historical record.
 
 Status: Superseded (relocated) - Accepted
@@ -11,7 +11,7 @@ Applies to: the POSIX backend's design, and how it plugs into every
 existing OAL service's backend-registration mechanism (ADR-005).
 
 **Relocation note:** the code this ADR describes (`src/posix_osadapter/`,
-`include/safeapi/posix_osadapter/`, `tests/posix_osadapter/`) has been moved
+`include/rte/posix_osadapter/`, `tests/posix_osadapter/`) has been moved
 out of this repository into the `safeAPIRBC2oo2` project
 (`src/posix_osadapter/` there). This is a location change only, not a
 design reversal - the rationale below is unchanged and still describes
@@ -74,7 +74,7 @@ the reverse).
 ### 2.2 Fitting inside each service's fixed opaque storage
 
 Every service's public header reserves a small fixed-size byte buffer
-for backend state (`SAFEAPI_DECLARE_STORAGE`, ADR-001 section 3.4) -
+for backend state (`RTE_DECLARE_STORAGE`, ADR-001 section 3.4) -
 64 bytes for timer/ipc/nvm/memory, 128 for task. This is the main design
 constraint on every backend below, and it directly ruled out the
 "obvious" POSIX implementation for `rte_ipc`: a `pthread_mutex_t` +
@@ -175,6 +175,6 @@ failing to configure.
 ## 4. Location
 
 `src/posix_osadapter/rte_posix_osadapter_{timer,ipc,task,log,nvm,reboot,memory}.c`
-+ `rte_posix_osadapter.c` (aggregator) + `include/safeapi/posix_osadapter/rte_posix_osadapter.h`,
-target `safeapi::posix_osadapter`, POSIX-only (`if(UNIX)`), links every OAL
++ `rte_posix_osadapter.c` (aggregator) + `include/rte/posix_osadapter/rte_posix_osadapter.h`,
+target `rte::posix_osadapter`, POSIX-only (`if(UNIX)`), links every OAL
 service target plus `pthread`.

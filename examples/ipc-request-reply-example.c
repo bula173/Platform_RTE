@@ -19,9 +19,9 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "safeapi/status.h"
-#include "safeapi/log.h"
-#include "safeapi/ipc/rte_ipc_request_reply.h"
+#include "rte/status.h"
+#include "rte/log.h"
+#include "rte/ipc/rte_ipc_request_reply.h"
 
 /* ============================================================================
  * Message Definitions (Shared between client and server)

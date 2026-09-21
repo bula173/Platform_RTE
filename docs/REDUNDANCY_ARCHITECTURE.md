@@ -6,7 +6,7 @@ pieces fit in a 2oo2 deployment. This document merges the earlier `REDUNDANCY_AR
 `rte_nonvital_*`, `rte_cluster_*`) or used other names for what is now `rte_voter`, `rte_cross_comparator` and
 `rte_channel_link`. Their API sketches, the per-CPU hardware walk-throughs and the illustrative timing tables were dropped
 because they no longer describe the code; the git history of both files keeps them. Real APIs are in the headers under
-`include/safeapi/redundancy/` and authoritative over anything here. Hardware selection guidance is in
+`include/rte/redundancy/` and authoritative over anything here. Hardware selection guidance is in
 [HARDWARE_PATTERNS_GUIDE.md](HARDWARE_PATTERNS_GUIDE.md).
 
 ## 1. Terminology

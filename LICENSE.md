@@ -1,14 +1,14 @@
-# safeAPIFramework - Community Improvement License (CIL)
+# RteFramework - Community Improvement License (CIL)
 
 **Version:** 1.0  
 **Effective Date:** 2026-08-02  
-**Repository:** https://github.com/[your-org]/safeAPIFramework  
+**Repository:** https://github.com/[your-org]/RteFramework  
 
 ---
 
 ## 1. License Summary
 
-**safeAPIFramework** (including documentation, design patterns, code, and assessment templates) is provided under a **Community Improvement License (CIL)** that encourages collaborative development and knowledge sharing within the railway safety engineering community.
+**RteFramework** (including documentation, design patterns, code, and assessment templates) is provided under a **Community Improvement License (CIL)** that encourages collaborative development and knowledge sharing within the railway safety engineering community.
 
 ---
 
@@ -16,7 +16,7 @@
 
 You are granted the right to:
 
-✅ **Use** — Use safeAPIFramework for any project (commercial or non-commercial)  
+✅ **Use** — Use RteFramework for any project (commercial or non-commercial)  
 ✅ **Study** — Study the source code, design, and documentation  
 ✅ **Modify** — Modify the code and templates for your needs  
 ✅ **Distribute** — Distribute modified or unmodified versions  
@@ -28,7 +28,7 @@ You are granted the right to:
 
 ### 3.1 Primary Requirement: Share Improvements
 
-**If you improve safeAPIFramework, you SHALL contribute those improvements back to the community.**
+**If you improve RteFramework, you SHALL contribute those improvements back to the community.**
 
 "Improvements" include:
 - Bug fixes
@@ -38,7 +38,7 @@ You are granted the right to:
 - Test case improvements
 - Performance optimizations
 - Security fixes
-- safeAPIFramework OSAdapter implementations (RTOS-specific)
+- RteFramework OSAdapter implementations (RTOS-specific)
 - New assessment templates or checklist items
 
 **How to share improvements:**
@@ -53,7 +53,7 @@ You are granted the right to:
 **If you cannot contribute code improvements, you MUST provide feedback via GitHub Issues.**
 
 Report:
-- Bugs found in safeAPIFramework or templates
+- Bugs found in RteFramework or templates
 - Suggestions for improvement
 - Your experience using templates in SIL 4 assessments
 - Missing documentation or guidance
@@ -67,7 +67,7 @@ Title: "Template 06_HARA missing guidance for concurrent IPC hazards"
 Description: "When multiple tasks use IPC simultaneously, race conditions 
 not covered in hazard identification section. Suggest adding..."
 
-Title: "safeAPIFramework timer OSAdapter needs timeout mechanism"
+Title: "RteFramework timer OSAdapter needs timeout mechanism"
 Description: "In our VxWorks OSAdapter implementation, we discovered that 
 blocking timer operations need timeout protection. Here's what we did..."
 ```
@@ -84,7 +84,7 @@ blocking timer operations need timeout protection. Here's what we did..."
 
 **Example:**
 ```
-Title: "safeAPIFramework NVM OSAdapter needs wear-leveling for high-cycle writes"
+Title: "RteFramework NVM OSAdapter needs wear-leveling for high-cycle writes"
 Description: "In railway real-time systems with frequent config updates, 
 flash wear-out becomes an issue. We implemented wear-leveling in our 
 OSAdapter. Suggest adding guidance for integrators on this topic."
@@ -96,7 +96,7 @@ OSAdapter. Suggest adding guidance for integrators on this topic."
 
 ### 4.1 SIL 4 Projects
 
-If you deploy safeAPIFramework in a **SIL 4 certified railway system**:
+If you deploy RteFramework in a **SIL 4 certified railway system**:
 
 1. **Before Deployment:**
    - Contributions (bug fixes, OSAdapter implementations) should be submitted to the project
@@ -105,10 +105,10 @@ If you deploy safeAPIFramework in a **SIL 4 certified railway system**:
 2. **After Certification:**
    - Share your Safety Case approach (without revealing confidential design)
    - Your Notified Body assessment experience
-   - Any safeAPIFramework improvements discovered during verification
+   - Any RteFramework improvements discovered during verification
 
 3. **Long-term Support:**
-   - If safeAPIFramework is integral to your certified system, commit to:
+   - If RteFramework is integral to your certified system, commit to:
      - Reporting bugs found in production
      - Contributing OSAdapter improvements for your RTOS
      - Participating in security patches (6-month window)
@@ -124,12 +124,12 @@ For research, development, and testing:
 
 ## 5. Conditions for Distribution
 
-If you distribute safeAPIFramework (modified or unmodified):
+If you distribute RteFramework (modified or unmodified):
 
 ✓ **Include this LICENSE** — This license file must be included  
 ✓ **Preserve Attribution** — Maintain original author credits and file headers  
 ✓ **Document Changes** — Clearly mark any modifications you made  
-✓ **Link Back** — Reference the official repository: https://github.com/[your-org]/safeAPIFramework  
+✓ **Link Back** — Reference the official repository: https://github.com/[your-org]/RteFramework  
 ✓ **Pass Along License** — Derivatives must be distributed under this same license  
 ✓ **Include CHANGELOG** — Document what you changed and why  
 
@@ -155,7 +155,7 @@ If you improve the assessment templates:
 **Examples:**
 - "Added new template for SIL 3 projects (simpler)"
 - "Template 06_HARA missing guidance for X railway domain"
-- "Better examples for integrating safeAPIFramework OSAdapter"
+- "Better examples for integrating RteFramework OSAdapter"
 - "Notified Body requested these changes"
 
 ---
@@ -166,7 +166,7 @@ If you improve the assessment templates:
 
 ```
 Step 1: Fork the repository
-        git clone https://github.com/[your-org]/safeAPIFramework.git
+        git clone https://github.com/[your-org]/RteFramework.git
 
 Step 2: Create a feature branch
         git checkout -b feature/your-improvement
@@ -189,7 +189,7 @@ Step 6: Merge
 ### 7.2 Creating Issues (Minimum Feedback)
 
 ```
-Go to: https://github.com/[your-org]/safeAPIFramework/issues
+Go to: https://github.com/[your-org]/RteFramework/issues
 
 Click: "New Issue"
 
@@ -205,7 +205,7 @@ Provide:
 
 ## 8. No Warranty & Liability
 
-**safeAPIFramework is provided AS-IS with NO WARRANTY.**
+**RteFramework is provided AS-IS with NO WARRANTY.**
 
 ### 8.1 Disclaimer
 
@@ -217,7 +217,7 @@ Provide:
 ### 8.2 Your Responsibility
 
 **You are responsible for:**
-- Verifying safeAPIFramework for your use case
+- Verifying RteFramework for your use case
 - Performing all required static analysis and testing
 - Conducting formal assessment via Notified Body
 - Obtaining regulatory approval from railway authorities
@@ -243,9 +243,9 @@ Contributors are recognized via:
 
 ### 9.2 Maintainer Role
 
-- **Maintainer:** Curator of safeAPIFramework, accepts/reviews contributions
+- **Maintainer:** Curator of RteFramework, accepts/reviews contributions
 - **Contributors:** Community members improving the project
-- **Users:** Deploy safeAPIFramework in their systems
+- **Users:** Deploy RteFramework in their systems
 
 ### 9.3 Dispute Resolution
 
@@ -262,22 +262,22 @@ If disputes arise about licensing or contributions:
 ### 10.1 Academic Use
 
 **Universities & research institutions:**
-- May use safeAPIFramework freely
+- May use RteFramework freely
 - Encouraged to publish improvements (peer review = contribution)
-- Should cite safeAPIFramework in academic papers
+- Should cite RteFramework in academic papers
 - Issues & PRs appreciated but optional
 
 ### 10.2 Embedded in Products
 
-If you embed safeAPIFramework in a commercial product:
-- Share back any improvements to safeAPIFramework itself
-- Proprietary extensions around safeAPIFramework don't need to be shared
+If you embed RteFramework in a commercial product:
+- Share back any improvements to RteFramework itself
+- Proprietary extensions around RteFramework don't need to be shared
 - Document your use case (Issue or GitHub Discussion)
 
 **Example:**
 ```
 Your product:
-├── safeAPIFramework (shared community version)
+├── RteFramework (shared community version)
 ├── Your proprietary railway algorithm (yours to keep)
 └── Your RTOS OSAdapter (share with community!)
 ```
@@ -308,8 +308,8 @@ This ensures:
 
 All files must retain:
 ```c
-// safeAPIFramework - Community Improvement License (CIL) v1.0
-// Maintained at: https://github.com/[your-org]/safeAPIFramework
+// RteFramework - Community Improvement License (CIL) v1.0
+// Maintained at: https://github.com/[your-org]/RteFramework
 // See LICENSE.md for terms
 ```
 
@@ -326,7 +326,7 @@ If someone violates this license:
 
 This license grants you rights **perpetually**, but:
 
-- Rights terminate if you sue for patent infringement related to safeAPIFramework
+- Rights terminate if you sue for patent infringement related to RteFramework
 - Rights terminate if you violate Sections 3 or 5 without remediation
 - No termination for non-commercial or research use
 
@@ -340,7 +340,7 @@ This license may be updated by maintainer:
 |---------|------|--------|
 | 1.0 | 2026-08-02 | Initial Community Improvement License |
 
-**You automatically use the latest version when you update safeAPIFramework.**
+**You automatically use the latest version when you update RteFramework.**
 
 ---
 
@@ -353,7 +353,7 @@ This license may be updated by maintainer:
 - [ ] **Document your changes** in git commits
 - [ ] **Share improvements** via Pull Request within 6 months
 - [ ] **Or submit Issues** describing your use case & findings
-- [ ] **Cite safeAPIFramework** if you publish your work
+- [ ] **Cite RteFramework** if you publish your work
 - [ ] **Report bugs** you find in production
 
 **That's it!** Simple, reasonable, community-focused.
@@ -389,15 +389,15 @@ This license is inspired by:
 | **Modify** | ✅ Yes | ✅ Yes | ✅ Yes |
 | **Distribute** | ✅ Yes (share improvements) | ✅ Yes (share improvements) | ✅ Yes (share improvements) |
 | **Deploy** | ✅ Yes | ✅ Yes | ✅ Yes (formal assessment required) |
-| **Keep proprietary** | ❌ No (share back) | ⚠️ Limited (algorithm yes, safeAPIFramework no) | ⚠️ Very limited |
+| **Keep proprietary** | ❌ No (share back) | ⚠️ Limited (algorithm yes, RteFramework no) | ⚠️ Very limited |
 
 ---
 
-**ACCEPT & AGREE:** By using safeAPIFramework, you agree to this license.
+**ACCEPT & AGREE:** By using RteFramework, you agree to this license.
 
-**Questions?** Open an Issue: https://github.com/[your-org]/safeAPIFramework/issues
+**Questions?** Open an Issue: https://github.com/[your-org]/RteFramework/issues
 
-**Ready to contribute?** Submit a Pull Request: https://github.com/[your-org]/safeAPIFramework/pulls
+**Ready to contribute?** Submit a Pull Request: https://github.com/[your-org]/RteFramework/pulls
 
 ---
 

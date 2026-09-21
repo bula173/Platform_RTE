@@ -5,18 +5,18 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-# Find safeAPIFramework
-find_package(safeAPIFramework REQUIRED)
+# Find RteFramework
+find_package(RteFramework REQUIRED)
 
 # Example executable
 add_executable(railway-processor main.c)
 
-# Link safeAPIFramework modules (ADR-023: status/types/buffer/string/
-# safestate live in safeapi::core, log/timer live in safeapi::oal - 22
+# Link RteFramework modules (ADR-023: status/types/buffer/string/
+# safestate live in rte::core, log/timer live in rte::oal - 22
 # per-feature targets were consolidated into 4 grouped libraries).
 target_link_libraries(railway-processor PRIVATE
-    safeapi::core
-    safeapi::oal
+    rte::core
+    rte::oal
 )
 
 # POSIX-specific: link pthread

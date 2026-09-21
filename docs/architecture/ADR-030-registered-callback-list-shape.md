@@ -2,8 +2,8 @@
 
 Status: Accepted
 Date: 2026-08-20
-Applies to: new `include/safeapi/notify/rte_notify.h` (header-only, no
-`src/`, no `SAFEAPI_ENABLE_*` option, no `tests/` executable of its own -
+Applies to: new `include/rte/notify/rte_notify.h` (header-only, no
+`src/`, no `RTE_ENABLE_*` option, no `tests/` executable of its own -
 see §2.3/§5).
 
 ## 1. Context
@@ -47,11 +47,11 @@ in a non-MISRA codebase.
 
 ### 2.1 Storage-shape macro only, no generated control flow
 
-`SAFEAPI_DECLARE_CALLBACK_LIST(list_type, callback_fn_type, max_subscribers)`
+`RTE_DECLARE_CALLBACK_LIST(list_type, callback_fn_type, max_subscribers)`
 declares `list_type_slot_t` (`{callback_fn_type fn; void *context;}`)
 and `list_type` (`{list_type_slot_t slots[max_subscribers]; uint32_t count;}`)
 - nothing else. Every existing macro in this framework
-(`SAFEAPI_DECLARE_STORAGE`, `rte_types.h`) declares a TYPE only, never
+(`RTE_DECLARE_STORAGE`, `rte_types.h`) declares a TYPE only, never
 control flow; this stays consistent rather than introducing the
 framework's first macro-generated loop/conditional, which would need
 either `__VA_ARGS__`-based dispatch (poor MISRA posture - hidden
@@ -79,7 +79,7 @@ pointer type, same call site, same NULL-guard" precedent
 `rte_watchdog_create()` already established (per
 `docs/MISRA_COMPLIANCE_REPORT.md`'s own note on that function).
 
-### 2.3 Header-only, no `SAFEAPI_ENABLE_*` option
+### 2.3 Header-only, no `RTE_ENABLE_*` option
 
 Unlike `rte_voter`/`rte_cross_comparator` (full runtime modules with
 their own `.c`, own enable flag, own dependency-graph entry per
@@ -132,5 +132,5 @@ consuming project opts into.
 
 ## 5. Location
 
-- `include/safeapi/notify/rte_notify.h` (new, header-only).
-- No `src/`, no `tests/`, no `SAFEAPI_ENABLE_*` CMake option - see §2.3.
+- `include/rte/notify/rte_notify.h` (new, header-only).
+- No `src/`, no `tests/`, no `RTE_ENABLE_*` CMake option - see §2.3.

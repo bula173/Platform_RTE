@@ -2,7 +2,7 @@
 
 Status: Accepted
 Date: 2026-08-17
-Applies to: `include/safeapi/lifecycle/rte_lifecycle.h` (new),
+Applies to: `include/rte/lifecycle/rte_lifecycle.h` (new),
 `src/lifecycle/rte_lifecycle.c` (new), `rte_appmanager.h`/`.c`,
 `rte_timer.c`, `rte_channel.c`, `rte_voter.c`,
 `rte_cross_comparator.c`, `rte_watchdog.c`, `rte_status.h`/`.c`.
@@ -39,9 +39,9 @@ framework's own design:
 
 ### 2.1 A new, minimal `rte_lifecycle` module (REQ-LIFECYCLE-001/002)
 
-A single process-wide flag (`include/safeapi/lifecycle/rte_lifecycle.h`,
+A single process-wide flag (`include/rte/lifecycle/rte_lifecycle.h`,
 implemented in `src/lifecycle/rte_lifecycle.c`, compiled unconditionally
-into `safeapi_core` alongside `status`/`buffer`/`cast`/`safestate`/
+into `rte_core` alongside `status`/`buffer`/`cast`/`safestate`/
 `string` - it has no OS dependency of its own, matching that library's
 own admission criteria): `rte_lifecycle_lock()`/`_unlock()`/
 `_is_locked()`, plus `rte_lifecycle_check_setup_allowed()` returning
@@ -173,9 +173,9 @@ via a non-local jump) corrupts that call's own state.
 
 ## 5. Location
 
-- `include/safeapi/lifecycle/rte_lifecycle.h`, `src/lifecycle/rte_lifecycle.c` (new)
-- `include/safeapi/appmanager/rte_appmanager.h`, `src/appmanager/rte_appmanager.c`
-- `include/safeapi/status/rte_status.h`, `src/status/rte_status.c`
+- `include/rte/lifecycle/rte_lifecycle.h`, `src/lifecycle/rte_lifecycle.c` (new)
+- `include/rte/appmanager/rte_appmanager.h`, `src/appmanager/rte_appmanager.c`
+- `include/rte/status/rte_status.h`, `src/status/rte_status.c`
 - `src/timer/rte_timer.c`, `src/channel_link/rte_channel.c`,
   `src/voter/rte_voter.c`, `src/cross_comparator/rte_cross_comparator.c`,
   `src/watchdog/rte_watchdog.c`

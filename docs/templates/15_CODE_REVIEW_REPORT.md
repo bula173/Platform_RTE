@@ -50,7 +50,7 @@ This report documents the formal code review of [System Name] software against M
   - Function complexity limits
   - No recursion or uninitialized variables
 
-#### safeAPIFramework Design Patterns
+#### RteFramework Design Patterns
 - **ADR-001:** OS Abstraction Layer - layered architecture enforcement
 - **ADR-003:** Checked integer casting - all conversions through rte_cast_*
 - **ADR-004:** Safe-state transitions - RTE_ASSERT/SAFESTATE/REBOOT usage
@@ -325,7 +325,7 @@ if (status != RTE_STATUS_OK) return status;
 - [✓] All 30 MISRA Mandatory rules checked
 - [✓] All 40 MISRA Required rules checked
 - [✓] All 8 EN 50128 Section 6 requirements checked
-- [✓] safeAPIFramework design pattern compliance verified
+- [✓] RteFramework design pattern compliance verified
 - [✓] Code metrics computed and acceptable
 - [✓] All findings documented
 - [✓] Deviations justified and approved
@@ -385,7 +385,7 @@ All critical and major findings in the code review have been corrected. The rema
 
 - MISRA C:2012 Guidelines
 - EN 50128:2011
-- safeAPIFramework Architecture Decision Records
+- RteFramework Architecture Decision Records
 - SAFETY_APPLICATION_CONDITIONS.md
 - Code Review Checklist (attached)
 

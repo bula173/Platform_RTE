@@ -7,8 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "safeapi_osadapter/rte_osadapter.h"
-#include "safeapi/oal/protocol/rte_protocol_adapter.h"
+#include "rte_osadapter/rte_osadapter.h"
+#include "rte/oal/protocol/rte_protocol_adapter.h"
 
 static int s_mock_open_called = 0;
 static int s_mock_bind_called = 0;

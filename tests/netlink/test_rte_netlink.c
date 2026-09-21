@@ -1,8 +1,8 @@
 /* Tests for the rte_netlink validate-then-dispatch API (ADR-005): see
  * tests/timer/test_rte_timer.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/oal/netlink/rte_netlink.h"
-#include "safeapi_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte/oal/netlink/rte_netlink.h"
+#include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 static int g_mock_open_calls = 0;
 static int g_mock_send_calls = 0;

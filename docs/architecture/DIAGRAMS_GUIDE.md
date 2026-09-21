@@ -63,7 +63,7 @@ Shows module dependencies and interactions.
 @startuml component-sapiframework
 skinparam componentStyle uml2
 
-package "safeAPIFramework" {
+package "RteFramework" {
     component [status] as status_mod
     component [types] as types_mod
     component [buffer] as buffer_mod
@@ -127,7 +127,7 @@ redundancy_mod --> qnx_osadapter : OSAdapter
 
 ```c
 /**
- * @file safeapi/ipc/rte_ipc.h
+ * @file rte/ipc/rte_ipc.h
  * @brief Inter-Process Communication Module
  * 
  * @startuml component-sapiframework
@@ -274,7 +274,7 @@ Shows how Platform_RTE is deployed on hardware.
 
 ```plantuml
 @startuml deployment-2oo3
-artifact "safeAPIFramework" as rte_lib
+artifact "RteFramework" as rte_lib
 
 node "Site A (CPU 1)" as siteA {
     component [RBC Logic] as rbcA
@@ -377,7 +377,7 @@ stop
 
 ```c
 /**
- * @file safeapi/ipc/rte_ipc_request_reply.h
+ * @file rte/ipc/rte_ipc_request_reply.h
  * @brief Request-Reply (RPC) IPC Pattern
  *
  * @section overview Overview
@@ -433,7 +433,7 @@ Each feature is an independent module with clear boundaries.
 
 \`\`\`puml
 @startuml
-package "safeAPIFramework" {
+package "RteFramework" {
     [Module A] as modA
     [Module B] as modB
 }

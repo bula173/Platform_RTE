@@ -1,8 +1,8 @@
 /* Tests for the rte_mem_pool validate-then-dispatch API (ADR-005): see
  * tests/nvm/test_rte_nvm.c for the pattern this follows. */
 #include <assert.h>
-#include "safeapi/oal/memory/rte_memory.h"
-#include "safeapi_osadapter/memory/rte_osadapter_memory.h"
+#include "rte/oal/memory/rte_memory.h"
+#include "rte_osadapter/memory/rte_osadapter_memory.h"
 
 static unsigned char g_block[8];
 

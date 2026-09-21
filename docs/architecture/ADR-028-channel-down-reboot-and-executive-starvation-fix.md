@@ -44,9 +44,9 @@ different treatment:
 
 ### 2.1 Same-site channels: REBOOT after a sustained outage
 
-New `SAFEAPI_EXAMPLE_CHANNEL_DOWN_REBOOT_MS` (`common_config.h`, 20000ms)
+New `RTE_EXAMPLE_CHANNEL_DOWN_REBOOT_MS` (`common_config.h`, 20000ms)
 - deliberately much longer than the existing
-`SAFEAPI_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`-based reconnect trigger
+`RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`-based reconnect trigger
 (ADR-027 Phase 2, ~6s): a channel that's merely reconnecting should get
 real time to self-heal first. Each affected rx task
 (`channel_ab_io_peer_rx_task_entry()`, `channel_ab_io_m136_rx_task_entry()`,
@@ -55,7 +55,7 @@ real time to self-heal first. Each affected rx task
 recovery); once continuously down past the threshold, the owning
 process calls `channel_ab_shutdown()`/`monitor_c_shutdown()` then
 `RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_REBOOT, ...)` (new reason codes
-`SAFEAPI_EXAMPLE_REASON_AB_PEER_LINK_DOWN`, `_C_LINK_DOWN`,
+`RTE_EXAMPLE_REASON_AB_PEER_LINK_DOWN`, `_C_LINK_DOWN`,
 `_C_MONITOR_LINK_DOWN`).
 
 **Deliberately excluded**: `monitor_c_io_rx_b_task_entry()`'s own link.
@@ -110,15 +110,15 @@ second physical link per negotiation pair, not done as part of this ADR.
 Found while tracing why `on_negotiation_link_lost()` (`channel_ab_negotiate.c`,
 pre-existing - the ONLINE-only reboot-on-negotiation-loss reaction this
 ADR's §2.1 deliberately does *not* replicate) sometimes fired on a single
-dropped UDP datagram: `SAFEAPI_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS`
+dropped UDP datagram: `RTE_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS`
 was a fixed 2500ms, shorter than `rte_dual_channel_send()`'s own
 `ack_timeout_ms` (3000ms) - meaning a single missed ACK could exceed the
 watchdog's window before ADR-027 Phase 1's own `neg_consecutive_send_miss`
 hysteresis (added specifically so one dropped datagram doesn't cause
 drastic action) ever got a chance to run. Fixed by deriving the timeout
 from that hysteresis's own worst-case timing instead of a bare constant:
-`(SAFEAPI_EXAMPLE_NEG_SEND_MISS_THRESHOLD * SAFEAPI_EXAMPLE_LINK_TIMEOUT_MS)
-+ SAFEAPI_EXAMPLE_RECONNECT_ATTEMPT_TIMEOUT_MS + SAFEAPI_EXAMPLE_AB_CYCLE_PERIOD_MS`
+`(RTE_EXAMPLE_NEG_SEND_MISS_THRESHOLD * RTE_EXAMPLE_LINK_TIMEOUT_MS)
++ RTE_EXAMPLE_RECONNECT_ATTEMPT_TIMEOUT_MS + RTE_EXAMPLE_AB_CYCLE_PERIOD_MS`
 (10500ms), so the two can't silently drift back out of sync.
 
 ### 2.4 The real bug: the cyclic executive starves whenever checkpoint is paused
@@ -235,6 +235,6 @@ correlation until §2.5 is fixed separately.
   `monitor_c_io.c` (down-since marking, B's link deliberately excluded),
   `monitor_c_types.h` (down-since fields)
 - `safeAPIRBC2oo2/src/application/common_config.h`
-  (`SAFEAPI_EXAMPLE_CHANNEL_DOWN_REBOOT_MS`, new reason codes,
-  `SAFEAPI_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS` reworked)
+  (`RTE_EXAMPLE_CHANNEL_DOWN_REBOOT_MS`, new reason codes,
+  `RTE_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS` reworked)
 - `safeAPIRBC2oo2/tests/robot/fault_injection.robot` (two new extended-partition cases)

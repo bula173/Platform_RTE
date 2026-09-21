@@ -2,7 +2,7 @@
 
 **Status:** ACCEPTED  
 **Date:** 2026-08-02  
-**Author:** safeAPIFramework Team  
+**Author:** RteFramework Team  
 **Category:** Data Integrity, Redundancy Support
 
 ---
@@ -70,7 +70,7 @@ Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect d
 ### Module Structure (ADR-007 compliance)
 
 ```
-include/safeapi/checksum/
+include/rte/checksum/
 ├── rte_checksum.h              # API definition
 
 src/checksum/
@@ -176,10 +176,10 @@ Output or Safe-State
 ### With Existing Modules
 
 **Depends on:**
-- `safeapi/types` — uint64_t, rte_status_t
-- `safeapi/log` — Logging for diagnostics
-- `safeapi/safestate` — Trigger safe-state on error
-- `safeapi/timer` — Timestamp in vital messages
+- `rte/types` — uint64_t, rte_status_t
+- `rte/log` — Logging for diagnostics
+- `rte/safestate` — Trigger safe-state on error
+- `rte/timer` — Timestamp in vital messages
 
 **Used by:**
 - Application IPC code (wrap payloads)
