@@ -55,4 +55,36 @@
  * - Requirements traceability: @ref safeapi_srs
  * - MISRA C:2012 conformance status: `docs/MISRA_COMPLIANCE_REPORT.md`
  * - Cross-compilation (Linux, QNX, etc.): `docs/CROSS_COMPILATION.md`
+
+
+ +-------------------------------------------------------------------------+
+|                  Generic Platform (safeAPIRBC2oo2GP)                    |
+|      (ERTMS Procedures, Handover FSM, Route Management, 2oo2 Voter)     |
++-------------------------------------------------------------------------+
+                                    │
+                                    ▼ (sapi_channel_open / sapi_flow_write)
++-------------------------------------------------------------------------+
+|                Safe Computing Platform (safeAPIFreamwork)               |
++-------------------------------------------------------------------------+
+                                    │
+           ┌────────────────────────┼────────────────────────┐
+           ▼                        ▼                        ▼
++---------------------+  +---------------------+  +---------------------+
+| safeApiProtocol-    |  | safeApiProtocol-    |  | safeApiProtocol-    |
+| AdapterDDS          |  | AdapterSS098        |  | AdapterEuroRadio    |
+| (Trackside Bus)     |  | (RBC-RBC Fixed IP)  |  | (EVC-RBC Radio)     |
++---------------------+  +---------------------+  +---------------------+
+           │                        │                        │
+           │                        └────────────┬───────────┘
+           │                                     ▼
+           │                     +--------------------------------------+
+           │                     |          safeCommFramework           |
+           │                     | (SaF State Machine, 3DES MAC, KSMAC, |
+           │                     |  CFM, ALE, Future RaSTA Engine)      |
+           │                     +--------------------------------------+
+           ▼                                     ▼
++-------------------------------------------------------------------------+
+|                       OSAdapter (safeAPIAdapterPosix)                   |
+|                   (Timers, Memory Pools, Raw OS Sockets)                |
++-------------------------------------------------------------------------+
  */
