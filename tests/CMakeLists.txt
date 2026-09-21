@@ -1,3 +1,7 @@
+# The tests use assert() as their check, often around calls with side effects; -DNDEBUG (Release) would turn them into
+# no-ops (unused variables and functions, and checks that silently never run).
+add_compile_options(-UNDEBUG)
+
 # Minimal assert()-based CTest harness placeholder.
 # TODO: replace with Unity/CMock (or equivalent qualified framework) before
 # this is used as SIL 3/4 verification evidence - see ADR-001 section 7.
