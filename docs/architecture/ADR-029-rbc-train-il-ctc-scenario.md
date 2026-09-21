@@ -84,7 +84,7 @@ reconnect-forever loop establish the connection lazily, whenever a real
 client first shows up - found live: the original implementation blocked
 on the initial accept the same way A/B's links do, which meant an
 `etc/run_all.sh`-style boot order where C starts before any sim connects
-would fail `monitor_c_init()` outright with `SAPI_STATUS_TIMEOUT`.
+would fail `monitor_c_init()` outright with `RTE_STATUS_TIMEOUT`.
 
 ### 2.3 A/B: the train-session table
 
@@ -133,7 +133,7 @@ train's granted MA length/sequence in memory, before the Train/IL sims
 even notice anything happened.
 
 Cross-compare (`channel_ab_crosscompare.c`) now votes on the whole
-session table instead of one scalar M24/M15 value. `sapi_cross_comparator_execute()`
+session table instead of one scalar M24/M15 value. `rte_cross_comparator_execute()`
 does a raw `memcmp()`, so the compared payload is the WIRE-ENCODED form
 (`channel_ab_wire_encode_sessions()`, no padding by construction), not
 the raw `train_session_t` struct directly - that struct mixes
@@ -213,9 +213,9 @@ without that flag):
 1. **A permanent, unrecoverable 100%-CPU hang.** Live `docker stats`
    showed an A or B process pinned at 100% CPU indefinitely after a
    peer-link stale/reconnect event; `gdb`'s `thread apply all bt` on the
-   frozen main thread showed it stuck inside `sapi_safestate_enter()`,
-   called from the framework's own built-in `sapi_channel_checkpoint()`
-   (`safeAPIFreamwork/src/checkpoint/sapi_checkpoint.c`) - a deliberate,
+   frozen main thread showed it stuck inside `rte_safestate_enter()`,
+   called from the framework's own built-in `rte_channel_checkpoint()`
+   (`safeAPIFreamwork/src/checkpoint/rte_checkpoint.c`) - a deliberate,
    by-design, permanent halt (REQ-CHECKPOINT-003: once a checkpoint
    rendezvous fails to confirm within its budget, it MUST NOT silently
    continue). This is correct behavior for a genuinely dead peer, but
@@ -273,7 +273,7 @@ Per the integrator's own explicit choice, every sim (`sims/train_sim.py`,
 keeps both open for its whole run (`sims/dual_link.py`) - "which site is
 ONLINE" is inferred purely from which site actually answers (a STANDBY
 site's C has nothing to forward back), not a separate status message.
-This is a hand-ported Python mirror of `sapi_posix_backend_netlink.c`'s
+This is a hand-ported Python mirror of `rte_posix_backend_netlink.c`'s
 own HELLO/HELLO-ACK UDP handshake (ADR-027) - the sims speak this
 project's real wire transport, not a plain TCP socket (an early attempt
 using `SOCK_STREAM` connected to nothing at all, silently, since this
@@ -377,7 +377,7 @@ parts of §2 change; everything else in this ADR stands.
 size of every `session[]` / `peer_sessions[]` array (no-malloc rule
 intact). The number of trains a process actually services is a **runtime**
 value - `SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2), overridable by the
-`SAPI_RBC_ACTIVE_TRAINS` environment variable, clamped `1..MAX_TRAINS`.
+`RTE_RBC_ACTIVE_TRAINS` environment variable, clamped `1..MAX_TRAINS`.
 Per-train loops in `C` and `A/B` iterate `0 .. active-1`. It is not a
 wire field; each process reads it independently. Trains are identified
 solely by `train_id` (nid_engine); the ADR-029 `west/east == slot`
@@ -387,7 +387,7 @@ coupling is dropped (see ADR-036 §5).
 
 `SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` + `SAFEAPI_EXAMPLE_DB_WIRE_SIZE`
 encoded the whole session + whole runtime-route table every cycle inside
-one `sapi_vital_message_t` (248-byte payload, `uint8_t` size field). At
+one `rte_vital_message_t` (248-byte payload, `uint8_t` size field). At
 100 trains that is ~8.3 kB. Revised encoding:
 
 - Only `in_use` sessions and `in_use` runtime routes are encoded; a

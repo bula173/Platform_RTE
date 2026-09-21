@@ -4,7 +4,7 @@
  * @section status_architecture_overview Design Overview
  *
  * The Status module defines a unified error handling system across the entire
- * framework. Every operation returns a `sapi_status_t` code that indicates
+ * framework. Every operation returns a `rte_status_t` code that indicates
  * success or the specific failure reason.
  *
  * **Design principle:** Consistency. All modules use the same status codes,
@@ -14,20 +14,20 @@
  *
  * ```c
  * typedef enum {
- *     SAPI_STATUS_OK = 0,                 // Success
- *     SAPI_STATUS_INVALID_PARAM = 1,      // Invalid parameter
- *     SAPI_STATUS_TIMEOUT = 2,            // Operation timed out
- *     SAPI_STATUS_HARDWARE_FAULT = 3,     // Hardware error
- *     SAPI_STATUS_RESOURCE_EXHAUSTED = 4, // Out of capacity
- *     SAPI_STATUS_NOT_INITIALIZED = 5,    // Not initialized
- *     SAPI_STATUS_NOT_SUPPORTED = 6,      // Not supported
- * } sapi_status_t;
+ *     RTE_STATUS_OK = 0,                 // Success
+ *     RTE_STATUS_INVALID_PARAM = 1,      // Invalid parameter
+ *     RTE_STATUS_TIMEOUT = 2,            // Operation timed out
+ *     RTE_STATUS_HARDWARE_FAULT = 3,     // Hardware error
+ *     RTE_STATUS_RESOURCE_EXHAUSTED = 4, // Out of capacity
+ *     RTE_STATUS_NOT_INITIALIZED = 5,    // Not initialized
+ *     RTE_STATUS_NOT_SUPPORTED = 6,      // Not supported
+ * } rte_status_t;
  * ```
  *
  * @section status_architecture_code_allocation Code Allocation Strategy
  *
  * ```
- * 0: SAPI_STATUS_OK (success - no error)
+ * 0: RTE_STATUS_OK (success - no error)
  * 1-6: Framework core status codes (parameter, timeout, hardware, etc.)
  * 7-999: Reserved for framework expansion
  * 1000+: Application-specific error codes (user can extend)
@@ -39,16 +39,16 @@
  *
  * **Without framework status codes:**
  * ```c
- * int timer_result = sapi_timer_create(...);  // What does -1 mean?
- * bool buffer_result = sapi_buffer_write(...); // What does false mean?
+ * int timer_result = rte_timer_create(...);  // What does -1 mean?
+ * bool buffer_result = rte_buffer_write(...); // What does false mean?
  * errno = ...; // Different modules use different mechanisms
  * ```
  * Problem: Inconsistent error handling across modules.
  *
  * **With framework status codes:**
  * ```c
- * sapi_status_t timer_rc = sapi_timer_create(...);
- * sapi_status_t buffer_rc = sapi_buffer_write(...);
+ * rte_status_t timer_rc = rte_timer_create(...);
+ * rte_status_t buffer_rc = rte_buffer_write(...);
  * // Both return the SAME code type
  * // Same error handling everywhere
  * ```
@@ -67,9 +67,9 @@
  * ```c
  * // In application header
  * typedef enum {
- *     SAPI_STATUS_OK = 0,
+ *     RTE_STATUS_OK = 0,
  *     // ... framework codes ...
- *     SAPI_STATUS_NOT_SUPPORTED = 6,
+ *     RTE_STATUS_NOT_SUPPORTED = 6,
  *
  *     // Application-specific (starting from 1000)
  *     APP_STATUS_TRAIN_SPEED_LIMIT_EXCEEDED = 1000,
@@ -80,29 +80,29 @@
  *
  * @section status_architecture_conversion String Conversion
  *
- * The module provides `sapi_status_to_string()` for diagnostics:
+ * The module provides `rte_status_to_string()` for diagnostics:
  *
  * ```c
- * sapi_status_t rc = some_operation();
- * if (rc != SAPI_STATUS_OK) {
- *     printf("Error: %s\n", sapi_status_to_string(rc));
- *     // Output: "Error: SAPI_STATUS_TIMEOUT"
+ * rte_status_t rc = some_operation();
+ * if (rc != RTE_STATUS_OK) {
+ *     printf("Error: %s\n", rte_status_to_string(rc));
+ *     // Output: "Error: RTE_STATUS_TIMEOUT"
  * }
  * ```
  *
  * **Implementation:**
  * ```c
- * const char *sapi_status_to_string(sapi_status_t status) {
+ * const char *rte_status_to_string(rte_status_t status) {
  *     switch (status) {
- *     case SAPI_STATUS_OK:
- *         return "SAPI_STATUS_OK";
- *     case SAPI_STATUS_INVALID_PARAM:
- *         return "SAPI_STATUS_INVALID_PARAM";
- *     case SAPI_STATUS_TIMEOUT:
- *         return "SAPI_STATUS_TIMEOUT";
+ *     case RTE_STATUS_OK:
+ *         return "RTE_STATUS_OK";
+ *     case RTE_STATUS_INVALID_PARAM:
+ *         return "RTE_STATUS_INVALID_PARAM";
+ *     case RTE_STATUS_TIMEOUT:
+ *         return "RTE_STATUS_TIMEOUT";
  *     // ... etc ...
  *     default:
- *         return "SAPI_STATUS_UNKNOWN";
+ *         return "RTE_STATUS_UNKNOWN";
  *     }
  * }
  * ```
@@ -113,21 +113,21 @@
  *
  * Every module follows this pattern:
  * ```c
- * sapi_status_t sapi_module_init(config_t *config) {
+ * rte_status_t rte_module_init(config_t *config) {
  *     // Validate input
  *     if (config == NULL) {
- *         return SAPI_STATUS_INVALID_PARAM;
+ *         return RTE_STATUS_INVALID_PARAM;
  *     }
  *
  *     // Check if already initialized
  *     if (is_initialized) {
- *         return SAPI_STATUS_NOT_INITIALIZED;
+ *         return RTE_STATUS_NOT_INITIALIZED;
  *     }
  *
  *     // Perform initialization
  *     // ...
  *
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -135,14 +135,14 @@
  *
  * Operations that can timeout:
  * ```c
- * sapi_status_t sapi_channel_recv(handle, buffer, size, timeout) {
+ * rte_status_t rte_channel_recv(handle, buffer, size, timeout) {
  *     // Try to receive data within timeout
  *     // ...
  *     if (no_data_within_timeout) {
- *         return SAPI_STATUS_TIMEOUT;  // Caller knows why
+ *         return RTE_STATUS_TIMEOUT;  // Caller knows why
  *     }
  *     // ...
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -150,13 +150,13 @@
  *
  * Operations that can fail due to capacity:
  * ```c
- * sapi_status_t sapi_buffer_write(handle, data, size, written) {
+ * rte_status_t rte_buffer_write(handle, data, size, written) {
  *     // Check buffer capacity
  *     if (buffer_remaining < size) {
- *         return SAPI_STATUS_RESOURCE_EXHAUSTED;
+ *         return RTE_STATUS_RESOURCE_EXHAUSTED;
  *     }
  *     // ...
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -166,20 +166,20 @@
  *
  * **Critical failure:**
  * ```c
- * sapi_status_t rc = vital_operation();
- * if (rc != SAPI_STATUS_OK) {
+ * rte_status_t rc = vital_operation();
+ * if (rc != RTE_STATUS_OK) {
  *     // ANY failure in vital code triggers safe-state
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
- *                   SAPI_SAFESTATE_REASON_COMMUNICATION_FAILURE);
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
+ *                   RTE_SAFESTATE_REASON_COMMUNICATION_FAILURE);
  * }
  * ```
  *
  * **Non-critical operation:**
  * ```c
- * sapi_status_t rc = diagnostics_operation();
- * if (rc != SAPI_STATUS_OK) {
+ * rte_status_t rc = diagnostics_operation();
+ * if (rc != RTE_STATUS_OK) {
  *     // Log but DON'T trigger safe-state
- *     log_debug("Diagnostics error: %s", sapi_status_to_string(rc));
+ *     log_debug("Diagnostics error: %s", rte_status_to_string(rc));
  * }
  * ```
  *
@@ -187,7 +187,7 @@
  *
  * The status module supports MISRA C:2012:
  *
- * - ✓ Fixed return type (sapi_status_t enum)
+ * - ✓ Fixed return type (rte_status_t enum)
  * - ✓ No implicit conversions (explicit enum values)
  * - ✓ No global state (errno-free)
  * - ✓ Deterministic (same code always means same error)
@@ -197,8 +197,8 @@
  *
  * ### Files
  *
- * - `include/safeapi/status/sapi_status.h` — Public API
- * - `src/status/sapi_status.c` — String conversion table
+ * - `include/safeapi/status/rte_status.h` — Public API
+ * - `src/status/rte_status.c` — String conversion table
  *
  * ### String Conversion Table
  *
@@ -206,8 +206,8 @@
  *
  * ```c
  * static const char *status_strings[] = {
- *     [SAPI_STATUS_OK] = "SAPI_STATUS_OK",
- *     [SAPI_STATUS_INVALID_PARAM] = "SAPI_STATUS_INVALID_PARAM",
+ *     [RTE_STATUS_OK] = "RTE_STATUS_OK",
+ *     [RTE_STATUS_INVALID_PARAM] = "RTE_STATUS_INVALID_PARAM",
  *     // ...
  * };
  * ```
@@ -222,12 +222,12 @@
  * ```c
  * void test_status_to_string(void) {
  *     // Test all known codes
- *     assert(strcmp(sapi_status_to_string(SAPI_STATUS_OK), "SAPI_STATUS_OK") == 0);
- *     assert(strcmp(sapi_status_to_string(SAPI_STATUS_TIMEOUT), "SAPI_STATUS_TIMEOUT") == 0);
+ *     assert(strcmp(rte_status_to_string(RTE_STATUS_OK), "RTE_STATUS_OK") == 0);
+ *     assert(strcmp(rte_status_to_string(RTE_STATUS_TIMEOUT), "RTE_STATUS_TIMEOUT") == 0);
  *     // ...
  *
  *     // Test unknown code
- *     assert(strcmp(sapi_status_to_string(9999), "SAPI_STATUS_UNKNOWN") == 0);
+ *     assert(strcmp(rte_status_to_string(9999), "RTE_STATUS_UNKNOWN") == 0);
  * }
  * ```
  *

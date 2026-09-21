@@ -15,17 +15,17 @@ This guide describes hardware patterns that can be built with Platform_RTE. Stat
 | Hardware Pattern | Support | Notes |
 |---|---|---|
 | **1oo1 (single system)** | Implemented | All modules, watchdog included |
-| **2oo2 (dual channel)** | Implemented | `sapi_cross_comparator` (2-way), `sapi_checkpoint`, `sapi_watchdog`, safe-state transition on disagreement |
-| **2oo2 with redundancy (two sites, each 2oo2)** | Implemented, warm and cold standby | `sapi_dual` negotiation, `sapi_state_transfer`, `sapi_redundancy_config` (`topology = 2oo2_redundant`). **This is the commercial project's choice** (Kontron platform) |
-| **2oo3 / NMR** | Voter implemented, mesh not | `sapi_voter` votes N inputs; registering N-way mesh channels between replicas is not implemented, so a real 2oo3 deployment is not yet possible |
-| **Hot standby** | Not implemented | Needs platform-controlled invocation cadence in `sapi_appmanager` |
+| **2oo2 (dual channel)** | Implemented | `rte_cross_comparator` (2-way), `rte_checkpoint`, `rte_watchdog`, safe-state transition on disagreement |
+| **2oo2 with redundancy (two sites, each 2oo2)** | Implemented, warm and cold standby | `rte_dual` negotiation, `rte_state_transfer`, `rte_redundancy_config` (`topology = 2oo2_redundant`). **This is the commercial project's choice** (Kontron platform) |
+| **2oo3 / NMR** | Voter implemented, mesh not | `rte_voter` votes N inputs; registering N-way mesh channels between replicas is not implemented, so a real 2oo3 deployment is not yet possible |
+| **Hot standby** | Not implemented | Needs platform-controlled invocation cadence in `rte_appmanager` |
 | **Online mode (active-active), centralized voter, distributed gossip** | Design only | |
 | **Heterogeneous systems** | Supported | CPU diversity is a hardware choice; see ADR-008 and `safety/CCF_ANALYSIS.md` |
 
 **Project decision.** Sections below that recommend 2oo3 for an ERTMS RBC are general guidance from the time this
 guide was written. The reference RBC and the commercial project use **2oo2 with redundancy**; 2oo3 is kept as a possible
 future change (see `docs/architecture/ARCHITECTURE.md` in the workspace root). Redundancy is a configuration
-(a JSON file, see `sapi_redundancy_config`), not application code.
+(a JSON file, see `rte_redundancy_config`), not application code.
 
 The framework is not independently assessed; see [SAFETY_APPLICATION_CONDITIONS.md](SAFETY_APPLICATION_CONDITIONS.md).
 See [REDUNDANCY_ARCHITECTURE.md](REDUNDANCY_ARCHITECTURE.md) for the design record of the redundancy APIs.
@@ -287,18 +287,18 @@ Step 2: Select Hardware Configuration
         ↓
 Step 3: Implement OS-Specific Backend
    ├─ Platform_RTE expects these OS services:
-   │  ├─ Timers (sapi_timer_start, sapi_timer_wait, etc.)
-   │  ├─ IPC (sapi_ipc_send, sapi_ipc_receive, etc.)
-   │  ├─ Memory (sapi_memory_allocate for init-time, static for runtime)
-   │  ├─ Watchdog (sapi_watchdog_kick, sapi_watchdog_timeout)
-   │  ├─ Logging (sapi_log_write to your sink)
-   │  ├─ Storage (sapi_nvm_read/write to your storage)
-   │  └─ Reboot (sapi_reboot_system when safe-state fails)
+   │  ├─ Timers (rte_timer_start, rte_timer_wait, etc.)
+   │  ├─ IPC (rte_ipc_send, rte_ipc_receive, etc.)
+   │  ├─ Memory (rte_memory_allocate for init-time, static for runtime)
+   │  ├─ Watchdog (rte_watchdog_kick, rte_watchdog_timeout)
+   │  ├─ Logging (rte_log_write to your sink)
+   │  ├─ Storage (rte_nvm_read/write to your storage)
+   │  └─ Reboot (rte_reboot_system when safe-state fails)
    │
    └─ Register your OS backend at startup:
-      ├─ sapi_timer_register_backend(posix_timer_ops)
-      ├─ sapi_ipc_register_backend(qnx_ipc_ops)
-      ├─ sapi_memory_register_backend(custom_memory_ops)
+      ├─ rte_timer_register_backend(posix_timer_ops)
+      ├─ rte_ipc_register_backend(qnx_ipc_ops)
+      ├─ rte_memory_register_backend(custom_memory_ops)
       └─ etc. for each service
         ↓
 Step 4: Implement Hardware Strategy
@@ -365,7 +365,7 @@ Platform_RTE defines the API interface through which you implement these mandato
 | **Defensive Programming** | API forces explicit error handling | Every OS backend validates inputs |
 | **Diverse Redundancy** | Voting API (2oo2, 2oo3, NMR) | Deploy multiple diverse CPUs |
 | **Monitoring & Watchdog** | Watchdog API interface | Integrate OS/hardware watchdog timer |
-| **Safe-State Machine** | Safe-state API (SAPI_SAFESTATE) | Verify safe-state logic in your app |
+| **Safe-State Machine** | Safe-state API (RTE_SAFESTATE) | Verify safe-state logic in your app |
 | **Initialization & Failure Handling** | Init/shutdown API | Implement recovery procedures |
 | **Error Detection & Correction** | Checkpoint, voting APIs | Implement checkpoint logic in your app |
 | **Bounded Time & Space** | No dynamic allocation after init | Static buffers, no recursion |
@@ -435,7 +435,7 @@ earlier version carried were unsupported estimates and were removed.
 
 The reference RBC and the commercial project use **2oo2 with redundancy** on the Kontron platform: fail-safe detection in each
 site by cross-comparison, availability from the second site through negotiated ONLINE and STANDBY roles, and a simple per-site
-design. Redundancy is a configuration (`sapi_redundancy_config`) and the application is agnostic of it, so a later change to
+design. Redundancy is a configuration (`rte_redundancy_config`) and the application is agnostic of it, so a later change to
 2oo3 is possible once mesh registration exists. See [REDUNDANCY_ARCHITECTURE.md](REDUNDANCY_ARCHITECTURE.md) and the workspace
 `docs/architecture/ARCHITECTURE.md`.
 
@@ -1192,7 +1192,7 @@ Vital Channels        Service Unit
 
 **When to use:** When service unit is logging high-frequency vital decisions but can't keep up in real-time.
 
-The vital channel puts each decision into a bounded queue and returns immediately; the service unit drains the queue asynchronously and does the slow work (compression, storage). The queue is application code; Platform_RTE provides no `sapi_queue`.
+The vital channel puts each decision into a bounded queue and returns immediately; the service unit drains the queue asynchronously and does the slow work (compression, storage). The queue is application code; Platform_RTE provides no `rte_queue`.
 
 ### Service Unit Failure Scenarios
 

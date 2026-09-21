@@ -1,4 +1,4 @@
-# ADR-035: `sapi_platform` OAL service for real-time bring-up
+# ADR-035: `rte_platform` OAL service for real-time bring-up
 
 ## Status
 
@@ -7,12 +7,12 @@ Accepted
 ## Context
 
 `safeAPIRBC2oo2GP`'s process startup (`app_main_common.c`, both the AB and
-C variants) called `sapi_posix_backend_init_realtime(80U)` directly - a
+C variants) called `rte_posix_backend_init_realtime(80U)` directly - a
 symbol exported by `safeAPIBackendPosix`, not by `safeAPIFreamwork`. That
 is a layering violation: ADR-001 §3.5 and ADR-005 require application code
 to reach the OS *only* through the framework's OAL API, with the single
 exception of the composition-root wiring that registers a concrete backend
-(`sapi_*_register_backend()`). `sapi_posix_backend_init_realtime()` is not
+(`rte_*_register_backend()`). `rte_posix_backend_init_realtime()` is not
 registration - it is behaviour (POSIX `mlockall()` + `SCHED_FIFO`) the
 application was invoking by reaching around the framework, and there was
 no OAL API for it to use instead.
@@ -23,25 +23,25 @@ call as noteworthy. On a host with a bounded `RLIMIT_MEMLOCK` (a stock
 Ubuntu VM: 8 MiB soft/hard cap) the call *succeeds*, and `MCL_FUTURE` then
 forces every subsequent mapping - including each new 8 MiB thread stack -
 to be locked. The next `pthread_create()` fails with `EAGAIN`, so
-`sapi_timer`'s backend cannot start its cyclic-timer thread,
-`sapi_appmanager` init fails with `INTERNAL_ERROR`, and every RBC process
+`rte_timer`'s backend cannot start its cyclic-timer thread,
+`rte_appmanager` init fails with `INTERNAL_ERROR`, and every RBC process
 exits at startup. 13 of 16 end-to-end scenario tests failed as a result,
 all with the same downstream symptom (no RBC indications ever produced).
 
 ## Decision
 
-### 1. New OAL service `sapi_platform` (framework)
+### 1. New OAL service `rte_platform` (framework)
 
 A minimal validate-then-dispatch service in the same shape as
-`sapi_reboot` (ADR-004/005) and split consumer/backend headers per
+`rte_reboot` (ADR-004/005) and split consumer/backend headers per
 ADR-021:
 
-- `include/safeapi/oal/platform/sapi_platform.h` - consumer surface:
-  `sapi_status_t sapi_platform_realtime_init(uint32_t rt_priority);`
-- `include/safeapi_backend/platform/sapi_platform_backend.h` - vtable
-  `sapi_platform_backend_t { sapi_status_t (*realtime_init)(uint32_t); }`
-  and `sapi_platform_register_backend()`.
-- `src/oal/platform/sapi_platform.c` - range-checks `rt_priority` (0..99),
+- `include/safeapi/oal/platform/rte_platform.h` - consumer surface:
+  `rte_status_t rte_platform_realtime_init(uint32_t rt_priority);`
+- `include/safeapi_backend/platform/rte_platform_backend.h` - vtable
+  `rte_platform_backend_t { rte_status_t (*realtime_init)(uint32_t); }`
+  and `rte_platform_register_backend()`.
+- `src/oal/platform/rte_platform.c` - range-checks `rt_priority` (0..99),
   then dispatches; `NOT_INITIALIZED` if no backend, `NOT_SUPPORTED` if the
   vtable slot is `NULL`. Registration is setup-phase-gated (ADR-026), the
   same as every other `*_register_backend()`.
@@ -54,19 +54,19 @@ only operation today is `realtime_init`.
 
 `realtime_init` is defined as **best-effort** (REQ-OAL-PLATFORM-001): a
 backend that cannot get RT scheduling or full memory residency still
-returns `SAPI_STATUS_OK` - and, critically, must not leave the process
+returns `RTE_STATUS_OK` - and, critically, must not leave the process
 unable to create threads afterwards. That last clause is what the POSIX
 backend's old code violated.
 
 ### 2. POSIX implementation moves behind the vtable (`safeAPIBackendPosix`)
 
-- New `src/sapi_posix_backend_platform.c`: the `mlockall` / stack
+- New `src/rte_posix_backend_platform.c`: the `mlockall` / stack
   pre-fault / `SCHED_FIFO` body moves here from
-  `sapi_posix_backend.c::sapi_posix_backend_init_realtime()`, as the
-  `realtime_init` vtable function, plus a `sapi_posix_backend_platform()`
-  accessor (matching `sapi_posix_backend_timer()` etc.).
-- `sapi_posix_backend_register_all()` now also registers this backend.
-- The old public `sapi_posix_backend_init_realtime()` is **removed** - it
+  `rte_posix_backend.c::rte_posix_backend_init_realtime()`, as the
+  `realtime_init` vtable function, plus a `rte_posix_backend_platform()`
+  accessor (matching `rte_posix_backend_timer()` etc.).
+- `rte_posix_backend_register_all()` now also registers this backend.
+- The old public `rte_posix_backend_init_realtime()` is **removed** - it
   had exactly one caller (GP), now migrated.
 
 **The `RLIMIT_MEMLOCK` fix**: before `mlockall`, the backend now calls
@@ -79,18 +79,18 @@ current footprint resident but no longer poisons later thread creation.
 ### 3. GP calls the framework
 
 `app_main_common.c` (AB and C) replaces
-`sapi_posix_backend_init_realtime(80U)` with
-`sapi_platform_realtime_init(80U)` and includes
-`safeapi/oal/platform/sapi_platform.h`. It still includes
-`sapi_posix_backend.h` for `sapi_posix_backend_register_all()` and
-`sapi_posix_backend_reboot_set_argv()` - those are the sanctioned
+`rte_posix_backend_init_realtime(80U)` with
+`rte_platform_realtime_init(80U)` and includes
+`safeapi/oal/platform/rte_platform.h`. It still includes
+`rte_posix_backend.h` for `rte_posix_backend_register_all()` and
+`rte_posix_backend_reboot_set_argv()` - those are the sanctioned
 composition-root wiring; the RT call no longer is.
 
 ## Consequences
 
 - Application code no longer invokes any `safeAPIBackendPosix` *behaviour*
-  symbol - only the registration seam. `sapi_posix_backend_channel_service_register_resolver()`
-  (in `gateway_c.c` / `ab_gp_channel.c`) and `sapi_posix_backend_reboot_set_argv()`
+  symbol - only the registration seam. `rte_posix_backend_channel_service_register_resolver()`
+  (in `gateway_c.c` / `ab_gp_channel.c`) and `rte_posix_backend_reboot_set_argv()`
   are the remaining direct backend touches; folding those behind
   framework seams is left as follow-up work, out of scope here.
 - One more OAL service to keep in build/test/install wiring. The
@@ -105,5 +105,5 @@ composition-root wiring; the RT call no longer is.
   not done here.
 - Backends other than POSIX (a future `safeAPIBackendQNX`, bare-metal
   FreeRTOS) can leave `realtime_init` as `NULL` and callers transparently
-  get `SAPI_STATUS_NOT_SUPPORTED`, which `app_main_common.c` already
+  get `RTE_STATUS_NOT_SUPPORTED`, which `app_main_common.c` already
   ignores (the call is `(void)`-cast).

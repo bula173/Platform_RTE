@@ -11,10 +11,10 @@ the `examples/*-app` integration templates.
 
 ADR-007 gave every feature its own directory and its own CMake static
 library target (`safeapi_<feature>`, aliased `safeapi::<feature>`),
-arguing that "an integrator who only needs `sapi_cast` and
-`sapi_safestate` links exactly those two targets." That granularity has
+arguing that "an integrator who only needs `rte_cast` and
+`rte_safestate` links exactly those two targets." That granularity has
 grown to 21 feature targets plus `appmanager` (22 total; the dead,
-excluded-from-build ADR-008 `sapi_channel` module is not counted). Most
+excluded-from-build ADR-008 `rte_channel` module is not counted). Most
 of these targets are tiny - `status` is 33 lines of `.c`, `reboot` 34,
 `types` is header-only - and none of them are ever linked "à la carte"
 in practice: every real consumer (safeAPIRBC2oo2's `posix_backend` and
@@ -59,7 +59,7 @@ cluster boundaries above, keep `appmanager` as a 4th, and delete
 per-feature `CMakeLists.txt` files entirely - the three new libraries'
 `add_library()` calls are declared directly in the top-level
 `CMakeLists.txt`, which already lists every source file's path
-unambiguously (`src/<feature>/sapi_<feature>.c`).
+unambiguously (`src/<feature>/rte_<feature>.c`).
 
 ```
 safeapi_core     : status, buffer, cast, safestate, string
@@ -82,7 +82,7 @@ instead of twenty-two.
 ### 2.1 What does *not* change
 
 - **No file moves.** Every `.c`/`.h` stays exactly where ADR-007 put it
-  (`src/<feature>/sapi_<feature>.c`, `include/safeapi/<feature>/sapi_<feature>.h`).
+  (`src/<feature>/rte_<feature>.c`, `include/safeapi/<feature>/rte_<feature>.h`).
   This ADR only changes which compiled library a `.c` file's object code
   ends up in - it is not a reversal of ADR-007's directory-per-feature
   layout (section 2.1), only of section 2.2's "one CMake target per
@@ -96,11 +96,11 @@ instead of twenty-two.
 - The backend header split (ADR-021, `include/safeapi_backend/`) is
   unaffected - it was already header-placement-only, not a separate set
   of build targets.
-- ADR-008's `sapi_channel` module (`src/channel/`) stays excluded from
+- ADR-008's `rte_channel` module (`src/channel/`) stays excluded from
   the build exactly as it was; its own `CMakeLists.txt` is untouched and
   its retire-or-fix disposition remains the separate open decision ADR-020
   already described it as.
-- `sapi_ipc_pubsub.c`/`sapi_ipc_request_reply.c` (pre-existing stub files
+- `rte_ipc_pubsub.c`/`rte_ipc_request_reply.c` (pre-existing stub files
   under `src/ipc/`, never wired into `safeapi_ipc`'s source list and
   including a nonexistent `safeapi/log.h` path) are **not** added to the
   new `safeapi_oal` library's source list either - this ADR preserves
@@ -114,8 +114,8 @@ four new ones instead:
 
 - `tests/CMakeLists.txt`: each test links whichever of `safeapi::core` /
   `safeapi::oal` / `safeapi::channels` / `safeapi::appmanager` actually
-  covers the module under test (e.g. `test_sapi_nvm` now links
-  `safeapi::oal`, `test_sapi_checkpoint` now links `safeapi::channels`) -
+  covers the module under test (e.g. `test_rte_nvm` now links
+  `safeapi::oal`, `test_rte_checkpoint` now links `safeapi::channels`) -
   `target_link_libraries` being `PUBLIC` throughout the new libraries
   means linking one name still pulls in everything transitively required,
   exactly as linking the old fine-grained set did.
@@ -142,12 +142,12 @@ four new ones instead:
   chain (core -> oal -> channels -> appmanager) instead of an
   ad hoc per-feature graph a reader had to reconstruct from 22 separate
   `target_link_libraries()` calls to understand.
-- Negative: the fine-grained "link only `sapi_cast`" story ADR-007
+- Negative: the fine-grained "link only `rte_cast`" story ADR-007
   section 2.2 promised is gone - the smallest unit link-able now is
   `safeapi::core` (all six primitives together). This was judged an
   acceptable trade since no consumer in either repository ever actually
   exercised that fine-grained linking; if a future integrator genuinely
-  needs, say, `sapi_cast` alone without the rest of `core` (e.g. a
+  needs, say, `rte_cast` alone without the rest of `core` (e.g. a
   size-constrained bootloader stage), splitting a narrower fifth library
   back out remains possible without touching directory layout again.
 - Negative (documented, not treated as blocking): this makes each
@@ -155,7 +155,7 @@ four new ones instead:
   fuzzier at the CMake-target level than "22 independently linkable
   units" implied - in practice this was already only nominal (every real
   consumer already linked overlapping supersets), and each `.c` file is
-  still individually reviewed, tested (`tests/<feature>/test_sapi_<feature>.c`
+  still individually reviewed, tested (`tests/<feature>/test_rte_<feature>.c`
   is unchanged, one file per feature, unaffected by this ADR), and
   MISRA-checked regardless of which `.a` its object code lands in.
 - Neutral: this ADR supersedes ADR-007 section 2.2 specifically (one
@@ -191,7 +191,7 @@ CMake-only change in this project).
 - `src/channel/CMakeLists.txt` (untouched at the time of this ADR, listed
   here only to make clear it was considered and deliberately left alone;
   that module was later removed outright by ADR-025, which superseded it
-  with `sapi_cross_comparator`)
+  with `rte_cross_comparator`)
 - safeAPIRBC2oo2: `CMakeLists.txt`, `src/posix_backend/CMakeLists.txt`
 - `examples/qnx-rtos-app/CMakeLists.txt`,
   `examples/linux-posix-app/CMakeLists.txt`, `examples/build-qnx.sh`

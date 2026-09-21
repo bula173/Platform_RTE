@@ -1,8 +1,8 @@
-# ADR-030: `sapi_notify` - fixed-capacity registered-callback list shape
+# ADR-030: `rte_notify` - fixed-capacity registered-callback list shape
 
 Status: Accepted
 Date: 2026-08-20
-Applies to: new `include/safeapi/notify/sapi_notify.h` (header-only, no
+Applies to: new `include/safeapi/notify/rte_notify.h` (header-only, no
 `src/`, no `SAFEAPI_ENABLE_*` option, no `tests/` executable of its own -
 see §2.3/§5).
 
@@ -24,13 +24,13 @@ exists in this framework, so a downstream project reaches for a
 hand-rolled one.
 
 A repository-wide search confirmed this is a genuine gap, not a naming
-mismatch: `sapi_channel_t`/`sapi_voter_t`/`sapi_cross_comparator_t` each
+mismatch: `rte_channel_t`/`rte_voter_t`/`rte_cross_comparator_t` each
 carry a single, concretely-typed callback field per config
-(`sapi_voter_compare_fn`, `on_disagreement`, ...) - none register a
+(`rte_voter_compare_fn`, `on_disagreement`, ...) - none register a
 bounded LIST of N independently-registered `{callback, context}` pairs.
-`sapi_ipc_pubsub` is structurally the closest cousin (`_topic_create`/
+`rte_ipc_pubsub` is structurally the closest cousin (`_topic_create`/
 `_subscribe`/`_publish`) but a different shape entirely - subscribers
-poll a bounded async queue (`sapi_ipc_pubsub_receive` with a timeout),
+poll a bounded async queue (`rte_ipc_pubsub_receive` with a timeout),
 not a synchronous callback invocation - wrong fit for a same-cycle
 "ask before proceeding" gate or an immediate "tell everyone now"
 notification, both of which need to resolve within the same call, not
@@ -51,7 +51,7 @@ in a non-MISRA codebase.
 declares `list_type_slot_t` (`{callback_fn_type fn; void *context;}`)
 and `list_type` (`{list_type_slot_t slots[max_subscribers]; uint32_t count;}`)
 - nothing else. Every existing macro in this framework
-(`SAFEAPI_DECLARE_STORAGE`, `sapi_types.h`) declares a TYPE only, never
+(`SAFEAPI_DECLARE_STORAGE`, `rte_types.h`) declares a TYPE only, never
 control flow; this stays consistent rather than introducing the
 framework's first macro-generated loop/conditional, which would need
 either `__VA_ARGS__`-based dispatch (poor MISRA posture - hidden
@@ -62,12 +62,12 @@ the `void *` type-erasure §1 already rules out.
 
 Each concrete instantiation gets its own small, ordinary
 `list_type_init()`/`_register()`/dispatch function, following the
-worked example in `sapi_notify.h`'s own header doc. `_register()` calls
-`sapi_lifecycle_check_setup_allowed()` as its first check, mirroring
+worked example in `rte_notify.h`'s own header doc. `_register()` calls
+`rte_lifecycle_check_setup_allowed()` as its first check, mirroring
 every other setup-only constructor in this framework
-(`sapi_timer_create()`, `sapi_voter_init()`/`_register_channel()`,
-`sapi_cross_comparator_init()`/`_register_channel()`,
-`sapi_watchdog_create()`) - registering a callback is exactly the same
+(`rte_timer_create()`, `rte_voter_init()`/`_register_channel()`,
+`rte_cross_comparator_init()`/`_register_channel()`,
+`rte_watchdog_create()`) - registering a callback is exactly the same
 kind of INIT-phase-only resource construction ADR-026 already gates.
 A veto-gate dispatch function returns `false` if ANY registered
 validator returns `false`, **and if zero validators are registered**
@@ -76,17 +76,17 @@ registered authority - the safety-appropriate default for code that
 will run in a SIL2/SIL3 context). A fan-out notify dispatch function
 NULL-guards every slot before calling it, the same "same function
 pointer type, same call site, same NULL-guard" precedent
-`sapi_watchdog_create()` already established (per
+`rte_watchdog_create()` already established (per
 `docs/MISRA_COMPLIANCE_REPORT.md`'s own note on that function).
 
 ### 2.3 Header-only, no `SAFEAPI_ENABLE_*` option
 
-Unlike `sapi_voter`/`sapi_cross_comparator` (full runtime modules with
+Unlike `rte_voter`/`rte_cross_comparator` (full runtime modules with
 their own `.c`, own enable flag, own dependency-graph entry per
 ADR-024), this is a single header-only macro with zero runtime code of
 its own - the actual logic lives in each caller's own hand-written
 functions (§2.2), which compile as part of that caller's own
-translation unit. It belongs alongside `sapi_buffer`/`sapi_types` as an
+translation unit. It belongs alongside `rte_buffer`/`rte_types` as an
 always-available foundational header, not as an optional subsystem a
 consuming project opts into.
 
@@ -97,7 +97,7 @@ consuming project opts into.
   reviewed storage shape instead of a fully hand-rolled one, without
   introducing macro-generated control flow or MISRA Rule 11.1-violating
   type erasure into this framework.
-- Positive: the worked example in `sapi_notify.h`'s own header doc is
+- Positive: the worked example in `rte_notify.h`'s own header doc is
   itself the primary documentation - a downstream integrator copies the
   three-function pattern once per callback signature, the same
   per-signature boilerplate C's lack of generics always requires, not a
@@ -109,7 +109,7 @@ consuming project opts into.
   value (bounds-checked capacity, consistent NULL-guard/lifecycle-lock
   posture across every instantiation).
 - Neutral: this ADR does not itself change any existing module -
-  `sapi_channel`/`sapi_voter`/`sapi_cross_comparator`'s own single-typed-
+  `rte_channel`/`rte_voter`/`rte_cross_comparator`'s own single-typed-
   callback-per-config shape is unaffected and remains the right choice
   for their own conceptually-single-slot use cases (ADR-025 §2.3's own
   "keep conceptually distinct relationships as separate types" applies
@@ -121,7 +121,7 @@ consuming project opts into.
 
 - Standalone compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`,
   header include path only) of a worked instantiation matching
-  `sapi_notify.h`'s own doc example: clean, zero warnings.
+  `rte_notify.h`'s own doc example: clean, zero warnings.
 - `safeAPIRBC2oo2` (downstream consumer, separate repo): full clean
   rebuild after wiring its new GA/GP callback lists against this header,
   plus `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` matching its
@@ -132,5 +132,5 @@ consuming project opts into.
 
 ## 5. Location
 
-- `include/safeapi/notify/sapi_notify.h` (new, header-only).
+- `include/safeapi/notify/rte_notify.h` (new, header-only).
 - No `src/`, no `tests/`, no `SAFEAPI_ENABLE_*` CMake option - see §2.3.

@@ -2,29 +2,29 @@
 
 Status: Accepted
 Date: 2026-08-20
-Applies to: `src/timer/sapi_timer.c`, `src/ipc/sapi_ipc.c`,
-`src/task/sapi_task.c`, `src/netlink/sapi_netlink.c`,
-`src/nvm/sapi_nvm.c`, `src/log/sapi_log.c`,
-`src/clocksync/sapi_clocksync.c`, `src/reboot/sapi_reboot.c`,
-`src/memory/sapi_memory.c`, `src/safestate/sapi_safestate.c`,
-`src/ipc/sapi_ipc_pubsub.c`, `src/ipc/sapi_ipc_request_reply.c`.
+Applies to: `src/timer/rte_timer.c`, `src/ipc/rte_ipc.c`,
+`src/task/rte_task.c`, `src/netlink/rte_netlink.c`,
+`src/nvm/rte_nvm.c`, `src/log/rte_log.c`,
+`src/clocksync/rte_clocksync.c`, `src/reboot/rte_reboot.c`,
+`src/memory/rte_memory.c`, `src/safestate/rte_safestate.c`,
+`src/ipc/rte_ipc_pubsub.c`, `src/ipc/rte_ipc_request_reply.c`.
 
 ## 1. Context
 
 A downstream integrator (`safeAPIRBC2oo2`) asked this framework to review
 itself end to end for exactly the class of gap ADR-026 introduced
-`sapi_lifecycle_check_setup_allowed()` to close: "can a resource with
+`rte_lifecycle_check_setup_allowed()` to close: "can a resource with
 process-lifetime scope still be created/registered after the application
 has started running, when it should only ever be creatable during
 setup." ADR-026 §2.2 enumerates the constructors it gated as a closed
-list (`sapi_timer_create`, `sapi_channel_init`, `sapi_voter_init`/
-`_register_channel`, `sapi_cross_comparator_init`/`_register_channel`,
-`sapi_watchdog_create`) and a separate, deliberate exclusion list
-(`sapi_netlink_open`, `sapi_dual_channel_init`, `sapi_dual_negotiator_init`
+list (`rte_timer_create`, `rte_channel_init`, `rte_voter_init`/
+`_register_channel`, `rte_cross_comparator_init`/`_register_channel`,
+`rte_watchdog_create`) and a separate, deliberate exclusion list
+(`rte_netlink_open`, `rte_dual_channel_init`, `rte_dual_negotiator_init`
 - legitimately re-invoked post-lock for reconnect). Neither list mentions
-any `sapi_*_register_backend()` function, `sapi_mem_pool_create()`,
-`sapi_safestate_register_handler()`, or the two `sapi_ipc_pubsub`/
-`sapi_ipc_request_reply` creation functions - these were simply not
+any `rte_*_register_backend()` function, `rte_mem_pool_create()`,
+`rte_safestate_register_handler()`, or the two `rte_ipc_pubsub`/
+`rte_ipc_request_reply` creation functions - these were simply not
 considered when ADR-026 was written, not intentionally left open. A
 repository-wide audit against ADR-026's own criteria ("is this a one-time
 'wire this up' call, or a per-cycle 'do this now' call") confirmed all of
@@ -43,41 +43,41 @@ state to a different backend implementation).
 
 Extend ADR-026 §2.2's gated list with the same guard, in the same place
 (after NULL/param validation, before any real work), returning the same
-`SAPI_STATUS_INVALID_STATE` on a locked setup phase:
+`RTE_STATUS_INVALID_STATE` on a locked setup phase:
 
-- `sapi_timer_register_backend`, `sapi_ipc_register_backend`,
-  `sapi_task_register_backend`, `sapi_netlink_register_backend`,
-  `sapi_nvm_register_backend`, `sapi_log_register_backend`,
-  `sapi_clocksync_register_backend`, `sapi_reboot_register_backend`,
-  `sapi_mem_pool_register_backend` - every `_register_backend()` function
+- `rte_timer_register_backend`, `rte_ipc_register_backend`,
+  `rte_task_register_backend`, `rte_netlink_register_backend`,
+  `rte_nvm_register_backend`, `rte_log_register_backend`,
+  `rte_clocksync_register_backend`, `rte_reboot_register_backend`,
+  `rte_mem_pool_register_backend` - every `_register_backend()` function
   in the framework, with no exceptions (unlike §2.2's constructor list,
   none of these has a documented legitimate post-lock re-registration
   use case - an integrator swapping a live backend mid-run was never a
   supported pattern, only an unenforced one).
-- `sapi_mem_pool_create()` - same "fixed resource set, reserved once"
+- `rte_mem_pool_create()` - same "fixed resource set, reserved once"
   rationale as every other gated constructor; REQ-OAL-MEM-001 already
   says pool reservation is expected during system initialization, this
   ADR is what actually enforces that expectation instead of only
   documenting it.
-- `sapi_safestate_register_handler()` - a safe-state level's reaction is
+- `rte_safestate_register_handler()` - a safe-state level's reaction is
   process-lifetime configuration, the same class of resource as a
   watchdog or channel.
-- `sapi_ipc_pubsub_topic_create()`, `sapi_ipc_rr_server_create()`,
-  `sapi_ipc_rr_client_create()` - both modules are still `TODO`-stub
+- `rte_ipc_pubsub_topic_create()`, `rte_ipc_rr_server_create()`,
+  `rte_ipc_rr_client_create()` - both modules are still `TODO`-stub
   bodies (no real backend dispatch yet), gated now so the guard is
   already correct before their real implementations land, rather than
   retrofitting it later under time pressure.
 
-`sapi_nvm_open()` and `sapi_log_init()` were evaluated and NOT gated -
+`rte_nvm_open()` and `rte_log_init()` were evaluated and NOT gated -
 see the "Deferred" note below.
 
 **No new malloc-based default backend was added anywhere in the
 framework as part of this ADR.** This was raised as a candidate (a
 pluggable allocator, falling back to `malloc()` if no backend is
 registered) but rejected once a repository search found
-`safeAPIRBC2oo2/src/posix_backend/sapi_posix_backend_memory.c` already
-implements a complete, working `sapi_mem_pool_backend_t` using a static
-compile-time-sized arena (`g_arena[SAPI_POSIX_MEM_ARENA_SIZE]`) with a
+`safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_memory.c` already
+implements a complete, working `rte_mem_pool_backend_t` using a static
+compile-time-sized arena (`g_arena[RTE_POSIX_MEM_ARENA_SIZE]`) with a
 bump allocator and intrusive free list - zero `malloc()`/`free()` calls.
 Adding a malloc-backed default to the framework itself would reintroduce
 dynamic allocation exactly where this framework's own `CLAUDE.md` ("No
@@ -89,11 +89,11 @@ no amendment: it remains categorically true (zero `malloc`/`free`/
 `realloc` call sites anywhere in `include/`/`src/`) rather than needing a
 new stated exception.
 
-### Deferred: `sapi_nvm_open()`, `sapi_log_init()`
+### Deferred: `rte_nvm_open()`, `rte_log_init()`
 
 Both are structurally the initialization half of a `_register_backend()`
 pair, but neither has a settled answer to "is a post-lock re-open ever
-legitimate" the way `sapi_netlink_open()` does (ADR-026 §2.2's own
+legitimate" the way `rte_netlink_open()` does (ADR-026 §2.2's own
 reconnect rationale, backed by a real downstream consumer that does it).
 Gating them speculatively risks the same kind of break ADR-026 §2.2
 already had to reason carefully about for netlink/dual - left ungated
@@ -109,12 +109,12 @@ at here.
 - Positive: the `_register_backend()` gating in particular closes a
   sharper hazard than ADR-026's original list did (a live backend swap
   mid-run, not just a new resource of an already-used kind).
-- Negative: `sapi_ipc_pubsub_topic_create()`/`sapi_ipc_rr_server_create()`/
+- Negative: `rte_ipc_pubsub_topic_create()`/`rte_ipc_rr_server_create()`/
   `_client_create()` are gated ahead of having real bodies - low present
   risk (nothing to protect yet) but means the guard's placement was
   chosen without a concrete implementation to validate ordering against;
   worth re-checking once those modules gain real backend dispatch.
-- Neutral: `sapi_nvm_open()`/`sapi_log_init()` remain exactly as
+- Neutral: `rte_nvm_open()`/`rte_log_init()` remain exactly as
   permissive as before this ADR - not a regression, just an explicitly
   acknowledged open question rather than a silent gap.
 
@@ -128,7 +128,7 @@ at here.
 - `safeAPIRBC2oo2` (downstream consumer): full clean rebuild, `ctest`,
   and `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` matching its
   established baseline - confirms none of its own `_register_backend()`/
-  `sapi_mem_pool_create()`/etc. call sites (all setup-phase, per the same
+  `rte_mem_pool_create()`/etc. call sites (all setup-phase, per the same
   ADR-026 §3 finding) are affected either.
 
 ## 5. Location

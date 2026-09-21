@@ -12,7 +12,7 @@
  * @section cast_user_guide_quick_start Quick Start
  *
  * ```c
- * #include "safeapi/cast/sapi_cast.h"
+ * #include "safeapi/cast/rte_cast.h"
  *
  * // ✗ BAD: Silent truncation
  * int32_t large = 100000;
@@ -21,8 +21,8 @@
  * // ✓ GOOD: Checked conversion
  * int32_t large = 100000;
  * int16_t small;
- * sapi_status_t rc = sapi_cast_int32_to_int16(large, &small);
- * if (rc == SAPI_STATUS_INVALID_PARAM) {
+ * rte_status_t rc = rte_cast_int32_to_int16(large, &small);
+ * if (rc == RTE_STATUS_INVALID_PARAM) {
  *     log_error("Value %d too large for int16_t", large);
  *     return rc;
  * }
@@ -65,11 +65,11 @@
  * // Need to convert to temperature in 0.1°C units
  * // Safe conversion (raw fits in uint16_t)
  * int16_t temp_units;
- * sapi_status_t rc = sapi_cast_uint16_to_int16(adc_raw, &temp_units);
+ * rte_status_t rc = rte_cast_uint16_to_int16(adc_raw, &temp_units);
  *
- * if (rc != SAPI_STATUS_OK) {
+ * if (rc != RTE_STATUS_OK) {
  *     log_error("ADC value out of range");
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE, REASON);
  * }
  * // temp_units is now 0-4095 safely
  * ```
@@ -82,7 +82,7 @@
  * // CAN extended ID uses only 29 bits, 3 bits reserved
  * if (can_id > 0x1FFFFFFF) {  // 29-bit max
  *     log_error("Invalid CAN ID: 0x%x", can_id);
- *     return SAPI_STATUS_INVALID_PARAM;
+ *     return RTE_STATUS_INVALID_PARAM;
  * }
  * ```
  *
@@ -93,8 +93,8 @@
  * void *ptr = get_pointer();
  * uint32_t addr32;
  *
- * sapi_status_t rc = sapi_cast_ptr_to_uint32(ptr, &addr32);
- * if (rc != SAPI_STATUS_OK) {
+ * rte_status_t rc = rte_cast_ptr_to_uint32(ptr, &addr32);
+ * if (rc != RTE_STATUS_OK) {
  *     log_error("Pointer too large for uint32_t");
  *     // On 64-bit system, address might not fit in 32 bits
  * }
@@ -104,7 +104,7 @@
  *
  * 1. **Always Use Checked Casts for Downcasting**
  *    - Never (type)value for size reduction
- *    - Always check with sapi_cast_*
+ *    - Always check with rte_cast_*
  *    - Handle errors, don't ignore them
  *
  * 2. **Upcasting is Safe**

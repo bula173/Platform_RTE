@@ -313,7 +313,7 @@ Errors:              0
 
 **Linux:**
 ```c
-sapi_timer_start(timer_id, 1000, heartbeat_callback, &g_app);
+rte_timer_start(timer_id, 1000, heartbeat_callback, &g_app);
 ```
 
 **QNX:**

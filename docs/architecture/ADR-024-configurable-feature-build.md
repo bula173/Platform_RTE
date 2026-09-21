@@ -26,8 +26,8 @@ That matters for two reasons beyond binary size:
   is a module they still have to account for in that verification
   scope, whether they exercise it or not.
 - **Explicit configuration.** An integrator building a train-protection
-  core that has no need for, say, `sapi_reboot` or the West/East
-  negotiation machinery in `sapi_dual` should be able to say so at
+  core that has no need for, say, `rte_reboot` or the West/East
+  negotiation machinery in `rte_dual` should be able to say so at
   configure time and have that module genuinely absent from the build,
   not merely unreferenced.
 
@@ -75,7 +75,7 @@ Channels layer (each an independent option, default ON):
 
 App layer (option, default ON):
   APPMANAGER     -- needs VOTER, WATCHDOG, CHECKPOINT
-                    (hard #include dependency in sapi_appmanager.h/.c -
+                    (hard #include dependency in rte_appmanager.h/.c -
                     the checkpoint/watchdog integration is a *runtime*
                     NULL check, but the types must still be compiled in
                     either way, so this is a real build-time dependency
@@ -88,8 +88,8 @@ point-to-point link primitive - plus the new `VOTER` and
 `APPMANAGER`'s dependency each moved from `VITAL_CHANNEL` to `VOTER`
 accordingly. See ADR-025 for the full rationale.)
 
-`IPC` covers only the real `sapi_ipc.c` queue API. The pre-existing
-`sapi_ipc_pubsub.c`/`sapi_ipc_request_reply.c` stub files (TODO-only,
+`IPC` covers only the real `rte_ipc.c` queue API. The pre-existing
+`rte_ipc_pubsub.c`/`rte_ipc_request_reply.c` stub files (TODO-only,
 never wired into any target - see ADR-023 section 2.1) stay excluded
 regardless of `SAFEAPI_ENABLE_IPC`; this ADR does not change that.
 
@@ -149,9 +149,9 @@ top-level `CMakeLists.txt`.
 - Positive: the dependency graph in section 2.1, once written down,
   turned out to double as documentation of the framework's actual
   internal coupling - useful independent of the build-configuration
-  motivation (e.g. it makes explicit that `sapi_appmanager` cannot be
-  used without `sapi_watchdog` being compiled in, which was previously
-  only discoverable by reading `sapi_appmanager.c`'s `#include` list).
+  motivation (e.g. it makes explicit that `rte_appmanager` cannot be
+  used without `rte_watchdog` being compiled in, which was previously
+  only discoverable by reading `rte_appmanager.c`'s `#include` list).
 - Negative: 15 new CMake options is more surface for a downstream
   `CMakeLists.txt` or CI matrix to have to reason about than the
   previous "it's all compiled in" default. Mitigated by every option
@@ -171,7 +171,7 @@ top-level `CMakeLists.txt`.
   (`-DSAFEAPI_ENABLE_WATCHDOG=OFF -DSAFEAPI_ENABLE_CHECKPOINT=OFF
   -DSAFEAPI_ENABLE_APPMANAGER=OFF`) succeeds and produces libraries with
   those modules' object files genuinely absent (`ar t
-  libsafeapi_oal.a` no longer lists `sapi_watchdog.c.o`).
+  libsafeapi_oal.a` no longer lists `rte_watchdog.c.o`).
 - A misconfigured combination (e.g. `-DSAFEAPI_ENABLE_SAFECHANNEL=ON
   -DSAFEAPI_ENABLE_DUAL=OFF`) fails configure with a `FATAL_ERROR`
   naming the exact flag to add, rather than failing later at compile or

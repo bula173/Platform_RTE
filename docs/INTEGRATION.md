@@ -87,7 +87,7 @@ in isolation):
   (depends on `safeapi::core`)
 - `safeapi::channels` — safety-comms/channel layer: CRC-64 checksums,
   voting channels, clock sync, checkpoint rendezvous, dual-transfer
-  redundant links, the unified `sapi_safechannel` factory (depends on
+  redundant links, the unified `rte_safechannel` factory (depends on
   `safeapi::core` and `safeapi::oal`)
 - `safeapi::appmanager` — application lifecycle hooks and built-in
   checkpoint integration (depends on all three above)
@@ -128,16 +128,16 @@ find_package(safeAPIFramework REQUIRED)
 include(SafeAPIHelpers)
 
 # Enable MISRA C:2012 checking via cppcheck
-sapi_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
+rte_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
 
 # Apply strict warnings
-sapi_apply_strict_warnings(TARGET myapp)
+rte_apply_strict_warnings(TARGET myapp)
 
 # Verify conventions
-sapi_verify_conventions()
+rte_verify_conventions()
 
 # Generate CMakePresets.json template
-sapi_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
+rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 ```
 
 ---
@@ -152,7 +152,7 @@ Generate a template `CMakePresets.json` for your project:
 find_package(safeAPIFramework REQUIRED)
 include(SafeAPIHelpers)
 
-sapi_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
+rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 ```
 
 Then use presets:
@@ -237,13 +237,13 @@ target_link_libraries(myapp
 target_include_directories(myapp PRIVATE deps/safeAPIFramework/include)
 
 # Apply strict warnings
-sapi_apply_strict_warnings(TARGET myapp)
+rte_apply_strict_warnings(TARGET myapp)
 
 # Enable MISRA analysis
-sapi_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
+rte_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
 
 # Verify conventions
-sapi_verify_conventions()
+rte_verify_conventions()
 ```
 
 ### CMakePresets.json (minimal):

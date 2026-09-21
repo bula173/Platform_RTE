@@ -125,33 +125,33 @@ main.c
 
 ### 1. Status Codes (No Exceptions)
 ```c
-sapi_status_t status = process_message(msg, len);
-if (status != SAPI_STATUS_OK) {
-    SAPI_LOG_ERROR("Processing failed: %d", status);
+rte_status_t status = process_message(msg, len);
+if (status != RTE_STATUS_OK) {
+    RTE_LOG_ERROR("Processing failed: %d", status);
 }
 ```
 
 ### 2. Structured Logging
 ```c
-SAPI_LOG_INFO("Train %u at position %u", train_id, position);
-SAPI_LOG_WARN("Invalid message (len=%zu)", len);
-SAPI_LOG_DEBUG("Processing message [%zu bytes]", len);
+RTE_LOG_INFO("Train %u at position %u", train_id, position);
+RTE_LOG_WARN("Invalid message (len=%zu)", len);
+RTE_LOG_DEBUG("Processing message [%zu bytes]", len);
 ```
 
 ### 3. Safe Assertions
 ```c
-SAPI_ASSERT(msg != NULL);
-SAPI_ASSERT(len > 0);
-SAPI_ASSERT(len <= MESSAGE_BUFFER_SIZE);
+RTE_ASSERT(msg != NULL);
+RTE_ASSERT(len > 0);
+RTE_ASSERT(len <= MESSAGE_BUFFER_SIZE);
 ```
 
 ### 4. Safe State Management
 ```c
-static sapi_status_t transition_to_state(app_state_t new_state)
+static rte_status_t transition_to_state(app_state_t new_state)
 {
     // State transition logic with validation
     g_app.state = new_state;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 ```
 
@@ -187,7 +187,7 @@ Return status code
 1. Add type to message handling:
 ```c
 case 0x04: /* NEW_MESSAGE_TYPE */
-    SAPI_LOG_INFO("Received NEW_MESSAGE_TYPE");
+    RTE_LOG_INFO("Received NEW_MESSAGE_TYPE");
     // Handle it
     break;
 ```
@@ -201,21 +201,21 @@ uint8_t sequence[] = {0x01, 0x02, 0x03, 0x04};
 
 Replace simulation with `safeapi::timer`:
 ```c
-sapi_timer_t timer;
-sapi_timer_create(&timer, SAPI_TIMER_PERIODIC, 1000); // 1 second
-sapi_timer_start(&timer, heartbeat_callback, NULL);
+rte_timer_t timer;
+rte_timer_create(&timer, RTE_TIMER_PERIODIC, 1000); // 1 second
+rte_timer_start(&timer, heartbeat_callback, NULL);
 // ... later ...
-sapi_timer_stop(&timer);
-sapi_timer_destroy(&timer);
+rte_timer_stop(&timer);
+rte_timer_destroy(&timer);
 ```
 
 ### Add Task Pool
 
 Extend with `safeapi::task` (when available):
 ```c
-sapi_task_t task1, task2;
-sapi_task_create(&task1, message_processor, NULL);
-sapi_task_create(&task2, heartbeat_generator, NULL);
+rte_task_t task1, task2;
+rte_task_create(&task1, message_processor, NULL);
+rte_task_create(&task2, heartbeat_generator, NULL);
 ```
 
 ### Add Network I/O
@@ -241,7 +241,7 @@ int sock = socket(AF_INET, SOCK_DGRAM, 0);
 - Enum for state machine
 
 ### Error Handling
-- Every function returns `sapi_status_t`
+- Every function returns `rte_status_t`
 - Errors logged before propagation
 - Statistics tracked for analysis
 
@@ -276,6 +276,6 @@ For hard real-time performance, see the QNX RTOS example.
 
 ## References
 
-- [safeapi::log](../../include/safeapi/oal/log/sapi_log.h)
-- [safeapi::status](../../include/safeapi/utils/status/sapi_status.h)
-- [safeapi::safestate](../../include/safeapi/utils/safestate/sapi_safestate.h)
+- [safeapi::log](../../include/safeapi/oal/log/rte_log.h)
+- [safeapi::status](../../include/safeapi/utils/status/rte_status.h)
+- [safeapi::safestate](../../include/safeapi/utils/safestate/rte_safestate.h)

@@ -1,8 +1,8 @@
 # Watchdog Mechanism - Platform_RTE Design
 
 📋 **STATUS:** API DESIGN COMPLETE, IMPLEMENTATION IN PROGRESS
-- API specification: `include/safeapi/watchdog/sapi_watchdog.h` ✅
-- Implementation: `src/watchdog/sapi_watchdog.c` (stub code, being developed)
+- API specification: `include/safeapi/watchdog/rte_watchdog.h` ✅
+- Implementation: `src/watchdog/rte_watchdog.c` (stub code, being developed)
 - Target release: safeAPIFramework v0.3.0
 
 ## Overview
@@ -89,40 +89,40 @@ Safe-state / reboot / failover triggered
 /**
  * @brief Watchdog handle (opaque)
  */
-typedef struct sapi_watchdog_s *sapi_watchdog_t;
+typedef struct rte_watchdog_s *rte_watchdog_t;
 
 /**
  * @brief Watchdog type
  */
 typedef enum {
-    SAPI_WATCHDOG_SYSTEM,      // Entire system hung detection
-    SAPI_WATCHDOG_TASK,        // Specific task/thread hung
-    SAPI_WATCHDOG_CHANNEL,     // IPC channel stuck
-    SAPI_WATCHDOG_CHECKPOINT   // Node didn't reach checkpoint
-} sapi_watchdog_type_t;
+    RTE_WATCHDOG_SYSTEM,      // Entire system hung detection
+    RTE_WATCHDOG_TASK,        // Specific task/thread hung
+    RTE_WATCHDOG_CHANNEL,     // IPC channel stuck
+    RTE_WATCHDOG_CHECKPOINT   // Node didn't reach checkpoint
+} rte_watchdog_type_t;
 
 /**
  * @brief Recovery action when watchdog fires
  */
 typedef enum {
-    SAPI_WATCHDOG_ACTION_LOG,           // Log event only
-    SAPI_WATCHDOG_ACTION_SAFESTATE,     // Trigger safe-state transition
-    SAPI_WATCHDOG_ACTION_REBOOT,        // Reboot system
-    SAPI_WATCHDOG_ACTION_FAILOVER,      // Failover to backup (cluster only)
-    SAPI_WATCHDOG_ACTION_CUSTOM         // Custom callback
-} sapi_watchdog_action_t;
+    RTE_WATCHDOG_ACTION_LOG,           // Log event only
+    RTE_WATCHDOG_ACTION_SAFESTATE,     // Trigger safe-state transition
+    RTE_WATCHDOG_ACTION_REBOOT,        // Reboot system
+    RTE_WATCHDOG_ACTION_FAILOVER,      // Failover to backup (cluster only)
+    RTE_WATCHDOG_ACTION_CUSTOM         // Custom callback
+} rte_watchdog_action_t;
 
 /**
  * @brief Watchdog configuration
  */
 typedef struct {
-    sapi_watchdog_type_t type;
+    rte_watchdog_type_t type;
     const char *name;
-    sapi_duration_ms_t timeout_ms;      // Kick deadline
-    sapi_watchdog_action_t action;
+    rte_duration_ms_t timeout_ms;      // Kick deadline
+    rte_watchdog_action_t action;
     void (*custom_action)(void *context);
     void *context;
-} sapi_watchdog_config_t;
+} rte_watchdog_config_t;
 
 /**
  * @brief Watchdog health/status
@@ -132,9 +132,9 @@ typedef struct {
     uint32_t kicks;                 // Total kicks/pets
     uint32_t fires;                 // Total fires
     uint32_t recoveries;            // Total recovery actions
-    sapi_duration_ms_t time_since_last_kick;  // ms since last kick
-    sapi_duration_ms_t time_until_fire;       // ms until timeout
-} sapi_watchdog_status_t;
+    rte_duration_ms_t time_since_last_kick;  // ms since last kick
+    rte_duration_ms_t time_until_fire;       // ms until timeout
+} rte_watchdog_status_t;
 ```
 
 ### System Watchdog API
@@ -148,22 +148,22 @@ typedef struct {
  *
  * Usage:
  * @code
- * sapi_watchdog_config_t config = {
- *     .type = SAPI_WATCHDOG_SYSTEM,
+ * rte_watchdog_config_t config = {
+ *     .type = RTE_WATCHDOG_SYSTEM,
  *     .name = "rbc_system_wd",
  *     .timeout_ms = 1000,            // 1 second
- *     .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+ *     .action = RTE_WATCHDOG_ACTION_SAFESTATE
  * };
- * sapi_watchdog_t wd;
- * sapi_watchdog_create(&wd, &config);
+ * rte_watchdog_t wd;
+ * rte_watchdog_create(&wd, &config);
  * @endcode
  *
  * @param handle_out Receives watchdog handle
  * @param config Watchdog configuration
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
-                                    const sapi_watchdog_config_t *config);
+rte_status_t rte_watchdog_create(rte_watchdog_t *handle_out,
+                                    const rte_watchdog_config_t *config);
 
 /**
  * @brief Kick (pet) system watchdog
@@ -178,27 +178,27 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
  *     process_events();
  *     
  *     // Prove we're alive
- *     sapi_watchdog_kick(system_wd);
+ *     rte_watchdog_kick(system_wd);
  *     
  *     sleep_ms(100);
  * }
  * @endcode
  *
  * @param watchdog Watchdog handle
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_kick(sapi_watchdog_t watchdog);
+rte_status_t rte_watchdog_kick(rte_watchdog_t watchdog);
 
 /**
  * @brief Start watchdog timer
  *
  * Enables watchdog monitoring. Timer begins counting.
- * Must be called after sapi_watchdog_create().
+ * Must be called after rte_watchdog_create().
  *
  * @param watchdog Watchdog handle
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_start(sapi_watchdog_t watchdog);
+rte_status_t rte_watchdog_start(rte_watchdog_t watchdog);
 
 /**
  * @brief Stop watchdog timer
@@ -207,9 +207,9 @@ sapi_status_t sapi_watchdog_start(sapi_watchdog_t watchdog);
  * Timer stops counting; no timeout will occur.
  *
  * @param watchdog Watchdog handle
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_stop(sapi_watchdog_t watchdog);
+rte_status_t rte_watchdog_stop(rte_watchdog_t watchdog);
 
 /**
  * @brief Get watchdog status
@@ -218,10 +218,10 @@ sapi_status_t sapi_watchdog_stop(sapi_watchdog_t watchdog);
  *
  * @param watchdog Watchdog handle
  * @param status_out Receives watchdog status
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog,
-                                        sapi_watchdog_status_t *status_out);
+rte_status_t rte_watchdog_get_status(rte_watchdog_t watchdog,
+                                        rte_watchdog_status_t *status_out);
 
 /**
  * @brief Destroy watchdog
@@ -229,9 +229,9 @@ sapi_status_t sapi_watchdog_get_status(sapi_watchdog_t watchdog,
  * Stops and deallocates watchdog.
  *
  * @param watchdog Watchdog handle
- * @return SAPI_STATUS_OK on success
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_destroy(sapi_watchdog_t watchdog);
+rte_status_t rte_watchdog_destroy(rte_watchdog_t watchdog);
 ```
 
 ### Task Watchdog API
@@ -246,29 +246,29 @@ sapi_status_t sapi_watchdog_destroy(sapi_watchdog_t watchdog);
  * Usage:
  * @code
  * // In task initialization
- * sapi_watchdog_config_t config = {
- *     .type = SAPI_WATCHDOG_TASK,
+ * rte_watchdog_config_t config = {
+ *     .type = RTE_WATCHDOG_TASK,
  *     .name = "signal_processor_wd",
  *     .timeout_ms = 500,             // 500ms deadline per iteration
- *     .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+ *     .action = RTE_WATCHDOG_ACTION_SAFESTATE
  * };
- * sapi_watchdog_t task_wd;
- * sapi_watchdog_create(&task_wd, &config);
- * sapi_watchdog_start(task_wd);
+ * rte_watchdog_t task_wd;
+ * rte_watchdog_create(&task_wd, &config);
+ * rte_watchdog_start(task_wd);
  * 
  * // In task main loop
  * while (running) {
  *     process_signals();
- *     sapi_watchdog_kick(task_wd);   // Must kick within 500ms
+ *     rte_watchdog_kick(task_wd);   // Must kick within 500ms
  * }
  * @endcode
  *
  * @param handle_out Receives watchdog handle
- * @param config Task watchdog config (type = SAPI_WATCHDOG_TASK)
- * @return SAPI_STATUS_OK on success
+ * @param config Task watchdog config (type = RTE_WATCHDOG_TASK)
+ * @return RTE_STATUS_OK on success
  */
-sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
-                                    const sapi_watchdog_config_t *config);
+rte_status_t rte_watchdog_create(rte_watchdog_t *handle_out,
+                                    const rte_watchdog_config_t *config);
 ```
 
 ### Checkpoint Watchdog API (Integrated)
@@ -278,21 +278,21 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
  * @brief Create checkpoint watchdog
  *
  * Automatically detects when a node doesn't reach checkpoint in time.
- * Integrated with sapi_channel_checkpoint() function.
+ * Integrated with rte_channel_checkpoint() function.
  *
  * Usage:
  * @code
- * sapi_checkpoint_config_t ckpt = {
+ * rte_checkpoint_config_t ckpt = {
  *     .checkpoint_id = 1,
  *     .max_delay_ms = 200,           // Checkpoint timeout
  *     .expected_node_count = 3,
  *     
  *     // WATCHDOG INTEGRATION
  *     .watchdog_enabled = true,
- *     .watchdog_action = SAPI_WATCHDOG_ACTION_FAILOVER
+ *     .watchdog_action = RTE_WATCHDOG_ACTION_FAILOVER
  * };
  * 
- * status = sapi_channel_checkpoint(vital_signal, &ckpt);
+ * status = rte_channel_checkpoint(vital_signal, &ckpt);
  * // If timeout: watchdog fires automatically
  * // Action: failover to remaining nodes (2oo3 → 2oo2)
  * @endcode
@@ -310,21 +310,21 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
  *
  * Usage:
  * @code
- * sapi_watchdog_config_t config = {
- *     .type = SAPI_WATCHDOG_CHANNEL,
+ * rte_watchdog_config_t config = {
+ *     .type = RTE_WATCHDOG_CHANNEL,
  *     .name = "vital_signal_channel_wd",
  *     .timeout_ms = 100,             // Expect message every 100ms
- *     .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+ *     .action = RTE_WATCHDOG_ACTION_SAFESTATE
  * };
- * sapi_watchdog_create(&channel_wd, &config);
- * sapi_watchdog_start(channel_wd);
+ * rte_watchdog_create(&channel_wd, &config);
+ * rte_watchdog_start(channel_wd);
  * 
  * // In channel receive loop
  * while (true) {
- *     status = sapi_vital_receive(channel, &msg, sizeof(msg), 100);
- *     if (status == SAPI_STATUS_OK) {
+ *     status = rte_vital_receive(channel, &msg, sizeof(msg), 100);
+ *     if (status == RTE_STATUS_OK) {
  *         process_message(&msg);
- *         sapi_watchdog_kick(channel_wd);  // Channel alive
+ *         rte_watchdog_kick(channel_wd);  // Channel alive
  *     }
  * }
  * @endcode
@@ -340,16 +340,16 @@ sapi_status_t sapi_watchdog_create(sapi_watchdog_t *handle_out,
 ```c
 // Main RBC loop
 
-sapi_watchdog_config_t wd_config = {
-    .type = SAPI_WATCHDOG_SYSTEM,
+rte_watchdog_config_t wd_config = {
+    .type = RTE_WATCHDOG_SYSTEM,
     .name = "rbc_main_wd",
     .timeout_ms = 1000,               // 1 second deadline
-    .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+    .action = RTE_WATCHDOG_ACTION_SAFESTATE
 };
 
-sapi_watchdog_t wd;
-sapi_watchdog_create(&wd, &wd_config);
-sapi_watchdog_start(wd);
+rte_watchdog_t wd;
+rte_watchdog_create(&wd, &wd_config);
+rte_watchdog_start(wd);
 
 while (running) {
     // Process RBC logic
@@ -358,13 +358,13 @@ while (running) {
     update_speed_limits();
     
     // Prove we're alive (resets 1-second timeout)
-    sapi_watchdog_kick(wd);
+    rte_watchdog_kick(wd);
     
     sleep_ms(100);
 }
 
-sapi_watchdog_stop(wd);
-sapi_watchdog_destroy(wd);
+rte_watchdog_stop(wd);
+rte_watchdog_destroy(wd);
 ```
 
 ### Pattern 2: Task-Specific Monitoring
@@ -372,42 +372,42 @@ sapi_watchdog_destroy(wd);
 ```c
 // Signal processing task (runs every 50ms)
 
-sapi_watchdog_config_t task_wd_config = {
-    .type = SAPI_WATCHDOG_TASK,
+rte_watchdog_config_t task_wd_config = {
+    .type = RTE_WATCHDOG_TASK,
     .name = "signal_processor_wd",
     .timeout_ms = 500,                // 500ms per iteration max
-    .action = SAPI_WATCHDOG_ACTION_REBOOT
+    .action = RTE_WATCHDOG_ACTION_REBOOT
 };
 
-sapi_watchdog_t task_wd;
-sapi_watchdog_create(&task_wd, &task_wd_config);
-sapi_watchdog_start(task_wd);
+rte_watchdog_t task_wd;
+rte_watchdog_create(&task_wd, &task_wd_config);
+rte_watchdog_start(task_wd);
 
 while (running) {
     // Checkpoint 1: Start processing
-    sapi_checkpoint_config_t ckpt1 = {
+    rte_checkpoint_config_t ckpt1 = {
         .checkpoint_id = 1,
         .max_delay_ms = 100
     };
-    sapi_channel_checkpoint(vital_ch, &ckpt1);
+    rte_channel_checkpoint(vital_ch, &ckpt1);
     
     // Process signals (must complete within 100ms)
     signal_list_t signals = fetch_signals();
     process_signals(&signals);
     
     // Checkpoint 2: Processing done
-    sapi_checkpoint_config_t ckpt2 = {
+    rte_checkpoint_config_t ckpt2 = {
         .checkpoint_id = 2,
         .max_delay_ms = 100
     };
-    sapi_channel_checkpoint(vital_ch, &ckpt2);
+    rte_channel_checkpoint(vital_ch, &ckpt2);
     
     // Prove task made progress
-    sapi_watchdog_kick(task_wd);
+    rte_watchdog_kick(task_wd);
 }
 
-sapi_watchdog_stop(task_wd);
-sapi_watchdog_destroy(task_wd);
+rte_watchdog_stop(task_wd);
+rte_watchdog_destroy(task_wd);
 ```
 
 ### Pattern 3: Redundant System with Watchdog-Triggered Failover
@@ -415,14 +415,14 @@ sapi_watchdog_destroy(task_wd);
 ```c
 // Online mode (2oo3) with automatic failover on node hang
 
-sapi_watchdog_config_t failover_wd = {
-    .type = SAPI_WATCHDOG_CHECKPOINT,
+rte_watchdog_config_t failover_wd = {
+    .type = RTE_WATCHDOG_CHECKPOINT,
     .name = "node_c_failover_wd",
     .timeout_ms = 200,               // Node C must reach checkpoint in 200ms
-    .action = SAPI_WATCHDOG_ACTION_FAILOVER
+    .action = RTE_WATCHDOG_ACTION_FAILOVER
 };
 
-sapi_checkpoint_config_t ckpt = {
+rte_checkpoint_config_t ckpt = {
     .checkpoint_id = 1,
     .max_delay_ms = 200,
     .watchdog_enabled = true,
@@ -435,10 +435,10 @@ sapi_checkpoint_config_t ckpt = {
 // 3. Node C isolated from voting
 // 4. Cluster continues as 2oo2 (A & B only)
 
-status = sapi_channel_checkpoint(vital_signal, &ckpt);
+status = rte_channel_checkpoint(vital_signal, &ckpt);
 
-if (status == SAPI_STATUS_TIMEOUT) {
-    SAPI_LOG_ERROR("Node C missing checkpoint - watchdog triggered failover");
+if (status == RTE_STATUS_TIMEOUT) {
+    RTE_LOG_ERROR("Node C missing checkpoint - watchdog triggered failover");
     // Cluster automatically reduced to 2oo2
 }
 ```
@@ -448,8 +448,8 @@ if (status == SAPI_STATUS_TIMEOUT) {
 ```c
 // Periodic health check (runs every 1 second)
 
-sapi_watchdog_status_t wd_status;
-sapi_watchdog_get_status(system_wd, &wd_status);
+rte_watchdog_status_t wd_status;
+rte_watchdog_get_status(system_wd, &wd_status);
 
 printf("Watchdog Health:\n");
 printf("  Active:     %s\n", wd_status.active ? "YES" : "NO");
@@ -461,7 +461,7 @@ printf("  Time until timeout:   %u ms\n", wd_status.time_until_fire);
 
 // Alert if watchdog is about to fire
 if (wd_status.time_until_fire < 100) {
-    SAPI_LOG_WARN("Watchdog about to fire in %u ms!", 
+    RTE_LOG_WARN("Watchdog about to fire in %u ms!", 
                    wd_status.time_until_fire);
 }
 ```
@@ -474,17 +474,17 @@ if (wd_status.time_until_fire < 100) {
 
 ```c
 // Checkpoint already includes watchdog support
-sapi_checkpoint_config_t ckpt = {
+rte_checkpoint_config_t ckpt = {
     .checkpoint_id = 1,
     .max_delay_ms = 200,
     .expected_node_count = 3,
     
     // Watchdog automatically monitors checkpoint barrier
     .watchdog_enabled = true,
-    .watchdog_action = SAPI_WATCHDOG_ACTION_FAILOVER
+    .watchdog_action = RTE_WATCHDOG_ACTION_FAILOVER
 };
 
-status = sapi_channel_checkpoint(vital_signal, &ckpt);
+status = rte_channel_checkpoint(vital_signal, &ckpt);
 // Watchdog fires if any node doesn't reach checkpoint
 ```
 
@@ -492,11 +492,11 @@ status = sapi_channel_checkpoint(vital_signal, &ckpt);
 
 ```c
 // When watchdog fires with SAFESTATE action
-sapi_watchdog_config_t config = {
-    .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+rte_watchdog_config_t config = {
+    .action = RTE_WATCHDOG_ACTION_SAFESTATE
 };
 
-// Automatically calls: sapi_safestate_trigger()
+// Automatically calls: rte_safestate_trigger()
 // Application transitions to safe state (signals all RED, etc.)
 ```
 
@@ -504,9 +504,9 @@ sapi_watchdog_config_t config = {
 
 ```c
 // All watchdog events logged automatically
-SAPI_LOG_ERROR("Watchdog fired: system_wd (timeout 1000ms)");
-SAPI_LOG_ERROR("  Last kick: 1250ms ago");
-SAPI_LOG_ERROR("  Recovery action: SAFESTATE");
+RTE_LOG_ERROR("Watchdog fired: system_wd (timeout 1000ms)");
+RTE_LOG_ERROR("  Last kick: 1250ms ago");
+RTE_LOG_ERROR("  Recovery action: SAFESTATE");
 
 // Full audit trail for certification
 ```

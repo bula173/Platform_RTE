@@ -28,7 +28,7 @@
 
 #include "safeapi/status.h"
 #include "safeapi/log.h"
-#include "safeapi/ipc/sapi_ipc_pubsub.h"
+#include "safeapi/ipc/rte_ipc_pubsub.h"
 
 /* ============================================================================
  * Message Definitions
@@ -57,7 +57,7 @@ typedef struct {
  */
 static void* track_publisher_thread(void *arg)
 {
-    sapi_ipc_pubsub_topic_t *topic = (sapi_ipc_pubsub_topic_t *)arg;
+    rte_ipc_pubsub_topic_t *topic = (rte_ipc_pubsub_topic_t *)arg;
 
     printf("[Publisher] Track status publisher starting\n");
 
@@ -78,10 +78,10 @@ static void* track_publisher_thread(void *arg)
         printf("[Publisher] Publishing track %u status: %s\n",
                status->track_id, status->description);
 
-        sapi_status_t result = sapi_ipc_pubsub_publish(*topic, status, sizeof(*status));
+        rte_status_t result = rte_ipc_pubsub_publish(*topic, status, sizeof(*status));
 
-        if (result != SAPI_STATUS_OK) {
-            SAPI_LOG_ERROR("Publish failed: %d", result);
+        if (result != RTE_STATUS_OK) {
+            RTE_LOG_ERROR("Publish failed: %d", result);
         }
     }
 
@@ -98,20 +98,20 @@ static void* track_publisher_thread(void *arg)
  */
 static void* signal_manager_thread(void *arg)
 {
-    sapi_ipc_pubsub_subscriber_t *subscriber = (sapi_ipc_pubsub_subscriber_t *)arg;
+    rte_ipc_pubsub_subscriber_t *subscriber = (rte_ipc_pubsub_subscriber_t *)arg;
 
     printf("[Signal Manager] Started\n");
 
     for (int i = 0; i < 5; i++) {
         track_status_t status = {0};
 
-        sapi_status_t result = sapi_ipc_pubsub_receive(
+        rte_status_t result = rte_ipc_pubsub_receive(
             *subscriber,
             &status, sizeof(status),
             2000  /* 2 second timeout */
         );
 
-        if (result == SAPI_STATUS_OK) {
+        if (result == RTE_STATUS_OK) {
             printf("[Signal Manager] Track %u: ", status.track_id);
 
             if (status.occupancy == TRACK_OCCUPIED) {
@@ -121,7 +121,7 @@ static void* signal_manager_thread(void *arg)
             } else {
                 printf("Setting signal to YELLOW (caution)\n");
             }
-        } else if (result == SAPI_STATUS_TIMEOUT) {
+        } else if (result == RTE_STATUS_TIMEOUT) {
             printf("[Signal Manager] No update received (timeout)\n");
         }
     }
@@ -135,23 +135,23 @@ static void* signal_manager_thread(void *arg)
  */
 static void* speed_manager_thread(void *arg)
 {
-    sapi_ipc_pubsub_subscriber_t *subscriber = (sapi_ipc_pubsub_subscriber_t *)arg;
+    rte_ipc_pubsub_subscriber_t *subscriber = (rte_ipc_pubsub_subscriber_t *)arg;
 
     printf("[Speed Manager] Started\n");
 
     for (int i = 0; i < 5; i++) {
         track_status_t status = {0};
 
-        sapi_status_t result = sapi_ipc_pubsub_receive(
+        rte_status_t result = rte_ipc_pubsub_receive(
             *subscriber,
             &status, sizeof(status),
             2000
         );
 
-        if (result == SAPI_STATUS_OK) {
+        if (result == RTE_STATUS_OK) {
             printf("[Speed Manager] Track %u: Speed limit = %u km/h\n",
                    status.track_id, status.speed_limit);
-        } else if (result == SAPI_STATUS_TIMEOUT) {
+        } else if (result == RTE_STATUS_TIMEOUT) {
             printf("[Speed Manager] No update received (timeout)\n");
         }
     }
@@ -165,20 +165,20 @@ static void* speed_manager_thread(void *arg)
  */
 static void* route_manager_thread(void *arg)
 {
-    sapi_ipc_pubsub_subscriber_t *subscriber = (sapi_ipc_pubsub_subscriber_t *)arg;
+    rte_ipc_pubsub_subscriber_t *subscriber = (rte_ipc_pubsub_subscriber_t *)arg;
 
     printf("[Route Manager] Started\n");
 
     for (int i = 0; i < 5; i++) {
         track_status_t status = {0};
 
-        sapi_status_t result = sapi_ipc_pubsub_receive(
+        rte_status_t result = rte_ipc_pubsub_receive(
             *subscriber,
             &status, sizeof(status),
             2000
         );
 
-        if (result == SAPI_STATUS_OK) {
+        if (result == RTE_STATUS_OK) {
             if (status.occupancy == TRACK_OCCUPIED) {
                 printf("[Route Manager] Track %u occupied - rerouting trains\n",
                        status.track_id);
@@ -186,7 +186,7 @@ static void* route_manager_thread(void *arg)
                 printf("[Route Manager] Track %u available - planning route\n",
                        status.track_id);
             }
-        } else if (result == SAPI_STATUS_TIMEOUT) {
+        } else if (result == RTE_STATUS_TIMEOUT) {
             printf("[Route Manager] No update received (timeout)\n");
         }
     }
@@ -201,7 +201,7 @@ static void* route_manager_thread(void *arg)
 
 int main(void)
 {
-    sapi_log_initialize();
+    rte_log_initialize();
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -209,50 +209,50 @@ int main(void)
     printf("═══════════════════════════════════════════════════════════════\n");
     printf("\n");
 
-    SAPI_LOG_INFO("Creating pub-sub topic...");
+    RTE_LOG_INFO("Creating pub-sub topic...");
 
     /* Create topic */
-    sapi_ipc_pubsub_topic_config_t topic_config = {
+    rte_ipc_pubsub_topic_config_t topic_config = {
         .topic_name = "track_status",
         .message_size = sizeof(track_status_t),
         .max_subscribers = 5
     };
 
-    sapi_ipc_pubsub_topic_t topic;
-    sapi_status_t status = sapi_ipc_pubsub_topic_create(&topic, &topic_config);
+    rte_ipc_pubsub_topic_t topic;
+    rte_status_t status = rte_ipc_pubsub_topic_create(&topic, &topic_config);
 
-    if (status != SAPI_STATUS_OK) {
-        SAPI_LOG_ERROR("Failed to create topic: %d", status);
+    if (status != RTE_STATUS_OK) {
+        RTE_LOG_ERROR("Failed to create topic: %d", status);
         return EXIT_FAILURE;
     }
 
-    SAPI_LOG_INFO("Creating subscribers...");
+    RTE_LOG_INFO("Creating subscribers...");
 
     /* Create subscribers */
-    sapi_ipc_pubsub_subscriber_t signal_subscriber, speed_subscriber, route_subscriber;
+    rte_ipc_pubsub_subscriber_t signal_subscriber, speed_subscriber, route_subscriber;
 
-    sapi_ipc_pubsub_subscriber_config_t signal_config = {
+    rte_ipc_pubsub_subscriber_config_t signal_config = {
         .subscriber_name = "signal_manager",
         .topic = topic,
         .queue_depth = 5
     };
-    sapi_ipc_pubsub_subscribe(&signal_subscriber, &signal_config);
+    rte_ipc_pubsub_subscribe(&signal_subscriber, &signal_config);
 
-    sapi_ipc_pubsub_subscriber_config_t speed_config = {
+    rte_ipc_pubsub_subscriber_config_t speed_config = {
         .subscriber_name = "speed_manager",
         .topic = topic,
         .queue_depth = 5
     };
-    sapi_ipc_pubsub_subscribe(&speed_subscriber, &speed_config);
+    rte_ipc_pubsub_subscribe(&speed_subscriber, &speed_config);
 
-    sapi_ipc_pubsub_subscriber_config_t route_config = {
+    rte_ipc_pubsub_subscriber_config_t route_config = {
         .subscriber_name = "route_manager",
         .topic = topic,
         .queue_depth = 5
     };
-    sapi_ipc_pubsub_subscribe(&route_subscriber, &route_config);
+    rte_ipc_pubsub_subscribe(&route_subscriber, &route_config);
 
-    SAPI_LOG_INFO("Starting publisher and subscribers...");
+    RTE_LOG_INFO("Starting publisher and subscribers...");
 
     /* Start threads */
     pthread_t pub_thread, sig_thread, spd_thread, rte_thread;
@@ -269,11 +269,11 @@ int main(void)
     pthread_join(rte_thread, NULL);
 
     /* Cleanup */
-    SAPI_LOG_INFO("Cleaning up...");
-    sapi_ipc_pubsub_unsubscribe(&signal_subscriber);
-    sapi_ipc_pubsub_unsubscribe(&speed_subscriber);
-    sapi_ipc_pubsub_unsubscribe(&route_subscriber);
-    sapi_ipc_pubsub_topic_destroy(&topic);
+    RTE_LOG_INFO("Cleaning up...");
+    rte_ipc_pubsub_unsubscribe(&signal_subscriber);
+    rte_ipc_pubsub_unsubscribe(&speed_subscriber);
+    rte_ipc_pubsub_unsubscribe(&route_subscriber);
+    rte_ipc_pubsub_topic_destroy(&topic);
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");

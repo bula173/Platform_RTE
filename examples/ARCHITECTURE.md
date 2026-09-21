@@ -116,21 +116,21 @@ static app_context_t g_app = {0};
 
 ```c
 /* Initialization */
-static sapi_status_t app_init(void *context)
+static rte_status_t app_init(void *context)
 {
     app_context_t *app = (app_context_t *)context;
     
-    SAPI_LOG_INFO("Initializing application");
+    RTE_LOG_INFO("Initializing application");
     
     // One-time setup: open files, allocate buffers, etc.
     // Return error if setup fails
     
     app->state = APP_STATE_RUNNING;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /* Main execution loop (one iteration) */
-static sapi_status_t app_execute(void *context)
+static rte_status_t app_execute(void *context)
 {
     app_context_t *app = (app_context_t *)context;
     
@@ -141,23 +141,23 @@ static sapi_status_t app_execute(void *context)
     // - Return immediately
     
     if (error_condition) {
-        return SAPI_STATUS_ERROR;  // Signal error to manager
+        return RTE_STATUS_ERROR;  // Signal error to manager
     }
     
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /* Graceful shutdown */
-static sapi_status_t app_shutdown(void *context)
+static rte_status_t app_shutdown(void *context)
 {
     app_context_t *app = (app_context_t *)context;
     
-    SAPI_LOG_INFO("Shutting down application");
+    RTE_LOG_INFO("Shutting down application");
     
     // Release resources: close files, free buffers, etc.
     // MUST NOT FAIL - log errors but continue
     
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 static const char *app_get_name(void) { return "my-app"; }
@@ -246,9 +246,9 @@ error:
 ### With Manager (Refactored)
 
 ```c
-static sapi_status_t app_init(void *ctx)  { /* ... */ }
-static sapi_status_t app_execute(void *ctx) { /* ... */ }
-static sapi_status_t app_shutdown(void *ctx) { /* ... */ }
+static rte_status_t app_init(void *ctx)  { /* ... */ }
+static rte_status_t app_execute(void *ctx) { /* ... */ }
+static rte_status_t app_shutdown(void *ctx) { /* ... */ }
 
 int main() {
     return app_manager_run(&(app_manager_config_t){
@@ -321,22 +321,22 @@ fail:
 
 **After (with manager):**
 ```c
-static sapi_status_t app_init(void *ctx) {
-    sapi_log_initialize();
+static rte_status_t app_init(void *ctx) {
+    rte_log_initialize();
     g_app.state = RUNNING;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
-static sapi_status_t app_execute(void *ctx) {
-    sapi_status_t status = simulate_train_message();
-    if (status != SAPI_STATUS_OK) g_app.error_count++;
+static rte_status_t app_execute(void *ctx) {
+    rte_status_t status = simulate_train_message();
+    if (status != RTE_STATUS_OK) g_app.error_count++;
     return status;
 }
 
-static sapi_status_t app_shutdown(void *ctx) {
-    SAPI_LOG_INFO("Shutting down");
-    sapi_log_shutdown();
-    return SAPI_STATUS_OK;
+static rte_status_t app_shutdown(void *ctx) {
+    RTE_LOG_INFO("Shutting down");
+    rte_log_shutdown();
+    return RTE_STATUS_OK;
 }
 
 int main() {
@@ -361,17 +361,17 @@ Test each operation independently:
 ```c
 void test_app_init() {
     app_context_t ctx = {0};
-    assert(app_init(&ctx) == SAPI_STATUS_OK);
+    assert(app_init(&ctx) == RTE_STATUS_OK);
 }
 
 void test_app_execute() {
     app_context_t ctx = {.state = APP_STATE_RUNNING};
-    assert(app_execute(&ctx) == SAPI_STATUS_OK);
+    assert(app_execute(&ctx) == RTE_STATUS_OK);
 }
 
 void test_app_shutdown() {
     app_context_t ctx = {.state = APP_STATE_SHUTTING_DOWN};
-    assert(app_shutdown(&ctx) == SAPI_STATUS_OK);
+    assert(app_shutdown(&ctx) == RTE_STATUS_OK);
 }
 ```
 

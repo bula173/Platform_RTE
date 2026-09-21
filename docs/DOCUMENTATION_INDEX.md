@@ -23,15 +23,15 @@
  *   - Dispatcher callback pattern for mixed transports
  *   - Online/Standby examples
  *
- * - **sapi_ipc.h** - Base IPC API (code, not documentation)
+ * - **rte_ipc.h** - Base IPC API (code, not documentation)
  *   - Backend vtable abstraction
  *   - OS-agnostic interface
  *
- * - **sapi_ipc_request_reply.h** - Request-Reply pattern (code)
+ * - **rte_ipc_request_reply.h** - Request-Reply pattern (code)
  *   - RPC-style synchronous communication
  *   - Deadlock-free with timeouts
  *
- * - **sapi_ipc_pubsub.h** - Publish-Subscribe pattern (code)
+ * - **rte_ipc_pubsub.h** - Publish-Subscribe pattern (code)
  *   - One-to-many broadcasting
  *   - Asynchronous, decoupled
  *
@@ -50,7 +50,7 @@
  *   - Pattern 4: Triple redundancy (2oo3)
  *   - Decision tree for selecting topology
  *
- * - **sapi_channel.h** - Public API (code)
+ * - **rte_channel.h** - Public API (code)
  *   - init(), send(), receive(), get_health()
  *   - Voting strategies and result codes
  *

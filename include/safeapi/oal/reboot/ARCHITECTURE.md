@@ -3,20 +3,20 @@
  *
  * @section reboot_architecture_overview Design Overview
  *
- * Minimal layer providing single entry point: sapi_reboot_request(reason).
- * Integrator registers platform-specific backend via sapi_reboot_register_backend().
+ * Minimal layer providing single entry point: rte_reboot_request(reason).
+ * Integrator registers platform-specific backend via rte_reboot_register_backend().
  * No dynamic allocation; single backend pointer storage.
  *
  * @section reboot_architecture_api Public API
  *
  * @code
- * sapi_status_t sapi_reboot_request(uint16_t reason_code);
+ * rte_status_t rte_reboot_request(uint16_t reason_code);
  * @endcode
  *
  * Requests controlled system restart. Does not return on success (CPU resets).
  *
  * @code
- * sapi_status_t sapi_reboot_register_backend(const sapi_reboot_backend_t *backend);
+ * rte_status_t rte_reboot_register_backend(const rte_reboot_backend_t *backend);
  * @endcode
  *
  * Registers platform-specific reboot implementation. Called at startup.
@@ -25,8 +25,8 @@
  *
  * @code
  * typedef struct {
- *     sapi_status_t (*request)(uint16_t reason_code);
- * } sapi_reboot_backend_t;
+ *     rte_status_t (*request)(uint16_t reason_code);
+ * } rte_reboot_backend_t;
  * @endcode
  *
  * Backend implements platform-specific reset mechanism:
@@ -38,7 +38,7 @@
  * @section reboot_architecture_flow Reboot Flow
  *
  * @verbatim
- * sapi_reboot_request(reason)
+ * rte_reboot_request(reason)
  *     │
  *     └─ Retrieve registered backend
  *        ├─ If no backend: return NOT_INITIALIZED
@@ -63,7 +63,7 @@
  * Single static backend pointer. No allocation. Minimal state:
  *
  * @verbatim
- * backend_ptr: NULL or pointer to sapi_reboot_backend_t
+ * backend_ptr: NULL or pointer to rte_reboot_backend_t
  * @endverbatim
  *
  * @section reboot_architecture_misra MISRA Compliance

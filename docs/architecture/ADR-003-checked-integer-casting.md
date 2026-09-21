@@ -2,7 +2,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, `include/safeapi/common/sapi_cast.h`
+Applies to: safeAPIFreamwork, `include/safeapi/common/rte_cast.h`
 
 ## 1. Context
 
@@ -16,7 +16,7 @@ safety-relevant misbehavior.
 
 This ADR defines how every conversion between the framework's integer types
 is performed: never with a bare C cast at a call site, always through a
-named, checked `sapi_cast_*` function.
+named, checked `rte_cast_*` function.
 
 ## 2. Decision
 
@@ -27,35 +27,35 @@ integer types, not just the conversions that can lose data. This includes
 lossless widening (e.g. `uint8_t -> uint32_t`), so that every conversion
 site in the codebase looks the same and is equally easy to find, review,
 and grep for - "was this value ever cast without going through
-`sapi_cast`" is answerable by searching for raw casts, and that search
-should have no legitimate hits outside `sapi_cast.c` itself.
+`rte_cast`" is answerable by searching for raw casts, and that search
+should have no legitimate hits outside `rte_cast.c` itself.
 
 Types covered: `int8_t`, `int16_t`, `int32_t`, `int64_t`, `uint8_t`,
 `uint16_t`, `uint32_t`, `uint64_t`, and `size_t` (used pervasively by the
 framework's own APIs for capacity/length/offset parameters - see
-`sapi_buffer_t`, `sapi_nvm_read/write`, `sapi_ipc_send/receive`).
+`rte_buffer_t`, `rte_nvm_read/write`, `rte_ipc_send/receive`).
 
 9 types x 8 other types = **72 functions**, named
-`sapi_cast_<from>_to_<to>`, e.g. `sapi_cast_u32_to_u16`,
-`sapi_cast_i16_to_u8`, `sapi_cast_size_to_u32`. Short type tokens: `i8/i16/
+`rte_cast_<from>_to_<to>`, e.g. `rte_cast_u32_to_u16`,
+`rte_cast_i16_to_u8`, `rte_cast_size_to_u32`. Short type tokens: `i8/i16/
 i32/i64`, `u8/u16/u32/u64`, `size`.
 
 ### 2.2 Signature and failure semantics
 
 ```c
-sapi_status_t sapi_cast_u32_to_u16(uint32_t in, uint16_t *out);
+rte_status_t rte_cast_u32_to_u16(uint32_t in, uint16_t *out);
 ```
 
-- `out == NULL` -> `SAPI_STATUS_INVALID_PARAM`, nothing dereferenced.
-- Value does not fit the destination type -> `SAPI_STATUS_VALUE_OUT_OF_RANGE`
-  (new status code, appended to `sapi_status_t`; see section 2.4), and
+- `out == NULL` -> `RTE_STATUS_INVALID_PARAM`, nothing dereferenced.
+- Value does not fit the destination type -> `RTE_STATUS_VALUE_OUT_OF_RANGE`
+  (new status code, appended to `rte_status_t`; see section 2.4), and
   **`*out` is left untouched** - the caller's variable keeps whatever value
   it held before the call. This means callers must always check the
   returned status before using `*out`; the function makes no attempt to
   provide a "safe default" on failure, since a silently-substituted default
   (e.g. clamping or zeroing) could itself be mistaken for a valid value on
   a safety-relevant path.
-- Value fits -> `SAPI_STATUS_OK`, `*out` set to the converted value.
+- Value fits -> `RTE_STATUS_OK`, `*out` set to the converted value.
 
 ### 2.3 Range-check algorithm (why it's correct without triggering `-Wsign-conversion`)
 
@@ -88,7 +88,7 @@ unsigned value of possibly-different rank, which is what triggers spurious
 ### 2.4 New status code
 
 ```c
-SAPI_STATUS_VALUE_OUT_OF_RANGE = 11  /* appended, does not renumber existing values */
+RTE_STATUS_VALUE_OUT_OF_RANGE = 11  /* appended, does not renumber existing values */
 ```
 
 ### 2.5 Why named functions instead of macros or C11 `_Generic`
@@ -123,23 +123,23 @@ gain a dependency on it.
 - Positive: uniform failure semantics (status-only signaling, untouched
   output on failure) matches every other API in the framework - no special
   case to remember.
-- Negative: call sites become more verbose (`sapi_status_t st =
-  sapi_cast_u32_to_u16(x, &y); if (st != SAPI_STATUS_OK) { ... }` instead of
+- Negative: call sites become more verbose (`rte_status_t st =
+  rte_cast_u32_to_u16(x, &y); if (st != RTE_STATUS_OK) { ... }` instead of
   `uint16_t y = (uint16_t)x;`). Accepted as the correct trade for SIL 3/4
   rigor; this is the same trade CLAUDE.md already makes by banning implicit
   conversions outright.
-- Deferred: existing service headers (`sapi_nvm`, `sapi_ipc`, `sapi_memory`,
-  `sapi_buffer`) are not retrofitted to call `sapi_cast_*` internally in
+- Deferred: existing service headers (`rte_nvm`, `rte_ipc`, `rte_memory`,
+  `rte_buffer`) are not retrofitted to call `rte_cast_*` internally in
   this change - their current bodies don't perform any narrowing casts
   today. Any future code that does convert between these types (in this
   framework or in RBC core code built on top of it) is expected to go
-  through `sapi_cast_*` rather than a bare cast.
+  through `rte_cast_*` rather than a bare cast.
 
 ## 4. Location
 
 > **Superseded by ADR-007.** See below for the original path; the current
-> physical layout is `include/safeapi/cast/sapi_cast.h` +
-> `src/cast/sapi_cast.c`, target `safeapi::cast`.
+> physical layout is `include/safeapi/cast/rte_cast.h` +
+> `src/cast/rte_cast.c`, target `safeapi::cast`.
 
-`include/safeapi/common/sapi_cast.h` + `src/common/sapi_cast.c`, added to
+`include/safeapi/common/rte_cast.h` + `src/common/rte_cast.c`, added to
 the existing `safeapi_common` library target (see ADR-002).

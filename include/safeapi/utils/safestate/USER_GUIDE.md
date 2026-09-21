@@ -39,8 +39,8 @@
  * @subsection safestate_user_guide_qs_register 1. Register Handler at Startup
  *
  * @code
- * void my_safe_state_handler(sapi_safestate_level_t level,
- *                            sapi_safestate_reason_t reason,
+ * void my_safe_state_handler(rte_safestate_level_t level,
+ *                            rte_safestate_reason_t reason,
  *                            const char *file,
  *                            int32_t line,
  *                            const char *message) {
@@ -48,7 +48,7 @@
  *     printf("Safe-state [%d]: reason=%u at %s:%ld msg=%s\n",
  *            level, reason, file, line, message);
  *
- *     if (level == SAPI_SAFESTATE_LEVEL_DEGRADED) {
+ *     if (level == RTE_SAFESTATE_LEVEL_DEGRADED) {
  *         // Can return - system continues
  *         activate_fallback_mode();
  *         return;
@@ -62,37 +62,37 @@
  * }
  *
  * // At application startup:
- * sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_DEGRADED,
+ * rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_DEGRADED,
  *                                 my_safe_state_handler);
- * sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_SAFE,
+ * rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_SAFE,
  *                                 my_safe_state_handler);
- * sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_REBOOT,
+ * rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_REBOOT,
  *                                 my_safe_state_handler);
  * @endcode
  *
- * @subsection safestate_user_guide_qs_assert 2. Use SAPI_ASSERT for Checked Assertions
+ * @subsection safestate_user_guide_qs_assert 2. Use RTE_ASSERT for Checked Assertions
  *
- * Replace standard assert() with SAPI_ASSERT() - always active, even in production.
+ * Replace standard assert() with RTE_ASSERT() - always active, even in production.
  *
  * @code
- * SAPI_ASSERT(buffer != NULL);           // Always checked
- * SAPI_ASSERT(count > 0 && count < 256); // Condition must be true
+ * RTE_ASSERT(buffer != NULL);           // Always checked
+ * RTE_ASSERT(count > 0 && count < 256); // Condition must be true
  * @endcode
  *
- * On failure: enters SAFE state with SAPI_SAFESTATE_REASON_ASSERT_FAILED.
+ * On failure: enters SAFE state with RTE_SAFESTATE_REASON_ASSERT_FAILED.
  *
  * @subsection safestate_user_guide_qs_trigger 3. Trigger Safe-State Explicitly
  *
  * @code
  * // Critical channel failed
  * if (vital_channel_status == CHANNEL_ERROR) {
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                   CUSTOM_REASON_VITAL_CHANNEL_FAILED);
  * }
  *
  * // Need restart
  * if (recovery_failed) {
- *     SAPI_REBOOT(CUSTOM_REASON_RECOVERY_IMPOSSIBLE);
+ *     RTE_REBOOT(CUSTOM_REASON_RECOVERY_IMPOSSIBLE);
  *     // Does not return
  * }
  * @endcode
@@ -102,28 +102,28 @@
  * @subsection safestate_user_guide_example_voting Example 1: Redundant Channel Voting Failure
  *
  * @code
- * sapi_status_t process_vital_command(const vital_msg_t *msg) {
+ * rte_status_t process_vital_command(const vital_msg_t *msg) {
  *     // Both channels must deliver identical message
  *     // If either fails or values differ -> critical failure
  *
  *     if (msg->checksum_mismatch) {
  *         log_error("Vital message checksum failed");
- *         SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *         RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                       CUSTOM_REASON_CHECKSUM_MISMATCH);
- *         return SAPI_STATUS_INVALID_PARAM;
+ *         return RTE_STATUS_INVALID_PARAM;
  *     }
  *
  *     if (!msg->channel_a_valid || !msg->channel_b_valid) {
  *         log_error("Channel unavailable: a=%d b=%d",
  *                  msg->channel_a_valid, msg->channel_b_valid);
- *         SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *         RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                       CUSTOM_REASON_CHANNEL_UNAVAILABLE);
- *         return SAPI_STATUS_INVALID_PARAM;
+ *         return RTE_STATUS_INVALID_PARAM;
  *     }
  *
  *     // Both channels valid and checksums match - safe to proceed
  *     execute_command(msg);
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * @endcode
  *
@@ -131,7 +131,7 @@
  *
  * @code
  * void check_system_health(void) {
- *     sapi_system_health_t health;
+ *     rte_system_health_t health;
  *     get_system_health(&health);
  *
  *     uint32_t failures = 0;
@@ -141,17 +141,17 @@
  *
  *     if (failures == 0) {
  *         // All systems OK - normal operation
- *         SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_DEGRADED,
+ *         RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_DEGRADED,
  *                       CUSTOM_REASON_RECOVERED);
  *     } else if (failures == 1) {
  *         // One system down - degraded but operational
  *         log_warning("System degraded: %u failures", failures);
- *         SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_DEGRADED,
+ *         RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_DEGRADED,
  *                       CUSTOM_REASON_REDUCED_REDUNDANCY);
  *     } else if (failures >= 2) {
  *         // Multiple failures - must enter safe state
  *         log_critical("System failed: %u failures", failures);
- *         SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *         RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                       CUSTOM_REASON_INSUFFICIENT_REDUNDANCY);
  *     }
  * }
@@ -162,9 +162,9 @@
  * @code
  * void process_train_command(const train_cmd_t *cmd) {
  *     // These assertions are ALWAYS active, even in production builds
- *     SAPI_ASSERT(cmd != NULL);
- *     SAPI_ASSERT(cmd->speed <= MAX_TRAIN_SPEED);
- *     SAPI_ASSERT(cmd->brake_level <= MAX_BRAKE);
+ *     RTE_ASSERT(cmd != NULL);
+ *     RTE_ASSERT(cmd->speed <= MAX_TRAIN_SPEED);
+ *     RTE_ASSERT(cmd->brake_level <= MAX_BRAKE);
  *
  *     // If any assertion fails -> SAFE state with REASON_ASSERT_FAILED
  *     // No exception, no recovery - just fail-safe
@@ -182,16 +182,16 @@
  * @code
  * void health_check_loop(void) {
  *     while (1) {
- *         sapi_system_status_t status = get_system_status();
+ *         rte_system_status_t status = get_system_status();
  *
  *         if (status.all_healthy) {
  *             // Try to recover to normal if previously degraded
- *             if (current_level != SAPI_SAFESTATE_LEVEL_DEGRADED) {
- *                 SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_DEGRADED, 0);
+ *             if (current_level != RTE_SAFESTATE_LEVEL_DEGRADED) {
+ *                 RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_DEGRADED, 0);
  *             }
  *         } else if (status.critical_fault) {
  *             // Critical system fault - enter SAFE
- *             SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *             RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                           CUSTOM_REASON_CRITICAL_FAULT);
  *         }
  *
@@ -206,16 +206,16 @@
  *
  * @code
  * // BAD: Assumes safe unless proven unsafe
- * sapi_status_t rc = critical_operation();
- * if (rc == SAPI_STATUS_OK) {
+ * rte_status_t rc = critical_operation();
+ * if (rc == RTE_STATUS_OK) {
  *     proceed_with_operation();
  * }
  * // What if rc indicates error? Continues anyway!
  *
  * // GOOD: Assumes unsafe, must prove safe
- * sapi_status_t rc = critical_operation();
- * if (rc != SAPI_STATUS_OK) {
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);
+ * rte_status_t rc = critical_operation();
+ * if (rc != RTE_STATUS_OK) {
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE, REASON);
  *     return;
  * }
  * proceed_with_operation();  // Proven safe
@@ -252,12 +252,12 @@
  *    - Helps with diagnostics and post-incident analysis
  *    - Reserve ranges: framework 0-4095, application 4096+
  *
- * 4. SAPI_ASSERT for programmer errors
+ * 4. RTE_ASSERT for programmer errors
  *    - Use for assumptions that should always be true
  *    - Example: pointer not NULL, array index in range
  *    - Failure = bug in code, must stop immediately
  *
- * 5. SAPI_SAFESTATE for runtime faults
+ * 5. RTE_SAFESTATE for runtime faults
  *    - Use for conditions that can legitimately fail at runtime
  *    - Example: communication failure, sensor error
  *    - Failure = system state invalid, must enter safe mode

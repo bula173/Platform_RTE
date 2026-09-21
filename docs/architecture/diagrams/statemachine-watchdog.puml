@@ -7,11 +7,11 @@ skinparam state {
 
 [*] --> CREATED
 
-CREATED --> STOPPED: sapi_watchdog_create()\nwatch <= config
+CREATED --> STOPPED: rte_watchdog_create()\nwatch <= config
 
-STOPPED --> RUNNING: sapi_watchdog_start()\ncountdown = timeout_ms
+STOPPED --> RUNNING: rte_watchdog_start()\ncountdown = timeout_ms
 
-RUNNING --> RUNNING: sapi_watchdog_kick() [countdown > 0]\ncountdown = timeout_ms\nkicks++
+RUNNING --> RUNNING: rte_watchdog_kick() [countdown > 0]\ncountdown = timeout_ms\nkicks++
 
 RUNNING --> TIMEOUT: countdown == 0ms\nfires++
 
@@ -30,9 +30,9 @@ FAILOVER --> [*]: cluster failovers\n(active-passive)
 
 LOG_ONLY --> RUNNING: resume (if safe)\nor STOPPED
 
-RUNNING --> STOPPED: sapi_watchdog_stop()\ncountdown = 0
+RUNNING --> STOPPED: rte_watchdog_stop()\ncountdown = 0
 
-STOPPED --> [*]: sapi_watchdog_destroy()\nresource freed
+STOPPED --> [*]: rte_watchdog_destroy()\nresource freed
 
 note right of CREATED
   Watchdog created but not active

@@ -25,7 +25,7 @@
  *    agreement), @ref CLOCKSYNC (diagnostic-only wall-clock offset,
  *    never a correctness dependency), @ref CHECKSUM (CRC-64 data
  *    integrity), and @ref WATCHDOG (hang detection and recovery,
- *    including SAPI_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss
+ *    including RTE_WATCHDOG_ACTION_FAILOVER for redundant-peer-loss
  *    reactions).
  *
  * @ref APPMANAGER sits above all three layers, giving an application a
@@ -62,7 +62,7 @@
 |      (ERTMS Procedures, Handover FSM, Route Management, 2oo2 Voter)     |
 +-------------------------------------------------------------------------+
                                     │
-                                    ▼ (sapi_channel_open / sapi_flow_write)
+                                    ▼ (rte_channel_open / rte_flow_write)
 +-------------------------------------------------------------------------+
 |                Safe Computing Platform (Platform_RTE)               |
 +-------------------------------------------------------------------------+

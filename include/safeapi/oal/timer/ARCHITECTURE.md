@@ -10,34 +10,34 @@
  * @section timer_architecture_api Core API
  *
  * @code
- * sapi_timer_create(storage, config, out_handle)   // Create timer
- * sapi_timer_start(handle)                          // Start countdown
- * sapi_timer_stop(handle)                           // Stop countdown
- * sapi_timer_destroy(handle)                        // Release
- * sapi_timer_now_ms(out_now_ms)                     // Get current time
+ * rte_timer_create(storage, config, out_handle)   // Create timer
+ * rte_timer_start(handle)                          // Start countdown
+ * rte_timer_stop(handle)                           // Stop countdown
+ * rte_timer_destroy(handle)                        // Release
+ * rte_timer_now_ms(out_now_ms)                     // Get current time
  * @endcode
  *
  * @section timer_architecture_config Configuration
  *
  * @code
  * typedef struct {
- *     sapi_timer_mode_t mode;        // ONE_SHOT or PERIODIC
- *     sapi_duration_ms_t period_ms;  // Period/delay in ms
- *     sapi_timer_callback_t callback;// Called on expiry
+ *     rte_timer_mode_t mode;        // ONE_SHOT or PERIODIC
+ *     rte_duration_ms_t period_ms;  // Period/delay in ms
+ *     rte_timer_callback_t callback;// Called on expiry
  *     void *user_ctx;                // Passed to callback
- * } sapi_timer_config_t;
+ * } rte_timer_config_t;
  * @endcode
  *
  * @section timer_architecture_storage Storage Model
  *
- * Caller provides 64-byte storage via sapi_timer_storage_t.
+ * Caller provides 64-byte storage via rte_timer_storage_t.
  * Framework uses for internal state. Caller keeps valid for timer lifetime.
  *
  * @section timer_architecture_callback Callback Signature
  *
  * @code
- * typedef void (*sapi_timer_callback_t)(
- *     sapi_timer_handle_t handle,
+ * typedef void (*rte_timer_callback_t)(
+ *     rte_timer_handle_t handle,
  *     void *user_ctx
  * );
  * @endcode

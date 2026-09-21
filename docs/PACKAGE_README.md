@@ -33,8 +33,8 @@ include(SafeAPIHelpers)           # Helper functions for cppcheck, warnings, etc
 include(CompilerWarnings)         # Strict warning flags
 
 # Now use the functions
-sapi_enable_cppcheck_misra(TARGET myapp)
-sapi_apply_strict_warnings(TARGET myapp)
+rte_enable_cppcheck_misra(TARGET myapp)
+rte_apply_strict_warnings(TARGET myapp)
 ```
 
 ---
@@ -88,32 +88,32 @@ cmake --preset debug -DCMAKE_PREFIX_PATH=~/.local/safeapi
 
 After `find_package()` and `include(SafeAPIHelpers)`:
 
-### sapi_enable_cppcheck_misra(TARGET <name> [SUPPRESS_RULE_15_5])
+### rte_enable_cppcheck_misra(TARGET <name> [SUPPRESS_RULE_15_5])
 Enables MISRA C:2012 checking via cppcheck for a target.
 
 ```cmake
-sapi_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
+rte_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
 ```
 
-### sapi_apply_strict_warnings(TARGET <name>)
+### rte_apply_strict_warnings(TARGET <name>)
 Applies safeAPIFramework's strict warning flags (-Wall -Wextra -Wpedantic -Werror).
 
 ```cmake
-sapi_apply_strict_warnings(TARGET myapp)
+rte_apply_strict_warnings(TARGET myapp)
 ```
 
-### sapi_verify_conventions()
+### rte_verify_conventions()
 Validates that the project follows safeAPIFramework conventions (C99, no malloc, etc.).
 
 ```cmake
-sapi_verify_conventions()
+rte_verify_conventions()
 ```
 
-### sapi_generate_presets_template(OUTPUT_FILE)
+### rte_generate_presets_template(OUTPUT_FILE)
 Generates a CMakePresets.json template for your project.
 
 ```cmake
-sapi_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
+rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 ```
 
 ---
@@ -142,8 +142,8 @@ See [docs/INTEGRATION.md](INTEGRATION.md) for a complete working example with so
 4. **Reuse modules:**
    ```cmake
    include(SafeAPIHelpers)
-   sapi_apply_strict_warnings(TARGET myapp)
-   sapi_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
+   rte_apply_strict_warnings(TARGET myapp)
+   rte_enable_cppcheck_misra(TARGET myapp SUPPRESS_RULE_15_5)
    ```
 
 ---
@@ -168,12 +168,12 @@ target_link_libraries(myapp ${safeAPIFramework_LIB_DIR}/libsafeapi_timer.a)
 Or use a link wrapper (recommended in downstream CMakeLists):
 ```cmake
 # Create your own namespace targets wrapping safeAPIFramework
-add_library(mylibs::sapi_timer STATIC IMPORTED)
-set_target_properties(mylibs::sapi_timer PROPERTIES
+add_library(mylibs::rte_timer STATIC IMPORTED)
+set_target_properties(mylibs::rte_timer PROPERTIES
     IMPORTED_LOCATION "${safeAPIFramework_LIB_DIR}/libsafeapi_timer.a"
     INTERFACE_INCLUDE_DIRECTORIES "${safeAPIFramework_INCLUDE_DIR}"
 )
-target_link_libraries(myapp mylibs::sapi_timer)
+target_link_libraries(myapp mylibs::rte_timer)
 ```
 
 ---

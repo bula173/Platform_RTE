@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/status/rte_status.h"
 
 /* ============================================================================
  * Channel Callback Definition
@@ -35,7 +35,7 @@
  * Called by OS backend when data arrives on the channel.
  * User implements this to handle incoming data.
  */
-typedef void (*sapi_channel_callback_t)(const char *channel_name,
+typedef void (*rte_channel_callback_t)(const char *channel_name,
                                         const void *data,
                                         size_t data_size,
                                         void *context);
@@ -77,9 +77,9 @@ typedef struct {
 
 typedef struct {
     const char *name;
-    sapi_channel_callback_t callback;
+    rte_channel_callback_t callback;
     void *context;
-    // In real implementation: sapi_ipc_handle_t handle;
+    // In real implementation: rte_ipc_handle_t handle;
 } channel_registry_entry_t;
 
 typedef struct {
@@ -92,12 +92,12 @@ static channel_registry_t g_channel_registry = {0};
 /**
  * @brief Register a named channel with callback
  */
-sapi_status_t channel_registry_register(const char *name,
-                                        sapi_channel_callback_t callback,
+rte_status_t channel_registry_register(const char *name,
+                                        rte_channel_callback_t callback,
                                         void *context)
 {
     if (g_channel_registry.count >= MAX_CHANNELS) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
 
     channel_registry_entry_t *entry = &g_channel_registry.channels[g_channel_registry.count];
@@ -107,7 +107,7 @@ sapi_status_t channel_registry_register(const char *name,
 
     g_channel_registry.count++;
     printf("✓ Registered channel: %s\n", name);
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**

@@ -14,46 +14,46 @@ that code accurately. The move itself is a direct consequence of this
 ADR's own reasoning (ADR-005): an OAL backend is an integrator-supplied
 implementation for a specific target, not part of the reusable safety
 framework itself. safeAPIFreamwork now ships only the OAL service
-interfaces and their validate-then-dispatch layers (`sapi_<service>_*()`
-+ `sapi_<service>_register_backend()`); any concrete backend - POSIX,
+interfaces and their validate-then-dispatch layers (`rte_<service>_*()`
++ `rte_<service>_register_backend()`); any concrete backend - POSIX,
 an RTOS, bare metal - belongs in the application/integration project
 that registers it, which is what `safeAPIRBC2oo2` now demonstrates.
 
 ## 1. Context
 
-Every OAL service (`sapi_timer`, `sapi_ipc`, `sapi_task`, `sapi_log`,
-`sapi_nvm`, `sapi_reboot`, `sapi_memory`) is a pure dispatch layer over a
+Every OAL service (`rte_timer`, `rte_ipc`, `rte_task`, `rte_log`,
+`rte_nvm`, `rte_reboot`, `rte_memory`) is a pure dispatch layer over a
 backend an integrator registers at startup (ADR-005) - none of them do
 anything on real hardware by themselves. A survey done for this ADR found
 that, despite the framework's maturity, **no real backend implementation
 existed anywhere in the repository** for any target: `examples/linux-posix-app/`
 looks like a working Linux app but never calls a single
-`sapi_*_register_backend()`; its timer path is explicitly bypassed with a
+`rte_*_register_backend()`; its timer path is explicitly bypassed with a
 comment saying so. Outside of test mocks, the only real backend
 registration call in the whole tree was a diagnostic clocksync stub
 returning a hardcoded constant. `examples/2oo2-geographic-redundancy/`
 and `examples/2oo2-cross-comparison/` - the two examples that look like
 they demonstrate 2oo2/online-standby clustering - define their own
-standalone types and contain zero `sapi_*` calls; the cross-comparison
-example's own integration doc says outright that real SAPI integration
+standalone types and contain zero `rte_*` calls; the cross-comparison
+example's own integration doc says outright that real RTE integration
 is still a "next step."
 
 This ADR is that missing piece: a real, working POSIX backend, so a
-Linux application can actually run on SAPI instead of just linking
+Linux application can actually run on RTE instead of just linking
 against its headers.
 
 ## 2. Decision
 
 ### 2.1 One module, one file per service, one aggregator
 
-`src/posix_backend/sapi_posix_backend_<service>.c` for each of timer,
+`src/posix_backend/rte_posix_backend_<service>.c` for each of timer,
 ipc, task, log, nvm, reboot, memory, plus
-`src/posix_backend/sapi_posix_backend.c` exposing a single
-`sapi_status_t sapi_posix_backend_register_all(void)` that calls every
-service's `sapi_<service>_register_backend()` with this module's
+`src/posix_backend/rte_posix_backend.c` exposing a single
+`rte_status_t rte_posix_backend_register_all(void)` that calls every
+service's `rte_<service>_register_backend()` with this module's
 implementation - one call at startup instead of seven, matching the
-"single entry point" pattern `sapi_appmanager` already established
-elsewhere in this codebase. Individual `sapi_posix_backend_<service>()`
+"single entry point" pattern `rte_appmanager` already established
+elsewhere in this codebase. Individual `rte_posix_backend_<service>()`
 accessor functions are also exposed for callers who want to register
 only some services with the real backend and mock/stub the rest (e.g. in
 tests).
@@ -72,10 +72,10 @@ Every service's public header reserves a small fixed-size byte buffer
 for backend state (`SAFEAPI_DECLARE_STORAGE`, ADR-001 section 3.4) -
 64 bytes for timer/ipc/nvm/memory, 128 for task. This is the main design
 constraint on every backend below, and it directly ruled out the
-"obvious" POSIX implementation for `sapi_ipc`: a `pthread_mutex_t` +
+"obvious" POSIX implementation for `rte_ipc`: a `pthread_mutex_t` +
 `pthread_cond_t` protecting an in-process ring buffer would already
 consume ~88 bytes on glibc x86_64 before storing anything else, blowing
-the 64-byte budget. `sapi_ipc`'s backend uses a `pipe()` instead - two
+the 64-byte budget. `rte_ipc`'s backend uses a `pipe()` instead - two
 file descriptors plus bookkeeping fits in under 32 bytes and sidesteps
 the whole synchronization-primitive-size problem by letting the kernel
 own the queue.
@@ -122,19 +122,19 @@ own the queue.
   (watchdog-triggered hardware reset, supervisory process, etc.).
 - **NVM**: a plain file per region, with a whole-region FNV-1a-64 hash
   trailer recomputed on every write and verified on every read
-  (REQ-OAL-NVM-001). Deliberately does **not** reuse `sapi_checksum`'s
+  (REQ-OAL-NVM-001). Deliberately does **not** reuse `rte_checksum`'s
   CRC-64 - that module's lookup tables are known-incomplete placeholders
   (flagged in ADR-017/the MISRA report); building this backend's
   integrity check on top of a hash known to be broken would just move
   the problem, not solve it. FNV-1a is simple enough to implement
   correctly inline, with no lookup table to get wrong.
 - **Memory**: a single fixed-size static byte arena
-  (`SAPI_POSIX_MEM_ARENA_SIZE`, default 1 MiB, compile-time constant) with
-  a per-pool intrusive free list carved out of it at `sapi_mem_pool_create()`
+  (`RTE_POSIX_MEM_ARENA_SIZE`, default 1 MiB, compile-time constant) with
+  a per-pool intrusive free list carved out of it at `rte_mem_pool_create()`
   time. This is static partitioning, not `malloc`/`free` - the arena's
   total size is fixed at compile time and every pool's claim against it
   is checked against remaining arena space, returning
-  `SAPI_STATUS_RESOURCE_EXHAUSTED` rather than growing anything.
+  `RTE_STATUS_RESOURCE_EXHAUSTED` rather than growing anything.
 
 ### 2.4 Build integration
 
@@ -152,7 +152,7 @@ failing to configure.
 - Positive: `examples/linux-posix-app/` finally has a real backend to
   register instead of bypassing the timer path; a genuine 2oo2 or
   online/standby Linux application can now be built on top of actual
-  running SAPI services instead of a parallel non-SAPI demo.
+  running RTE services instead of a parallel non-SAPI demo.
 - Negative / scope limit: this is a first real backend, not a
   SIL-qualified one. Explicitly not addressed here: real-time scheduling
   guarantees without elevated privilege, WCET analysis of any operation,
@@ -169,7 +169,7 @@ failing to configure.
 
 ## 4. Location
 
-`src/posix_backend/sapi_posix_backend_{timer,ipc,task,log,nvm,reboot,memory}.c`
-+ `sapi_posix_backend.c` (aggregator) + `include/safeapi/posix_backend/sapi_posix_backend.h`,
+`src/posix_backend/rte_posix_backend_{timer,ipc,task,log,nvm,reboot,memory}.c`
++ `rte_posix_backend.c` (aggregator) + `include/safeapi/posix_backend/rte_posix_backend.h`,
 target `safeapi::posix_backend`, POSIX-only (`if(UNIX)`), links every OAL
 service target plus `pthread`.

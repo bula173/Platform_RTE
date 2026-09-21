@@ -15,7 +15,7 @@
  *
  * // Read configuration
  * config_t cfg;
- * sapi_nvm_read(CONFIG_ADDR, (uint8_t *)&cfg, sizeof(cfg));
+ * rte_nvm_read(CONFIG_ADDR, (uint8_t *)&cfg, sizeof(cfg));
  *
  * // Verify checksum
  * uint32_t crc = compute_crc((uint8_t *)&cfg, sizeof(cfg) - 4);
@@ -26,7 +26,7 @@
  *
  * // Save configuration
  * cfg.checksum = compute_crc((uint8_t *)&cfg, sizeof(cfg) - 4);
- * sapi_nvm_write(CONFIG_ADDR, (uint8_t *)&cfg, sizeof(cfg));
+ * rte_nvm_write(CONFIG_ADDR, (uint8_t *)&cfg, sizeof(cfg));
  * @endcode
  *
  * @section nvm_user_guide_guidelines Best Practices

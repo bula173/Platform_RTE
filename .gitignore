@@ -4,7 +4,7 @@ cmake-build-*/
 build-coverage/
 
 # install(DESTINATION dist/...) output - the artifact this project hands to
-# downstream SAPI projects (see root CLAUDE.md's "dist/" convention), not
+# downstream RTE projects (see root CLAUDE.md's "dist/" convention), not
 # source; generate it with `cmake --install build --prefix .`.
 dist/*
 !dist/.gitkeep

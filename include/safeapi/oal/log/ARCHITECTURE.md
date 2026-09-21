@@ -16,7 +16,7 @@
  *
  * @section log_architecture_retrieve Retrieval
  *
- * sapi_log_read() - Read most recent entries
+ * rte_log_read() - Read most recent entries
  * Access NVM/flash via backend for persistence.
  *
  */

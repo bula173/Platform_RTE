@@ -42,7 +42,7 @@
  * **Channel Configuration:**
  * ```c
  * // Vital Channels (A ↔ B)
- * Channel 0: sapi_channel (2oo2 voting)
+ * Channel 0: rte_channel (2oo2 voting)
  * ├─ Transport 0: Shared Memory Queue
  * │  ├─ Latency: <1µs
  * │  ├─ Reliability: FIFO queue (atomic)
@@ -331,8 +331,8 @@
  * └─ Use: Fast path, best-effort
  *
  * // Voting configuration
- * sapi_channel_config_t cfg = {
- *     .voting_strategy = SAPI_VOTING_2OO3,
+ * rte_channel_config_t cfg = {
+ *     .voting_strategy = RTE_VOTING_2OO3,
  *     .channel_count = 3,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,

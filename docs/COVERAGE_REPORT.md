@@ -52,10 +52,10 @@ branches: 62.0% (953 out of 1537)
 ```
 
 Four files had **zero** coverage because no test file existed at all:
-`src/memory/sapi_memory.c`, `src/task/sapi_task.c`, `src/ipc/sapi_ipc.c`,
-`src/dual/sapi_dual_types.c`. `src/checksum/sapi_checksum.c` (67%) had no
+`src/memory/rte_memory.c`, `src/task/rte_task.c`, `src/ipc/rte_ipc.c`,
+`src/dual/rte_dual_types.c`. `src/checksum/rte_checksum.c` (67%) had no
 dedicated test file either — its partial coverage came only from being
-incidentally exercised by `sapi_checkpoint`/`sapi_dual`'s own tests.
+incidentally exercised by `rte_checkpoint`/`rte_dual`'s own tests.
 
 ## Current status, 2026-08-15
 
@@ -67,9 +67,9 @@ branches: 95.1% (1451 out of 1525)
 
 **Line and function coverage: 100%, every file.** New test files were added
 for the four previously-untested modules (`tests/memory/`, `tests/task/`,
-`tests/ipc/`, `tests/dual/test_sapi_dual_types.c`) and one that was only
+`tests/ipc/`, `tests/dual/test_rte_dual_types.c`) and one that was only
 incidentally exercised (`tests/checksum/`); every other
-`tests/<module>/test_sapi_<module>.c` was extended with the NULL-parameter,
+`tests/<module>/test_rte_<module>.c` was extended with the NULL-parameter,
 backend-not-supported, out-of-range, and enum-default-arm cases it was
 missing. A handful of genuinely unreachable lines (verified by tracing
 every call site, not assumed) are marked `GCOVR_EXCL_LINE`/
@@ -92,21 +92,21 @@ these):
 
 | File | Branch rate |
 |---|---|
-| `src/safestate/sapi_safestate.c` | 83.3% |
-| `src/appmanager/sapi_appmanager.c` | 85.2% |
-| `src/watchdog/sapi_watchdog.c` | 88.8% |
-| `src/log/sapi_log.c` | 89.7% |
-| `src/nvm/sapi_nvm.c` | 87.5% |
-| `src/checkpoint/sapi_checkpoint.c` | 90.5% |
-| `src/safechannel/sapi_safechannel.c` | 91.0% |
-| `src/buffer/sapi_buffer.c` | 92.0% |
-| `src/dual/sapi_dual_channel.c` | 91.5% |
-| `src/dual/sapi_dual_msgchannel.c` | 91.7% |
-| `src/dual/sapi_dual_negotiator.c` | 95.0% |
-| `src/netlink/sapi_netlink.c` | 95.5% |
-| `src/timer/sapi_timer.c` | 95.0% |
-| `src/string/sapi_string.c` | 97.9% |
-| `src/channel_link/sapi_channel.c` | 98.4% |
+| `src/safestate/rte_safestate.c` | 83.3% |
+| `src/appmanager/rte_appmanager.c` | 85.2% |
+| `src/watchdog/rte_watchdog.c` | 88.8% |
+| `src/log/rte_log.c` | 89.7% |
+| `src/nvm/rte_nvm.c` | 87.5% |
+| `src/checkpoint/rte_checkpoint.c` | 90.5% |
+| `src/safechannel/rte_safechannel.c` | 91.0% |
+| `src/buffer/rte_buffer.c` | 92.0% |
+| `src/dual/rte_dual_channel.c` | 91.5% |
+| `src/dual/rte_dual_msgchannel.c` | 91.7% |
+| `src/dual/rte_dual_negotiator.c` | 95.0% |
+| `src/netlink/rte_netlink.c` | 95.5% |
+| `src/timer/rte_timer.c` | 95.0% |
+| `src/string/rte_string.c` | 97.9% |
+| `src/channel_link/rte_channel.c` | 98.4% |
 
 To find the exact uncovered sub-conditions for any file above, open
 `build-coverage/coverage/index.html` after running `./scripts/coverage.sh`
@@ -115,8 +115,8 @@ partially-covered line with the specific branch percentage inline.
 
 ## Update, 2026-08-17
 
-Re-run after ADR-025 (`sapi_vital_channel` split into `sapi_channel`/
-`sapi_voter`/`sapi_cross_comparator`) and the `sapi_appmanager.c`
+Re-run after ADR-025 (`rte_vital_channel` split into `rte_channel`/
+`rte_voter`/`rte_cross_comparator`) and the `rte_appmanager.c`
 busy-loop fix (REQ-APPMANAGER-008):
 
 ```
@@ -134,15 +134,15 @@ not new untested functionality:
 
 | File | Branch rate | Note |
 |---|---|---|
-| `src/voter/sapi_voter.c` | 88% | New module; `tests/voter/test_sapi_voter.c` is comprehensive (2oo2/2oo3/NMR, the majority-vote fix, custom `compare_fn`, `trigger_safestate_on_disagreement=false`) but doesn't independently exercise every sub-condition of every multi-term guard. |
-| `src/cross_comparator/sapi_cross_comparator.c` | 83% | New module; same shape/reason as `sapi_voter.c` above - `tests/cross_comparator/test_sapi_cross_comparator.c` covers every function and status code, not every compound-condition sub-branch. |
-| `src/appmanager/sapi_appmanager.c` | 83% (down from 85.2%) | The new `sapi_appmanager_pace_failed_checkpoint()` (REQ-APPMANAGER-008) is 100% line-covered by `test_checkpoint_failure_is_paced_not_busy_looped()`, but its own two compound conditions (`(checkpoint_start_ms == 0U) \|\| (max_delay_ms == 0U)` and the poll loop's `(now_ms >= checkpoint_start_ms) && (...)`) aren't independently exercised in both directions by that one test - same category as the file's pre-existing gap, not a new kind of hole. |
+| `src/voter/rte_voter.c` | 88% | New module; `tests/voter/test_rte_voter.c` is comprehensive (2oo2/2oo3/NMR, the majority-vote fix, custom `compare_fn`, `trigger_safestate_on_disagreement=false`) but doesn't independently exercise every sub-condition of every multi-term guard. |
+| `src/cross_comparator/rte_cross_comparator.c` | 83% | New module; same shape/reason as `rte_voter.c` above - `tests/cross_comparator/test_rte_cross_comparator.c` covers every function and status code, not every compound-condition sub-branch. |
+| `src/appmanager/rte_appmanager.c` | 83% (down from 85.2%) | The new `rte_appmanager_pace_failed_checkpoint()` (REQ-APPMANAGER-008) is 100% line-covered by `test_checkpoint_failure_is_paced_not_busy_looped()`, but its own two compound conditions (`(checkpoint_start_ms == 0U) \|\| (max_delay_ms == 0U)` and the poll loop's `(now_ms >= checkpoint_start_ms) && (...)`) aren't independently exercised in both directions by that one test - same category as the file's pre-existing gap, not a new kind of hole. |
 
 A full standalone build+test verification of the earlier one-off
-`tests/appmanager/test_sapi_appmanager.c` timer-pacing regression test was
+`tests/appmanager/test_rte_appmanager.c` timer-pacing regression test was
 also cross-checked against a **stale-`.gcda` artifact**: the first
 `./scripts/coverage.sh --no-fail` run after landing the appmanager fix
-showed `sapi_appmanager.c` at 73% line / 0% on the new function entirely -
+showed `rte_appmanager.c` at 73% line / 0% on the new function entirely -
 `build-coverage/`'s incremental object build had recompiled the `.o` but
 left a leftover `.gcda` from an earlier coverage run untouched, so gcov
 was reading test-execution counts that predated the fix. A full `rm -rf
@@ -166,34 +166,34 @@ site, not assumed. Per the note above ("Notes on 100% branch coverage in a
 defensive codebase"), these are real, deliberate defense-in-depth, not
 uncovered functionality:
 
-- `src/checksum/sapi_checksum.c` — `sapi_checksum_crc64()`'s
+- `src/checksum/rte_checksum.c` — `rte_checksum_crc64()`'s
   `table == NULL` guard: `.table` and `.initialized` are only ever set
-  together by `sapi_checksum_crc64_init()`, so `.initialized == 1` already
+  together by `rte_checksum_crc64_init()`, so `.initialized == 1` already
   implies `.table != NULL` for any state the module's own code can
   produce. Kept as protection against corrupted static state (e.g. a
   single-event upset), not a reachable API path.
-- `src/watchdog/sapi_watchdog.c` — `sapi_watchdog_timeout_handler()`'s
-  `default:` switch arm: `sapi_watchdog_create()` rejects any
+- `src/watchdog/rte_watchdog.c` — `rte_watchdog_timeout_handler()`'s
+  `default:` switch arm: `rte_watchdog_create()` rejects any
   `config.action` that fails `is_valid_action()` before a slot is ever
   populated, so a live slot's action is always one of the 5 named cases.
-- `src/channel_link/sapi_channel.c` — two static helpers'
-  defensive checks: `sapi_vital_channel_data_equal()`'s NULL-arg branch
+- `src/channel_link/rte_channel.c` — two static helpers'
+  defensive checks: `rte_vital_channel_data_equal()`'s NULL-arg branch
   (its only call site always passes addresses into a fixed-size on-stack
-  array, never NULL) and `sapi_vital_channel_has_quorum()`'s NULL-handle
+  array, never NULL) and `rte_vital_channel_has_quorum()`'s NULL-handle
   branch (both call sites already reject NULL before reaching it).
-- `src/appmanager/sapi_appmanager.c` —
-  `sapi_appmanager_install_default_signal_handlers()`'s three
+- `src/appmanager/rte_appmanager.c` —
+  `rte_appmanager_install_default_signal_handlers()`'s three
   `sigemptyset()`/`sigaction()` failure branches: neither call has a
   documented failure mode for the fixed, always-valid arguments used here
   (a stack-local `sigset_t`; `SIGINT`/`SIGTERM`); forcing a real failure
   needs OS-level fault injection, not something a portable unit test can do.
-- `src/string/sapi_string.c` — `sapi_string_from_u32()`/`_from_i32()`'s
-  cast-failure passthroughs: the underlying `sapi_cast_u32_to_u64()`/
-  `sapi_cast_i32_to_i64()` calls can only fail for a NULL `out` pointer,
+- `src/string/rte_string.c` — `rte_string_from_u32()`/`_from_i32()`'s
+  cast-failure passthroughs: the underlying `rte_cast_u32_to_u64()`/
+  `rte_cast_i32_to_i64()` calls can only fail for a NULL `out` pointer,
   and both call sites always pass a valid local variable's address.
-- `src/safestate/sapi_safestate.c` — the infinite defensive halt
-  (`for(;;){}`) in `sapi_safestate_enter()`: this line **is** proven to
-  execute at runtime (`tests/safestate/test_sapi_safestate.c`'s
+- `src/safestate/rte_safestate.c` — the infinite defensive halt
+  (`for(;;){}`) in `rte_safestate_enter()`: this line **is** proven to
+  execute at runtime (`tests/safestate/test_rte_safestate.c`'s
   `test_unrecognized_level_halts_forever()` uses a `SIGALRM` escape to
   demonstrate it), but gcov's flow-graph-based line-count reconstruction
   always reports 0 for a loop with no outgoing edge, regardless of actual
@@ -209,9 +209,9 @@ really can pass `NULL`; a backend really can leave a vtable slot unset) —
 not aspirational/unreachable defensive code. Where a `default:` case in a
 `switch` over a fully-enumerated `enum` is defensive-only (not reachable
 through any legitimate public value), tests hit it directly with an
-out-of-range cast (e.g. `(sapi_dual_state_t)99`) — the established
-convention already used in `tests/log/test_sapi_log.c` and
-`tests/watchdog/test_sapi_watchdog.c` before this work, applied
+out-of-range cast (e.g. `(rte_dual_state_t)99`) — the established
+convention already used in `tests/log/test_rte_log.c` and
+`tests/watchdog/test_rte_watchdog.c` before this work, applied
 consistently to every remaining file that needed it.
 
 If a genuinely unreachable branch is found during this work (not merely

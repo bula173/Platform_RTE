@@ -8,8 +8,8 @@ Accepted
 
 Debugging a live `safeAPIRBC2oo2GP` reboot loop (A/WEST and B/WEST cycling
 reboots roughly every 40 seconds, never stabilizing) traced back to the
-built-in checkpoint integration `sapi_appmanager_run()` provides (ADR-019):
-`sapi_appmanager.c` set `checkpoint_cfg.checkpoint_id = g_app_state.iteration_count`
+built-in checkpoint integration `rte_appmanager_run()` provides (ADR-019):
+`rte_appmanager.c` set `checkpoint_cfg.checkpoint_id = g_app_state.iteration_count`
 - a process-local counter that resets to 0 on every reboot. Since A and B
 can (and, by the design of a 2oo2 redundant pair, routinely do) reboot
 independently of each other, their counters diverge the moment either
@@ -23,7 +23,7 @@ instant/near-instant match) - the signature of an ID mismatch, not
 network jitter.
 
 Cross-checking `docs/REDUNDANCY_ARCHITECTURE.md`'s own illustrative usage
-of `sapi_channel_checkpoint()` confirms `checkpoint_id` was originally
+of `rte_channel_checkpoint()` confirms `checkpoint_id` was originally
 conceived as a **barrier label** (the doc's own example always uses a
 constant `.checkpoint_id = 1`, naming *which* checkpoint, not a per-cycle
 sequence number) - the appmanager's `iteration_count` shortcut ("no
@@ -37,24 +37,24 @@ fundamentally cannot guarantee.
 `checkpoint_id` is computed from what each side actually *did* this
 cycle, not from how many cycles it has run since its last reboot:
 
-1. **Marks.** `SAPI_CHECKPOINT_MARK()` (captures `__FILE__`/`__LINE__`)
-   or `SAPI_CHECKPOINT_MARK_LABEL(label)`, called by application code at
+1. **Marks.** `RTE_CHECKPOINT_MARK()` (captures `__FILE__`/`__LINE__`)
+   or `RTE_CHECKPOINT_MARK_LABEL(label)`, called by application code at
    meaningful decision/preparation points, folds a CRC64 hash of the
    mark's identity into a single running per-cycle signature:
    `signature = crc64(encode_le(signature) || encode_le(mark_hash))` -
-   reusing the framework's existing `sapi_checksum_crc64()` (no new
+   reusing the framework's existing `rte_checksum_crc64()` (no new
    checksum primitive) and the same explicit-little-endian-byte-pack
-   convention `sapi_checkpoint.c`'s own `build_arrival_message()` already
+   convention `rte_checkpoint.c`'s own `build_arrival_message()` already
    uses, so the fold is well-defined across two potentially different CPU
    architectures.
 2. **Reset.** The signature resets to a fixed seed
-   (`SAPI_APPMANAGER_CHECKPOINT_SIGNATURE_SEED`) at the start of every
-   `sapi_appmanager_run()` cycle, before `pre_execute()` runs.
+   (`RTE_APPMANAGER_CHECKPOINT_SIGNATURE_SEED`) at the start of every
+   `rte_appmanager_run()` cycle, before `pre_execute()` runs.
 3. **Stage reorder.** The checkpoint stage moves from first (before
    `pre_execute()`) to last (after `post_execute()`), so it compares THIS
    cycle's own accumulated signature - marks made during a cycle can only
    be compared once that cycle's own stages have actually run. Internally
-   `sapi_channel_checkpoint()` itself is completely unchanged (still
+   `rte_channel_checkpoint()` itself is completely unchanged (still
    exact-ID-match plus CRC verification, still the same bounded-retry-
    loop/watchdog-kick behavior fixed earlier the same session); only the
    value computed as `checkpoint_id` changes.
@@ -89,7 +89,7 @@ stage starving `pre_execute()`'s own cycle timing) is superseded, not
 replaced: since `pre_execute()` now always runs before checkpoint even
 has a chance to fail, it already paces every cycle regardless of that
 cycle's checkpoint outcome, so the starvation that workaround guarded
-against can no longer occur by construction. `sapi_appmanager_pace_failed_checkpoint()`
+against can no longer occur by construction. `rte_appmanager_pace_failed_checkpoint()`
 was removed.
 
 See `docs/requirements/SRS.md` section 3c (REQ-APPMANAGER-007/008/011
@@ -112,8 +112,8 @@ through 014) for the normative requirements.
   sufficient for accidental divergence detection, not an adversarial
   context) is now load-bearing for checkpoint correctness in a way it was
   not before, when the ID was just an incrementing counter.
-- New surface: two optional `sapi_appmanager_operations_t` hooks
-  (`on_checkpoint_result`), a new public mark API in `sapi_appmanager.h`,
+- New surface: two optional `rte_appmanager_operations_t` hooks
+  (`on_checkpoint_result`), a new public mark API in `rte_appmanager.h`,
   and a new `ga_interface.h` field - all additive and optional; an
   existing integrator that does not adopt marks continues to get a
   cycle-with-zero-marks-every-time signature (a fixed constant, since the

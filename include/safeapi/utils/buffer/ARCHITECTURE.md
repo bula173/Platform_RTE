@@ -9,9 +9,9 @@
  * @section buffer_architecture_api Core API
  *
  * @code
- * sapi_buffer_init(buf, storage, capacity);    // Bind view to storage
- * sapi_buffer_set_length(buf, new_length);      // Mark data as valid
- * sapi_buffer_clear(buf);                       // Reset length to 0
+ * rte_buffer_init(buf, storage, capacity);    // Bind view to storage
+ * rte_buffer_set_length(buf, new_length);      // Mark data as valid
+ * rte_buffer_clear(buf);                       // Reset length to 0
  * @endcode
  *
  * @section buffer_architecture_invariants Invariants
@@ -25,7 +25,7 @@
  * @section buffer_architecture_ownership Ownership Model
  *
  * Caller owns backing storage:
- * - Must allocate before sapi_buffer_init()
+ * - Must allocate before rte_buffer_init()
  * - Must keep valid for buffer lifetime
  * - Caller manages writes to buf.data
  *

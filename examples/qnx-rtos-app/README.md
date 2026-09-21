@@ -295,20 +295,20 @@ main.c
 
 ### 1. Status Codes
 ```c
-sapi_status_t status = process_train_update(&msg, &reply);
+rte_status_t status = process_train_update(&msg, &reply);
 reply.status = status;
 ```
 
 ### 2. Structured Logging
 ```c
-SAPI_LOG_INFO("Train %u: signal=%u, speed_limit=%u",
+RTE_LOG_INFO("Train %u: signal=%u, speed_limit=%u",
               msg.train_id, reply.signal_state, reply.track_speed_limit);
 ```
 
 ### 3. Safe Assertions
 ```c
-SAPI_ASSERT(msg != NULL);
-SAPI_ASSERT(reply != NULL);
+RTE_ASSERT(msg != NULL);
+RTE_ASSERT(reply != NULL);
 ```
 
 ### 4. Fixed-Width Types
@@ -331,10 +331,10 @@ MsgReply(rcvid, EOK, &reply, ...);     // Send reply
 
 ```c
 if (msg->position > 10000) {
-    SAPI_LOG_WARN("Train position out of valid range: %u", msg->position);
-    reply->status = SAPI_STATUS_ERROR;
+    RTE_LOG_WARN("Train position out of valid range: %u", msg->position);
+    reply->status = RTE_STATUS_ERROR;
     reply->signal_state = 0;  // Red = STOP (safe default)
-    return SAPI_STATUS_ERROR;
+    return RTE_STATUS_ERROR;
 }
 ```
 
@@ -396,7 +396,7 @@ No race conditions; message passing is kernel-atomic.
 
 Store signal states in NVM:
 ```c
-sapi_nvm_write(NVM_OFFSET_SIGNAL_STATE, &signal_state, sizeof(signal_state));
+rte_nvm_write(NVM_OFFSET_SIGNAL_STATE, &signal_state, sizeof(signal_state));
 ```
 
 ### Add Periodic Tasks
@@ -406,7 +406,7 @@ Combine with timer for background monitoring:
 void monitor_task(void *arg) {
     while (running) {
         sleep(1);
-        SAPI_LOG_INFO("Heartbeat from monitor");
+        RTE_LOG_INFO("Heartbeat from monitor");
     }
 }
 ```
@@ -487,5 +487,5 @@ done
 - [QNX Message Passing](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.user_guide/topic/message_passing_overview.html)
 - [QNX Microkernel](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.arch/topic/qnx_microkernel_intro.html)
 - [QNX Real-Time](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.rtguide/)
-- [safeapi::log](../../include/safeapi/oal/log/sapi_log.h)
-- [safeapi::status](../../include/safeapi/utils/status/sapi_status.h)
+- [safeapi::log](../../include/safeapi/oal/log/rte_log.h)
+- [safeapi::status](../../include/safeapi/utils/status/rte_status.h)

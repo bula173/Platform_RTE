@@ -6,8 +6,8 @@
  *
  * @section task_architecture_api Queue Operations
  *
- * sapi_task_queue_enqueue(queue, task) - Add to queue
- * sapi_task_queue_dequeue(queue, task) - Remove highest priority
+ * rte_task_queue_enqueue(queue, task) - Add to queue
+ * rte_task_queue_dequeue(queue, task) - Remove highest priority
  *
  * @section task_architecture_priority Priority Ordering
  *

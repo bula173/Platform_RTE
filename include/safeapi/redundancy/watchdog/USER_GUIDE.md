@@ -15,10 +15,10 @@
  * Four types for different monitoring scenarios:
  *
  * @verbatim
- * SAPI_WATCHDOG_SYSTEM   - Entire system liveness (main loop heartbeat)
- * SAPI_WATCHDOG_TASK     - Specific task/thread heartbeat
- * SAPI_WATCHDOG_CHANNEL  - IPC/redundancy channel health
- * SAPI_WATCHDOG_CHECKPOINT - Execution checkpoint barrier
+ * RTE_WATCHDOG_SYSTEM   - Entire system liveness (main loop heartbeat)
+ * RTE_WATCHDOG_TASK     - Specific task/thread heartbeat
+ * RTE_WATCHDOG_CHANNEL  - IPC/redundancy channel health
+ * RTE_WATCHDOG_CHECKPOINT - Execution checkpoint barrier
  * @endverbatim
  *
  * @section watchdog_user_guide_actions Recovery Actions
@@ -27,8 +27,8 @@
  *
  * @verbatim
  * LOG           - Log the event only
- * SAFESTATE     - Enter SAFE state via SAPI_SAFESTATE()
- * REBOOT        - Trigger system reboot via SAPI_REBOOT()
+ * SAFESTATE     - Enter SAFE state via RTE_SAFESTATE()
+ * REBOOT        - Trigger system reboot via RTE_REBOOT()
  * FAILOVER      - Failover to backup (distributed systems)
  * CUSTOM        - Custom callback provided by application
  * @endverbatim
@@ -38,33 +38,33 @@
  * @subsection watchdog_user_guide_qs_include 1. Include Header
  *
  * @code
- * #include "safeapi/watchdog/sapi_watchdog.h"
+ * #include "safeapi/watchdog/rte_watchdog.h"
  * @endcode
  *
  * @subsection watchdog_user_guide_qs_create 2. Create Watchdog
  *
  * @code
  * // Allocate storage for watchdog state
- * sapi_watchdog_storage_t wd_storage;
+ * rte_watchdog_storage_t wd_storage;
  *
  * // Configure watchdog
- * sapi_watchdog_config_t config = {
- *     .type = SAPI_WATCHDOG_SYSTEM,
+ * rte_watchdog_config_t config = {
+ *     .type = RTE_WATCHDOG_SYSTEM,
  *     .name = "main_watchdog",
  *     .timeout_ms = 100,              // Timeout after 100ms without kick
- *     .action = SAPI_WATCHDOG_ACTION_SAFESTATE,
+ *     .action = RTE_WATCHDOG_ACTION_SAFESTATE,
  *     .custom_action = NULL,          // Not used for non-CUSTOM actions
  *     .context = NULL
  * };
  *
- * sapi_watchdog_t wd;
- * sapi_watchdog_create(&wd_storage, &config, &wd);
+ * rte_watchdog_t wd;
+ * rte_watchdog_create(&wd_storage, &config, &wd);
  * @endcode
  *
  * @subsection watchdog_user_guide_qs_start 3. Start Watchdog
  *
  * @code
- * sapi_watchdog_start(wd);
+ * rte_watchdog_start(wd);
  * // Watchdog now counting down from 100ms
  * @endcode
  *
@@ -78,8 +78,8 @@
  *     compute_output();
  *
  *     // Prove we're alive
- *     sapi_status_t rc = sapi_watchdog_kick(wd);
- *     if (rc != SAPI_STATUS_OK) {
+ *     rte_status_t rc = rte_watchdog_kick(wd);
+ *     if (rc != RTE_STATUS_OK) {
  *         // Watchdog already fired (recovery in progress)
  *         // Cannot kick anymore
  *         break;
@@ -97,22 +97,22 @@
  * @code
  * // Application state
  * typedef struct {
- *     sapi_watchdog_t system_wd;
+ *     rte_watchdog_t system_wd;
  *     uint32_t cycle_count;
  *     uint32_t errors;
  * } app_t;
  *
  * void app_init(app_t *app) {
- *     sapi_watchdog_storage_t *storage = malloc(sizeof(*storage));
- *     sapi_watchdog_config_t config = {
- *         .type = SAPI_WATCHDOG_SYSTEM,
+ *     rte_watchdog_storage_t *storage = malloc(sizeof(*storage));
+ *     rte_watchdog_config_t config = {
+ *         .type = RTE_WATCHDOG_SYSTEM,
  *         .name = "app_main_loop",
  *         .timeout_ms = 100,
- *         .action = SAPI_WATCHDOG_ACTION_SAFESTATE,
+ *         .action = RTE_WATCHDOG_ACTION_SAFESTATE,
  *         .context = app
  *     };
- *     sapi_watchdog_create(storage, &config, &app->system_wd);
- *     sapi_watchdog_start(app->system_wd);
+ *     rte_watchdog_create(storage, &config, &app->system_wd);
+ *     rte_watchdog_start(app->system_wd);
  * }
  *
  * void app_main_loop(app_t *app) {
@@ -126,8 +126,8 @@
  *         app->cycle_count++;
  *
  *         // Kick watchdog before sleeping (must be within 100ms)
- *         sapi_status_t rc = sapi_watchdog_kick(app->system_wd);
- *         if (rc != SAPI_STATUS_OK) {
+ *         rte_status_t rc = rte_watchdog_kick(app->system_wd);
+ *         if (rc != RTE_STATUS_OK) {
  *             // Watchdog fired, recovery in progress
  *             log_error("Watchdog fired, terminating");
  *             break;
@@ -157,17 +157,17 @@
  * }
  *
  * void app_with_custom_handler(app_t *app) {
- *     sapi_watchdog_config_t config = {
- *         .type = SAPI_WATCHDOG_SYSTEM,
+ *     rte_watchdog_config_t config = {
+ *         .type = RTE_WATCHDOG_SYSTEM,
  *         .name = "app_custom_wd",
  *         .timeout_ms = 200,
- *         .action = SAPI_WATCHDOG_ACTION_CUSTOM,
+ *         .action = RTE_WATCHDOG_ACTION_CUSTOM,
  *         .custom_action = my_watchdog_handler,
  *         .context = app
  *     };
- *     sapi_watchdog_t wd;
- *     sapi_watchdog_create(&wd_storage, &config, &wd);
- *     sapi_watchdog_start(wd);
+ *     rte_watchdog_t wd;
+ *     rte_watchdog_create(&wd_storage, &config, &wd);
+ *     rte_watchdog_start(wd);
  * }
  * @endcode
  *
@@ -199,15 +199,15 @@
  * Only kick if operation succeeds:
  *
  * @code
- * sapi_status_t rc = critical_operation();
- * if (rc != SAPI_STATUS_OK) {
- *     log_error("Operation failed: %s", sapi_status_to_string(rc));
+ * rte_status_t rc = critical_operation();
+ * if (rc != RTE_STATUS_OK) {
+ *     log_error("Operation failed: %s", rte_status_to_string(rc));
  *     // Don't kick - let watchdog timeout if condition persists
  *     return rc;
  * }
  *
  * // Operation succeeded - safe to kick
- * sapi_watchdog_kick(wd);
+ * rte_watchdog_kick(wd);
  * @endcode
  *
  * This pattern makes watchdog a health indicator: if operation fails repeatedly,
@@ -218,8 +218,8 @@
  * Monitor watchdog health:
  *
  * @code
- * sapi_watchdog_status_t status;
- * sapi_watchdog_get_status(wd, &status);
+ * rte_watchdog_status_t status;
+ * rte_watchdog_get_status(wd, &status);
  *
  * printf("Watchdog: kicks=%u fires=%u time_until=%u ms\n",
  *        status.kicks, status.fires, status.time_until_fire);
@@ -245,7 +245,7 @@
  *    - Automatic recovery on transient failures
  *
  * 4. Stop watchdog on intentional shutdown
- *    - @code sapi_watchdog_stop(wd); @endcode
+ *    - @code rte_watchdog_stop(wd); @endcode
  *    - Prevents false timeouts during graceful shutdown
  *
  * 5. Test watchdog behavior

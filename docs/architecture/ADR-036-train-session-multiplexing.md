@@ -16,8 +16,8 @@ train.
 
 ADR-029's transport is **one TCP connection per train instance**:
 
-- `sapi_netlink`'s `SAPI_NETLINK_ROLE_LISTEN` accepts exactly **one
-  peer per bound port** (`sapi_netlink.h`), so N trains need N listen
+- `rte_netlink`'s `RTE_NETLINK_ROLE_LISTEN` accepts exactly **one
+  peer per bound port** (`rte_netlink.h`), so N trains need N listen
   ports on `C`, N more for `IL`, and the C<->A and C<->B relay links
   are likewise one dedicated link per `{peer, kind, instance}`
   (`site_config.h`, `gateway_c_train_handler.h`:
@@ -35,8 +35,8 @@ There is a second, independent ceiling. ADR-029 §2.4's cross-site
 state-transfer snapshot (`SAFEAPI_EXAMPLE_SITE_EXTRA_PAYLOAD_SIZE` +
 `SAFEAPI_EXAMPLE_DB_WIRE_SIZE`) encodes the **whole** session table plus
 the **whole** runtime route table every cycle and rides inside one
-`sapi_vital_message_t`, whose payload is **248 bytes** and whose
-`payload_size` field is a `uint8_t` (`sapi_checksum.h:237-241`). Today
+`rte_vital_message_t`, whose payload is **248 bytes** and whose
+`payload_size` field is a `uint8_t` (`rte_checksum.h:237-241`). Today
 that snapshot is ~173 bytes. At `MAX_TRAINS = 100` (`MAX_ROUTES =
 MAX_TRAINS * MAX_ROUTES_PER_TRAIN = 400`) it is **~8300 bytes** - 33x
 over the cap, and not even expressible in `payload_size`.
@@ -57,7 +57,7 @@ constant, honouring the project's no-malloc/no-dynamic-list rule.
 
 The number of trains actually brought up is a **runtime** value,
 `SAFEAPI_EXAMPLE_DEFAULT_ACTIVE_TRAINS` (2) unless the environment
-variable `SAPI_RBC_ACTIVE_TRAINS` overrides it (clamped to
+variable `RTE_RBC_ACTIVE_TRAINS` overrides it (clamped to
 `1..MAX_TRAINS`). Every per-train loop in `C` and `A/B` runs
 `0 .. active_trains-1`, not `0 .. MAX_TRAINS-1`. This keeps the
 regression suite, CI, and a plain local bring-up paying only the
@@ -103,7 +103,7 @@ carries.
   `ab_gp_channel_types.h` drops its `[MAX_TRAINS]` dimension;
   `ab_gp_channel_send_relay` / `_stage_relay` lose their `index`
   parameter; `on_relay_envelope_received` loses `index`.
-- `SAPI_RBC_ACTIVE_TRAINS` is read by **A/B** (session-table iteration
+- `RTE_RBC_ACTIVE_TRAINS` is read by **A/B** (session-table iteration
   bound) and the **sims** (how many trains to create). `C` does not
   read it - it relays whatever arrives.
 - Channel resolver names lose their `-%u` suffix: `c-sim-train`,
@@ -160,10 +160,10 @@ See the **ADR-029 Addendum** appended to that file. In brief:
   roster (or `active_trains: N` + `base_nid_engine` shorthand, expanded
   by `SimCore`).
 - **Compose**: 11 containers -> **9** (6 RBC + `train` + `il` + `ctc`).
-  `SAPI_RBC_ACTIVE_TRAINS` is set once, shared by the RBC services and
+  `RTE_RBC_ACTIVE_TRAINS` is set once, shared by the RBC services and
   the sims.
 - `setupLocalTestEnv.sh` generates 3 sim configs instead of 5 and
-  exports `SAPI_RBC_ACTIVE_TRAINS`.
+  exports `RTE_RBC_ACTIVE_TRAINS`.
 
 ### 6. FRMCS analogy - and its limit
 
@@ -175,7 +175,7 @@ real on-board<->RBC communication keeps a **per-train EURORADIO safe
 connection** (Subset-037) over the shared FRMCS/GSM-R bearer. This ADR
 changes the simulator transport and the RBC's *sim-facing* gateway, not
 the vitality model - A/B still cross-compare per-train decisions exactly
-as before, and the inter-site transfer is still a vital `sapi_dual_channel`
+as before, and the inter-site transfer is still a vital `rte_dual_channel`
 payload. A production RBC would terminate 100 EURORADIO connections;
 this demo terminates one multiplexed test link and keeps 100 independent
 vital sessions behind it.
@@ -190,7 +190,7 @@ vital sessions behind it.
    an MA; a mid-run West->East failover leaves all 10 MAs intact
    (ADR-029 §2.4's property, now over a chunked transfer - assert
    convergence within the window bound).
-3. **N = 100 soak** - `SAPI_RBC_ACTIVE_TRAINS=100`, 100 trains connect
+3. **N = 100 soak** - `RTE_RBC_ACTIVE_TRAINS=100`, 100 trains connect
    and hold MAs for a 5-minute soak; 0 SAFE-states, 0 reboots, port
    scan shows the per-site span still inside the WEST/EAST gap,
    inter-site payload stays `<= 248` bytes.

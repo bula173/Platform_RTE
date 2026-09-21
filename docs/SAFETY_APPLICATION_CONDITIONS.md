@@ -94,8 +94,8 @@ Any project using safeAPIFramework must perform:
 - **What:** Unit and integration tests for all safeAPIFramework components
   - Test coverage: Minimum 80% line coverage (recommend >90% for SIL 3/4)
   - Test each module's backend interface separately
-  - Test error handling paths (SAPI_STATUS_* return values)
-  - Test safe-state transitions (SAPI_ASSERT, SAPI_SAFESTATE, SAPI_REBOOT)
+  - Test error handling paths (RTE_STATUS_* return values)
+  - Test safe-state transitions (RTE_ASSERT, RTE_SAFESTATE, RTE_REBOOT)
 - **Output:** Test report with coverage metrics
 - **Evidence for Safety Case:** Test cases, coverage report, traceability matrix
 
@@ -192,7 +192,7 @@ Any project using safeAPIFramework must perform:
 - **Project Must Verify:** No buffer overflow due to untrusted input sizes
 
 #### Type Safety Assumptions
-- **Assumption:** All integer conversions use sapi_cast_* functions
+- **Assumption:** All integer conversions use rte_cast_* functions
 - **Project Must Verify:** Static analysis confirms no bare casts in application code
 
 #### Timing Assumptions
@@ -454,7 +454,7 @@ Use this checklist for your formal review of safeAPIFramework:
 
 | Rule | File | Line | Violation | Rationale | Risk | Mitigation | Approval |
 |------|------|------|-----------|-----------|------|-----------|----------|
-| 15.5 | src/status/sapi_status.c | 25 | Multiple return statements | Guard clauses improve readability vs nested else | Low | Code review confirms pattern consistency | [Manager] |
+| 15.5 | src/status/rte_status.c | 25 | Multiple return statements | Guard clauses improve readability vs nested else | Low | Code review confirms pattern consistency | [Manager] |
 | [Add findings...] | | | | | | | |
 ```
 

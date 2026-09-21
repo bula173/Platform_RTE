@@ -10,7 +10,7 @@
  * The framework provides:
  * - **Base IPC API**: send(), receive(), create(), destroy() (transport-agnostic)
  * - **Patterns**: Request-Reply (RPC), Pub-Sub (broadcast)
- * - **Backend Interface**: sapi_ipc_backend_t vtable for plugging in transport
+ * - **Backend Interface**: rte_ipc_backend_t vtable for plugging in transport
  *
  * @section ipc_transport_selection_transport_options Available Transport Options
  *
@@ -28,23 +28,23 @@
  * Each transport implements the backend vtable:
  *
  * ```c
- * typedef struct sapi_ipc_backend_s {
- *     sapi_status_t (*create)(sapi_ipc_storage_t *storage,
- *                             const sapi_ipc_config_t *config,
- *                             sapi_ipc_handle_t *out_handle);
- *     sapi_status_t (*send)(sapi_ipc_handle_t handle, const void *message,
- *                           size_t message_size, sapi_duration_ms_t timeout_ms);
- *     sapi_status_t (*receive)(sapi_ipc_handle_t handle, void *out_message,
- *                              size_t buffer_size, sapi_duration_ms_t timeout_ms);
- *     sapi_status_t (*destroy)(sapi_ipc_handle_t handle);
- * } sapi_ipc_backend_t;
+ * typedef struct rte_ipc_backend_s {
+ *     rte_status_t (*create)(rte_ipc_storage_t *storage,
+ *                             const rte_ipc_config_t *config,
+ *                             rte_ipc_handle_t *out_handle);
+ *     rte_status_t (*send)(rte_ipc_handle_t handle, const void *message,
+ *                           size_t message_size, rte_duration_ms_t timeout_ms);
+ *     rte_status_t (*receive)(rte_ipc_handle_t handle, void *out_message,
+ *                              size_t buffer_size, rte_duration_ms_t timeout_ms);
+ *     rte_status_t (*destroy)(rte_ipc_handle_t handle);
+ * } rte_ipc_backend_t;
  * ```
  *
  * At application startup, register ONE backend:
  *
  * ```c
- * sapi_ipc_register_backend(&my_transport_backend);  // Once at init
- * // All subsequent sapi_ipc_* calls use this backend
+ * rte_ipc_register_backend(&my_transport_backend);  // Once at init
+ * // All subsequent rte_ipc_* calls use this backend
  * ```
  *
  * @section ipc_transport_selection_shared_memory Shared Memory Transport
@@ -78,7 +78,7 @@
  *     uint8_t data[MAX_QUEUE_DEPTH][MAX_MESSAGE_SIZE];
  * } shm_queue_t;
  *
- * sapi_status_t shm_send(sapi_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
+ * rte_status_t shm_send(rte_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
  *     shm_queue_t *q = (shm_queue_t *)handle;
  *     // Acquire spinlock or mutex
  *     // Check if queue has space
@@ -86,7 +86,7 @@
  *     // Increment write_idx (wrap around)
  *     // Release spinlock
  *     // Signal semaphore/condition-var for waiters
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -117,12 +117,12 @@
  *     char name[256];            // FIFO path
  * } fifo_channel_t;
  *
- * sapi_status_t fifo_send(sapi_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
+ * rte_status_t fifo_send(rte_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
  *     fifo_channel_t *ch = (fifo_channel_t *)handle;
  *     // Set fd to non-blocking or use poll/select with timeout
  *     ssize_t written = write(ch->fd, msg, size);
  *     // Handle EAGAIN (queue full) with timeout retry
- *     return (written == size) ? SAPI_STATUS_OK : SAPI_STATUS_TIMEOUT;
+ *     return (written == size) ? RTE_STATUS_OK : RTE_STATUS_TIMEOUT;
  * }
  * ```
  *
@@ -161,14 +161,14 @@
  *     uint32_t connect_timeout;
  * } tcp_channel_t;
  *
- * sapi_status_t tcp_send(sapi_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
+ * rte_status_t tcp_send(rte_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
  *     tcp_channel_t *ch = (tcp_channel_t *)handle;
  *     // Send header with message size (framing)
  *     uint32_t frame_size = size;
  *     send(ch->socket, &frame_size, sizeof(frame_size), MSG_NOSIGNAL);
  *     // Send payload
  *     ssize_t sent = send(ch->socket, msg, size, MSG_NOSIGNAL);
- *     return (sent == size) ? SAPI_STATUS_OK : SAPI_STATUS_HARDWARE_FAULT;
+ *     return (sent == size) ? RTE_STATUS_OK : RTE_STATUS_HARDWARE_FAULT;
  * }
  * ```
  *
@@ -197,15 +197,15 @@
  *     struct sockaddr_in peer;   // Peer address
  * } udp_channel_t;
  *
- * sapi_status_t udp_send(sapi_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
+ * rte_status_t udp_send(rte_ipc_handle_t handle, const void *msg, size_t size, uint32_t timeout) {
  *     udp_channel_t *ch = (udp_channel_t *)handle;
  *     // UDP is connectionless, send directly to peer
  *     ssize_t sent = sendto(ch->socket, msg, size, MSG_DONTWAIT, 
  *                           (struct sockaddr*)&ch->peer, sizeof(ch->peer));
  *     if (sent == -1 && errno == EAGAIN) {
- *         return SAPI_STATUS_TIMEOUT;  // Queue full (unordered buffer)
+ *         return RTE_STATUS_TIMEOUT;  // Queue full (unordered buffer)
  *     }
- *     return (sent == size) ? SAPI_STATUS_OK : SAPI_STATUS_HARDWARE_FAULT;
+ *     return (sent == size) ? RTE_STATUS_OK : RTE_STATUS_HARDWARE_FAULT;
  * }
  * ```
  *
@@ -224,13 +224,13 @@
  *
  * ```c
  * // Configuration: Shared memory for low latency + TCP for remote fallback
- * sapi_ipc_handle_t ch0, ch1;
- * sapi_ipc_config_t cfg0 = {
+ * rte_ipc_handle_t ch0, ch1;
+ * rte_ipc_config_t cfg0 = {
  *     .name = "shm_channel",
  *     .message_size = sizeof(train_cmd_t),
  *     .queue_depth = 10
  * };
- * sapi_ipc_config_t cfg1 = {
+ * rte_ipc_config_t cfg1 = {
  *     .name = "tcp_channel",
  *     .message_size = sizeof(train_cmd_t),
  *     .queue_depth = 5
@@ -240,12 +240,12 @@
  * // If we want mixed transports, we need per-channel wrapper callbacks
  *
  * // Create channels with selected transports
- * sapi_ipc_create(&storage0, &cfg0, &ch0);  // Uses registered backend
- * sapi_ipc_create(&storage1, &cfg1, &ch1);  // Uses registered backend
+ * rte_ipc_create(&storage0, &cfg0, &ch0);  // Uses registered backend
+ * rte_ipc_create(&storage1, &cfg1, &ch1);  // Uses registered backend
  *
  * // Wrap in vital channel for 2oo2 voting
- * sapi_channel_config_t vital_cfg = {
- *     .voting_strategy = SAPI_VOTING_2OO2,
+ * rte_channel_config_t vital_cfg = {
+ *     .voting_strategy = RTE_VOTING_2OO2,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,
  *     .backend_send = custom_backend_send,    // YOUR callback
@@ -253,10 +253,10 @@
  * };
  *
  * void *channels[2] = { &ch0, &ch1 };
- * sapi_channel_init(&vital_channel, &vital_cfg, channels, 2);
+ * rte_channel_init(&vital_channel, &vital_cfg, channels, 2);
  *
  * // Now use vital_channel for voting communication
- * sapi_channel_send(&vital_channel, &cmd, sizeof(cmd));
+ * rte_channel_send(&vital_channel, &cmd, sizeof(cmd));
  * ```
  *
  * ### Custom Callbacks for Multi-Transport Support
@@ -267,22 +267,22 @@
  * // Channel 0 uses shared memory (fast, local)
  * // Channel 1 uses TCP (remote, reliable backup)
  *
- * sapi_status_t mixed_backend_send(void *ch, const void *data, size_t size) {
+ * rte_status_t mixed_backend_send(void *ch, const void *data, size_t size) {
  *     if (is_shm_channel(ch)) {
  *         return shm_queue_send((shm_queue_t*)ch, data, size);
  *     } else if (is_tcp_channel(ch)) {
  *         return tcp_socket_send((tcp_channel_t*)ch, data, size);
  *     }
- *     return SAPI_STATUS_INVALID_PARAM;
+ *     return RTE_STATUS_INVALID_PARAM;
  * }
  *
- * sapi_status_t mixed_backend_recv(void *ch, void *data, size_t size, uint32_t timeout) {
+ * rte_status_t mixed_backend_recv(void *ch, void *data, size_t size, uint32_t timeout) {
  *     if (is_shm_channel(ch)) {
  *         return shm_queue_recv((shm_queue_t*)ch, data, size, timeout);
  *     } else if (is_tcp_channel(ch)) {
  *         return tcp_socket_recv((tcp_channel_t*)ch, data, size, timeout);
  *     }
- *     return SAPI_STATUS_INVALID_PARAM;
+ *     return RTE_STATUS_INVALID_PARAM;
  * }
  *
  * // Use this in vital_channel config
@@ -320,7 +320,7 @@
  * **Configuration:**
  * ```c
  * // Both channels = shared memory (low latency)
- * sapi_voting_strategy = SAPI_VOTING_2OO2
+ * rte_voting_strategy = RTE_VOTING_2OO2
  * channel[0] = shared_memory_queue_0
  * channel[1] = shared_memory_queue_1
  * ```
@@ -448,7 +448,7 @@
  * ```c
  * // 2oo2 redundancy with high reliability
  * config = {
- *     .voting_strategy = SAPI_VOTING_2OO2,
+ *     .voting_strategy = RTE_VOTING_2OO2,
  *     .channel_timeout_ms = 500,  // Strict timeout
  *     .log_disagreements = true,  // Every mismatch logged
  *     .backend_send = tcp_send,   // TCP for ordered delivery
@@ -462,7 +462,7 @@
  * ```c
  * // 2oo3 with mixed transports (fast + reliable)
  * config = {
- *     .voting_strategy = SAPI_VOTING_2OO3,
+ *     .voting_strategy = RTE_VOTING_2OO3,
  *     .channel_timeout_ms = 100,   // Tighter timeout for vehicles
  *     .log_disagreements = true,
  *     .backend_send = hybrid_send,  // Supports both shared-mem + TCP
@@ -476,7 +476,7 @@
  * ```c
  * // 2oo2 across data centers (accept higher latency)
  * config = {
- *     .voting_strategy = SAPI_VOTING_2OO2,
+ *     .voting_strategy = RTE_VOTING_2OO2,
  *     .channel_timeout_ms = 2000,   // Allow regional latency (100ms+ RTT)
  *     .log_disagreements = false,   // Log volume too high in production
  *     .backend_send = tcp_send,
@@ -492,8 +492,8 @@
  * - [ ] Implement backend callbacks (backend_send/backend_recv)
  * - [ ] Create transport-specific channels (2 or 3)
  * - [ ] Configure vital_channel with callbacks and channels
- * - [ ] Use sapi_channel_send/receive for voting communication
- * - [ ] Monitor health via sapi_channel_get_health()
+ * - [ ] Use rte_channel_send/receive for voting communication
+ * - [ ] Monitor health via rte_channel_get_health()
  * - [ ] Implement watchdog for health-based channel isolation
  * - [ ] Test disagreement scenarios (simulate channel failures)
  * - [ ] Verify safe-state triggers on voting failure

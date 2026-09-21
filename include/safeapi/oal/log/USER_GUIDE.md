@@ -17,11 +17,11 @@
  * @section log_user_guide_quick_start Quick Start
  *
  * @code
- * sapi_log_debug("value=%d", x);
- * sapi_log_info("System initialized");
- * sapi_log_warning("Low battery");
- * sapi_log_error("Read failed: %s", reason);
- * sapi_log_critical("Entering safe-state");
+ * rte_log_debug("value=%d", x);
+ * rte_log_info("System initialized");
+ * rte_log_warning("Low battery");
+ * rte_log_error("Read failed: %s", reason);
+ * rte_log_critical("Entering safe-state");
  * @endcode
  *
  * @section log_user_guide_guidelines Best Practices

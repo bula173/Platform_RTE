@@ -127,7 +127,7 @@ redundancy_mod --> qnx_backend : backend
 
 ```c
 /**
- * @file safeapi/ipc/sapi_ipc.h
+ * @file safeapi/ipc/rte_ipc.h
  * @brief Inter-Process Communication Module
  * 
  * @startuml component-sapiframework
@@ -150,7 +150,7 @@ participant "Train Controller\n(Client)" as client
 participant "IPC Layer" as ipc
 participant "Signal Database\n(Server)" as server
 
-client ->> ipc: sapi_ipc_send_request(query, 5s timeout)
+client ->> ipc: rte_ipc_send_request(query, 5s timeout)
 note right of client: "What is signal at position 100m?"
 
 ipc ->> server: receive_request()
@@ -159,7 +159,7 @@ note right of ipc: Route to server queue
 server ->> server: process_signal_query()
 note right of server: Compute signal state
 
-server ->> ipc: sapi_ipc_send_reply(reply)
+server ->> ipc: rte_ipc_send_reply(reply)
 note right of server: "Signal is RED, speed limit 40km/h"
 
 ipc ->> client: reply received
@@ -236,11 +236,11 @@ Shows watchdog state transitions.
 @startuml statemachine-watchdog
 [*] --> CREATED
 
-CREATED --> STOPPED: sapi_watchdog_create()
+CREATED --> STOPPED: rte_watchdog_create()
 
-STOPPED --> RUNNING: sapi_watchdog_start()
+STOPPED --> RUNNING: rte_watchdog_start()
 
-RUNNING --> RUNNING: sapi_watchdog_kick()\n[countdown reset]
+RUNNING --> RUNNING: rte_watchdog_kick()\n[countdown reset]
 
 RUNNING --> TIMEOUT: countdown == 0ms
 note right of TIMEOUT: Watchdog fires!
@@ -257,9 +257,9 @@ REBOOT --> [*]
 FAILOVER --> [*]
 LOG_ONLY --> RUNNING: optional restart
 
-RUNNING --> STOPPED: sapi_watchdog_stop()
+RUNNING --> STOPPED: rte_watchdog_stop()
 
-STOPPED --> [*]: sapi_watchdog_destroy()
+STOPPED --> [*]: rte_watchdog_destroy()
 
 @enduml
 ```
@@ -274,7 +274,7 @@ Shows how Platform_RTE is deployed on hardware.
 
 ```plantuml
 @startuml deployment-2oo3
-artifact "safeAPIFramework" as sapi_lib
+artifact "safeAPIFramework" as rte_lib
 
 node "Site A (CPU 1)" as siteA {
     component [RBC Logic] as rbcA
@@ -305,10 +305,10 @@ node "Voting Engine (Central)" as voter {
     component [Checkpoint Barrier] as ckpt
 }
 
-sapi_lib --> siteA
-sapi_lib --> siteB
-sapi_lib --> siteC
-sapi_lib --> voter
+rte_lib --> siteA
+rte_lib --> siteB
+rte_lib --> siteC
+rte_lib --> voter
 
 ipcA -right-> ipcB: network
 ipcB -right-> ipcC: network
@@ -377,7 +377,7 @@ stop
 
 ```c
 /**
- * @file safeapi/ipc/sapi_ipc_request_reply.h
+ * @file safeapi/ipc/rte_ipc_request_reply.h
  * @brief Request-Reply (RPC) IPC Pattern
  *
  * @section overview Overview
@@ -391,7 +391,7 @@ stop
  * s ->> c: send_reply(answer)
  * @enduml
  *
- * @see sapi_ipc_request_reply_t
+ * @see rte_ipc_request_reply_t
  */
 ```
 
@@ -570,7 +570,7 @@ skinparam monochrome true
 
 **Link diagrams to code:**
 ```
-Component → sapi_*.h header file → Implementation
+Component → rte_*.h header file → Implementation
 Sequence → Test case → Documented behavior
 State Machine → State enum → Code logic
 ```

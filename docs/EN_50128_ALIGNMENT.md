@@ -154,7 +154,7 @@ EN 50128 Technique: MISRA C:2012 Rule 6.1 (Bit manipulation)
 ```
 EN 50128 Technique: Defensive Programming (7.2.3), MISRA C:2012 Rule 10.2
 
-✓ sapi_cast_* functions (never C-style cast)
+✓ rte_cast_* functions (never C-style cast)
 ✓ Range validation on every type conversion
 ✓ Detects overflow/underflow at cast time
 ✓ Logs cast violations for diagnostics
@@ -167,10 +167,10 @@ Example:
 uint8_t small = (uint8_t)(big_value);  // May overflow undetected
 
 // ✅ SAFE: Checked cast with error handling
-sapi_status_t status = sapi_cast_u32_to_u8(big_value, &small);
-if (status == SAPI_STATUS_INVALID_CAST) {
-    SAPI_LOG_ERROR("Overflow detected: %u too large for uint8_t", big_value);
-    sapi_safestate_trigger();
+rte_status_t status = rte_cast_u32_to_u8(big_value, &small);
+if (status == RTE_STATUS_INVALID_CAST) {
+    RTE_LOG_ERROR("Overflow detected: %u too large for uint8_t", big_value);
+    rte_safestate_trigger();
 }
 ```
 
@@ -182,7 +182,7 @@ if (status == SAPI_STATUS_INVALID_CAST) {
 ```
 EN 50128 Technique: Defensive Programming (7.2.3), MISRA C:2012
 
-✓ All fallible operations return sapi_status_t
+✓ All fallible operations return rte_status_t
 ✓ No exceptions (deterministic, verifiable)
 ✓ Caller MUST check status before using result
 ✓ Error handling is explicit (not hidden)
@@ -192,23 +192,23 @@ EN 50128 Technique: Defensive Programming (7.2.3), MISRA C:2012
 Example Flow:
 ```c
 // Send vital message
-status = sapi_vital_send(channel, &msg, sizeof(msg), 100);
+status = rte_vital_send(channel, &msg, sizeof(msg), 100);
 
 switch (status) {
-    case SAPI_STATUS_OK:
+    case RTE_STATUS_OK:
         // Message sent successfully
         break;
     
-    case SAPI_STATUS_TIMEOUT:
+    case RTE_STATUS_TIMEOUT:
         // Channel didn't respond in time → Fault
-        SAPI_LOG_ERROR("Vital channel timeout");
-        sapi_safestate_trigger();
+        RTE_LOG_ERROR("Vital channel timeout");
+        rte_safestate_trigger();
         break;
     
-    case SAPI_STATUS_ERROR:
+    case RTE_STATUS_ERROR:
         // Channel disagreement or network fault
-        SAPI_LOG_ERROR("Vital channel error");
-        sapi_safestate_trigger();
+        RTE_LOG_ERROR("Vital channel error");
+        rte_safestate_trigger();
         break;
 }
 ```
@@ -217,7 +217,7 @@ switch (status) {
 ```
 EN 50128 Technique: Fault Tolerance & Recovery (7.6.1)
 
-✓ sapi_safestate_trigger() moves to safe state immediately
+✓ rte_safestate_trigger() moves to safe state immediately
 ✓ Safe state halts all safety-critical outputs
 ✓ Safe state is irrevocable (cannot accidentally recover)
 ✓ All paths to safe state logged
@@ -357,14 +357,14 @@ EN 50128 Technique: Fault Tolerance & Recovery (7.6.1)
 
 Log Event Examples:
 ```c
-SAPI_LOG_ERROR("Watchdog fired: system_wd (timeout 1000ms)");
-SAPI_LOG_ERROR("  Recovery action: SAFESTATE");
-SAPI_LOG_ERROR("  Last kick: 1250ms ago");
+RTE_LOG_ERROR("Watchdog fired: system_wd (timeout 1000ms)");
+RTE_LOG_ERROR("  Recovery action: SAFESTATE");
+RTE_LOG_ERROR("  Last kick: 1250ms ago");
 
-SAPI_LOG_INFO("Checkpoint reached: all 3 sites synchronized");
-SAPI_LOG_INFO("Data sync succeeded: sites A, B, C agree");
+RTE_LOG_INFO("Checkpoint reached: all 3 sites synchronized");
+RTE_LOG_INFO("Data sync succeeded: sites A, B, C agree");
 
-SAPI_LOG_WARN("Task latency high: took 450ms (deadline 500ms)");
+RTE_LOG_WARN("Task latency high: took 450ms (deadline 500ms)");
 ```
 
 ---
@@ -426,8 +426,8 @@ EN 50128 Technique: Modular Approach (7.2.2)
 BENEFIT: Reduces verification scope per module
 
 Structure:
-  include/safeapi/<module>/sapi_<module>.h
-  src/<module>/sapi_<module>.c
+  include/safeapi/<module>/rte_<module>.h
+  src/<module>/rte_<module>.c
   src/<module>/CMakeLists.txt
   tests/<module>/test_<module>.c
 

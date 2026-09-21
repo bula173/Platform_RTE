@@ -11,16 +11,16 @@
  * @section checksum_user_guide_quick_start Quick Start
  *
  * ```c
- * #include "safeapi/checksum/sapi_checksum.h"
+ * #include "safeapi/checksum/rte_checksum.h"
  *
  * // Compute checksum
- * uint32_t crc = sapi_checksum_crc32(data, length);
+ * uint32_t crc = rte_checksum_crc32(data, length);
  *
  * // Verify checksum
  * uint32_t stored_crc = get_stored_checksum();
  * if (crc != stored_crc) {
  *     log_error("Data corrupted: CRC mismatch");
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, REASON);
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE, REASON);
  * }
  * ```
  *
@@ -28,13 +28,13 @@
  *
  * ```c
  * // Compute CRC32 of entire buffer
- * uint32_t sapi_checksum_crc32(const uint8_t *data, size_t length);
+ * uint32_t rte_checksum_crc32(const uint8_t *data, size_t length);
  *
  * // Simple 8-bit checksum (XOR of all bytes)
- * uint8_t sapi_checksum_xor8(const uint8_t *data, size_t length);
+ * uint8_t rte_checksum_xor8(const uint8_t *data, size_t length);
  *
  * // CRC16 for smaller data
- * uint16_t sapi_checksum_crc16(const uint8_t *data, size_t length);
+ * uint16_t rte_checksum_crc16(const uint8_t *data, size_t length);
  * ```
  *
  * @section checksum_user_guide_examples Practical Examples
@@ -48,18 +48,18 @@
  *     uint32_t checksum;  // Computed over all previous fields
  * } message_t;
  *
- * sapi_status_t process_message(const message_t *msg) {
+ * rte_status_t process_message(const message_t *msg) {
  *     // Compute checksum over everything except checksum field
- *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)msg,
+ *     uint32_t computed = rte_checksum_crc32((const uint8_t *)msg,
  *                                            offsetof(message_t, checksum));
  *
  *     if (computed != msg->checksum) {
  *         log_error("Message corrupted");
- *         return SAPI_STATUS_INVALID_PARAM;
+ *         return RTE_STATUS_INVALID_PARAM;
  *     }
  *
  *     execute_command(msg->command_id, msg->data);
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -73,20 +73,20 @@
  *     uint32_t crc;  // Checksum of above
  * } config_t;
  *
- * sapi_status_t load_config(config_t *cfg) {
+ * rte_status_t load_config(config_t *cfg) {
  *     // Read from NVM
  *     read_nvm(0, (uint8_t *)cfg, sizeof(config_t));
  *
  *     // Verify checksum
  *     size_t data_len = offsetof(config_t, crc);
- *     uint32_t computed = sapi_checksum_crc32((const uint8_t *)cfg, data_len);
+ *     uint32_t computed = rte_checksum_crc32((const uint8_t *)cfg, data_len);
  *
  *     if (computed != cfg->crc) {
  *         log_error("Configuration corrupted, using defaults");
  *         init_default_config(cfg);
  *     }
  *
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *

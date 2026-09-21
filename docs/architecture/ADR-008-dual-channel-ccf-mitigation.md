@@ -3,7 +3,7 @@
 Status: Draft
 Date: 2026-08-05
 Applies to: safeAPIFreamwork, RBC core's dual-channel (2-channel) vital
-computation, and the new `sapi_channel` module.
+computation, and the new `rte_channel` module.
 
 ## 1. Context
 
@@ -19,7 +19,7 @@ codegen bug, a timing-dependent race triggered by one specific instruction
 sequence - can hit both channels the same way at the same moment, which
 defeats the reason a second channel exists. EN 50129 expects an explicit
 CCF analysis for any redundant/voted architecture; this ADR states the
-same-architecture assumption plainly and defines what SAPI does to
+same-architecture assumption plainly and defines what RTE does to
 mitigate it, rather than letting "two channels" silently imply
 independence it doesn't actually have.
 
@@ -29,7 +29,7 @@ identity, (2) a bounds-checked way to compare its computed result against
 the peer channel's result, and (3) a defined fail-safe reaction on
 disagreement. The physical transport that carries the peer channel's
 result to the local channel (serial link, dual-port RAM, network) is
-expected to build on `sapi_ipc` (ADR-001 section 4, service 5) and is
+expected to build on `rte_ipc` (ADR-001 section 4, service 5) and is
 **not** designed by this ADR.
 
 ## 2. Decision
@@ -38,7 +38,7 @@ expected to build on `sapi_ipc` (ADR-001 section 4, service 5) and is
 
 Both channels stay on x86 - that constraint is accepted here, not
 re-litigated by this ADR. CCF mitigation is via **build diversity**:
-channel A and channel B are compiled from identical SAPI/application
+channel A and channel B are compiled from identical RBC_Template/application
 source but with two independently-configured toolchains (different
 compiler, and/or different optimization level and code-generation flags).
 
@@ -61,34 +61,34 @@ channel-specific code never calls the OS/CPU directly, so moving channel B
 to a different CPU family later is a backend swap, not an application
 rewrite.
 
-### 2.2 New feature: `sapi_channel` (comparator + identity)
+### 2.2 New feature: `rte_channel` (comparator + identity)
 
 A new, OS-independent module (like `buffer`/`cast`/`safestate`/`string` -
 pure data/logic, no backend):
 
-- `sapi_channel_id_t` (`SAPI_CHANNEL_ID_A` / `SAPI_CHANNEL_ID_B`), resolved
+- `rte_channel_id_t` (`RTE_CHANNEL_ID_A` / `RTE_CHANNEL_ID_B`), resolved
   at **compile time** from a build-supplied macro
-  (`SAPI_CHANNEL_BUILD_A` / `SAPI_CHANNEL_BUILD_B`), enforced with a
+  (`RTE_CHANNEL_BUILD_A` / `RTE_CHANNEL_BUILD_B`), enforced with a
   preprocessor `#error` if neither or both are defined. A channel binary
   that doesn't unambiguously know which channel it is is itself a defect
   that must be caught at compile time, not left to build-script
   convention.
-- `sapi_channel_local_id()` - query for the local channel identity.
-- `sapi_channel_id_to_string()` - diagnostic string, matching the
-  `sapi_status_to_string()` pattern (ADR-001 section 3.6); logging/
+- `rte_channel_local_id()` - query for the local channel identity.
+- `rte_channel_id_to_string()` - diagnostic string, matching the
+  `rte_status_to_string()` pattern (ADR-001 section 3.6); logging/
   diagnostics only.
-- `sapi_channel_compare()` - bounds-checked, byte-for-byte comparison of
-  the local channel's computed result (`sapi_const_buffer_t`, reusing
+- `rte_channel_compare()` - bounds-checked, byte-for-byte comparison of
+  the local channel's computed result (`rte_const_buffer_t`, reusing
   ADR-002's buffer view) against the peer channel's result buffer
-  (received via whatever transport - e.g. `sapi_ipc`), reporting
-  `SAPI_CHANNEL_COMPARE_MATCH` / `SAPI_CHANNEL_COMPARE_MISMATCH`. A length
+  (received via whatever transport - e.g. `rte_ipc`), reporting
+  `RTE_CHANNEL_COMPARE_MATCH` / `RTE_CHANNEL_COMPARE_MISMATCH`. A length
   mismatch is itself reported as `MISMATCH`, not treated as an error.
-- `sapi_channel_compare_and_enter_safestate()` - convenience wrapper:
+- `rte_channel_compare_and_enter_safestate()` - convenience wrapper:
   compares, and on `MISMATCH` calls
-  `sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, reason, ...)` (never
+  `rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE, reason, ...)` (never
   returns on mismatch, per REQ-COMMON-SAFESTATE-002). A dedicated reserved
-  reason code, `SAPI_SAFESTATE_REASON_CHANNEL_MISMATCH`, is added to
-  `sapi_safestate.h`.
+  reason code, `RTE_SAFESTATE_REASON_CHANNEL_MISMATCH`, is added to
+  `rte_safestate.h`.
 
 This is deliberately a **comparator**, not a voter: with exactly two
 channels there is no majority to take, so the only sound reaction to
@@ -105,14 +105,14 @@ what diverse compilation catches (compiler/codegen-specific systematic
 faults) and explicitly does **not** catch (CPU-silicon-family-wide errata,
 shared power/environment faults, and any specification-level bug common
 to both channels, since they still share one algorithm); and the
-compensating measures expected outside SAPI's scope (independent power
+compensating measures expected outside RTE's scope (independent power
 supplies, independent clocking, physical separation) that a full safety
 case will still need to state.
 
 ## 3. Consequences
 
 - Positive: cheap to adopt - no second hardware platform to qualify;
-  reuses the existing `sapi_safestate` primitive instead of inventing a
+  reuses the existing `rte_safestate` primitive instead of inventing a
   new fault-reaction path; keeps the OAL's future hardware-diversity
   option open without committing to it now.
 - Negative / accepted risk: diverse compilation is real but weaker
@@ -122,16 +122,16 @@ case will still need to state.
   shared source is **not** caught by this design (both channels compute
   the same wrong answer and agree with each other) - this is a
   fundamental limit of comparing two runs of the same algorithm, not a
-  defect in the `sapi_channel` implementation.
+  defect in the `rte_channel` implementation.
 - Deferred: the actual cross-channel transport carrying the peer's result
   (link protocol, timing budget, EN 50159-style message integrity if
   channels run on separate physical nodes) is out of scope here; expected
-  to build on `sapi_ipc` in a future ADR once the transport is designed.
-  **Update:** ADR-017 (`sapi_checkpoint`, `sapi_clocksync`) is that future
-  ADR - built on `sapi_channel` rather than `sapi_channel`, since by
-  the time ADR-017 was written `sapi_channel` had become the more
+  to build on `rte_ipc` in a future ADR once the transport is designed.
+  **Update:** ADR-017 (`rte_checkpoint`, `rte_clocksync`) is that future
+  ADR - built on `rte_channel` rather than `rte_channel`, since by
+  the time ADR-017 was written `rte_channel` had become the more
   complete, actively-developed voting implementation (2oo2/2oo3/NMR vs.
-  this ADR's fixed 2-channel comparator). `sapi_channel`'s own fate
+  this ADR's fixed 2-channel comparator). `rte_channel`'s own fate
   (retire vs. keep as a lighter-weight alternative) is still an open
   decision - see ADR-017 section 3.
 - Deferred: the build-diversity CMake scaffolding (toolchain files for
@@ -142,7 +142,7 @@ case will still need to state.
 
 ## 4. Location
 
-`include/safeapi/channel/sapi_channel.h` + `src/channel/sapi_channel.c`
+`include/safeapi/channel/rte_channel.h` + `src/channel/rte_channel.c`
 (target `safeapi::channel`, links `safeapi::buffer` and
 `safeapi::safestate`), per the per-feature layout (ADR-007).
 Build-diversity toolchain skeletons at `cmake/toolchain-channel-a.cmake` /

@@ -74,11 +74,11 @@ develop/   ← Integration
 git checkout -b feature/improve-timer
 
 # Make changes
-vim src/timer/sapi_timer.c
+vim src/timer/rte_timer.c
 cmake --preset debug && cmake --build --preset debug && ctest --preset debug
 
 # Commit with good message
-git commit -m "feat: Add timeout parameter to sapi_timer_create
+git commit -m "feat: Add timeout parameter to rte_timer_create
 
 Allows flexible timeout configuration per timer instance instead of
 hardcoded value. Improves railway system flexibility.
@@ -145,7 +145,7 @@ cmake --preset debug
 # 2. Build
 cmake --build --preset debug
 # → Compiles src/ → libsafeapi_*.a
-# → Compiles tests/ → test_sapi_*
+# → Compiles tests/ → test_rte_*
 
 # 3. Test
 ctest --preset debug
@@ -271,7 +271,7 @@ releases/
 ├── v0.1.0/
 │   ├── build-debug/
 │   │   ├── libsafeapi_*.a
-│   │   └── test_sapi_*
+│   │   └── test_rte_*
 │   ├── test-results/
 │   │   └── test-*.xml (8 files)
 │   ├── coverage-report/
@@ -386,8 +386,8 @@ git pull
 git checkout -b feature/issue-42
 
 # 3. Make changes
-vim src/timer/sapi_timer.c
-vim tests/timer/test_sapi_timer.c
+vim src/timer/rte_timer.c
+vim tests/timer/test_rte_timer.c
 
 # 4. Test locally
 cmake --preset debug && cmake --build --preset debug && ctest --preset debug
@@ -396,7 +396,7 @@ cmake --preset debug && cmake --build --preset debug && ctest --preset debug
 ./scripts/run-cppcheck.sh | tee cppcheck-report.txt
 
 # 6. Commit with good message
-git commit -m "feat: Add timeout parameter to sapi_timer_create
+git commit -m "feat: Add timeout parameter to rte_timer_create
 
 Allows flexible timeout configuration per timer instance.
 

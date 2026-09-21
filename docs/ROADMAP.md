@@ -79,8 +79,8 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **GitHub Issues:** #32–#35 (4 sub-features)
 - **Documentation:** [WATCHDOG_DESIGN.md](WATCHDOG_DESIGN.md) ✓
 - **API Files:** 
-  - `include/safeapi/watchdog/sapi_watchdog.h` ✓
-  - `src/watchdog/sapi_watchdog.c` (stubs) ✓
+  - `include/safeapi/watchdog/rte_watchdog.h` ✓
+  - `src/watchdog/rte_watchdog.c` (stubs) ✓
 - **MISRA Considerations:** Deterministic, no dynamic allocation, O(1) operations
 - **SIL 4 Safety:** Meets EN 50128 liveness requirement
 - **Est. Effort:** 3–4 weeks (core + examples + testing)
@@ -229,7 +229,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P2 (For multi-variant firmware)
 - **Target Release:** 0.3.0 or later
 - **Scope:**
-  - `sapi_enable_feature()` API
+  - `rte_enable_feature()` API
   - Feature availability checks at runtime
   - Graceful degradation when features disabled
 - **GitHub Issue:** [#15](https://github.com/bula173/safeAPIFreamwork/issues/15)

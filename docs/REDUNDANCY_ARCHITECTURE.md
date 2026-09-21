@@ -2,9 +2,9 @@
 
 How Platform_RTE supports redundant, voted vital computation: the concepts, what is implemented today, and how the
 pieces fit in a 2oo2 deployment. This document merges the earlier `REDUNDANCY_ARCHITECTURE.md` (a design proposal) and
-`2OO2_ARCHITECTURE_GUIDE.md` (a generic 2oo2 guide). Both described APIs that were never built (`sapi_vital_channel_*`,
-`sapi_nonvital_*`, `sapi_cluster_*`) or used other names for what is now `sapi_voter`, `sapi_cross_comparator` and
-`sapi_channel_link`. Their API sketches, the per-CPU hardware walk-throughs and the illustrative timing tables were dropped
+`2OO2_ARCHITECTURE_GUIDE.md` (a generic 2oo2 guide). Both described APIs that were never built (`rte_vital_channel_*`,
+`rte_nonvital_*`, `rte_cluster_*`) or used other names for what is now `rte_voter`, `rte_cross_comparator` and
+`rte_channel_link`. Their API sketches, the per-CPU hardware walk-throughs and the illustrative timing tables were dropped
 because they no longer describe the code; the git history of both files keeps them. Real APIs are in the headers under
 `include/safeapi/redundancy/` and authoritative over anything here. Hardware selection guidance is in
 [HARDWARE_PATTERNS_GUIDE.md](HARDWARE_PATTERNS_GUIDE.md).
@@ -27,23 +27,23 @@ The older text used "hot standby" for a standby that only replicates state. In t
 
 | Concept | Module | Header |
 |---|---|---|
-| One redundant link with health tracking | `sapi_channel` (channel link) | `redundancy/channel_link/sapi_channel.h` |
-| N-way voting (2oo2, 2oo3, NMR) across registered links | `sapi_voter` | `redundancy/voter/sapi_voter.h` |
-| 2-way cross-comparison of two peers, channel or buffer form | `sapi_cross_comparator` | `redundancy/cross_comparator/sapi_cross_comparator.h` |
-| Checkpoint rendezvous across channels | `sapi_checkpoint` (`sapi_channel_checkpoint()`) and the app manager's checkpoint stage | `redundancy/checkpoint/`, `app/appmanager/` |
-| Data integrity and the vital message envelope (sequence, sender, CRC-64) | `sapi_checksum` | `redundancy/checksum/` |
-| Fault detection and recovery actions (log, safe state, reboot, failover, custom) | `sapi_watchdog` | `redundancy/watchdog/` |
-| Site-level ONLINE/STANDBY negotiation over redundant links | `sapi_dual_*` | `redundancy/dual/` |
-| State carried across a promotion, declared by the application | `sapi_state_transfer` | `redundancy/state_transfer/` |
-| Topology, replicas, quorum, `standby_mode`, capability check | `sapi_redundancy_config` | `redundancy/config/` |
-| Transition to SAFE or REBOOT | `sapi_safestate` | `utils/safestate/` |
-| Named channels over pluggable backends | `sapi_channel_service` | `redundancy/channel_service/` |
+| One redundant link with health tracking | `rte_channel` (channel link) | `redundancy/channel_link/rte_channel.h` |
+| N-way voting (2oo2, 2oo3, NMR) across registered links | `rte_voter` | `redundancy/voter/rte_voter.h` |
+| 2-way cross-comparison of two peers, channel or buffer form | `rte_cross_comparator` | `redundancy/cross_comparator/rte_cross_comparator.h` |
+| Checkpoint rendezvous across channels | `rte_checkpoint` (`rte_channel_checkpoint()`) and the app manager's checkpoint stage | `redundancy/checkpoint/`, `app/appmanager/` |
+| Data integrity and the vital message envelope (sequence, sender, CRC-64) | `rte_checksum` | `redundancy/checksum/` |
+| Fault detection and recovery actions (log, safe state, reboot, failover, custom) | `rte_watchdog` | `redundancy/watchdog/` |
+| Site-level ONLINE/STANDBY negotiation over redundant links | `rte_dual_*` | `redundancy/dual/` |
+| State carried across a promotion, declared by the application | `rte_state_transfer` | `redundancy/state_transfer/` |
+| Topology, replicas, quorum, `standby_mode`, capability check | `rte_redundancy_config` | `redundancy/config/` |
+| Transition to SAFE or REBOOT | `rte_safestate` | `utils/safestate/` |
+| Named channels over pluggable backends | `rte_channel_service` | `redundancy/channel_service/` |
 
 Design decisions: ADR-008 (common-cause mitigation), ADR-017 (checkpoint and clock sync), ADR-019 (app manager hooks and
 checkpoint), ADR-020 (dual transfer negotiation), ADR-025 (voter and cross-comparator split), ADR-034 (staged sends and
 checkpoint signature marks).
 
-**Supported today.** 2oo2 per site, and 2oo2 with redundancy across two sites with cold or warm standby. `sapi_voter` votes
+**Supported today.** 2oo2 per site, and 2oo2 with redundancy across two sites with cold or warm standby. `rte_voter` votes
 N inputs, but registering an N-way mesh of channels between replicas is not implemented, so a real 2oo3 deployment is not
 possible yet. Hot standby needs platform-controlled invocation cadence in the app manager and is not implemented.
 Which combinations an application accepts is decided by its registered capability callback; the Platform rejects the rest
@@ -121,14 +121,14 @@ within the last few cycles, while a silent peer still trips the safe state (see 
 | Model | Description | In Platform_RTE |
 |---|---|---|
 | **Online (active-active)** | All nodes process the same inputs and must agree | Within a site this is the 2oo2 pair. Across sites it would be an active-active design, which is not implemented |
-| **Standby** | One site is ONLINE and outputs; the other is ready to take over | Implemented as cold and warm. Roles are ONLINE, STANDBY and FAULTED, negotiated with `sapi_dual_*` |
+| **Standby** | One site is ONLINE and outputs; the other is ready to take over | Implemented as cold and warm. Roles are ONLINE, STANDBY and FAULTED, negotiated with `rte_dual_*` |
 
 Behaviour of the reference implementation:
 
 - **Negotiation.** Each channel negotiates with its counterpart on the other site; the older start time wins the initial
   ONLINE role. A FAULTED channel never promotes itself; a STANDBY channel whose counterpart is FAULTED promotes itself;
   a FAULTED channel whose counterpart is ONLINE recovers to STANDBY; two FAULTED channels re-negotiate.
-- **Promotion.** The application declares the state that must survive (`sapi_state_transfer`). The reference RBC transfers
+- **Promotion.** The application declares the state that must survive (`rte_state_transfer`). The reference RBC transfers
   sessions and the route/train database unconditionally on promotion.
 - **Standby computes or not.** Both sites run their full A/B group. In the reference RBC the standby observes but does not
   decide. Real hot standby (independent computation on the same inputs) needs platform-controlled invocation cadence.

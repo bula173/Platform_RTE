@@ -13,10 +13,10 @@
  * @subsection watchdog_architecture_api_create Creation
  *
  * @code
- * sapi_status_t sapi_watchdog_create(
- *     sapi_watchdog_storage_t *storage,
- *     const sapi_watchdog_config_t *config,
- *     sapi_watchdog_t *out_handle
+ * rte_status_t rte_watchdog_create(
+ *     rte_watchdog_storage_t *storage,
+ *     const rte_watchdog_config_t *config,
+ *     rte_watchdog_t *out_handle
  * );
  * @endcode
  *
@@ -26,16 +26,16 @@
  * @subsection watchdog_architecture_api_lifecycle Lifecycle
  *
  * @code
- * sapi_watchdog_start(handle)     // Begin countdown
- * sapi_watchdog_kick(handle)      // Reset countdown
- * sapi_watchdog_stop(handle)      // Stop countdown
- * sapi_watchdog_destroy(handle)   // Release resources
+ * rte_watchdog_start(handle)     // Begin countdown
+ * rte_watchdog_kick(handle)      // Reset countdown
+ * rte_watchdog_stop(handle)      // Stop countdown
+ * rte_watchdog_destroy(handle)   // Release resources
  * @endcode
  *
  * @subsection watchdog_architecture_api_query Query
  *
  * @code
- * sapi_watchdog_get_status(handle, &status);
+ * rte_watchdog_get_status(handle, &status);
  * @endcode
  *
  * Returns: kicks (total), fires (total timeouts), time_until_fire, active flag.
@@ -45,8 +45,8 @@
  * Global singleton managing all watchdogs:
  *
  * @code
- * sapi_watchdog_manager_initialize()   // Call at startup
- * sapi_watchdog_manager_shutdown()     // Call at shutdown
+ * rte_watchdog_manager_initialize()   // Call at startup
+ * rte_watchdog_manager_shutdown()     // Call at shutdown
  * @endcode
  *
  * Manager coordinates timeout callbacks and recovery actions.
@@ -80,9 +80,9 @@
  * Action on timeout depends on configuration:
  *
  * @verbatim
- * LOG          - Log the event via sapi_log
- * SAFESTATE    - Invoke SAPI_SAFESTATE(SAFE, APP_REASON_WATCHDOG)
- * REBOOT       - Invoke SAPI_REBOOT(APP_REASON_WATCHDOG)
+ * LOG          - Log the event via rte_log
+ * SAFESTATE    - Invoke RTE_SAFESTATE(SAFE, APP_REASON_WATCHDOG)
+ * REBOOT       - Invoke RTE_REBOOT(APP_REASON_WATCHDOG)
  * FAILOVER     - Application-defined failover (distributed systems)
  * CUSTOM       - Call custom callback (application-provided)
  * @endverbatim
@@ -114,10 +114,10 @@
  * Watchdog recovery action can trigger safe-state:
  *
  * @code
- * .action = SAPI_WATCHDOG_ACTION_SAFESTATE
+ * .action = RTE_WATCHDOG_ACTION_SAFESTATE
  *   │
  *   └─ On timeout:
- *       └─ SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE, reason)
+ *       └─ RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE, reason)
  *           └─ Enters safe-state as programmed
  * @endcode
  *
@@ -126,9 +126,9 @@
  * **Test 1: Timeout fires recovery action**
  *
  * @code
- * sapi_watchdog_t wd;
- * sapi_watchdog_create(&storage, &config, &wd);
- * sapi_watchdog_start(wd);
+ * rte_watchdog_t wd;
+ * rte_watchdog_create(&storage, &config, &wd);
+ * rte_watchdog_start(wd);
  * // Wait for timeout without kicking
  * sleep_ms(config.timeout_ms + 10);
  * // Verify recovery action was triggered
@@ -138,9 +138,9 @@
  * **Test 2: Kick resets countdown**
  *
  * @code
- * sapi_watchdog_start(wd);
+ * rte_watchdog_start(wd);
  * sleep_ms(50);  // Wait halfway to timeout
- * sapi_watchdog_kick(wd);
+ * rte_watchdog_kick(wd);
  * sleep_ms(50);  // Half timeout again
  * // Should not have fired yet (total 100ms < timeout 200ms)
  * ASSERT(status.fires == 0);

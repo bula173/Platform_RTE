@@ -20,7 +20,7 @@ independent handlers in sequence:
 - `gateway_c_ctc_handler` - A/B -> CTCSim relay (one-way)
 
 The three handlers share **no runtime state**. Each owns exactly one
-`sapi_example_relay_kind_t` and one sim-facing link; the port scheme
+`rte_example_relay_kind_t` and one sim-facing link; the port scheme
 (`common_config.h`, `site_config.h`) already gives each kind its own
 dedicated TCP ports per peer. The only thing binding them is
 `gateway_c.c`'s appmanager / cyclic-timer / config / channel-resolver /
@@ -43,7 +43,7 @@ channel between them.
   (appmanager ops, cyclic timer, `cycle_ticks` pacing,
   channel-down-reboot), and the shared `resolve_channel_c` (unchanged -
   it resolves every `c-*` channel name; a service only ever *requests*
-  its own subset via `sapi_channel_service_setup()`, so an over-broad
+  its own subset via `rte_channel_service_setup()`, so an over-broad
   resolver is harmless). Plus `gateway_c_config.c`, `gateway_c_util.c`,
   `common/{app_main_common,site_config}.c`.
 - `safeapi_gateway_c_train` = `main_c_train.c` + `gateway_c_train_handler.c`
@@ -120,8 +120,8 @@ to attribute them under those names.
 
 `gateway_c_logctl.c` moves into the **IL** service (it fans
 `RBC_MSG_SET_LOG_LEVEL` to A/B over the IL relay - its natural home). All
-three services still read `SAPI_RBC_LOG_LEVEL` at startup for their own
-threshold; all three still poll `SAPI_RBC_LOG_LEVEL_FILE` for their own
+three services still read `RTE_RBC_LOG_LEVEL` at startup for their own
+threshold; all three still poll `RTE_RBC_LOG_LEVEL_FILE` for their own
 level (cheap, one `fopen`/`fgets` per cycle) but only the IL service
 broadcasts the change to A/B. One file write still re-levels the whole
 site.
@@ -129,7 +129,7 @@ site.
 ### 5. Future: inter-service communication
 
 Out of scope here, but the separate-process split is chosen specifically
-so it can be added cleanly later - e.g. a local `sapi_channel_service`
+so it can be added cleanly later - e.g. a local `rte_channel_service`
 loopback or shared-NVM region letting the Train service tell the IL
 service which trains are live. Nothing in this ADR precludes it; it is
 the reason "three source files in one process" was rejected in favour of

@@ -1,4 +1,4 @@
-# ADR-020: Dual-Transfer State Negotiation (`sapi_dual`)
+# ADR-020: Dual-Transfer State Negotiation (`rte_dual`)
 
 ## Status
 
@@ -21,7 +21,7 @@ redundancy right now?"
   flag byte riding along in the same beacon.
 - `channel_ab.c` tracks its own A<->B peer link health via a dual-transfer
   watchdog and drops from DUAL to SINGLE mode on peer loss, all
-  hand-rolled: raw `sapi_netlink` sends, a bespoke `PEER_MSG_KIND` framing
+  hand-rolled: raw `rte_netlink` sends, a bespoke `PEER_MSG_KIND` framing
   byte, a `pthread_mutex_t` guarding concurrent sends, a seqlock slot for
   the background rx task to hand data to the cycle thread.
 
@@ -29,34 +29,34 @@ Neither of these is reusable: a different application wanting the same
 "which of my two redundant instances is active, and how degraded is my
 own transport redundancy" behavior would have to reinvent both from
 scratch. This ADR promotes the reusable parts into the framework as
-`sapi_dual` - a state negotiator plus a redundant, EN 50159-defended
+`rte_dual` - a state negotiator plus a redundant, EN 50159-defended
 messaging channel it can run over - while leaving the two application
 files as they are for now (no retrofit in this pass; see "Non-goals").
 
 ## Decision
 
-Add a new framework module, `sapi_dual` (`include/safeapi/dual/`,
+Add a new framework module, `rte_dual` (`include/safeapi/dual/`,
 `src/dual/`), with three public types:
 
-1. **`sapi_dual_state_t`** - shared vocabulary for "what is this instance
+1. **`rte_dual_state_t`** - shared vocabulary for "what is this instance
    right now":
 
    | Value | Meaning |
    |---|---|
-   | `SAPI_DUAL_STATE_IDLE` | Never yet negotiated with a peer (startup transient). |
-   | `SAPI_DUAL_STATE_UNKNOWN` | Had a negotiated state before but contact with the peer has been lost - own/peer state can no longer be trusted. |
-   | `SAPI_DUAL_STATE_ONLINE` | This instance is the active one. |
-   | `SAPI_DUAL_STATE_HOTSTANDBY` | This instance is standby, and the peer's own redundancy is currently full (not degraded). |
-   | `SAPI_DUAL_STATE_COLDSTANDBY` | This instance is standby, and the peer's own redundancy is currently degraded (fewer of the peer's own links are up). |
+   | `RTE_DUAL_STATE_IDLE` | Never yet negotiated with a peer (startup transient). |
+   | `RTE_DUAL_STATE_UNKNOWN` | Had a negotiated state before but contact with the peer has been lost - own/peer state can no longer be trusted. |
+   | `RTE_DUAL_STATE_ONLINE` | This instance is the active one. |
+   | `RTE_DUAL_STATE_HOTSTANDBY` | This instance is standby, and the peer's own redundancy is currently full (not degraded). |
+   | `RTE_DUAL_STATE_COLDSTANDBY` | This instance is standby, and the peer's own redundancy is currently degraded (fewer of the peer's own links are up). |
 
-2. **`sapi_dual_msgchannel_t`** ("Channel") - one EN 50159-style defended
-   message channel over one `sapi_netlink_handle_t`.
+2. **`rte_dual_msgchannel_t`** ("Channel") - one EN 50159-style defended
+   message channel over one `rte_netlink_handle_t`.
 
-3. **`sapi_dual_channel_t`** ("DualChannel") - a wrapper over 1..N
-   `sapi_dual_msgchannel_t` redundant links, providing always-send +
+3. **`rte_dual_channel_t`** ("DualChannel") - a wrapper over 1..N
+   `rte_dual_msgchannel_t` redundant links, providing always-send +
    bounded-ACK-wait delivery, per-link and aggregate connection-status
    tracking with an optional change callback, and (optionally) hosting a
-   `sapi_dual_negotiator_t`'s own state-beacon traffic on the same links.
+   `rte_dual_negotiator_t`'s own state-beacon traffic on the same links.
 
 ### 1. Two defensive layers, not one (EN 50159)
 
@@ -66,9 +66,9 @@ threats: repetition, deletion, insertion, resequencing, corruption, delay,
 and masquerade. This module applies two layers of defense, matching the
 two levels of "Channel" the user asked for:
 
-**Layer 1 - `sapi_dual_msgchannel_t` (the base Channel).** Every frame
-sent/received on a single link is a `sapi_vital_message_t`
-(`sapi_checksum.h`, already used the same way by `sapi_channel_checkpoint()`
+**Layer 1 - `rte_dual_msgchannel_t` (the base Channel).** Every frame
+sent/received on a single link is a `rte_vital_message_t`
+(`rte_checksum.h`, already used the same way by `rte_channel_checkpoint()`
 - ADR-017 - so this is reuse, not reinvention):
 
 ```c
@@ -80,49 +80,49 @@ typedef struct {
     uint8_t      padding;
     uint16_t     reserved;
     uint8_t      payload[248];
-    sapi_crc64_t crc64;            /* corruption */
-} sapi_vital_message_t;
+    rte_crc64_t crc64;            /* corruption */
+} rte_vital_message_t;
 ```
 
-`sapi_checksum_vital_message_create()`/`_verify()` do the sequence-
-continuity and CRC-64 checking; `sapi_dual_msgchannel_send()`/`_receive()`
+`rte_checksum_vital_message_create()`/`_verify()` do the sequence-
+continuity and CRC-64 checking; `rte_dual_msgchannel_send()`/`_receive()`
 are thin wrappers that own the running sequence counter and the
-`sapi_netlink_handle_t` the frame travels over.
+`rte_netlink_handle_t` the frame travels over.
 
-**Layer 2 - `sapi_dual_channel_t` (DualChannel)'s own frame kind.** The
-248-byte `sapi_vital_message_t.payload` carries a small DualChannel-owned
+**Layer 2 - `rte_dual_channel_t` (DualChannel)'s own frame kind.** The
+248-byte `rte_vital_message_t.payload` carries a small DualChannel-owned
 header so that DATA, ACK, and STATE-negotiation traffic sharing the same
 redundant links can never be misinterpreted as each other:
 
 ```c
 typedef enum {
-    SAPI_DUAL_FRAME_KIND_DATA  = 0, /* application payload; expects an ACK back */
-    SAPI_DUAL_FRAME_KIND_ACK   = 1, /* acknowledges one DATA frame's sequence_number */
-    SAPI_DUAL_FRAME_KIND_STATE = 2  /* negotiator's own state beacon */
-} sapi_dual_frame_kind_t;
+    RTE_DUAL_FRAME_KIND_DATA  = 0, /* application payload; expects an ACK back */
+    RTE_DUAL_FRAME_KIND_ACK   = 1, /* acknowledges one DATA frame's sequence_number */
+    RTE_DUAL_FRAME_KIND_STATE = 2  /* negotiator's own state beacon */
+} rte_dual_frame_kind_t;
 
-typedef struct { uint8_t kind; uint8_t reserved[3]; } sapi_dual_frame_header_t; /* 4B, keeps what follows aligned */
+typedef struct { uint8_t kind; uint8_t reserved[3]; } rte_dual_frame_header_t; /* 4B, keeps what follows aligned */
 
-typedef struct { sapi_dual_frame_header_t header; uint32_t acked_sequence; } sapi_dual_ack_frame_t;
+typedef struct { rte_dual_frame_header_t header; uint32_t acked_sequence; } rte_dual_ack_frame_t;
 
 typedef struct {
-    sapi_dual_frame_header_t header;
-    uint8_t  state;             /* sender's own sapi_dual_state_t */
+    rte_dual_frame_header_t header;
+    uint8_t  state;             /* sender's own rte_dual_state_t */
     uint8_t  channel_degraded;  /* 0 = sender's own DualChannel is FULL, 1 = DEGRADED */
     uint16_t reserved;
     uint64_t timestamp_ms;      /* sender's own clock, for the same startup tie-break site.c uses today */
-} sapi_dual_state_frame_t;
+} rte_dual_state_frame_t;
 ```
 
 An ACK's `acked_sequence` is checked against the sequence the DATA frame
 was actually sent with (not just "some ACK arrived") - this specifically
 defends against a stale or misdirected ACK being accepted as confirmation
-of the wrong send, a gap the base `sapi_vital_message_t` sequence check
+of the wrong send, a gap the base `rte_vital_message_t` sequence check
 alone does not close for a request/reply pattern.
 
 ### 2. Always send, wait for a bounded ACK - that IS the liveness signal
 
-Per the requirement: `sapi_dual_channel_send()` never gates on the
+Per the requirement: `rte_dual_channel_send()` never gates on the
 current negotiated state. It always transmits the DATA frame, on every
 configured redundant link, and for each link waits up to
 `config.ack_timeout_ms` for that link's ACK before moving to the next.
@@ -134,16 +134,16 @@ could disagree with the first about whether the peer is actually reachable.
 Per link, the result (ACK arrived in time vs timed out) updates that
 link's own UP/DOWN status. After all configured links have been tried:
 
-- **Aggregate `sapi_dual_channel_status_t`** = `FULL` (all links UP),
+- **Aggregate `rte_dual_channel_status_t`** = `FULL` (all links UP),
   `DEGRADED` (some but not all UP), or `DOWN` (none UP). A change from the
   previously reported aggregate status invokes the optional
-  `status_callback` registered at `sapi_dual_channel_init()` - this is
+  `status_callback` registered at `rte_dual_channel_init()` - this is
   the "indicate to the user via callback if registered" requirement.
 - **Negotiator liveness event**: the negotiator does not attach to the
   channel or receive a push notification - the one-directional dependency
   (negotiator depends on channel, never the reverse; section 3) means
-  `sapi_dual_negotiator_execute()` itself pulls this signal each cycle, by
-  calling `sapi_dual_channel_get_status()` before sending its own beacon
+  `rte_dual_negotiator_execute()` itself pulls this signal each cycle, by
+  calling `rte_dual_channel_get_status()` before sending its own beacon
   (`own_channel_degraded = status != FULL`) and by the beacon
   send/receive round trip itself timing out (or not) the same way any
   DATA send would. There is no separate registration step on the channel
@@ -153,25 +153,25 @@ This is the explicit answer to "when redundant link down then dual
 channel is degraded but SITE state is still ONLINE and other STANDBY":
 losing one of several redundant links only ever changes the *channel's*
 own status (`FULL` -> `DEGRADED`); it does not by itself touch
-`sapi_dual_state_t` at all. Only total loss (aggregate `DOWN`, i.e. every
+`rte_dual_state_t` at all. Only total loss (aggregate `DOWN`, i.e. every
 redundant link unresponsive) is a negotiator-relevant event. Partial
 redundancy loss on the *peer's* side, however, is exactly what downgrades
 *this* instance from HOTSTANDBY to COLDSTANDBY - see next section.
 
 ### 3. The negotiator keeps both its own and the peer's state
 
-`sapi_dual_negotiator_t` exposes both:
+`rte_dual_negotiator_t` exposes both:
 
 ```c
-sapi_dual_state_t sapi_dual_negotiator_get_own_state(const sapi_dual_negotiator_t *neg);
-sapi_dual_state_t sapi_dual_negotiator_get_peer_state(const sapi_dual_negotiator_t *neg);
+rte_dual_state_t rte_dual_negotiator_get_own_state(const rte_dual_negotiator_t *neg);
+rte_dual_state_t rte_dual_negotiator_get_peer_state(const rte_dual_negotiator_t *neg);
 ```
 
-It is attached to a `sapi_dual_channel_t` at init and, once per
-`sapi_dual_negotiator_execute()` call (intended to be driven once per
-application cycle, e.g. from an `sapi_appmanager` hook, the same way
-`sapi_channel_checkpoint()` is driven today), sends its own
-`sapi_dual_state_frame_t` over the attached DualChannel's redundant
+It is attached to a `rte_dual_channel_t` at init and, once per
+`rte_dual_negotiator_execute()` call (intended to be driven once per
+application cycle, e.g. from an `rte_appmanager` hook, the same way
+`rte_channel_checkpoint()` is driven today), sends its own
+`rte_dual_state_frame_t` over the attached DualChannel's redundant
 links (piggy-backing on the same ACK/timeout machinery as any DATA send)
 and processes whatever STATE frames arrived from the peer since the last
 call.
@@ -193,7 +193,7 @@ State decision, each `execute()`:
   how well the STANDBY side is actually being backed up:
   - This instance decided ONLINE -> `own_state = ONLINE`; `peer_state`
     (the STANDBY side's label, as this instance sees it) is set from
-    *this instance's own* `sapi_dual_channel_get_status()`:
+    *this instance's own* `rte_dual_channel_get_status()`:
     `channel_degraded == 0 (FULL) -> HOTSTANDBY`,
     `channel_degraded == 1 (not FULL) -> COLDSTANDBY`.
   - This instance decided STANDBY -> `peer_state = ONLINE`; `own_state`
@@ -206,7 +206,7 @@ State decision, each `execute()`:
     side's own health, and never the ONLINE side's opinion of itself
     when it is the one being labeled. Swapping which side's degradation
     bit feeds which label was an implementation bug caught during test
-    design (see `sapi_dual_negotiator.c`'s `negotiator_update_states()`)
+    design (see `rte_dual_negotiator.c`'s `negotiator_update_states()`)
     and is called out here explicitly so this ADR does not go stale
     relative to the fix.
   - Both directions refine on every subsequent `execute()` call the same
@@ -217,65 +217,65 @@ State decision, each `execute()`:
   never ONLINE), `own_state = UNKNOWN` too. An application that needs a
   harder reaction than "state is now UNKNOWN" (e.g. `site.c`'s own
   FAULTED+reboot escalation) still owns that decision - the negotiator
-  raises the event, exactly as `sapi_watchdog`'s failover callback and
-  `sapi_checkpoint`'s timeout do today; it does not itself call
-  `sapi_safestate_enter()`.
+  raises the event, exactly as `rte_watchdog`'s failover callback and
+  `rte_checkpoint`'s timeout do today; it does not itself call
+  `rte_safestate_enter()`.
 
-An optional `sapi_dual_negotiator_state_change_callback_t` fires whenever
+An optional `rte_dual_negotiator_state_change_callback_t` fires whenever
 either `own_state` or `peer_state` changes, for the same "tell the user"
-reason `sapi_dual_channel_t`'s connection-status callback exists.
+reason `rte_dual_channel_t`'s connection-status callback exists.
 
 ### 4. Non-goals for this ADR
 
 - **No retrofit of `safeAPIRBC2oo2` in this pass.** `site.c` and
   `channel_ab.c` keep their existing hand-rolled logic; migrating them
-  to `sapi_dual` is a deliberate follow-up once this API has shipped and
+  to `rte_dual` is a deliberate follow-up once this API has shipped and
   been exercised by its own tests, not bundled into the same change that
   defines the API.
-- **No dynamic link count.** `SAPI_DUAL_CHANNEL_MAX_LINKS` (fixed at 4)
-  bounds every `sapi_dual_channel_t`'s redundant-link array; no
+- **No dynamic link count.** `RTE_DUAL_CHANNEL_MAX_LINKS` (fixed at 4)
+  bounds every `rte_dual_channel_t`'s redundant-link array; no
   allocation, consistent with REQ-OAL-COMMON-010.
-- **No new transport backend.** `sapi_dual_msgchannel_t` sends/receives
-  over an already-open `sapi_netlink_handle_t`; opening/closing the
-  underlying link(s) remains the caller's job via `sapi_netlink_open()`/
-  `_close()`, exactly as `sapi_channel_checkpoint()` reuses
-  `sapi_channel_t`'s already-registered backend rather than owning
+- **No new transport backend.** `rte_dual_msgchannel_t` sends/receives
+  over an already-open `rte_netlink_handle_t`; opening/closing the
+  underlying link(s) remains the caller's job via `rte_netlink_open()`/
+  `_close()`, exactly as `rte_channel_checkpoint()` reuses
+  `rte_channel_t`'s already-registered backend rather than owning
   a transport itself.
 - **No automatic safety reaction.** As with every other OAL/negotiation
-  primitive in this framework (`sapi_watchdog`, `sapi_checkpoint`), this
+  primitive in this framework (`rte_watchdog`, `rte_checkpoint`), this
   module reports state/events; deciding what a sustained `UNKNOWN` means
   for safety (reboot? safe-state? degrade only?) stays an
-  application-level policy decision, made via `sapi_safestate.h`
+  application-level policy decision, made via `rte_safestate.h`
   directly by the integrator.
 
 ## Consequences
 
-- A new reusable state vocabulary (`sapi_dual_state_t`) exists for "which
+- A new reusable state vocabulary (`rte_dual_state_t`) exists for "which
   of two redundant instances is active, and how well-backed is the
   standby one" - any future dual-site/dual-instance application can reuse
   it instead of reinventing `site.c`'s ad hoc ONLINE/STANDBY/FAULTED byte
   and separate Hot/Cold Standby log-only distinction.
-- `sapi_dual_channel_t` gives redundant-link fault tolerance
+- `rte_dual_channel_t` gives redundant-link fault tolerance
   (`FULL`/`DEGRADED`/`DOWN`) for free to anything sending real payload
   data over it, with the EN 50159 defensive envelope applied
   automatically rather than left to each integrator to reimplement (as
   `channel_ab.c` did for its own bespoke `PEER_MSG_KIND` framing).
-- Two more fixed-size structs (`sapi_dual_ack_frame_t`,
-  `sapi_dual_state_frame_t`) travel inside `sapi_vital_message_t.payload`
+- Two more fixed-size structs (`rte_dual_ack_frame_t`,
+  `rte_dual_state_frame_t`) travel inside `rte_vital_message_t.payload`
   - both well under the 248-byte payload budget, no change to
-  `sapi_checksum.h` required.
+  `rte_checksum.h` required.
 - `safeAPIRBC2oo2` is unchanged by this ADR; its own dual-transfer logic
   and this new module will temporarily overlap in *purpose* (not in
   code) until the follow-up retrofit lands.
 
-## Post-acceptance fix (ADR-022, SITE's live `sapi_safechannel` migration)
+## Post-acceptance fix (ADR-022, SITE's live `rte_safechannel` migration)
 
-`sapi_dual_channel_send()`'s ACK-wait loop (`src/dual/sapi_dual_channel.c`)
-had only ever been exercised through `test_sapi_dual_channel.c`'s mock
+`rte_dual_channel_send()`'s ACK-wait loop (`src/dual/rte_dual_channel.c`)
+had only ever been exercised through `test_rte_dual_channel.c`'s mock
 netlink backend before ADR-022 wired it to a real POSIX TCP link for the
 first time (SITE's WEST/EAST heartbeat). Its "recompute remaining budget
 from wall-clock elapsed time" step treated `now_ms == start_ms` (no
-measurable progress on `sapi_timer_now()`'s own millisecond tick) as "no
+measurable progress on `rte_timer_now()`'s own millisecond tick) as "no
 timer backend available, give up after one attempt". A real localhost
 round trip - connect, send DATA, receive the peer's own DATA, auto-ACK
 it, receive the peer's ACK - routinely completes inside a single
@@ -283,8 +283,8 @@ millisecond, so this guard misfired as a false abort after exactly one
 poll, and WEST/EAST's very first negotiation exchange timed out every
 run. Fixed by keeping `remaining` unchanged on a same-millisecond
 iteration (instead of aborting) while capping the number of such
-no-progress iterations at a fixed `SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`
+no-progress iterations at a fixed `RTE_DUAL_CHANNEL_STALL_POLL_LIMIT`
 (32), so a genuinely unresponsive link or absent timer backend still
-cannot spin unboundedly. Verified via `test_sapi_dual_channel.c` (no
+cannot spin unboundedly. Verified via `test_rte_dual_channel.c` (no
 regression) and a live two-process SITE WEST/EAST run completing
 negotiation and steady-state heartbeats over the real TCP backend.

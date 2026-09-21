@@ -77,7 +77,7 @@ safeAPIFramework/
 ├── src/                          Implementation (13 modules)
 │   ├── status/
 │   │   ├── CMakeLists.txt
-│   │   └── sapi_status.c
+│   │   └── rte_status.c
 │   ├── buffer/
 │   ├── cast/
 │   ├── safestate/
@@ -92,10 +92,10 @@ safeAPIFramework/
 │
 ├── tests/                        Unit tests (per module)
 │   ├── CMakeLists.txt
-│   ├── status/test_sapi_status.c
-│   ├── buffer/test_sapi_buffer.c
+│   ├── status/test_rte_status.c
+│   ├── buffer/test_rte_buffer.c
 │   ├── [other test files]
-│   └── common/test_sapi_safestate.c
+│   └── common/test_rte_safestate.c
 │
 ├── scripts/                      Helper scripts
 │   ├── run-cppcheck.sh          Static analysis runner
@@ -137,7 +137,7 @@ safeAPIFramework/
 ├── build/                       Build outputs (not version controlled)
 │   ├── compile_commands.json   For static analysis
 │   ├── libsafeapi_*.a          Static libraries
-│   └── test_sapi_*             Test executables
+│   └── test_rte_*             Test executables
 │
 └── ROADMAP.md                  Future development roadmap
 ```
@@ -200,7 +200,7 @@ endif()
 
 **Per-module CMakeLists.txt:**
 ```cmake
-add_library(safeapi_status STATIC sapi_status.c)
+add_library(safeapi_status STATIC rte_status.c)
 target_include_directories(safeapi_status PUBLIC ${CMAKE_SOURCE_DIR}/include)
 add_library(safeapi::status ALIAS safeapi_status)
 ```
@@ -701,7 +701,7 @@ Approved by: [Functional Safety Manager]
 ```
 Deviation: [ID]
 Rule: MISRA C:2012 Rule 15.5
-File: src/status/sapi_status.c
+File: src/status/rte_status.c
 Reason: Guard clauses improve readability
 Risk: Low
 Mitigation: Code review confirms consistency

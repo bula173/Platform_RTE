@@ -8,8 +8,8 @@ Applies to: repository-wide directory structure
 
 Through ADR-001 to ADR-006 the repository grew a two-tier grouping:
 `common/` (layer-agnostic facilities) and `os/` (OAL services), each
-holding every feature's files together — `src/os/sapi_timer.c` sat next
-to `sapi_nvm.c`, `sapi_ipc.c`, and five others in the same directory. That
+holding every feature's files together — `src/os/rte_timer.c` sat next
+to `rte_nvm.c`, `rte_ipc.c`, and five others in the same directory. That
 grouping reflected an architectural distinction worth keeping *conceptually*
 (ADR-001/002 still explain why some things depend on the OS and some
 don't), but as more features were added, finding "everything about the
@@ -20,9 +20,9 @@ timer service" meant filtering one file out of a flat directory of seven.
 Every feature gets its own directory, mirrored across all three trees:
 
 ```
-include/safeapi/<feature>/sapi_<feature>.h
-src/<feature>/sapi_<feature>.c          (+ CMakeLists.txt)
-tests/<feature>/test_sapi_<feature>.c
+include/safeapi/<feature>/rte_<feature>.h
+src/<feature>/rte_<feature>.c          (+ CMakeLists.txt)
+tests/<feature>/test_rte_<feature>.c
 ```
 
 Features: `status`, `types` (header-only, no `.c`/test), `buffer`, `cast`,
@@ -37,7 +37,7 @@ every feature sits directly under `src/`, `include/safeapi/`, `tests/` as
 a sibling of every other feature. The common-vs-OAL distinction that
 motivated the original grouping is still real and still documented (every
 ADR still explains which features have an OS dependency and which don't;
-`sapi_buffer`/`sapi_cast`/`sapi_safestate`/`sapi_string` still have zero
+`rte_buffer`/`rte_cast`/`rte_safestate`/`rte_string` still have zero
 dependency on any OAL feature, per ADR-002 section 4's original rule), it's
 just no longer encoded as a directory level. One flat namespace of
 feature folders is simpler to navigate than a two-level one for a project
@@ -57,8 +57,8 @@ above is unaffected and remains current.
 Each `src/<feature>/CMakeLists.txt` builds a small static library
 `safeapi_<feature>`, aliased `safeapi::<feature>`. Most features have zero
 inter-feature dependencies and link nothing but the shared include path;
-`sapi_string` is the one exception (it calls `sapi_buffer_*` and
-`sapi_cast_*` functions directly) and links `safeapi::buffer` and
+`rte_string` is the one exception (it calls `rte_buffer_*` and
+`rte_cast_*` functions directly) and links `safeapi::buffer` and
 `safeapi::cast` publicly. This was already implicit in ADR-001 section 3.5's
 "consumer can link the whole OAL or a single service" goal — this ADR is
 what actually delivers it, down to individual-feature granularity rather
@@ -66,7 +66,7 @@ than whole-layer granularity.
 
 ### 2.3 What stays true from earlier ADRs despite the directory change
 
-- ADR-002 section 4's "no OS dependency" rule for `sapi_buffer` etc. is a
+- ADR-002 section 4's "no OS dependency" rule for `rte_buffer` etc. is a
   statement about `#include`s and function calls, not about directory
   nesting - it still holds and is still checkable (no feature under
   `status/types/buffer/cast/safestate/string` includes or links against
@@ -81,7 +81,7 @@ than whole-layer granularity.
 
 - Positive: one directory per feature is easy to browse, easy to reason
   about in isolation, and easy to link independently (an integrator who
-  only needs `sapi_cast` and `sapi_safestate` links exactly those two
+  only needs `rte_cast` and `rte_safestate` links exactly those two
   targets).
 - Positive: adding a new feature is now a mechanical, well-understood
   three-folder-plus-one-CMakeLists pattern.

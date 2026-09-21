@@ -2,11 +2,11 @@
  * @page cast_architecture Cast Module - Architecture
  *
  * Range-checked type conversions. Validates value fits destination type before
- * converting. Returns SAPI_STATUS_VALUE_OUT_OF_RANGE if out of bounds.
+ * converting. Returns RTE_STATUS_VALUE_OUT_OF_RANGE if out of bounds.
  *
  * @section cast_architecture_functions Conversion Functions
  *
- * sapi_cast_i8_to_i16() - From int8_t to int16_t (and variants)
+ * rte_cast_i8_to_i16() - From int8_t to int16_t (and variants)
  * Return: OK if fits, VALUE_OUT_OF_RANGE otherwise
  *
  * @section cast_architecture_strategy Check-Before-Convert

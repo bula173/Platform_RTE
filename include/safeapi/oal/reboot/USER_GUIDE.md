@@ -17,7 +17,7 @@
  * Integrator supplies platform-specific reboot implementation:
  *
  * @code
- * sapi_status_t platform_reboot(uint16_t reason_code) {
+ * rte_status_t platform_reboot(uint16_t reason_code) {
  *     // Backend-specific: trigger CPU reset, watchdog, etc.
  *     // This function must NOT return on success
  *
@@ -25,42 +25,42 @@
  *     watchdog_enable_without_pet(1ms);  // Timeout in 1ms
  *     while (1) {}  // Wait for watchdog to reset
  *
- *     return SAPI_STATUS_NOT_SUPPORTED;  // Only if watchdog unavailable
+ *     return RTE_STATUS_NOT_SUPPORTED;  // Only if watchdog unavailable
  * }
  *
- * sapi_reboot_backend_t backend = {
+ * rte_reboot_backend_t backend = {
  *     .request = platform_reboot
  * };
  *
- * sapi_reboot_register_backend(&backend);
+ * rte_reboot_register_backend(&backend);
  * @endcode
  *
  * @subsection reboot_user_guide_qs_request 2. Request Reboot on Critical Error
  *
  * @code
  * if (unrecoverable_error_detected) {
- *     sapi_status_t rc = sapi_reboot_request(APP_REASON_CRITICAL_ERROR);
+ *     rte_status_t rc = rte_reboot_request(APP_REASON_CRITICAL_ERROR);
  *     // This function typically does not return (CPU resets)
  *     // If it does return, error code indicates why reboot failed
- *     if (rc != SAPI_STATUS_OK) {
- *         log_critical("Reboot failed: %s", sapi_status_to_string(rc));
+ *     if (rc != RTE_STATUS_OK) {
+ *         log_critical("Reboot failed: %s", rte_status_to_string(rc));
  *     }
  * }
  * @endcode
  *
  * @section reboot_user_guide_integration Integration with Safe-State
  *
- * Typically called from SAPI_REBOOT macro or safe-state handler:
+ * Typically called from RTE_REBOOT macro or safe-state handler:
  *
  * @code
- * void my_safestate_handler(sapi_safestate_level_t level, ...) {
- *     if (level == SAPI_SAFESTATE_LEVEL_REBOOT) {
+ * void my_safestate_handler(rte_safestate_level_t level, ...) {
+ *     if (level == RTE_SAFESTATE_LEVEL_REBOOT) {
  *         log_critical("Initiating controlled restart");
  *         flush_logs();
  *         close_resources();
  *
  *         // Request reboot - does not return
- *         sapi_reboot_request(APP_REASON_SAFESTATE_REBOOT);
+ *         rte_reboot_request(APP_REASON_SAFESTATE_REBOOT);
  *
  *         // If execution reaches here, reboot failed
  *         // Enter infinite loop as fallback
@@ -94,7 +94,7 @@
  *     log_critical("  Cycle count: %u", app->cycle_count);
  *     log_critical("  Initiating controlled reboot");
  *
- *     sapi_reboot_request(APP_REASON_WATCHDOG_TIMEOUT);
+ *     rte_reboot_request(APP_REASON_WATCHDOG_TIMEOUT);
  *     // Does not return (CPU resets)
  * }
  * @endcode
@@ -110,7 +110,7 @@
  *         log_critical("  Expected: 0x%x", expected_checksum);
  *         log_critical("  Rebooting...");
  *
- *         sapi_reboot_request(APP_REASON_MEMORY_CORRUPTION);
+ *         rte_reboot_request(APP_REASON_MEMORY_CORRUPTION);
  *         // Does not return
  *     }
  * }
@@ -120,14 +120,14 @@
  *
  * @code
  * void request_reboot_with_timeout(uint32_t timeout_ms) {
- *     sapi_watchdog_t fallback_wd = setup_timeout_watchdog(timeout_ms);
- *     sapi_watchdog_start(fallback_wd);
+ *     rte_watchdog_t fallback_wd = setup_timeout_watchdog(timeout_ms);
+ *     rte_watchdog_start(fallback_wd);
  *
- *     sapi_status_t rc = sapi_reboot_request(APP_REASON_SHUTDOWN);
+ *     rte_status_t rc = rte_reboot_request(APP_REASON_SHUTDOWN);
  *
  *     // If reboot failed, watchdog will force reset
- *     if (rc != SAPI_STATUS_OK) {
- *         log_error("Reboot request failed: %s", sapi_status_to_string(rc));
+ *     if (rc != RTE_STATUS_OK) {
+ *         log_error("Reboot request failed: %s", rte_status_to_string(rc));
  *         // Don't kick watchdog - let it timeout and force reset
  *         while (1) {}
  *     }
@@ -147,7 +147,7 @@
  *    - Backend can log/persist for analysis
  *
  * 3. Prepare for non-return
- *    - sapi_reboot_request() typically doesn't return
+ *    - rte_reboot_request() typically doesn't return
  *    - Don't rely on execution continuing
  *    - Any final cleanup should happen before calling
  *
@@ -164,7 +164,7 @@
  * @section reboot_user_guide_see_also See Also
  *
  * - @ref reboot_architecture for internal design
- * - @ref safestate_user_guide for SAPI_REBOOT macro
+ * - @ref safestate_user_guide for RTE_REBOOT macro
  * - @ref watchdog_user_guide for watchdog-triggered reset
  *
  */

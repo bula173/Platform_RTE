@@ -127,7 +127,7 @@ plantuml -checkonly -c ../plantuml.cfg component-diagram.puml
 
 All diagrams are embedded in:
 - ADR documents (docs/architecture/ADR-*.md)
-- Header files (include/safeapi/*/sapi_*.h)
+- Header files (include/safeapi/*/rte_*.h)
 - Module documentation
 
 See [DIAGRAMS_GUIDE.md](../DIAGRAMS_GUIDE.md) for embedding examples.

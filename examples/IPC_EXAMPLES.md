@@ -24,7 +24,7 @@ Synchronous, bidirectional communication where a **client** sends a request and 
 │ Train Controller (Client)                       │
 │                                                │
 │ 1. Create RPC client                          │
-│ 2. sapi_ipc_rr_request() {                    │
+│ 2. rte_ipc_rr_request() {                    │
 │       send query                              │
 │       block waiting for reply (timeout=5s)    │
 │    }                                           │
@@ -40,11 +40,11 @@ Synchronous, bidirectional communication where a **client** sends a request and 
 │ Signal Database (Server)                    │
 │                                             │
 │ 1. Create RPC server                        │
-│ 2. sapi_ipc_rr_receive_request() {         │
+│ 2. rte_ipc_rr_receive_request() {         │
 │       block waiting for query (timeout=5s)  │
 │    }                                         │
 │ 3. Process query (deterministic)            │
-│ 4. sapi_ipc_rr_send_reply()                 │
+│ 4. rte_ipc_rr_send_reply()                 │
 │    (sends back to client)                   │
 └─────────────────────────────────────────────┘
 ```
@@ -66,7 +66,7 @@ typedef struct {
 
 // Reply from server
 typedef struct {
-    sapi_status_t status;
+    rte_status_t status;
     uint8_t signal_state;   // RED=0, YELLOW=1, GREEN=2
     uint32_t track_speed_limit;
 } signal_reply_t;
@@ -110,7 +110,7 @@ Asynchronous, one-to-many communication where a **publisher** sends messages to 
 ```
 ┌──────────────────────────────────┐
 │ Track Database (Publisher)        │
-│ sapi_ipc_pubsub_publish()         │
+│ rte_ipc_pubsub_publish()         │
 │ (doesn't wait for replies)        │
 └──────────────┬───────────────────┘
                │
@@ -229,15 +229,15 @@ cd ../..
 # Build examples (manually)
 gcc -I./include -L./build/linux/src/ipc \
     examples/ipc-request-reply-example.c \
-    build/linux/src/ipc/sapi_ipc_request_reply.c \
-    build/linux/src/log/sapi_log.c \
+    build/linux/src/ipc/rte_ipc_request_reply.c \
+    build/linux/src/log/rte_log.c \
     ... (other modules) \
     -lpthread -o ipc-request-reply-example
 
 gcc -I./include -L./build/linux/src/ipc \
     examples/ipc-pubsub-example.c \
-    build/linux/src/ipc/sapi_ipc_pubsub.c \
-    build/linux/src/log/sapi_log.c \
+    build/linux/src/ipc/rte_ipc_pubsub.c \
+    build/linux/src/log/rte_log.c \
     ... (other modules) \
     -lpthread -o ipc-pubsub-example
 ```
@@ -301,35 +301,35 @@ gcc -I./include -L./build/linux/src/ipc \
 
 ```c
 // Server side
-sapi_ipc_rr_server_create(&server, &config);
-sapi_ipc_rr_receive_request(&server, &request, timeout_ms);
-sapi_ipc_rr_send_reply(&server, request.request_id, &reply, size);
-sapi_ipc_rr_server_destroy(&server);
+rte_ipc_rr_server_create(&server, &config);
+rte_ipc_rr_receive_request(&server, &request, timeout_ms);
+rte_ipc_rr_send_reply(&server, request.request_id, &reply, size);
+rte_ipc_rr_server_destroy(&server);
 
 // Client side
-sapi_ipc_rr_client_create(&client, &config);
-sapi_ipc_rr_request(&client, &req, req_size, &reply, reply_size, timeout_ms);
-sapi_ipc_rr_client_destroy(&client);
+rte_ipc_rr_client_create(&client, &config);
+rte_ipc_rr_request(&client, &req, req_size, &reply, reply_size, timeout_ms);
+rte_ipc_rr_client_destroy(&client);
 ```
 
 ### Publish-Subscribe
 
 ```c
 // Setup (initialization time)
-sapi_ipc_pubsub_topic_create(&topic, &topic_config);
+rte_ipc_pubsub_topic_create(&topic, &topic_config);
 
 // Subscribers register
-sapi_ipc_pubsub_subscribe(&sub, &sub_config);
+rte_ipc_pubsub_subscribe(&sub, &sub_config);
 
 // Publisher publishes
-sapi_ipc_pubsub_publish(&topic, &message, size);
+rte_ipc_pubsub_publish(&topic, &message, size);
 
 // Subscribers receive
-sapi_ipc_pubsub_receive(&subscriber, &msg, size, timeout_ms);
+rte_ipc_pubsub_receive(&subscriber, &msg, size, timeout_ms);
 
 // Cleanup
-sapi_ipc_pubsub_unsubscribe(&subscriber);
-sapi_ipc_pubsub_topic_destroy(&topic);
+rte_ipc_pubsub_unsubscribe(&subscriber);
+rte_ipc_pubsub_topic_destroy(&topic);
 ```
 
 ---

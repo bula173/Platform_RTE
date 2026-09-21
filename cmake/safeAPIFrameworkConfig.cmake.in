@@ -8,14 +8,14 @@
 #   # (safeapi::channels / safeapi::appmanager also available, depending on
 #   # which SAFEAPI_ENABLE_* options this package was built with - see
 #   # safeAPIFramework_INCLUDE_DIR/_LIB_DIR below if you need the raw paths,
-#   # and include(SafeAPIHelpers) for sapi_enable_cppcheck_misra() etc.)
+#   # and include(SafeAPIHelpers) for rte_enable_cppcheck_misra() etc.)
 
 get_filename_component(_safeAPIFramework_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 # This file installs to
 # <prefix>/dist/<platform>[/<channel>]/lib/cmake/safeAPIFramework/ -
 # dist/<platform>/ is the SAPI-wide "what this project hands to another
 # project, per architecture" convention (root CLAUDE.md), and ADR-008
-# channel builds (-DSAPI_CHANNEL_BUILD_ID=A|B) add one more directory level
+# channel builds (-DRTE_CHANNEL_BUILD_ID=A|B) add one more directory level
 # below that (dist/<platform>/A/, dist/<platform>/B/ - see
 # safeAPIFreamwork/CMakeLists.txt's own SAFEAPI_DIST_SUBPATH doc). The
 # number of '..' needed to reach <prefix> therefore isn't fixed - it's
@@ -46,7 +46,7 @@ set(safeAPIFramework_LIB_DIR "${_safeAPIFramework_PREFIX}/dist/${_safeAPIFramewo
 
 # Baked in from the SAME SAFEAPI_FRAMEWORK_VERSION CACHE variable this
 # package's own build computed (scripts/compute_version.sh) - lets a
-# consumer using find_package() (SAPI_USE_INSTALLED_FRAMEWORK=ON) read
+# consumer using find_package() (RTE_USE_INSTALLED_FRAMEWORK=ON) read
 # "what version did I configure against" without parsing any header, the
 # same way an add_subdirectory() consumer reads the CACHE variable
 # directly (see safeAPIRBC2oo2/CMakeLists.txt's own
@@ -79,7 +79,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/safeAPIFrameworkTargets.cmake")
 # (`safeAPIFreamwork/include`, coincidentally still reachable and - until
 # now - containing an IDENTICAL copy of every header that also happens to
 # exist in the dist/ tree, since dist/ is populated FROM source; a header
-# that exists ONLY in dist/ - like sapi_core_version.h, generated at
+# that exists ONLY in dist/ - like rte_core_version.h, generated at
 # configure time - was the first thing to expose the gap). Fixed by
 # overriding each imported target's include dirs with the SAME correctly-
 # computed safeAPIFramework_INCLUDE_DIR above, rather than trusting

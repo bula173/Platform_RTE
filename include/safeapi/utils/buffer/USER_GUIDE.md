@@ -22,10 +22,10 @@
  * @subsection buffer_user_guide_qs_init 2. Bind Buffer View
  *
  * @code
- * sapi_buffer_t buf;
+ * rte_buffer_t buf;
  *
- * sapi_status_t rc = sapi_buffer_init(&buf, buffer_storage, sizeof(buffer_storage));
- * if (rc != SAPI_STATUS_OK) {
+ * rte_status_t rc = rte_buffer_init(&buf, buffer_storage, sizeof(buffer_storage));
+ * if (rc != RTE_STATUS_OK) {
  *     printf("Buffer init failed\n");
  *     return rc;
  * }
@@ -40,13 +40,13 @@
  * memcpy(buf.data, input, input_len);
  *
  * // Mark data as valid
- * sapi_buffer_set_length(&buf, input_len);
+ * rte_buffer_set_length(&buf, input_len);
  *
  * // Read data
  * printf("Buffer contains %zu bytes\n", buf.length);
  *
  * // Clear for reuse
- * sapi_buffer_clear(&buf);  // Sets length=0, keeps data/capacity
+ * rte_buffer_clear(&buf);  // Sets length=0, keeps data/capacity
  * @endcode
  *
  * @section buffer_user_guide_data_structures Key Structures
@@ -56,12 +56,12 @@
  *     void   *data;      // Pointer to backing storage (caller-owned)
  *     size_t  capacity;  // Total bytes available in storage
  *     size_t  length;    // Bytes currently holding valid data
- * } sapi_buffer_t;
+ * } rte_buffer_t;
  *
  * typedef struct {
  *     const void *data;  // Read-only view of data
  *     size_t      length; // Bytes of valid data
- * } sapi_const_buffer_t;
+ * } rte_const_buffer_t;
  * @endcode
  *
  * Invariant: length <= capacity
@@ -78,14 +78,14 @@
  * } message_t;
  *
  * message_t msg = {0};
- * sapi_buffer_t buf;
+ * rte_buffer_t buf;
  *
  * // Bind buffer to message payload
- * sapi_buffer_init(&buf, msg.payload, sizeof(msg.payload));
+ * rte_buffer_init(&buf, msg.payload, sizeof(msg.payload));
  *
  * // Receive data into payload
  * receive_from_network(&buf.data[0], 64);
- * sapi_buffer_set_length(&buf, 64);
+ * rte_buffer_set_length(&buf, 64);
  *
  * // Send message
  * msg.command_id = 1;
@@ -93,16 +93,16 @@
  * send_message(&msg);
  *
  * // Clear for next use
- * sapi_buffer_clear(&buf);
+ * rte_buffer_clear(&buf);
  * @endcode
  *
  * @subsection buffer_user_guide_example_ringbuf Example 2: Read-Only View
  *
  * @code
- * sapi_buffer_t mutable_buf = {...};
+ * rte_buffer_t mutable_buf = {...};
  *
  * // Create read-only view
- * sapi_const_buffer_t view = {
+ * rte_const_buffer_t view = {
  *     .data = mutable_buf.data,
  *     .length = mutable_buf.length
  * };
@@ -116,7 +116,7 @@
  * @subsection buffer_user_guide_op_init Initialize
  *
  * @code
- * sapi_buffer_init(&buf, storage, capacity);
+ * rte_buffer_init(&buf, storage, capacity);
  * @endcode
  *
  * - Sets buf.data = storage
@@ -131,10 +131,10 @@
  * memcpy(buf.data + offset, input, size);
  *
  * // Mark data as valid
- * sapi_buffer_set_length(&buf, new_length);
+ * rte_buffer_set_length(&buf, new_length);
  * @endcode
  *
- * sapi_buffer_set_length() fails if new_length > capacity.
+ * rte_buffer_set_length() fails if new_length > capacity.
  *
  * @subsection buffer_user_guide_op_read Read Data
  *
@@ -147,7 +147,7 @@
  * @subsection buffer_user_guide_op_clear Clear
  *
  * @code
- * sapi_buffer_clear(&buf);  // Sets length=0, keeps capacity/data
+ * rte_buffer_clear(&buf);  // Sets length=0, keeps capacity/data
  * @endcode
  *
  * @section buffer_user_guide_guidelines Best Practices
@@ -160,9 +160,9 @@
  * 2. Check capacity before writing
  *    - Caller responsible for bounds checking
  *    - Buffer tracks length, not write protection
- *    - sapi_buffer_set_length() validates
+ *    - rte_buffer_set_length() validates
  *
- * 3. Use sapi_buffer_set_length() for bounds checking
+ * 3. Use rte_buffer_set_length() for bounds checking
  *    - Always call after writing
  *    - Returns error if length > capacity
  *    - Prevents out-of-bounds bugs

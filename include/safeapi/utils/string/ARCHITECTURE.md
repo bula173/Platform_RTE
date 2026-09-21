@@ -7,11 +7,11 @@
  *
  * @section string_architecture_functions Core Functions
  *
- * sapi_strncpy()   - Bounded copy
- * sapi_strncat()   - Bounded append
- * sapi_strnlen()   - Bounded length
- * sapi_strncmp()   - Bounded compare
- * sapi_snprintf()  - Bounded format
+ * rte_strncpy()   - Bounded copy
+ * rte_strncat()   - Bounded append
+ * rte_strnlen()   - Bounded length
+ * rte_strncmp()   - Bounded compare
+ * rte_snprintf()  - Bounded format
  *
  * @section string_architecture_misra MISRA Rule 21.6
  *

@@ -6,7 +6,7 @@ and its enabling framework fix are done and verified live; the
 inter-site link" mechanism is not yet designed (blocked on the operator
 interaction model) or implemented.
 Date: 2026-08-18
-Applies to: `safeAPIFreamwork`'s `src/appmanager/sapi_appmanager.c`
+Applies to: `safeAPIFreamwork`'s `src/appmanager/rte_appmanager.c`
 (framework fix, REQ-APPMANAGER-011); `safeAPIRBC2oo2`'s
 `src/application/AB/channel_ab.c`/`channel_ab_io.c`/
 `channel_ab_negotiate.c`/`channel_ab_types.h`, `src/application/C/monitor_c.c`/
@@ -15,11 +15,11 @@ Applies to: `safeAPIFreamwork`'s `src/appmanager/sapi_appmanager.c`
 
 ## 1. Context
 
-Explicit requirement from the framework's integrator: SAPI shall enter a
+Explicit requirement from the framework's integrator: RTE shall enter a
 safe state when a *channel* is down - not merely log it - so that this
 site's own redundant cluster peer can take over. A channel may be backed
-by several network links (`sapi_dual_channel_t` already supports up to
-`SAPI_DUAL_CHANNEL_MAX_LINKS`); a single link going down should only be
+by several network links (`rte_dual_channel_t` already supports up to
+`RTE_DUAL_CHANNEL_MAX_LINKS`); a single link going down should only be
 *communicated*, not itself trigger a reaction - only the channel-level
 "no link at all" condition should escalate.
 
@@ -54,7 +54,7 @@ real time to self-heal first. Each affected rx task
 `*_down_since_ms` timestamp on the transition to down (cleared on
 recovery); once continuously down past the threshold, the owning
 process calls `channel_ab_shutdown()`/`monitor_c_shutdown()` then
-`SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_REBOOT, ...)` (new reason codes
+`RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_REBOOT, ...)` (new reason codes
 `SAFEAPI_EXAMPLE_REASON_AB_PEER_LINK_DOWN`, `_C_LINK_DOWN`,
 `_C_MONITOR_LINK_DOWN`).
 
@@ -68,7 +68,7 @@ one link, kept for every other.
 
 **The reboot decision must run on the main thread, never the rx task
 that detected it**: `channel_ab_shutdown()`/`monitor_c_shutdown()` call
-`sapi_task_destroy()` on the very rx tasks whose own doc explains that
+`rte_task_destroy()` on the very rx tasks whose own doc explains that
 call blocks (`pthread_join()`) until they return - calling shutdown
 *from* one of those tasks would self-join (undefined behavior, typically
 a deadlock). Each rx task only ever *writes* its own down-since
@@ -82,17 +82,17 @@ reachable at all during a real sustained outage.
 
 No reboot-on-down added here at all, per §1's split-brain concern. The
 framework already ships exactly the right primitive for this, unused by
-`safeAPIRBC2oo2` until now: `sapi_dual_negotiator_t`'s own
-`SAPI_DUAL_STATE_HOTSTANDBY`/`COLDSTANDBY` (REQ-DUAL-NEGOTIATOR-004) -
+`safeAPIRBC2oo2` until now: `rte_dual_negotiator_t`'s own
+`RTE_DUAL_STATE_HOTSTANDBY`/`COLDSTANDBY` (REQ-DUAL-NEGOTIATOR-004) -
 a STANDBY instance's HOT/COLD label is derived from the *peer's own*
 reported channel-degradation bit, not a self-report, computed inside
-`sapi_dual_negotiator_execute()` on every cycle already. An
+`rte_dual_negotiator_execute()` on every cycle already. An
 app-level `standby_hot` tracker was drafted and then deliberately
 reverted once this was found - it would have duplicated, with a cruder
 heuristic, something the framework already computes more correctly.
 `channel_ab_negotiate.c`'s existing `on_negotiator_state_change()`
 callback (previously logging raw numeric state values) now uses
-`sapi_dual_state_to_string()`, so a HOTSTANDBY↔COLDSTANDBY transition is
+`rte_dual_state_to_string()`, so a HOTSTANDBY↔COLDSTANDBY transition is
 directly visible in logs - satisfying "communicate a single link problem
 to the user" without adding new state or new reboot logic. Confirmed
 live: `peer IDLE->COLDSTANDBY` immediately after negotiation settles,
@@ -111,7 +111,7 @@ Found while tracing why `on_negotiation_link_lost()` (`channel_ab_negotiate.c`,
 pre-existing - the ONLINE-only reboot-on-negotiation-loss reaction this
 ADR's §2.1 deliberately does *not* replicate) sometimes fired on a single
 dropped UDP datagram: `SAFEAPI_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS`
-was a fixed 2500ms, shorter than `sapi_dual_channel_send()`'s own
+was a fixed 2500ms, shorter than `rte_dual_channel_send()`'s own
 `ack_timeout_ms` (3000ms) - meaning a single missed ACK could exceed the
 watchdog's window before ADR-027 Phase 1's own `neg_consecutive_send_miss`
 hysteresis (added specifically so one dropped datagram doesn't cause
@@ -129,31 +129,31 @@ network partition - confirmed live via `docker stats`: the affected
 process sat at ~100% CPU for 24+ seconds straight (past both the 10.5s
 negotiation-watchdog and 20s channel-down thresholds) with zero reboot.
 
-Root cause, traced to `sapi_appmanager_run()` itself (`safeAPIFreamwork`,
-not this example): `sapi_watchdog_t` has no independent timer or thread
+Root cause, traced to `rte_appmanager_run()` itself (`safeAPIFreamwork`,
+not this example): `rte_watchdog_t` has no independent timer or thread
 of its own, by design (the integrator's own explicit direction: *"the
 intention is to not have threads... each cycle we are checking whether
 timer against start timestamp expired... this allows to have only one
-thread"*) - its expiry check (`sapi_watchdog_timer_tick()`) only runs
+thread"*) - its expiry check (`rte_watchdog_timer_tick()`) only runs
 when the application itself calls it, which `channel_ab.c` does from
-inside `channel_ab_execute()`. `sapi_appmanager_run()`'s own per-cycle
+inside `channel_ab_execute()`. `rte_appmanager_run()`'s own per-cycle
 loop calls its checkpoint/pre_execute/execute/post_execute stages in
 strict sequence, each gated on the previous succeeding. When a link goes
 down, `safeAPIRBC2oo2` deliberately pauses the built-in checkpoint
 (`checkpoint_cfg.voter = NULL`) so a *known* outage doesn't also trip
-checkpoint's own independent SAFE-halt - but `sapi_channel_checkpoint(NULL, ...)`
-returns `SAPI_STATUS_INVALID_PARAM`, which the framework's own stage-
+checkpoint's own independent SAFE-halt - but `rte_channel_checkpoint(NULL, ...)`
+returns `RTE_STATUS_INVALID_PARAM`, which the framework's own stage-
 result handling treated as a *failed* stage: paced
-(`sapi_appmanager_pace_failed_checkpoint()`) and `continue`d, skipping
+(`rte_appmanager_pace_failed_checkpoint()`) and `continue`d, skipping
 `pre_execute()`/`execute()`/`post_execute()` entirely for as long as
 `voter` stayed `NULL`. This silently starved *every* per-cycle safety
-check, not just the new one - including `sapi_watchdog_timer_tick()`
+check, not just the new one - including `rte_watchdog_timer_tick()`
 itself, so no watchdog-driven reaction of any kind, old or new, could
 ever fire during exactly the sustained-outage scenario it exists for.
 
-**Fix (REQ-APPMANAGER-011, `sapi_appmanager.c`)**: `voter == NULL` is now
+**Fix (REQ-APPMANAGER-011, `rte_appmanager.c`)**: `voter == NULL` is now
 treated identically to `config->checkpoint == NULL` - skip the stage
-outright (no `sapi_channel_checkpoint()` call, no pacing, no error
+outright (no `rte_channel_checkpoint()` call, no pacing, no error
 counted) and let every later stage run normally, every cycle, regardless
 of how long checkpoint stays paused. This is a small, targeted change,
 not a move toward threads or async timers: a watchdog's own expiry check
@@ -164,7 +164,7 @@ previously spun at ~100% CPU with zero reboot now reboots correctly and
 promptly (within ~6s, via `on_negotiation_link_lost()`), CPU returns to
 idle afterward, and the framework's own test suite required updating two
 tests that had encoded the old (buggy) starved-cycle behavior as
-expected (`tests/appmanager/test_sapi_appmanager.c` -
+expected (`tests/appmanager/test_rte_appmanager.c` -
 `test_checkpoint_paused_skips_stage_not_starves_cycle`,
 `test_checkpoint_null_vital_channel_is_not_a_startup_error`).
 
@@ -199,7 +199,7 @@ correlation until §2.5 is fixed separately.
 ## 3. Verification
 
 - `safeAPIFreamwork`'s own `ctest --test-dir build`: 27/27, including the
-  two rewritten `test_sapi_appmanager.c` cases above.
+  two rewritten `test_rte_appmanager.c` cases above.
 - `safeAPIRBC2oo2` local `smoke.sh`: consistently clean across many runs
   after every fix in this ADR, no false-positive reboots observed.
 - Real 6-container Docker, manual `docker network disconnect` on
@@ -222,8 +222,8 @@ correlation until §2.5 is fixed separately.
 
 ## 4. Location
 
-- `safeAPIFreamwork/src/appmanager/sapi_appmanager.c` (REQ-APPMANAGER-011)
-- `safeAPIFreamwork/tests/appmanager/test_sapi_appmanager.c` (two tests
+- `safeAPIFreamwork/src/appmanager/rte_appmanager.c` (REQ-APPMANAGER-011)
+- `safeAPIFreamwork/tests/appmanager/test_rte_appmanager.c` (two tests
   rewritten)
 - `safeAPIFreamwork/docs/requirements/SRS.md` (REQ-APPMANAGER-011,
   REQ-APPMANAGER-008 reworded)

@@ -18,7 +18,7 @@
  * @section appmanager_integration_architecture Integration Architecture
  *
  * ```
- * sapi_appmanager_run(&config)
+ * rte_appmanager_run(&config)
  *     │
  *     └─ Calls ops->init(&context)  ◄─ You implement this
  *     │
@@ -44,7 +44,7 @@
  * - Allocate application state
  *
  * ```c
- * sapi_status_t my_app_init(void *context) {
+ * rte_status_t my_app_init(void *context) {
  *     my_app_t *app = (my_app_t *)context;
  *
  *     // Create channel registry
@@ -57,7 +57,7 @@
  *     tcp_config.on_data_available = on_vital_command;
  *     tcp_config.callback_context = app;
  *
- *     sapi_ipc_create_tcp(&app->vital_channel, &tcp_config);
+ *     rte_ipc_create_tcp(&app->vital_channel, &tcp_config);
  *
  *     // Register in registry
  *     channel_registry_register(
@@ -73,7 +73,7 @@
  *     // Initialize task queue
  *     app->tasks = task_queue_init(MAX_TASKS);
  *
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * ```
  *
@@ -82,7 +82,7 @@
  * Called repeatedly. YOUR MAIN LOOP - typical 10ms cycle:
  *
  * ```c
- * sapi_status_t my_app_execute(void *context) {
+ * rte_status_t my_app_execute(void *context) {
  *     my_app_t *app = (my_app_t *)context;
  *     uint64_t cycle_start = get_time_ms();
  *
@@ -118,13 +118,13 @@
  *
  *     // ===== STEP 6: SEND VITAL =====
  *     // Via vital_channel (automatic 2oo2 voting)
- *     sapi_channel_send(&app->vital_channel, &output);
+ *     rte_channel_send(&app->vital_channel, &output);
  *
  *     // ===== STEP 7: SEND NON-VITAL =====
  *     // Fire-and-forget diagnostics (non-blocking)
  *     telemetry_t telemetry;
  *     prepare_telemetry(&app->state, &telemetry);
- *     sapi_ipc_send(&app->diag_channel, &telemetry, 0);  // timeout=0
+ *     rte_ipc_send(&app->diag_channel, &telemetry, 0);  // timeout=0
  *
  *     // ===== STEP 8: MAINTAIN CYCLE TIME =====
  *     uint64_t elapsed = get_time_ms() - cycle_start;
@@ -134,7 +134,7 @@
  *         log_warning("Cycle overrun: %llu ms", elapsed);
  *     }
  *
- *     return SAPI_STATUS_OK;  // Continue loop
+ *     return RTE_STATUS_OK;  // Continue loop
  * }
  * ```
  *
@@ -157,12 +157,12 @@
  * Called once at termination (always, even on error):
  *
  * ```c
- * sapi_status_t my_app_shutdown(void *context) {
+ * rte_status_t my_app_shutdown(void *context) {
  *     my_app_t *app = (my_app_t *)context;
  *
  *     // Close all channels
- *     sapi_ipc_destroy(&app->vital_channel);
- *     sapi_ipc_destroy(&app->diag_channel);
+ *     rte_ipc_destroy(&app->vital_channel);
+ *     rte_ipc_destroy(&app->diag_channel);
  *
  *     // Free timer service
  *     timer_service_destroy(app->timers);
@@ -174,7 +174,7 @@
  *     channel_registry_destroy(app->channel_registry);
  *
  *     log_info("Application shutdown complete");
- *     return SAPI_STATUS_OK;  // Must not fail
+ *     return RTE_STATUS_OK;  // Must not fail
  * }
  * ```
  *
@@ -186,8 +186,8 @@
  * typedef struct {
  *     // Channels
  *     channel_registry_t *channel_registry;
- *     sapi_channel_t vital_channel;
- *     sapi_ipc_handle_t diag_channel;
+ *     rte_channel_t vital_channel;
+ *     rte_ipc_handle_t diag_channel;
  *
  *     // Services
  *     timer_service_t *timers;
@@ -209,7 +209,7 @@
  * int main(void) {
  *     my_app_t app = {0};
  *
- *     const sapi_appmanager_operations_t ops = {
+ *     const rte_appmanager_operations_t ops = {
  *         .init = my_app_init,
  *         .execute = my_app_execute,
  *         .shutdown = my_app_shutdown,
@@ -217,14 +217,14 @@
  *         .get_version = my_app_get_version,
  *     };
  *
- *     sapi_appmanager_config_t config = {
+ *     rte_appmanager_config_t config = {
  *         .ops = &ops,
  *         .context = &app,
  *         .max_iterations = 0,        // Run forever
  *         .error_threshold = 10,      // Stop after 10 errors
  *     };
  *
- *     return sapi_appmanager_run(&config);
+ *     return rte_appmanager_run(&config);
  * }
  * ```
  *
@@ -272,7 +272,7 @@
  * channel_registry_t *create_channel_registry(void);
  * void channel_registry_register(channel_registry_t *reg,
  *                                const char *name,
- *                                sapi_channel_callback_t callback,
+ *                                rte_channel_callback_t callback,
  *                                void *context);
  * void read_channels_with_callbacks(channel_registry_t *reg);
  *

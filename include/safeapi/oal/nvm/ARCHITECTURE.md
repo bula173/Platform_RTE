@@ -6,8 +6,8 @@
  *
  * @section nvm_architecture_api Read/Write Interface
  *
- * sapi_nvm_read(offset, data, size) - Read from NVM
- * sapi_nvm_write(offset, data, size) - Write to NVM
+ * rte_nvm_read(offset, data, size) - Read from NVM
+ * rte_nvm_write(offset, data, size) - Write to NVM
  *
  * @section nvm_architecture_wear Flash Wear
  *

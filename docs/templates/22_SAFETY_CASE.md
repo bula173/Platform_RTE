@@ -314,17 +314,17 @@ Total Requirements: 47
 **Derived From:** HARA Hazard H1 (Uninitialized backend)
 
 **Design Solution:**
-- Backend registration function: `sapi_timer_register_backend(backend)`
-- All services check backend == NULL → return SAPI_STATUS_NOT_INITIALIZED
+- Backend registration function: `rte_timer_register_backend(backend)`
+- All services check backend == NULL → return RTE_STATUS_NOT_INITIALIZED
 - Application initialization sequence documented
 
 **Implementation:**
-- File: src/timer/sapi_timer.c, lines 15-20
-- Function: sapi_timer_create() checks backend != NULL
+- File: src/timer/rte_timer.c, lines 15-20
+- Function: rte_timer_create() checks backend != NULL
 
 **Verification:**
 - Unit Test: test_timer_create_no_backend()
-- Verifies: Function returns SAPI_STATUS_NOT_INITIALIZED when backend NULL
+- Verifies: Function returns RTE_STATUS_NOT_INITIALIZED when backend NULL
 - Code Review: Confirmed NULL check present
 
 **Evidence:** ✓ COMPLETE
@@ -366,7 +366,7 @@ Total Requirements: 47
 | 6.2.3 | Modularity | ✓ 13 modules, clear boundaries | Source code structure |
 | 6.3 | Structured Design | ✓ Explicit design documents | Design documents 09-11 |
 | 6.4 | Traceability | ✓ Bidirectional | Traceability Matrix |
-| 6.5 | Safe-State | ✓ Defensive halt & recovery | SAPI_SAFESTATE, SAPI_REBOOT |
+| 6.5 | Safe-State | ✓ Defensive halt & recovery | RTE_SAFESTATE, RTE_REBOOT |
 
 ### 8.2 Section 7 - Quality Assurance
 

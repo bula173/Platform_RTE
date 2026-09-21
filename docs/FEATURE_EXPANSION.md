@@ -119,17 +119,17 @@ Features that strongly align with RBC (ERTMS Radio Block Centre) safety requirem
 **API Sketch:**
 ```c
 // Request-Reply
-sapi_status_t sapi_ipc_send_request(handle, request, reply, timeout_ms);
+rte_status_t rte_ipc_send_request(handle, request, reply, timeout_ms);
 
 // Pub-Sub
-sapi_status_t sapi_ipc_subscribe(topic, subscriber_queue, filter);
-sapi_status_t sapi_ipc_publish(topic, message);
+rte_status_t rte_ipc_subscribe(topic, subscriber_queue, filter);
+rte_status_t rte_ipc_publish(topic, message);
 
 // Priority
-sapi_status_t sapi_ipc_send_priority(handle, message, priority, timeout_ms);
+rte_status_t rte_ipc_send_priority(handle, message, priority, timeout_ms);
 
 // Statistics
-sapi_status_t sapi_ipc_get_stats(handle, stats);
+rte_status_t rte_ipc_get_stats(handle, stats);
 ```
 
 **MISRA Considerations:**
@@ -167,15 +167,15 @@ sapi_status_t sapi_ipc_get_stats(handle, stats);
 
 **API Sketch:**
 ```c
-typedef struct sapi_hsm_state {
+typedef struct rte_hsm_state {
     const char *name;
-    sapi_status_t (*on_entry)(void *context);
-    sapi_status_t (*on_exit)(void *context);
-    sapi_status_t (*on_event)(void *context, sapi_hsm_event_t event);
+    rte_status_t (*on_entry)(void *context);
+    rte_status_t (*on_exit)(void *context);
+    rte_status_t (*on_event)(void *context, rte_hsm_event_t event);
     // Orthogonal regions, parent state, transitions...
-} sapi_hsm_state_t;
+} rte_hsm_state_t;
 
-sapi_status_t sapi_hsm_dispatch(sapi_hsm_t *hsm, sapi_hsm_event_t event);
+rte_status_t rte_hsm_dispatch(rte_hsm_t *hsm, rte_hsm_event_t event);
 ```
 
 **MISRA Considerations:**
@@ -208,16 +208,16 @@ sapi_status_t sapi_hsm_dispatch(sapi_hsm_t *hsm, sapi_hsm_event_t event);
 
 **API Sketch:**
 ```c
-#define SAPI_MSGQUEUE_CAPACITY 128
+#define RTE_MSGQUEUE_CAPACITY 128
 
 typedef struct {
     uint32_t msg_type;
     uint8_t payload[64];
-} sapi_msg_t;
+} rte_msg_t;
 
-sapi_status_t sapi_msgqueue_send(sapi_msgqueue_t *q, const sapi_msg_t *msg);
-sapi_status_t sapi_msgqueue_recv(sapi_msgqueue_t *q, sapi_msg_t *msg);
-sapi_status_t sapi_msgqueue_is_empty(const sapi_msgqueue_t *q, bool *empty);
+rte_status_t rte_msgqueue_send(rte_msgqueue_t *q, const rte_msg_t *msg);
+rte_status_t rte_msgqueue_recv(rte_msgqueue_t *q, rte_msg_t *msg);
+rte_status_t rte_msgqueue_is_empty(const rte_msgqueue_t *q, bool *empty);
 ```
 
 **MISRA Considerations:**
@@ -263,27 +263,27 @@ sapi_status_t sapi_msgqueue_is_empty(const sapi_msgqueue_t *q, bool *empty);
 **API Overview:**
 ```c
 // Create and manage watchdog
-sapi_watchdog_t wd;
-sapi_watchdog_config_t config = {
-    .type = SAPI_WATCHDOG_SYSTEM,      // or TASK, CHANNEL, CHECKPOINT
+rte_watchdog_t wd;
+rte_watchdog_config_t config = {
+    .type = RTE_WATCHDOG_SYSTEM,      // or TASK, CHANNEL, CHECKPOINT
     .name = "rbc_main_wd",
     .timeout_ms = 1000,                // Deadline
-    .action = SAPI_WATCHDOG_ACTION_SAFESTATE  // Recovery action
+    .action = RTE_WATCHDOG_ACTION_SAFESTATE  // Recovery action
 };
-sapi_watchdog_create(&wd, &config);
-sapi_watchdog_start(wd);
+rte_watchdog_create(&wd, &config);
+rte_watchdog_start(wd);
 
 // Kick watchdog (reset countdown)
-sapi_watchdog_kick(wd);
+rte_watchdog_kick(wd);
 
 // Query status (non-blocking)
-sapi_watchdog_status_t status;
-sapi_watchdog_get_status(wd, &status);
+rte_watchdog_status_t status;
+rte_watchdog_get_status(wd, &status);
 // status.time_until_fire, status.kicks, status.fires, etc.
 
 // Stop and destroy
-sapi_watchdog_stop(wd);
-sapi_watchdog_destroy(wd);
+rte_watchdog_stop(wd);
+rte_watchdog_destroy(wd);
 ```
 
 **Usage Pattern (Main Loop):**
@@ -294,7 +294,7 @@ while (running) {
     update_speed_limits();
     
     // Prove we're alive (resets 1-second timeout)
-    sapi_watchdog_kick(wd);
+    rte_watchdog_kick(wd);
     
     sleep_ms(100);
 }
@@ -305,16 +305,16 @@ while (running) {
 // Each task monitors its own progress
 while (running) {
     // Checkpoint 1
-    sapi_channel_checkpoint(vital_ch, &ckpt1);
+    rte_channel_checkpoint(vital_ch, &ckpt1);
     
     // Process (must complete within timeout)
     process_signals(&signals);
     
     // Checkpoint 2
-    sapi_channel_checkpoint(vital_ch, &ckpt2);
+    rte_channel_checkpoint(vital_ch, &ckpt2);
     
     // Prove this task made progress
-    sapi_watchdog_kick(task_wd);
+    rte_watchdog_kick(task_wd);
 }
 ```
 
@@ -366,13 +366,13 @@ while (running) {
 typedef struct {
     uint8_t lock_id;  // For deadlock prevention
     uint32_t data;
-} sapi_protected_u32_t;
+} rte_protected_u32_t;
 
-sapi_status_t sapi_protected_read(const sapi_protected_u32_t *p, uint32_t *out);
-sapi_status_t sapi_protected_write(sapi_protected_u32_t *p, uint32_t value);
+rte_status_t rte_protected_read(const rte_protected_u32_t *p, uint32_t *out);
+rte_status_t rte_protected_write(rte_protected_u32_t *p, uint32_t value);
 
 // For lock-free patterns:
-sapi_status_t sapi_atomic_cas(volatile uint32_t *addr, uint32_t expected, 
+rte_status_t rte_atomic_cas(volatile uint32_t *addr, uint32_t expected, 
                                uint32_t new_val, bool *success);
 ```
 
@@ -539,7 +539,7 @@ cmake --build build
 
 **Pros:**
 - Single binary can support multiple configurations
-- Graceful degradation (disabled features return `SAPI_STATUS_NOT_AVAILABLE`)
+- Graceful degradation (disabled features return `RTE_STATUS_NOT_AVAILABLE`)
 - Useful for multi-variant firmware
 
 **Cons:**
@@ -549,14 +549,14 @@ cmake --build build
 **API:**
 ```c
 typedef enum {
-    SAPI_FEATURE_HSM,
-    SAPI_FEATURE_MSGQUEUE,
-    SAPI_FEATURE_WATCHDOG,
+    RTE_FEATURE_HSM,
+    RTE_FEATURE_MSGQUEUE,
+    RTE_FEATURE_WATCHDOG,
     // ...
-} sapi_feature_id_t;
+} rte_feature_id_t;
 
-sapi_status_t sapi_enable_feature(sapi_feature_id_t id, bool enabled);
-sapi_status_t sapi_is_feature_available(sapi_feature_id_t id, bool *available);
+rte_status_t rte_enable_feature(rte_feature_id_t id, bool enabled);
+rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 ```
 
 ---

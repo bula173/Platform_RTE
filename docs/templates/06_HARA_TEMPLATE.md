@@ -87,7 +87,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 ---
 
 #### H2: Buffer Overflow in String Operations
-**Description:** String operation (sapi_string_*) receives untrusted input  
+**Description:** String operation (rte_string_*) receives untrusted input  
 **Cause:** Application doesn't validate input length, buffer size insufficient  
 **Effect:** Memory corruption, security risk, crash  
 **SIL:** 4 (Potential for unsafe condition)  
@@ -193,23 +193,23 @@ Risk-based approach per EN 50128:2011 Section 5:
 
 ### 4.1 FMEA for safeAPIFramework Services
 
-#### Service: sapi_timer_create()
+#### Service: rte_timer_create()
 
 | Failure Mode | Failure Cause | Failure Effect | Current Control | Risk Priority |
 |--------------|---------------|----------------|-----------------|----------------|
-| Returns SAPI_STATUS_RESOURCE_EXHAUSTED | No timer slots available | Timer not created, no timeout protection | Pre-allocation of timer pool | Mitigated |
-| Returns SAPI_STATUS_INVALID_PARAM | Invalid name/handle pointer | Timer not created, error handling required | Parameter validation | Mitigated |
+| Returns RTE_STATUS_RESOURCE_EXHAUSTED | No timer slots available | Timer not created, no timeout protection | Pre-allocation of timer pool | Mitigated |
+| Returns RTE_STATUS_INVALID_PARAM | Invalid name/handle pointer | Timer not created, error handling required | Parameter validation | Mitigated |
 | NULL backend | Backend not registered | Crash with NULL dereference | Application ensures backend registered | Mitigated |
 
 **Risk Level:** Low (all failure modes have mitigations)
 
-#### Service: sapi_nvm_read()
+#### Service: rte_nvm_read()
 
 | Failure Mode | Failure Cause | Failure Effect | Current Control | Risk Priority |
 |--------------|---------------|----------------|-----------------|----------------|
-| Returns SAPI_STATUS_DATA_CORRUPTION | NVM sector corrupted | Read returns invalid data | CRC check, application validation | Mitigated |
+| Returns RTE_STATUS_DATA_CORRUPTION | NVM sector corrupted | Read returns invalid data | CRC check, application validation | Mitigated |
 | Timeout during read | Slow NVM backend | Operation blocks indefinitely | Timeout in backend | Mitigated |
-| Returns SAPI_STATUS_HARDWARE_FAULT | Underlying NVM failure | Complete loss of NVM access | Application fallback to defaults | Acceptable |
+| Returns RTE_STATUS_HARDWARE_FAULT | Underlying NVM failure | Complete loss of NVM access | Application fallback to defaults | Acceptable |
 
 **Risk Level:** Medium (requires backend implementation quality)
 
@@ -258,7 +258,7 @@ Risk-based approach per EN 50128:2011 Section 5:
 - **Layered Architecture:** Application isolated from OS via safeAPIFramework
 - **Explicit Error Handling:** Every function returns status code
 - **Bounded Operations:** No strcpy, sprintf, dynamic allocation
-- **Safe-State Transitions:** SAPI_ASSERT, SAPI_SAFESTATE, SAPI_REBOOT
+- **Safe-State Transitions:** RTE_ASSERT, RTE_SAFESTATE, RTE_REBOOT
 
 ### 6.2 Implementation Mitigations
 - **Code Review:** MISRA + EN 50128 compliance review
@@ -315,7 +315,7 @@ Backend implementation must provide:
 Based on HARA findings, the following safety requirements are derived:
 
 **SR-001:** safeAPIFramework services shall not be called before backend registration  
-**SR-002:** All string operations shall use bounded sapi_string_* functions  
+**SR-002:** All string operations shall use bounded rte_string_* functions  
 **SR-003:** Multi-threaded access to shared resources shall be protected by RTOS synchronization primitives  
 **SR-004:** All NVM data shall be protected by CRC/integrity checks  
 **SR-005:** Timer values shall be verified against application timing requirements  

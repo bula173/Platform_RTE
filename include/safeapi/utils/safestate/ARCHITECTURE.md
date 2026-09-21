@@ -5,7 +5,7 @@
  *
  * Safe-State is a handler registration system for critical events. Applications
  * register handlers for each severity level (DEGRADED, SAFE, REBOOT), then call
- * SAPI_SAFESTATE() or SAPI_REBOOT() macros to trigger transitions. The framework
+ * RTE_SAFESTATE() or RTE_REBOOT() macros to trigger transitions. The framework
  * invokes the registered handler with context (file, line, message) and guarantees
  * control never returns for SAFE/REBOOT levels.
  *
@@ -35,8 +35,8 @@
  * @subsection safestate_architecture_api_register Registration
  *
  * @code
- * sapi_status_t sapi_safestate_register_handler(sapi_safestate_level_t level,
- *                                                sapi_safestate_handler_t handler);
+ * rte_status_t rte_safestate_register_handler(rte_safestate_level_t level,
+ *                                                rte_safestate_handler_t handler);
  * @endcode
  *
  * Registers handler for one level. Replaces any previous handler for that level.
@@ -45,8 +45,8 @@
  * @subsection safestate_architecture_api_enter Entering a Level
  *
  * @code
- * void sapi_safestate_enter(sapi_safestate_level_t level,
- *                            sapi_safestate_reason_t reason,
+ * void rte_safestate_enter(rte_safestate_level_t level,
+ *                            rte_safestate_reason_t reason,
  *                            const char *file,
  *                            int32_t line,
  *                            const char *message);
@@ -60,9 +60,9 @@
  * @subsection safestate_architecture_api_macros Convenience Macros
  *
  * @code
- * SAPI_ASSERT(condition)          // If false, SAFE with REASON_ASSERT_FAILED
- * SAPI_SAFESTATE(level, reason)   // Enter level with reason
- * SAPI_REBOOT(reason)             // Enter REBOOT with reason
+ * RTE_ASSERT(condition)          // If false, SAFE with REASON_ASSERT_FAILED
+ * RTE_SAFESTATE(level, reason)   // Enter level with reason
+ * RTE_REBOOT(reason)             // Enter REBOOT with reason
  * @endcode
  *
  * Macros automatically capture __FILE__ and __LINE__.
@@ -70,9 +70,9 @@
  * @section safestate_architecture_handler_signature Handler Signature
  *
  * @code
- * typedef void (*sapi_safestate_handler_t)(
- *     sapi_safestate_level_t level,   // Level being entered
- *     sapi_safestate_reason_t reason, // Application-supplied reason code
+ * typedef void (*rte_safestate_handler_t)(
+ *     rte_safestate_level_t level,   // Level being entered
+ *     rte_safestate_reason_t reason, // Application-supplied reason code
  *     const char *file,               // Source file (__FILE__), may be NULL
  *     int32_t line,                   // Source line (__LINE__)
  *     const char *message             // Optional detail (e.g., assertion text)
@@ -88,9 +88,9 @@
  * @subsection safestate_architecture_reason_framework Framework Reasons (0-4095)
  *
  * @verbatim
- * SAPI_SAFESTATE_REASON_UNSPECIFIED (0)    - No specific reason
- * SAPI_SAFESTATE_REASON_ASSERT_FAILED (1)  - SAPI_ASSERT() condition false
- * SAPI_SAFESTATE_REASON_APPLICATION_BASE   - 4096, start of app-specific codes
+ * RTE_SAFESTATE_REASON_UNSPECIFIED (0)    - No specific reason
+ * RTE_SAFESTATE_REASON_ASSERT_FAILED (1)  - RTE_ASSERT() condition false
+ * RTE_SAFESTATE_REASON_APPLICATION_BASE   - 4096, start of app-specific codes
  * @endverbatim
  *
  * @subsection safestate_architecture_reason_application Application Reasons (4096+)
@@ -109,10 +109,10 @@
  * @section safestate_architecture_flow Transition Flow
  *
  * @verbatim
- * Application calls SAPI_SAFESTATE(level, reason)
+ * Application calls RTE_SAFESTATE(level, reason)
  *     │
  *     ├─ Captures __FILE__, __LINE__
- *     └─ Calls sapi_safestate_enter(level, reason, file, line, NULL)
+ *     └─ Calls rte_safestate_enter(level, reason, file, line, NULL)
  *             │
  *             ├─ Retrieves registered handler for level
  *             ├─ If handler != NULL: invokes it with context
@@ -120,7 +120,7 @@
  *
  * If DEGRADED:
  *     └─ Handler returns normally
- *     └─ sapi_safestate_enter() returns to caller
+ *     └─ rte_safestate_enter() returns to caller
  *     └─ Application continues execution
  *
  * If SAFE or REBOOT:
@@ -141,24 +141,24 @@
  * Level 2 (REBOOT)    ──> Handler C
  * @endverbatim
  *
- * @section safestate_architecture_assert SAPI_ASSERT Implementation
+ * @section safestate_architecture_assert RTE_ASSERT Implementation
  *
- * SAPI_ASSERT() is a macro that:
+ * RTE_ASSERT() is a macro that:
  * 1. Evaluates its condition
  * 2. If true: does nothing
- * 3. If false: calls sapi_safestate_enter(SAFE, ASSERT_FAILED, file, line, expr_text)
+ * 3. If false: calls rte_safestate_enter(SAFE, ASSERT_FAILED, file, line, expr_text)
  *
  * @code
- * #define SAPI_ASSERT(cond) \
+ * #define RTE_ASSERT(cond) \
  *     do { \
  *         if (!(cond)) \
- *             sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE, \
- *                                  SAPI_SAFESTATE_REASON_ASSERT_FAILED, \
+ *             rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE, \
+ *                                  RTE_SAFESTATE_REASON_ASSERT_FAILED, \
  *                                  __FILE__, (int32_t)__LINE__, #cond); \
  *     } while (0)
  * @endcode
  *
- * Unlike standard assert(), SAPI_ASSERT() is **always active**, never disabled.
+ * Unlike standard assert(), RTE_ASSERT() is **always active**, never disabled.
  * This is intentional for safety-critical systems where assertions must catch
  * bugs in production.
  *
@@ -184,14 +184,14 @@
  *
  * @code
  * void watchdog_fired(void) {
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
  *                   APP_REASON_WATCHDOG_TIMEOUT);
  * }
  * @endcode
  *
  * @subsection safestate_architecture_integ_reboot With Reboot Module
  *
- * SAPI_REBOOT() enters REBOOT level; handler can call sapi_reboot_request()
+ * RTE_REBOOT() enters REBOOT level; handler can call rte_reboot_request()
  * to actually restart the system.
  *
  * @section safestate_architecture_testing Unit Tests
@@ -200,30 +200,30 @@
  *
  * @code
  * static int handler_called = 0;
- * static sapi_safestate_level_t handler_level = 0;
+ * static rte_safestate_level_t handler_level = 0;
  *
- * void test_handler(sapi_safestate_level_t level, ...) {
+ * void test_handler(rte_safestate_level_t level, ...) {
  *     handler_called = 1;
  *     handler_level = level;
  * }
  *
  * void test_degraded_handler_invoked(void) {
- *     sapi_safestate_register_handler(SAPI_SAFESTATE_LEVEL_DEGRADED,
+ *     rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_DEGRADED,
  *                                     test_handler);
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_DEGRADED, 0);
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_DEGRADED, 0);
  *
  *     assert(handler_called == 1);
- *     assert(handler_level == SAPI_SAFESTATE_LEVEL_DEGRADED);
+ *     assert(handler_level == RTE_SAFESTATE_LEVEL_DEGRADED);
  * }
  * @endcode
  *
- * @subsection safestate_architecture_test_assert Test 2: SAPI_ASSERT Behavior
+ * @subsection safestate_architecture_test_assert Test 2: RTE_ASSERT Behavior
  *
  * @code
  * void test_assert_on_failure(void) {
- *     // SAPI_ASSERT(false) should enter SAFE state
+ *     // RTE_ASSERT(false) should enter SAFE state
  *     // Verify via mock handler that was triggered
- *     SAPI_ASSERT(false);  // Never reaches here (enters SAFE)
+ *     RTE_ASSERT(false);  // Never reaches here (enters SAFE)
  * }
  * @endcode
  *

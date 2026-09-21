@@ -3,23 +3,23 @@
 Date: 2026-09-09 (see "update 24" note below)
 
 **2026-09-09, update 24 (structured-log field builder:
-`sapi_log_fields_t` + `sapi_log_fields_reset()` /
-`sapi_log_fields_add_str/_u32/_i32/_u64/_i64/_hex_u32/_bool()` /
-`sapi_log_fields_c_str()` / `sapi_log_write_event_fields()`,
+`rte_log_fields_t` + `rte_log_fields_reset()` /
+`rte_log_fields_add_str/_u32/_i32/_u64/_i64/_hex_u32/_bool()` /
+`rte_log_fields_c_str()` / `rte_log_write_event_fields()`,
 REQ-OAL-LOG-017):** manual review of the change
-(`include/safeapi/oal/log/sapi_log.h`, `src/oal/log/sapi_log.c`,
-`tests/log/test_sapi_log.c`); `cppcheck --enable=all --addon=misra
---std=c99` run on `src/oal/log/sapi_log.c`.
+(`include/safeapi/oal/log/rte_log.h`, `src/oal/log/rte_log.c`,
+`tests/log/test_rte_log.c`); `cppcheck --enable=all --addon=misra
+--std=c99` run on `src/oal/log/rte_log.c`.
 
 - **Rule 17.1 (`<stdarg.h>` / variadic) — this is the reason the builder
-  exists.** `sapi_log_write_event()` deliberately has no `printf`-style
+  exists.** `rte_log_write_event()` deliberately has no `printf`-style
   variant; the builder is a fixed-arity, typed alternative for
   interpolating variable values into a log line. No `<stdarg.h>`,
   `<stdio.h>`, or `snprintf` introduced.
-- **No allocation (Dir 4.12 / Rule 21.3):** `sapi_log_fields_t` carries
-  its own `char storage[SAPI_LOG_EVENT_LINE_MAX_LEN]`; `sapi_log_fields_reset()`
-  binds an in-struct `sapi_string_t` to it. Every `_add_*` goes through
-  the already-reviewed bounded `sapi_string_concat()` / `_append_u32()` …
+- **No allocation (Dir 4.12 / Rule 21.3):** `rte_log_fields_t` carries
+  its own `char storage[RTE_LOG_EVENT_LINE_MAX_LEN]`; `rte_log_fields_reset()`
+  binds an in-struct `rte_string_t` to it. Every `_add_*` goes through
+  the already-reviewed bounded `rte_string_concat()` / `_append_u32()` …
   primitives (update 23), so the truncation/bounds behaviour is inherited,
   not re-implemented.
 - Every entry point NULL-checks `fields` (and `_add_*` also `key`) and is
@@ -27,43 +27,43 @@ REQ-OAL-LOG-017):** manual review of the change
   affect the caller's control flow). `_add_*` return `fields` for
   optional inline chaining; a single accumulated path, no early `return`
   inside the body beyond the guard.
-- `sapi_log_write_event()` gained a one-line hardening: an empty-string
+- `rte_log_write_event()` gained a one-line hardening: an empty-string
   `extra_fields` is now treated exactly like NULL (`(extra_fields != NULL)
   && (extra_fields[0] != '\0')`), so an empty builder round-trips with no
   trailing space. Behaviour for a non-empty `extra_fields` is unchanged.
-- `sapi_log.h` now `#include`s `safeapi/utils/string/sapi_string.h` (for
-  the `sapi_string_t` member) and `<stdbool.h>` (for `_add_bool`) — the
-  `.c` already depended on `sapi_string`; the header dependency is new but
+- `rte_log.h` now `#include`s `safeapi/utils/string/rte_string.h` (for
+  the `rte_string_t` member) and `<stdbool.h>` (for `_add_bool`) — the
+  `.c` already depended on `rte_string`; the header dependency is new but
   matches the module doc, which already names `safeapi::string` as the
   event-formatting path's dependency.
-- cppcheck on `sapi_log.c` after the change: only `unusedFunction` style
+- cppcheck on `rte_log.c` after the change: only `unusedFunction` style
   noise (single-TU public-API analysis), no `warning`/`error`/`misra-*`
-  on the new code. All 30 `ctest` binaries pass; `test_sapi_log` extended
+  on the new code. All 30 `ctest` binaries pass; `test_rte_log` extended
   with a builder block (per-type pairs, separator placement, NULL string
   value, NULL builder tolerance at every entry point, `_c_str()` output
   reused as the plain writer's `extra_fields`).
 - Static finding total: not re-run whole-tree; the touched `.c`'s own new
   code is clean per above. Carried from update 23's **1229**.
 
-**2026-09-04, update 23 (bounded numeric append: `sapi_string_append_u32()`
-/ `_i32()` / `_u64()` / `_i64()` / `sapi_string_append_hex_u32()` added to
-`sapi_string`, REQ-COMMON-STR-029..033):** `cppcheck --enable=all
+**2026-09-04, update 23 (bounded numeric append: `rte_string_append_u32()`
+/ `_i32()` / `_u64()` / `_i64()` / `rte_string_append_hex_u32()` added to
+`rte_string`, REQ-COMMON-STR-029..033):** `cppcheck --enable=all
 --addon=misra --std=c99` was available and run on
-`src/utils/string/sapi_string.c` this pass (unlike updates 22/21). Manual
+`src/utils/string/rte_string.c` this pass (unlike updates 22/21). Manual
 review plus tool run of the change
-(`src/utils/string/sapi_string.c`, `include/safeapi/utils/string/sapi_string.h`,
-`tests/string/test_sapi_string.c`):
+(`src/utils/string/rte_string.c`, `include/safeapi/utils/string/rte_string.h`,
+`tests/string/test_rte_string.c`):
 
-- New shared static tail `sapi_string_append_bytes()` mirrors
-  `sapi_string_concat()`'s already-reviewed append logic but for a known,
+- New shared static tail `rte_string_append_bytes()` mirrors
+  `rte_string_concat()`'s already-reviewed append logic but for a known,
   not-NUL-terminated length: validates `dest`/buffer, checks
   `n > (capacity - length)` before any write, `memcpy` + advance only when
   `n > 0`, single accumulated `return`. `<string.h>` already used by this
   TU.
 - `_u32`/`_i32` widen through the existing checked casts
-  (`sapi_cast_u32_to_u64` / `sapi_cast_i32_to_i64`), same `GCOVR_EXCL`
-  can't-fail pattern as `sapi_string_from_u32`/`_i32`. `_i64` reuses the
-  INT64_MIN-safe negation idiom already in `sapi_string_from_i64`.
+  (`rte_cast_u32_to_u64` / `rte_cast_i32_to_i64`), same `GCOVR_EXCL`
+  can't-fail pattern as `rte_string_from_u32`/`_i32`. `_i64` reuses the
+  INT64_MIN-safe negation idiom already in `rte_string_from_i64`.
 - `_append_hex_u32`: `out[8]` explicitly zero-initialised - `n` is
   provably `>= 1` (`n = max(real_digits>=1, width clamped to 1..8)`) so
   the `append_bytes(out, n)` call can never read an unwritten byte, but
@@ -74,38 +74,38 @@ review plus tool run of the change
   alternative to `snprintf(...,"%u"/"%x",...)` line assembly.
 - cppcheck after the zero-init: only `unusedFunction` style noise
   (single-file public-API analysis), no `warning`/`error`/`misra-*` on
-  the new code. All 30 `ctest` binaries pass, `test_sapi_string`
+  the new code. All 30 `ctest` binaries pass, `test_rte_string`
   extended with `test_append_numeric()` (compound assembly, hex padding,
   remaining-capacity refusal leaves dest intact, NULL dest).
 - Static finding total: not re-run whole-tree; the touched `.c`'s own
   new code is clean per above. Carried from update 22's **1229**.
 
-**2026-08-28, update 22 (runtime log-level threshold: `sapi_log_set_level()`
-/ `sapi_log_get_level()` / `sapi_log_level_from_string()` added to
-`sapi_log`):** no automated `cppcheck` run - not installed in this
+**2026-08-28, update 22 (runtime log-level threshold: `rte_log_set_level()`
+/ `rte_log_get_level()` / `rte_log_level_from_string()` added to
+`rte_log`):** no automated `cppcheck` run - not installed in this
 environment (same "state plainly when no tool was available" posture as
 updates 4/5/13/21). Manual MISRA C:2012 review of the change
-(`src/oal/log/sapi_log.c`, `include/safeapi/oal/log/sapi_log.h`):
+(`src/oal/log/rte_log.c`, `include/safeapi/oal/log/rte_log.h`):
 
-- New threshold `static sapi_log_level_t s_min_level` (default
-  `SAPI_LOG_LEVEL_DEBUG` = historical no-filter behaviour). Gate in
-  `sapi_log_write()` / `sapi_log_write_event()` is `((int)level <
+- New threshold `static rte_log_level_t s_min_level` (default
+  `RTE_LOG_LEVEL_DEBUG` = historical no-filter behaviour). Gate in
+  `rte_log_write()` / `rte_log_write_event()` is `((int)level <
   (int)s_min_level)` - both operands explicitly cast to a signed integer
   before the relational compare rather than comparing `enum` values
-  directly (Rule 10.x essential-type hygiene). `sapi_log_set_level()`
-  checks only the **upper** bound (`(int)min_level <= (int)SAPI_LOG_LEVEL_ERROR`):
-  the enum's underlying type is unsigned, so a `>= SAPI_LOG_LEVEL_DEBUG`
+  directly (Rule 10.x essential-type hygiene). `rte_log_set_level()`
+  checks only the **upper** bound (`(int)min_level <= (int)RTE_LOG_LEVEL_ERROR`):
+  the enum's underlying type is unsigned, so a `>= RTE_LOG_LEVEL_DEBUG`
   (== 0) test would be a tautology (Rule 14.3 / a `-Wtype-limits`
   warning-as-error); a wrapped/garbage value lands above ERROR and is
   ignored. Comment in-code records this.
-- `sapi_log_level_from_string()` iterates a `static const` name/level
+- `rte_log_level_from_string()` iterates a `static const` name/level
   table with `strcmp()` (`<string.h>` - already used by
-  `src/redundancy/voter/sapi_voter.c` etc., not a new banned-header
+  `src/redundancy/voter/rte_voter.c` etc., not a new banned-header
   situation; `errno`/`assert` remain the only banned std headers per
   CLAUDE.md). Single `for` loop, `size_t` index, `break` on match, single
   `return` of an accumulated status - no early return, CC well under 10.
 - Concurrency: `s_min_level` is a single int-sized value read on the log
-  path from any thread and written by `sapi_log_set_level()`. Documented
+  path from any thread and written by `rte_log_set_level()`. Documented
   in the header as best-effort (REQ-OAL-LOG-001): a racing change only
   keeps/drops one in-flight best-effort log line, never a torn read on
   any supported target. Consistent with how this module already treats
@@ -114,29 +114,29 @@ updates 4/5/13/21). Manual MISRA C:2012 review of the change
   from update 21's **1229** (the touched `.c` was not re-run through the
   tool - flagged, not silently folded in).
 
-**2026-08-27, update 21 (ADR-035: new `sapi_platform` OAL service - one-shot
+**2026-08-27, update 21 (ADR-035: new `rte_platform` OAL service - one-shot
 real-time platform bring-up moved out of a direct `safeAPIBackendPosix`
 call in `safeAPIRBC2oo2GP` startup):** no automated `cppcheck` run - the
 tool is not installed in the environment this change was made in (same
 "state plainly when no tool was available" posture as updates 4/5/13).
 Manual MISRA C:2012 review of the change:
 
-- **`src/oal/platform/sapi_platform.c`** (new, in `safeapi_oal`): a
+- **`src/oal/platform/rte_platform.c`** (new, in `safeapi_oal`): a
   validate-then-dispatch service structurally identical to
-  `src/oal/reboot/sapi_reboot.c` (its template) - fixed-width types
-  (`uint32_t`), one named constant (`SAPI_PLATFORM_RT_PRIORITY_MAX 99U`),
+  `src/oal/reboot/rte_reboot.c` (its template) - fixed-width types
+  (`uint32_t`), one named constant (`RTE_PLATFORM_RT_PRIORITY_MAX 99U`),
   no dynamic memory, no recursion, single-level pointer use, `const`
   backend pointer. The early-return validation style (Rule 15.5,
   Advisory) is the established, already-deviated pattern for every OAL
   `*_register_backend()` / dispatch function in this project - not a new
   deviation. One function-pointer call through the registered vtable,
-  same as `sapi_reboot`/`sapi_timer`.
-- **`include/safeapi/oal/platform/sapi_platform.h` +
-  `include/safeapi_backend/platform/sapi_platform_backend.h`** (new):
+  same as `rte_reboot`/`rte_timer`.
+- **`include/safeapi/oal/platform/rte_platform.h` +
+  `include/safeapi_backend/platform/rte_platform_backend.h`** (new):
   consumer/backend header split per ADR-021, Doxygen `@file`/`@brief`,
   full `@param`/`@return`, include guards, `extern "C"` wrappers - matches
   the reboot pair verbatim in shape.
-- **`tests/platform/test_sapi_platform.c`** (new): `<assert.h>`-based, in
+- **`tests/platform/test_rte_platform.c`** (new): `<assert.h>`-based, in
   the already-out-of-scope `tests/` tree (section 4).
 - No change to any existing `safeapi_core`/`safeapi_oal`/`safeapi_channels`
   translation unit; the static finding total is unchanged from update
@@ -145,7 +145,7 @@ Manual MISRA C:2012 review of the change:
   folded in).
 - Backend side (`safeAPIBackendPosix`, integrator code, not this
   framework's SIL scope): the `mlockall`/`SCHED_FIFO` body was **moved**
-  from `sapi_posix_backend.c` to a new `sapi_posix_backend_platform.c`
+  from `rte_posix_backend.c` to a new `rte_posix_backend_platform.c`
   behind the vtable, with one behavioural fix (gate `MCL_FUTURE` on
   `getrlimit(RLIMIT_MEMLOCK)`). Its POSIX-API use (`errno`, `strerror`,
   `snprintf`) is pre-existing and unchanged in kind, consistent with the
@@ -164,16 +164,16 @@ all three tools:
 - **AddressSanitizer + LeakSanitizer** (`-DSAFEAPI_ENABLE_ASAN=ON`):
   29/29 clean *after* two fixes, both real, both pre-existing (not
   introduced by this session's other work):
-  - `tests/voter/test_sapi_voter.c`: `g_mock[8]` was one element too
+  - `tests/voter/test_rte_voter.c`: `g_mock[8]` was one element too
     small - `test_register_channel()` legitimately needs 9 mock channel
     backends (`channels[9]`, indices 0-8) to exercise the
-    `SAPI_STATUS_RESOURCE_EXHAUSTED` path one past `SAPI_VOTER_MAX_CHANNELS`
+    `RTE_STATUS_RESOURCE_EXHAUSTED` path one past `RTE_VOTER_MAX_CHANNELS`
     (8). `reset_mocks(9)` was writing `g_mock[8]` out of bounds into
     whatever global happened to follow it in memory
     (`g_handler_calls`) - a real global-buffer-overflow, silent under a
     plain build, caught immediately by ASan's global redzones. Fixed:
     `g_mock[9]`.
-  - `tests/checkpoint/test_sapi_checkpoint.c`:
+  - `tests/checkpoint/test_rte_checkpoint.c`:
     `test_correct_sequence_wrong_payload_does_not_count()` deterministically
     crashes on its own epilogue under ASan (confirmed via `lldb`: `lr`
     correctly points back into this same function's `setjmp()` call
@@ -181,7 +181,7 @@ all three tools:
     address elsewhere) - a documented AddressSanitizer/`setjmp`+`longjmp`
     limitation (ASan's per-function stack-redzone epilogue bookkeeping
     doesn't replay correctly across a `longjmp()`-restored frame), not a
-    memory-safety defect in `sapi_checkpoint.c` itself: production code
+    memory-safety defect in `rte_checkpoint.c` itself: production code
     never calls `setjmp`/`longjmp` (REQ-COMMON-SAFESTATE-002's real
     handler never returns at all - this is test-only diversion tooling).
     The other three `setjmp`/`longjmp` tests in the same file, same
@@ -198,21 +198,21 @@ all three tools:
   platform here, but Linux is this project's actual deployment target
   per every `dist/<platform>` Docker/toolchain path elsewhere in this
   workspace): found one real, genuine "Use of uninitialised value of
-  size 8" inside `sapi_checksum_crc64()`, reached from
-  `sapi_dual_channel_send_heartbeat()`. Root cause:
-  `sapi_dual_heartbeat_frame_t` has a compiler-inserted 4-byte alignment
+  size 8" inside `rte_checksum_crc64()`, reached from
+  `rte_dual_channel_send_heartbeat()`. Root cause:
+  `rte_dual_heartbeat_frame_t` has a compiler-inserted 4-byte alignment
   gap between its 4-byte `header` and its 8-byte-aligned `timestamp_ms`
-  - unlike every other frame type in `sapi_dual_frames.h`, whose fields
+  - unlike every other frame type in `rte_dual_frames.h`, whose fields
   happen to sum to an already-8-aligned offset before their own trailing
   `uint64_t`. The function set every *named* field but never the struct
   as a whole, so that 4-byte gap stayed indeterminate stack content -
-  and `sapi_dual_msgchannel_send()` hashes/transmits `sizeof(frame)` raw
+  and `rte_dual_msgchannel_send()` hashes/transmits `sizeof(frame)` raw
   bytes, not just the named fields, so the indeterminate gap was read by
-  `sapi_checksum_crc64()` and folded into a live, on-wire checksum. A
+  `rte_checksum_crc64()` and folded into a live, on-wire checksum. A
   real "no uninitialized variables" violation (CLAUDE.md), not merely a
   Valgrind nag - fixed with a `memset(&frame, 0, sizeof(frame))` before
-  the field assignments in `sapi_dual_channel_send_heartbeat()`
-  (`src/redundancy/dual/sapi_dual_channel.c`). Re-ran the full
+  the field assignments in `rte_dual_channel_send_heartbeat()`
+  (`src/redundancy/dual/rte_dual_channel.c`). Re-ran the full
   `ctest -T memcheck` suite after the fix: 0 defects across all 29
   tests, confirmed in the same Linux container. Along with the ASan fix
   above (both are runtime findings, not static ones), this changes the
@@ -220,12 +220,12 @@ all three tools:
   itself - see the "Total MISRA findings" delta immediately below.
 - Every fix above is a test-file or production-`.c` change already
   covered by this repo's own existing `ctest` entries (no new test was
-  needed to exercise `sapi_dual_channel_send_heartbeat()` - the existing
+  needed to exercise `rte_dual_channel_send_heartbeat()` - the existing
   `test_send_heartbeat` already called it; Valgrind is what made the
   latent bug visible, not new test coverage).
 - Total MISRA findings: **1229** (up from update 19's 1228, +1) - the
   single `memset()` call added to
-  `src/redundancy/dual/sapi_dual_channel.c` above. Manual review: this
+  `src/redundancy/dual/rte_dual_channel.c` above. Manual review: this
   is a defensive, whole-struct zero-init immediately followed by the
   same explicit per-field assignments the file already used everywhere
   else - no deviation, no new finding type.
@@ -233,7 +233,7 @@ all three tools:
   and `ctest --test-dir build/native` on macOS - **29/29**, unchanged, and
   a full downstream rebuild of `safeAPIRBC2oo2GP` (pulls in
   `safeAPIBackendPosix`/`safeAPIRBC2oo2GA`/`safeAPIRBC2oo2SA`
-  transitively) confirming no regression from the `sapi_dual_channel.c`
+  transitively) confirming no regression from the `rte_dual_channel.c`
   fix.
 
 **2026-08-26, update 19 (channel-by-name lookup, plus the new opt-in
@@ -246,9 +246,9 @@ unchanged):
   from update 18's **1211** (+17). Two source changes landed in this
   repo since update 18's snapshot, neither of which had been through
   `cppcheck` yet:
-  - **Channel-by-name lookup** (`sapi_channel_config_t::name` +
-    `sapi_channel_get_name()` in `sapi_channel.c`;
-    `sapi_voter_get_channel_by_name()` in `sapi_voter.c`, linear
+  - **Channel-by-name lookup** (`rte_channel_config_t::name` +
+    `rte_channel_get_name()` in `rte_channel.c`;
+    `rte_voter_get_channel_by_name()` in `rte_voter.c`, linear
     `strcmp()` scan). Confirmed by line-level correlation against the
     report: both new functions land exactly one 15.5 (single point of
     exit, the trailing `return NULL;`/`return handle->config.name;`) and
@@ -256,20 +256,20 @@ unchanged):
     other function in these two files already carries (visually
     confirmed against the surrounding functions' own finding lines) -
     not a new finding *type* introduced by this code.
-  - **`sapi_safety_violation` module** (new
-    `include/safeapi/utils/safestate/sapi_safety_violation.h` +
-    `src/utils/safestate/sapi_safety_violation.c` - single fixed handler
+  - **`rte_safety_violation` module** (new
+    `include/safeapi/utils/safestate/rte_safety_violation.h` +
+    `src/utils/safestate/rte_safety_violation.c` - single fixed handler
     slot, REQ-COMMON-SAFETYVIOLATION-001/002) plus instrumenting the
     three existing primitive families with
-    `sapi_safety_violation_report()` calls at their pre-existing failure
-    branches: `sapi_safe_ptr_get()`/`_offset()` (`sapi_safe_ptr.c`, 3
-    call sites) and all six `sapi_cast_checked_*` functions plus
-    `sapi_cast_bounds_check()` (`sapi_cast.c`, 7 call sites). The new
+    `rte_safety_violation_report()` calls at their pre-existing failure
+    branches: `rte_safe_ptr_get()`/`_offset()` (`rte_safe_ptr.c`, 3
+    call sites) and all six `rte_cast_checked_*` functions plus
+    `rte_cast_bounds_check()` (`rte_cast.c`, 7 call sites). The new
     module itself contributes exactly 2 findings (15.5, on its own two
     early-return guard clauses); the instrumentation calls add no new
     findings of their own, since each call sits *before* a `return`
     statement that already existed (and was already counted) prior to
-    this change - the branch structure of `sapi_cast.c`/`sapi_safe_ptr.c`
+    this change - the branch structure of `rte_cast.c`/`rte_safe_ptr.c`
     is unchanged, only a function call was inserted into already-existing
     branches.
 - Manual review: both changes match this codebase's already-documented
@@ -280,7 +280,7 @@ unchanged):
   needed.
 - Verified separately from `cppcheck` (build-system/test-count concerns,
   not MISRA-rule content): full rebuild + `ctest` - **29/29** (up from
-  update 18's 28 - one new binary, `test_sapi_safety_violation`, covering
+  update 18's 28 - one new binary, `test_rte_safety_violation`, covering
   no-handler-is-a-no-op (REQ-COMMON-SAFETYVIOLATION-002), NULL-handler
   rejection, correct dispatch of kind/file/line/message, and
   re-registration replacing rather than stacking). Downstream repos
@@ -288,7 +288,7 @@ unchanged):
   specific update - the safety-violation module's default (no handler
   registered) behavior is provably unchanged from the three primitives'
   existing return-code contracts, so no downstream consumer is affected
-  until one opts in by calling `sapi_safety_violation_register_handler()`,
+  until one opts in by calling `rte_safety_violation_register_handler()`,
   which nothing yet does.
 
 **2026-08-26, update 18 (module reorg into `common`/`utils`/`oal`/`redundancy`/`app`
@@ -298,16 +298,16 @@ sections 1.4/2.3.1):** automated checker run performed (`cppcheck`,
 
 - Total MISRA findings: **1211** (`build/cppcheck-report.txt`) - up from update
   17's **1183** (+28). This delta is fully attributable to the three new
-  primitives' new code (`sapi_safe_ptr.h`/`.c`, and the six new
-  `sapi_cast_checked_*`/`sapi_cast_bounds_check` functions added to
-  `sapi_cast.c`) - the module reorg itself moved existing files into deeper
+  primitives' new code (`rte_safe_ptr.h`/`.c`, and the six new
+  `rte_cast_checked_*`/`rte_cast_bounds_check` functions added to
+  `rte_cast.c`) - the module reorg itself moved existing files into deeper
   directories without changing a single line of their content, so it
   contributed zero findings on its own (directory depth is not
   MISRA-relevant).
 - Manual review of the new code: no dynamic allocation
-  (`sapi_safe_ptr_t` wraps caller-owned memory, never allocates); fixed-width
+  (`rte_safe_ptr_t` wraps caller-owned memory, never allocates); fixed-width
   types throughout; explicit, checked overflow detection in every
-  `sapi_cast_checked_*` function (widen-then-compare for the `u32` variants,
+  `rte_cast_checked_*` function (widen-then-compare for the `u32` variants,
   `SIZE_MAX`-relative checks for the `size_t` variants, a zero-operand guard
   before the multiplication overflow check's own division); single point of
   exit preserved; full Doxygen blocks with `REQ-COMMON-CAST-004/005` and
@@ -333,7 +333,7 @@ session, `cmake --build build --target cppcheck`,
 `.cppcheck-suppressions` unchanged):
 
 - Total MISRA findings: **1183** (`build/cppcheck-report.txt`) - up from
-  update 16's **1108** (+75). `src/appmanager/sapi_appmanager.c` alone now
+  update 16's **1108** (+75). `src/appmanager/rte_appmanager.c` alone now
   accounts for 70 findings in this run. This session does not have a
   precise pre-change, per-file baseline for that file (only the prior
   session's repo-wide total, 1108) to separate "genuinely new violation
@@ -347,8 +347,8 @@ session, `cmake --build build --target cppcheck`,
   file (17.7 unused return value, 21.6 stdio.h, 10.4/12.1 arithmetic
   type/precedence, 15.5 multiple return points) are the same widespread,
   already-accepted style-level patterns present throughout this codebase
-  before this session (e.g. `src/cast/sapi_cast.c` alone carries 150 of
-  the repo's 1183 findings, `src/string/sapi_string.c` 68 - neither
+  before this session (e.g. `src/cast/rte_cast.c` alone carries 150 of
+  the repo's 1183 findings, `src/string/rte_string.c` 68 - neither
   touched this session) - not a new category this change introduced.
 - Manual review of the actual new code (not just the checker's
   style-level output) for the conventions this project cares about most:
@@ -356,19 +356,19 @@ session, `cmake --build build --target cppcheck`,
   (`fold_buf[16]`), the mark text buffer (`text[128]`), and
   `safeAPIRBC2oo2GP`'s new staged-send queue
   (`ab_gp_staged_send_t[AB_GP_MAX_STAGED_SENDS_PER_CYCLE]`) are all
-  fixed-size, sized generously, checked with `SAPI_STATUS_RESOURCE_EXHAUSTED`
+  fixed-size, sized generously, checked with `RTE_STATUS_RESOURCE_EXHAUSTED`
   rather than silently overflowing); fixed-width types throughout
   (`uint64_t` signature, `uint32_t` folded `checkpoint_id`); explicit,
   checked casts for the 64-to-32-bit signature fold
-  (`sapi_appmanager_checkpoint_fold_signature()` - an XOR of the two
+  (`rte_appmanager_checkpoint_fold_signature()` - an XOR of the two
   32-bit halves, not an implicit truncating assignment, per this
   project's own CLAUDE.md rule); single point of exit preserved in the
   new/changed functions; full Doxygen blocks with ADR-034 citations on
-  every new public function/type/macro in `sapi_appmanager.h`/
+  every new public function/type/macro in `rte_appmanager.h`/
   `ga_interface.h`/`ab_gp_channel_stage.h`. No deviation notes needed for
   the new code itself.
 - `safeAPIRBC2oo2GP`'s/`safeAPIRBC2oo2GA`'s own changes (the stage-then-
-  commit queue, `SAPI_CHECKPOINT_MARK()` call sites, the `ga_interface.h`
+  commit queue, `RTE_CHECKPOINT_MARK()` call sites, the `ga_interface.h`
   `checkpoint_mark` field) are out of this repo's `cppcheck` scan scope
   per ADR-018's own established convention (3a's/15's own entries) -
   manual review only, same conventions confirmed above.
@@ -437,14 +437,14 @@ unchanged):
 
 - Total MISRA findings: **1108** (`build/cppcheck-report.txt`), up from
   1107 at update 14's era - a one-finding increase from tightening
-  `sapi_appmanager.c`'s checkpoint-stage gating condition
+  `rte_appmanager.c`'s checkpoint-stage gating condition
   (`config->checkpoint->voter != NULL`, REQ-APPMANAGER-011); no new
-  files, no new rule category. `sapi_appmanager.c` itself carries 84
+  files, no new rule category. `rte_appmanager.c` itself carries 84
   MISRA findings post-change, same already-triaged-or-accepted buckets
   as update 13/14 (15.5 single-exit, 12.1/10.4 mixed-type loop
   conditions) - this change added a boolean-AND term to an existing
   `if`, not a new loop or a new pattern.
-  `tests/appmanager/test_sapi_appmanager.c`'s two rewritten test cases
+  `tests/appmanager/test_rte_appmanager.c`'s two rewritten test cases
   (`test_checkpoint_paused_skips_stage_not_starves_cycle`,
   `test_checkpoint_null_vital_channel_is_not_a_startup_error`) are test
   code, out of this report's production-code scope (same posture as
@@ -460,7 +460,7 @@ unchanged):
   `cppcheck` target only scans this repo's own `include/`/`src/`).
   Manual review only for those files: all follow the same conventions
   already established elsewhere in `safeAPIRBC2oo2` - no dynamic
-  allocation, fixed-width types (`sapi_timestamp_ms_t` for every new
+  allocation, fixed-width types (`rte_timestamp_ms_t` for every new
   down-since field), explicit `NULL`-pointer checks before every new
   dereference, single point of exit in each new function
   (`channel_ab_check_channel_down_reboot()`,
@@ -472,8 +472,8 @@ unchanged):
   performed this pass either - same deferred item as updates 13/14.
 
 **2026-08-18, update 14 (ADR-026: application setup-phase lock and
-single-entry-point enforcement, new `sapi_lifecycle` module; plus the
-`sapi_dual_channel.c` hard-fault-propagation fix - REQ-DUAL-CHANNEL-008 -
+single-entry-point enforcement, new `rte_lifecycle` module; plus the
+`rte_dual_channel.c` hard-fault-propagation fix - REQ-DUAL-CHANNEL-008 -
 and its test coverage; see `docs/requirements/SRS.md`):** automated
 checker run performed (`cppcheck` was available this session,
 `cmake --build build --target cppcheck`, `.cppcheck-suppressions`
@@ -482,11 +482,11 @@ unchanged):
 - Total MISRA findings: **1107** (`build/cppcheck-report.txt`), up from
   1083 at update 13's era.
 - The new module contributes almost nothing to that increase:
-  `src/lifecycle/sapi_lifecycle.c` has exactly **one** MISRA finding
+  `src/lifecycle/rte_lifecycle.c` has exactly **one** MISRA finding
   (rule 8.6 - an external identifier without a single external
   definition site cppcheck can resolve; not yet triaged real-vs-deviation,
   same "not yet triaged" status as every other rule in section 1a/5's
-  list below), and `include/safeapi/lifecycle/sapi_lifecycle.h` has
+  list below), and `include/safeapi/lifecycle/rte_lifecycle.h` has
   **zero** - only an informational (non-MISRA) `missingIncludeSystem`
   note from `<assert.h>` not being resolvable in this sandbox, which
   cppcheck's own message text explains is expected and harmless
@@ -494,17 +494,17 @@ unchanged):
   results").
 - The remaining ~23-finding increase is spread across this session's
   other in-flight, not-yet-individually-MISRA-reviewed changes bundled
-  into this same update: `sapi_appmanager.c`'s setup-phase lock/
+  into this same update: `rte_appmanager.c`'s setup-phase lock/
   reentrancy-guard additions (ADR-026 §2.1/2.3) and its new
-  `sapi_appmanager_reset_state()`; the seven newly-gated constructors
-  (`sapi_timer_create()`, `sapi_channel_init()`, `sapi_voter_init()`,
-  `sapi_voter_register_channel()`, `sapi_cross_comparator_init()`,
-  `sapi_cross_comparator_register_channel()`, `sapi_watchdog_create()`);
-  `sapi_dual_channel.c`'s hard-fault-propagation fix; and the new/
+  `rte_appmanager_reset_state()`; the seven newly-gated constructors
+  (`rte_timer_create()`, `rte_channel_init()`, `rte_voter_init()`,
+  `rte_voter_register_channel()`, `rte_cross_comparator_init()`,
+  `rte_cross_comparator_register_channel()`, `rte_watchdog_create()`);
+  `rte_dual_channel.c`'s hard-fault-propagation fix; and the new/
   extended test files for all of the above
-  (`tests/lifecycle/test_sapi_lifecycle.c` new;
-  `tests/appmanager/test_sapi_appmanager.c`,
-  `tests/dual/test_sapi_dual_channel.c` extended). Per-file attribution
+  (`tests/lifecycle/test_rte_lifecycle.c` new;
+  `tests/appmanager/test_rte_appmanager.c`,
+  `tests/dual/test_rte_dual_channel.c` extended). Per-file attribution
   of that portion was not performed this pass - same posture update 13
   already took ("a spot check... without confirming that check used the
   exact same methodology... left as-is rather than guess"); none of
@@ -514,9 +514,9 @@ unchanged):
 - No re-triage of section 1a/section 5's still-open un-triaged rule list
   performed this pass either - same deferred item as update 13.
 
-**2026-08-17, update 13 (ADR-025: `sapi_vital_channel` split into
-`sapi_channel`/`sapi_voter`/`sapi_cross_comparator`, retirement of the
-dead ADR-008 `channel/` module, and a `sapi_appmanager.c` busy-loop fix
+**2026-08-17, update 13 (ADR-025: `rte_vital_channel` split into
+`rte_channel`/`rte_voter`/`rte_cross_comparator`, retirement of the
+dead ADR-008 `channel/` module, and a `rte_appmanager.c` busy-loop fix
 - REQ-APPMANAGER-008, see `docs/requirements/SRS.md`):** automated
 checker run performed (`cppcheck` was available this session,
 `cmake --build build --target cppcheck`, `.cppcheck-suppressions`
@@ -526,8 +526,8 @@ unchanged):
   1052 at update 12's era. The increase is from three new production
   modules (`src/voter/`, `src/cross_comparator/`, and the renamed/
   redesigned `src/channel_link/`) plus their new test files, and the
-  small `sapi_appmanager_pace_failed_checkpoint()` addition to
-  `sapi_appmanager.c` (REQ-APPMANAGER-008) - not a regression in any
+  small `rte_appmanager_pace_failed_checkpoint()` addition to
+  `rte_appmanager.c` (REQ-APPMANAGER-008) - not a regression in any
   pre-existing file. The old, already-dead-and-excluded-from-every-build
   ADR-008 `src/channel/` module was removed outright as part of this
   same change (see ADR-025 §2.7), which would otherwise have partially
@@ -544,7 +544,7 @@ unchanged):
   already characterized.
 - Rules 12.1 and 10.4 (both already tracked in section 1a's "not yet
   triaged" list below) gained a handful of hits each from
-  `sapi_appmanager_pace_failed_checkpoint()`'s own bounded-poll loop -
+  `rte_appmanager_pace_failed_checkpoint()`'s own bounded-poll loop -
   same already-accepted mixed-`&&`/arithmetic-type style already used
   throughout this file's pre-existing loop conditions (e.g. the main
   `while` loop's own `!g_shutdown_requested && (...)` a few lines away,
@@ -573,23 +573,23 @@ unchanged):
 - Total MISRA findings: **1052** (`build/cppcheck-report.txt`), up from
   865 at the last real run (update 10's era). The increase is from
   `--project=compile_commands.json` now also scanning many new/expanded
-  `tests/<module>/test_sapi_<module>.c` files this session's coverage
+  `tests/<module>/test_rte_<module>.c` files this session's coverage
   work added (test code isn't held to the same production-path MISRA
   bar, but cppcheck scans it identically since it appears in
   `compile_commands.json`) - not a regression in `src/`. Top rules
   unchanged in kind from prior runs (15.5 single-exit still dominates at
   481 hits, matching the long-standing documented deviation in section 3).
 - Rule 21.6 (`<stdio.h>`): now confirmed to appear in exactly
-  `src/appmanager/sapi_appmanager.c` (still open, as section 5 already
-  said) and `tests/log/test_sapi_log.c` (test-only, not a production
+  `src/appmanager/rte_appmanager.c` (still open, as section 5 already
+  said) and `tests/log/test_rte_log.c` (test-only, not a production
   finding) - no other file. Fixes the report's own prior
   self-contradiction where section 5 additionally still named
-  `sapi_watchdog.c` here despite update 3 already saying it was fixed;
+  `rte_watchdog.c` here despite update 3 already saying it was fixed;
   corrected in place (see that note).
 - The real `-Wcast-qual` fix this update made
-  (`sapi_voter_get_aggregated_health()`'s first parameter widened
-  to `const sapi_channel_t *`, `src/channel_link/sapi_channel.c`/
-  `include/safeapi/channel_link/sapi_channel.h`) removes a compiler
+  (`rte_voter_get_aggregated_health()`'s first parameter widened
+  to `const rte_channel_t *`, `src/channel_link/rte_channel.c`/
+  `include/safeapi/channel_link/rte_channel.h`) removes a compiler
   warning, not a cppcheck/MISRA finding - it doesn't change any count
   above, but is worth noting here since it was found via the same
   strict-warnings build this report's own tooling depends on.
@@ -642,49 +642,49 @@ zero `.c`/`.h` files:
   updated; see ADR-023 for the full rationale and dependency-cluster
   reasoning.
 
-**2026-08-07, update 10 (new module `sapi_safechannel` (ADR-022), a
-real bug fix in `sapi_dual_channel_send()` (ADR-020) it surfaced, and
-SITE's migration off direct `sapi_netlink` use):** no automated re-run
+**2026-08-07, update 10 (new module `rte_safechannel` (ADR-022), a
+real bug fix in `rte_dual_channel_send()` (ADR-020) it surfaced, and
+SITE's migration off direct `rte_netlink` use):** no automated re-run
 performed (same caveat as prior updates - still no `cppcheck` in this
 sandbox session); reasoned manually plus full test-suite + live-run
 verification:
 
-- `sapi_safechannel` (`include/safeapi/safechannel/sapi_safechannel.h`,
-  `src/safechannel/sapi_safechannel.c`): new module, same conventions as
+- `rte_safechannel` (`include/safeapi/safechannel/rte_safechannel.h`,
+  `src/safechannel/rte_safechannel.c`): new module, same conventions as
   every other feature - no dynamic allocation (fixed
-  `SAPI_SAFECHANNEL_MAX_LINKS`-sized arrays), explicit casts at every
-  narrowing point (e.g. `sapi_safechannel_send()`'s `payload_size >
+  `RTE_SAFECHANNEL_MAX_LINKS`-sized arrays), explicit casts at every
+  narrowing point (e.g. `rte_safechannel_send()`'s `payload_size >
   UINT8_MAX` guard before the `(uint8_t)` cast for the DUAL_REDUNDANT
   path), single point of exit is not used throughout (early-return-on-
   invalid-param is this codebase's established idiom, consistent with
   every other OAL service), no recursion, `const`-correct where the
-  wrapped `sapi_dual_channel`/`sapi_channel` APIs allow it (one
-  explicit, commented `const`-cast in `sapi_safechannel_get_status()`
-  because `sapi_voter_get_aggregated_health()` itself takes a
+  wrapped `rte_dual_channel`/`rte_channel` APIs allow it (one
+  explicit, commented `const`-cast in `rte_safechannel_get_status()`
+  because `rte_voter_get_aggregated_health()` itself takes a
   non-const handle for a read-only query - a pre-existing constraint of
   the wrapped API, not introduced here).
-- Real bug found and fixed in `sapi_dual_channel_send()`
-  (`src/dual/sapi_dual_channel.c`, unchanged since ADR-020): its
+- Real bug found and fixed in `rte_dual_channel_send()`
+  (`src/dual/rte_dual_channel.c`, unchanged since ADR-020): its
   ACK-wait loop's "no measurable elapsed time" check aborted the wait
   after exactly one poll instead of allowing further polls within the
   same millisecond tick - see ADR-020's "Post-acceptance fix" section
   for the full explanation and the bounded-retry-count fix
-  (`SAPI_DUAL_CHANNEL_STALL_POLL_LIMIT`, a fixed cap of 32 - no dynamic
+  (`RTE_DUAL_CHANNEL_STALL_POLL_LIMIT`, a fixed cap of 32 - no dynamic
   behavior, no new casts). This module had only ever been exercised
-  through a mock netlink backend (`test_sapi_dual_channel.c`) before
+  through a mock netlink backend (`test_rte_dual_channel.c`) before
   this pass wired it to a real transport for the first time.
 - `safeAPIRBC2oo2/src/application/SITE/site.c`: removed its own direct
-  `sapi_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
+  `rte_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
   manual CONNECT-retry loop it hand-rolled around them; now opens one
-  `sapi_safechannel_t` (`SAPI_SAFECHANNEL_TYPE_DUAL_REDUNDANT`,
-  `link_count = 1`) and calls `sapi_safechannel_send()`/`_receive()`/
+  `rte_safechannel_t` (`RTE_SAFECHANNEL_TYPE_DUAL_REDUNDANT`,
+  `link_count = 1`) and calls `rte_safechannel_send()`/`_receive()`/
   `_close()` instead. No change to `encode_beacon()`/`decode_beacon()`
   or the negotiation/promotion/demotion/re-negotiation decision logic -
   only the transport calls moved.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all 17 framework unit tests (all pass, including
-  `test_sapi_dual_channel`, `test_sapi_dual_msgchannel`,
-  `test_sapi_dual_negotiator`, and the new `test_sapi_safechannel`) plus
+  `test_rte_dual_channel`, `test_rte_dual_msgchannel`,
+  `test_rte_dual_negotiator`, and the new `test_rte_safechannel`) plus
   a live two-process SITE WEST/EAST run over the real POSIX TCP netlink
   backend: negotiation completes and steady-state heartbeats continue
   exchanging role/single-mode status every cycle - see ADR-022 section 4.
@@ -697,27 +697,27 @@ modules: `nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
 `clocksync`):** no automated re-run performed (same caveat as prior
 updates - still no `cppcheck` in this sandbox session); reasoned manually
 since this change is a pure declaration move, not new logic, identical in
-nature to update 8's `sapi_timer` pilot:
+nature to update 8's `rte_timer` pilot:
 
-- Same pattern as the pilot: each module's `sapi_<feature>_backend_t` and
-  `sapi_<feature>_register_backend()` *declarations* moved from
-  `include/safeapi/<feature>/sapi_<feature>.h` to the new
-  `include/safeapi_backend/<feature>/sapi_<feature>_backend.h`; each
-  service's `.c` implementation (`src/<feature>/sapi_<feature>.c`) is
+- Same pattern as the pilot: each module's `rte_<feature>_backend_t` and
+  `rte_<feature>_register_backend()` *declarations* moved from
+  `include/safeapi/<feature>/rte_<feature>.h` to the new
+  `include/safeapi_backend/<feature>/rte_<feature>_backend.h`; each
+  service's `.c` implementation (`src/<feature>/rte_<feature>.c`) is
   byte-for-byte unchanged apart from the added `#include`. No new casts,
   no new control flow.
-- `sapi_clocksync.h` was the one header where backend material was
+- `rte_clocksync.h` was the one header where backend material was
   interleaved with consumer functions (vtable/register between the
   quality enum and the two consumer accessor functions) rather than
   trailing them as in the other 8 - the extraction was still a pure cut,
   no reordering of surrounding consumer declarations.
 - Every call site that referenced a vtable type or `_register_backend()`
   gained the corresponding new `#include`: framework tests
-  (`test_sapi_nvm`, `test_sapi_reboot`, `test_sapi_netlink`,
-  `test_sapi_clocksync`, `test_sapi_log`, `test_sapi_dual_msgchannel`,
-  `test_sapi_dual_channel`, `test_sapi_dual_negotiator`), the
+  (`test_rte_nvm`, `test_rte_reboot`, `test_rte_netlink`,
+  `test_rte_clocksync`, `test_rte_log`, `test_rte_dual_msgchannel`,
+  `test_rte_dual_channel`, `test_rte_dual_negotiator`), the
   `examples/geo_distributed_checkpoint_sync.c` sample, and
-  safeAPIRBC2oo2's umbrella `sapi_posix_backend.h` (now includes all 9
+  safeAPIRBC2oo2's umbrella `rte_posix_backend.h` (now includes all 9
   backend headers alongside their 9 consumer headers). No site needed a
   logic change; `task`, `ipc`, and `memory` have no dedicated framework
   unit tests, so only their `.c` implementation and the POSIX backend
@@ -731,23 +731,23 @@ nature to update 8's `sapi_timer` pilot:
   consumer/backend header split in place.
 
 **2026-08-06, update 8 (header restructuring only, no behavior change -
-ADR-021 consumer/OS-backend header split, `sapi_timer` pilot):** no
+ADR-021 consumer/OS-backend header split, `rte_timer` pilot):** no
 automated re-run performed (same caveat as prior updates - still no
 `cppcheck` in this sandbox session); reasoned manually since this change
 is a pure declaration move, not new logic:
 
-- `sapi_timer_backend_t` and `sapi_timer_register_backend()`'s
-  *declarations* moved from `include/safeapi/timer/sapi_timer.h` to the
-  new `include/safeapi_backend/timer/sapi_timer_backend.h`; their
-  *implementation* in `src/timer/sapi_timer.c` is byte-for-byte
+- `rte_timer_backend_t` and `rte_timer_register_backend()`'s
+  *declarations* moved from `include/safeapi/timer/rte_timer.h` to the
+  new `include/safeapi_backend/timer/rte_timer_backend.h`; their
+  *implementation* in `src/timer/rte_timer.c` is byte-for-byte
   unchanged, only its `#include` list gained the new header. No new
   casts, no new control flow, no new dynamic behavior - the existing
   Rule 8.x (declaration consistency), 17.x, and 21.x findings already
-  covering `sapi_timer.c` in prior updates are unaffected.
+  covering `rte_timer.c` in prior updates are unaffected.
 - Every call site that referenced the vtable type
-  (`tests/timer/test_sapi_timer.c`, `tests/watchdog/test_sapi_watchdog.c`,
-  `tests/dual/test_sapi_dual_negotiator.c`, `tests/log/test_sapi_log.c`,
-  safeAPIRBC2oo2's `sapi_posix_backend.h`/`sapi_posix_backend_timer.c`)
+  (`tests/timer/test_rte_timer.c`, `tests/watchdog/test_rte_watchdog.c`,
+  `tests/dual/test_rte_dual_negotiator.c`, `tests/log/test_rte_log.c`,
+  safeAPIRBC2oo2's `rte_posix_backend.h`/`rte_posix_backend_timer.c`)
   gained the new `#include` and were rebuilt; no site needed a logic
   change.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
@@ -756,26 +756,26 @@ is a pure declaration move, not new logic:
   see ADR-021 section 2.3.
 - **Not yet done:** the same split for the other eight backend-bearing
   modules (`nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
-  `clocksync`) - ADR-021 is a pilot on `sapi_timer` only as of this
+  `clocksync`) - ADR-021 is a pilot on `rte_timer` only as of this
   update. This report will gain a further update per module as each is
   split.
 
-**2026-08-06, update 7 (new module, `sapi_dual` - ADR-020 dual-transfer
+**2026-08-06, update 7 (new module, `rte_dual` - ADR-020 dual-transfer
 state negotiation):** no automated re-run performed (same caveat as
 updates 4-6 - still no `cppcheck` in this sandbox session); reasoned
-manually against the four new files (`sapi_dual_types`, `sapi_dual_frames`,
-`sapi_dual_msgchannel`, `sapi_dual_channel`, `sapi_dual_negotiator`):
+manually against the four new files (`rte_dual_types`, `rte_dual_frames`,
+`rte_dual_msgchannel`, `rte_dual_channel`, `rte_dual_negotiator`):
 
-- No dynamic allocation: every instance (`sapi_dual_msgchannel_t`,
-  `sapi_dual_channel_t`, `sapi_dual_negotiator_t`) is caller-owned storage;
-  `sapi_dual_channel_t`'s redundant links are a fixed
-  `[SAPI_DUAL_CHANNEL_MAX_LINKS]` array (4), never a dynamically-sized one.
+- No dynamic allocation: every instance (`rte_dual_msgchannel_t`,
+  `rte_dual_channel_t`, `rte_dual_negotiator_t`) is caller-owned storage;
+  `rte_dual_channel_t`'s redundant links are a fixed
+  `[RTE_DUAL_CHANNEL_MAX_LINKS]` array (4), never a dynamically-sized one.
 - No recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>`/`<setjmp.h>`,
   fixed-width types throughout, `const` on every read-only parameter -
   consistent with the rest of the codebase; `grep -rln
   "stdio.h\|assert.h\|errno.h\|setjmp.h" src/dual include/safeapi/dual`
   returns zero hits.
-- The one `switch` in the new code (`sapi_dual_channel.c`'s frame-kind
+- The one `switch` in the new code (`rte_dual_channel.c`'s frame-kind
   dispatch in `dual_channel_poll_link_once()`) has an explicit `default`
   clause (Rule 16.1/16.4) - an unrecognized `kind` is defensively ignored,
   not treated as an error, since it isn't reachable through a conforming
@@ -783,39 +783,39 @@ manually against the four new files (`sapi_dual_types`, `sapi_dual_frames`,
 - **Open finding, not yet fixed - narrows section 2's existing blanket
   claim.** Section 2's Rule 10.1-10.8 row states "no bare narrowing casts
   exist elsewhere in `include`/`src`"; that is no longer accurate as of
-  this module. `sapi_dual_channel.c` uses bare C-style casts (not
-  `sapi_cast_*`) to narrow `size_t sizeof(...)` expressions and
+  this module. `rte_dual_channel.c` uses bare C-style casts (not
+  `rte_cast_*`) to narrow `size_t sizeof(...)` expressions and
   `raw_size - sizeof(header)` arithmetic down to `uint8_t` at ~8 call
   sites (e.g. `(uint8_t)sizeof(raw)`, `(uint8_t)(raw_size -
   (uint8_t)sizeof(header))`, `(uint8_t)sizeof(frame)`), plus two
-  `uint8_t`<->`sapi_dual_frame_kind_t` enum casts for the frame-kind
+  `uint8_t`<->`rte_dual_frame_kind_t` enum casts for the frame-kind
   header byte. Risk assessment: every one of these is a compile-time-fixed
-  struct size (`sapi_dual_frame_header_t` = 4B, `sapi_dual_ack_frame_t` and
-  `sapi_dual_state_frame_t` well under 32B, `SAPI_DUAL_MSGCHANNEL_MAX_PAYLOAD`
-  = 248) or a value already bounded by an earlier `SAPI_STATUS_INVALID_PARAM`
-  check (`payload_size <= SAPI_DUAL_CHANNEL_MAX_PAYLOAD` before the
+  struct size (`rte_dual_frame_header_t` = 4B, `rte_dual_ack_frame_t` and
+  `rte_dual_state_frame_t` well under 32B, `RTE_DUAL_MSGCHANNEL_MAX_PAYLOAD`
+  = 248) or a value already bounded by an earlier `RTE_STATUS_INVALID_PARAM`
+  check (`payload_size <= RTE_DUAL_CHANNEL_MAX_PAYLOAD` before the
   `sizeof(header) + payload_size` cast) - none can actually overflow
   `uint8_t` today, so this is assessed as low-risk, not a live defect. It
   is recorded here rather than silently claimed compliant because the
   project's own CLAUDE.md convention (checked-cast helper preferred over a
   bare C-style cast, precisely so a *future* change - e.g. a larger frame
-  struct - fails loudly via `sapi_cast_size_to_u8()`'s
-  `SAPI_STATUS_VALUE_OUT_OF_RANGE` instead of silently truncating) was not
+  struct - fails loudly via `rte_cast_size_to_u8()`'s
+  `RTE_STATUS_VALUE_OUT_OF_RANGE` instead of silently truncating) was not
   followed for this module. **Follow-up recommendation:** route each site
-  through `sapi_cast_size_to_u8()`/`sapi_cast_u32_to_u8()` (already exist,
+  through `rte_cast_size_to_u8()`/`rte_cast_u32_to_u8()` (already exist,
   ADR-003) with the same guard-clause-on-failure style used throughout the
   rest of this module, as a dedicated, separately-tested change rather than
   bundled into this one. `(size_t)payload_size`/`(size_t)payload_max_size`
-  widening casts in `sapi_dual_msgchannel.c` are unaffected by this finding
+  widening casts in `rte_dual_msgchannel.c` are unaffected by this finding
   - they match the pre-existing widening-cast precedent already in
-  `sapi_watchdog.c` (section 2), which is safe by construction (no value
+  `rte_watchdog.c` (section 2), which is safe by construction (no value
   loss possible widening `uint8_t`/`int` into `size_t`) and was never part
   of the narrowing-cast claim this finding corrects.
-- New tests (`tests/dual/test_sapi_dual_msgchannel.c`,
-  `test_sapi_dual_channel.c`, `test_sapi_dual_negotiator.c`) cover NULL
+- New tests (`tests/dual/test_rte_dual_msgchannel.c`,
+  `test_rte_dual_channel.c`, `test_rte_dual_negotiator.c`) cover NULL
   rejection, basic send/receive roundtrips, masquerade rejection (wrong
   `sender_id`), sequence-continuity `DATA_CORRUPTION` and recovery via
-  `sapi_dual_msgchannel_reset_sequence()`, all three aggregate
+  `rte_dual_msgchannel_reset_sequence()`, all three aggregate
   `FULL`/`DEGRADED`/`DOWN` outcomes with the status callback firing only on
   change, redundant-link independence (a broken link never counts toward
   another's ACK), inbound-frame auto-ACK, STATE-frame roundtrip, the
@@ -826,38 +826,38 @@ manually against the four new files (`sapi_dual_types`, `sapi_dual_frames`,
   run, exit 0 each; no `cmake`/`cppcheck` in this sandbox session, same
   standing caveat as every other update in this report).
 
-**2026-08-06, update 6 (structured event logging, `sapi_log_write_event()`):**
+**2026-08-06, update 6 (structured event logging, `rte_log_write_event()`):**
 no automated re-run performed (same caveat as updates 4/5). New construct,
 reasoned manually:
-- `sapi_log.c`/`.h`: new `sapi_log_write_event()` and
-  `sapi_log_level_to_string()`. Deliberately **not** a variadic function -
+- `rte_log.c`/`.h`: new `rte_log_write_event()` and
+  `rte_log_level_to_string()`. Deliberately **not** a variadic function -
   MISRA C:2012 Rule 17.1 (required) prohibits `<stdarg.h>`; the optional
   "more fields" requirement is instead a single fixed `extra_fields`
   parameter that the caller pre-formats with `safeapi::string`'s own
   bounded helpers (same primitives this function uses internally to build
   the rest of the line) - `grep -rn "stdarg.h" include src` confirms zero
   hits, unchanged by this addition.
-- Fixed-size stack buffers only (`char line_storage[SAPI_LOG_EVENT_LINE_MAX_LEN]`,
+- Fixed-size stack buffers only (`char line_storage[RTE_LOG_EVENT_LINE_MAX_LEN]`,
   a small numeric-formatting scratch buffer) - no dynamic allocation, same
   as every other module (Dir 4.12 in section 2).
 - New dependencies for this module only: `safeapi::string` (bounded
-  concatenation/formatting) and `safeapi::timer` (`sapi_timer_now()` for
+  concatenation/formatting) and `safeapi::timer` (`rte_timer_now()` for
   the TIMESTAMP field) - both already-reviewed leaf OAL/common modules
   (section 2); no new external header, no new banned construct introduced
   by depending on them.
-- Every field-append is best-effort (`(void)`-cast `sapi_string_concat()`/
-  `sapi_string_from_u32()`/`sapi_string_from_u64()` return values) -
+- Every field-append is best-effort (`(void)`-cast `rte_string_concat()`/
+  `rte_string_from_u32()`/`rte_string_from_u64()` return values) -
   consistent with REQ-OAL-LOG-001's "must never affect caller control
-  flow": a `SAPI_STATUS_RESOURCE_EXHAUSTED` from an oversized field is
+  flow": a `RTE_STATUS_RESOURCE_EXHAUSTED` from an oversized field is
   accepted as truncation, not propagated as an error (this function
-  returns `void`, matching `sapi_log_write()`'s own existing contract).
+  returns `void`, matching `rte_log_write()`'s own existing contract).
 - Verified against the existing "no `<stdio.h>`/no recursion/no
   uninitialized locals/single-point-of-exit-preferred guard-clause style"
   conventions by direct code read - no deviation from any of those.
-- New tests (`tests/log/test_sapi_log.c`) cover field order/delimiters,
+- New tests (`tests/log/test_rte_log.c`) cover field order/delimiters,
   `NULL` `info`/`extra_fields` handling, `TIMESTAMP` degrading to `"0"`
-  with no `sapi_timer` backend registered, and the pre-existing
-  `sapi_log_write()`/no-backend silent-no-op contract being unaffected -
+  with no `rte_timer` backend registered, and the pre-existing
+  `rte_log_write()`/no-backend silent-no-op contract being unaffected -
   all passing (manual `gcc` build, exit 0; no `cmake`/`cppcheck` in this
   sandbox, same standing caveat as every other update in this report).
 
@@ -865,22 +865,22 @@ reasoned manually:
 checkpoint):** no automated re-run performed (same caveat as update 4 -
 still no `cppcheck` in this sandbox); reasoned manually against the
 already-open findings instead of introducing new ones:
-- `sapi_appmanager.c`/`.h`: adds `pre_execute`/`post_execute` (two more
+- `rte_appmanager.c`/`.h`: adds `pre_execute`/`post_execute` (two more
   optional function-pointer members, same type/NULL-check pattern already
   used for `execute`) and a checkpoint stage that calls
-  `sapi_channel_checkpoint()` (already-reviewed under ADR-017, no change
+  `rte_channel_checkpoint()` (already-reviewed under ADR-017, no change
   to that module - see 2.3 of ADR-019). New `#include
-  "safeapi/checkpoint/sapi_checkpoint.h"` and a new link dependency on
+  "safeapi/checkpoint/rte_checkpoint.h"` and a new link dependency on
   `safeapi::checkpoint`; no new banned construct (no dynamic memory, no
   recursion, no new `<stdio.h>`/`errno`/`assert` use beyond what section
-  1a's un-triaged `sapi_appmanager.c` `21.6` finding already covers). Both
+  1a's un-triaged `rte_appmanager.c` `21.6` finding already covers). Both
   modules remain inside this report's pre-existing "Known gap" paragraph
   (section header above) - this update does not close that gap, it adds
   to what's inside it.
-- `sapi_channel.c`: `sapi_channel_init()`'s `channel_count`
+- `rte_channel.c`: `rte_channel_init()`'s `channel_count`
   floor relaxed from `>= 2` to `>= 1` (only reachable via
-  `SAPI_VOTING_NMR` with `quorum_size == 1` - `SAPI_VOTING_2OO2`/
-  `SAPI_VOTING_2OO3` floors unchanged). A parameter-validation bound
+  `RTE_VOTING_NMR` with `quorum_size == 1` - `RTE_VOTING_2OO2`/
+  `RTE_VOTING_2OO3` floors unchanged). A parameter-validation bound
   change, not a new construct - no new type, no new header, no new
   control-flow shape; the existing `switch` on `voting_strategy` still has
   its `default` clause (Rule 16.1/16.4, section 2).
@@ -888,11 +888,11 @@ already-open findings instead of introducing new ones:
   already out of this report's stated scope, called out here only for
   completeness since it's the first real consumer of both changes
   above):** adds a `pthread_mutex_t` (`ctx->peer_send_mutex`) guarding
-  every `sapi_netlink_send()` call on the shared peer link, once the
+  every `rte_netlink_send()` call on the shared peer link, once the
   background receive task also needed to send (a checkpoint
   request/reply auto-responder echo - see ADR-019 §5.2). This is a
   genuinely new construct for that project (no prior direct pthread
-  primitive exposed in application code; `sapi_task`/`sapi_ipc` already
+  primitive exposed in application code; `rte_task`/`rte_ipc` already
   wrap pthreads internally in `posix_backend`, but this is the first
   direct use in `src/application/`). Framework-level deviation: **N/A**
   (out of this report's scope, per its own stated boundary); flagged here
@@ -901,15 +901,15 @@ already-open findings instead of introducing new ones:
 
 **2026-08-06, update 4:** two small, targeted changes, no automated
 re-run performed (see caveat below):
-- `sapi_watchdog.c`: `SAPI_WATCHDOG_ACTION_FAILOVER` now dispatches to
+- `rte_watchdog.c`: `RTE_WATCHDOG_ACTION_FAILOVER` now dispatches to
   `config->custom_action(config->context)` on timeout - identical code
-  path to the already-reviewed `SAPI_WATCHDOG_ACTION_CUSTOM` case (same
+  path to the already-reviewed `RTE_WATCHDOG_ACTION_CUSTOM` case (same
   function pointer type, same call site, same NULL-guard), plus a matching
-  `custom_action != NULL` check added to `sapi_watchdog_create()`'s
+  `custom_action != NULL` check added to `rte_watchdog_create()`'s
   existing validation block for `CUSTOM`. No new construct, no new banned
   header, no new dynamic allocation - MISRA posture unchanged from what
   was already reviewed for `CUSTOM`.
-- `sapi_appmanager.c`: added `#define _POSIX_C_SOURCE 200809L` before any
+- `rte_appmanager.c`: added `#define _POSIX_C_SOURCE 200809L` before any
   header include. This is a feature-test-macro fix, not a new construct -
   `struct sigaction`/`sigaction()`/`sigemptyset()` were already present
   and already covered by section 3's Rule 21.5 deviation entry below; this
@@ -924,26 +924,26 @@ re-run performed (see caveat below):
   reasoned as MISRA-neutral above rather than tool-confirmed. A fresh run
   is still recommended before treating section 1a's numbers as current.
 
-**2026-08-05, update 3:** `sapi_watchdog.c` has been rewritten from a
+**2026-08-05, update 3:** `rte_watchdog.c` has been rewritten from a
 non-functional stub (every function was a no-op or empty `/* TODO */`) to
 a real, working implementation: a fixed-size static pool of watchdog
-slots, timed via `sapi_timer_now()` (no dynamic allocation, no new
-OS-specific code of its own). `sapi_watchdog_timer_tick()` now genuinely
+slots, timed via `rte_timer_now()` (no dynamic allocation, no new
+OS-specific code of its own). `rte_watchdog_timer_tick()` now genuinely
 scans for expired watchdogs and dispatches the configured recovery action
-(`LOG` via `sapi_log_write()`, `SAFESTATE`/`REBOOT` via
-`sapi_safestate_enter()`, `CUSTOM` via the caller's callback). As part of
-this, the Rule 21.6 finding recorded below for `sapi_watchdog.c`
+(`LOG` via `rte_log_write()`, `SAFESTATE`/`REBOOT` via
+`rte_safestate_enter()`, `CUSTOM` via the caller's callback). As part of
+this, the Rule 21.6 finding recorded below for `rte_watchdog.c`
 (`<stdio.h>`/`fprintf` use) is now fixed - the new implementation has no
-`<stdio.h>` dependency at all, using only `sapi_log_write()` with static
-string literals (the same convention already used by `sapi_channel.c`).
-`sapi_appmanager.c`'s own Rule 21.6 finding is unrelated and still open.
-Verified via a new real test suite (`tests/watchdog/test_sapi_watchdog.c`,
-13/13 framework tests passing) using a mock `sapi_timer` backend with a
+`<stdio.h>` dependency at all, using only `rte_log_write()` with static
+string literals (the same convention already used by `rte_channel.c`).
+`rte_appmanager.c`'s own Rule 21.6 finding is unrelated and still open.
+Verified via a new real test suite (`tests/watchdog/test_rte_watchdog.c`,
+13/13 framework tests passing) using a mock `rte_timer` backend with a
 test-controlled clock: confirms a watchdog does NOT fire while kicked
 regularly, DOES fire once its deadline is genuinely passed, and that each
 of the `LOG`/`SAFESTATE`/`CUSTOM` actions dispatch correctly (SAFESTATE
 verified via the same setjmp/longjmp-diverting-handler technique as
-`tests/safestate/test_sapi_safestate.c`, since `SAPI_SAFESTATE_LEVEL_SAFE`
+`tests/safestate/test_rte_safestate.c`, since `RTE_SAFESTATE_LEVEL_SAFE`
 is documented to never return). Also fixed a real, previously-latent
 linking bug this work surfaced: `src/watchdog/CMakeLists.txt` only linked
 `safeapi_status`/`safeapi_log`, even though the (stub) implementation's
@@ -968,18 +968,18 @@ framework is consumed via `add_subdirectory()`, e.g. by `safeAPIRBC2oo2`).
 Section 1a records what the first real run actually found. The three
 CRC-64 lookup tables flagged as incomplete placeholders in section 2 below
 have also been fixed (full, correctly generated 256-entry tables) - see
-`sapi_checksum.c`'s own file-level note for detail.
+`rte_checksum.c`'s own file-level note for detail.
 
 Scope: `include/` and `src/` (shipped library code only - `tests/` is
 verification tooling, not a deliverable, and is called out separately in
 section 4).
 
 **Known gap, not closed by this update:** this report has not been
-re-verified against every module in the current tree - `sapi_watchdog`,
-`sapi_channel`, `sapi_appmanager`, and most of `sapi_checksum`'s
+re-verified against every module in the current tree - `rte_watchdog`,
+`rte_channel`, `rte_appmanager`, and most of `rte_checksum`'s
 pre-existing logic were added by work outside the review that originally
 produced this document and have not had a MISRA pass done against them,
-beyond what was necessary to make `sapi_checksum.c` compile at all (see
+beyond what was necessary to make `rte_checksum.c` compile at all (see
 below). Treat sections 2-3 below as covering the modules present when
 this report was first written, plus the two ADR-017 additions - not the
 whole current `src/` tree. Section 1a's real tool run *does* cover the
@@ -1018,7 +1018,7 @@ Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
 | 15.5 (single point of exit) | 387 | Matches the deviation already documented in section 3 - consistent guard-clause style across the codebase, not new. |
 | 8.7 (internal linkage) | 138 | Needs manual triage - section 2 claims this rule is compliant-by-construction (`static` on every backend/handler table); a real tool disagreeing with that specific claim across 138 sites needs to be reconciled, not assumed to be a tool false-positive. Not yet triaged as part of this update. |
 | 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
-| 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `sapi_appmanager.c` and `sapi_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `sapi_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `sapi_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
+| 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `rte_appmanager.c` and `rte_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `rte_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `rte_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
 | 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
 | `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIRBC2oo2`); not necessarily a real problem, but not yet individually verified either. |
 
@@ -1047,20 +1047,20 @@ retrofitted, and are verified here by direct search of the shipped source:
 | Rule | Topic | Evidence |
 |---|---|---|
 | Dir 4.12 (mandatory-equivalent per CLAUDE.md) | No dynamic memory allocation | `grep -rn "malloc\|free(\|realloc" include src` -> zero real hits (only a comment describing the policy). Every stateful object uses caller-owned static storage (ADR-001 section 3.4). |
-| Rule 10.1-10.8 | Essential type model / implicit conversions | Every conversion between fixed-width types and `size_t` goes through a checked `sapi_cast_*` function (ADR-003); no bare narrowing casts exist elsewhere in `include`/`src` (`grep` for stray native `int`/`long`/`unsigned` outside `sapi_types.h`'s byte-array storage macro returned nothing). |
+| Rule 10.1-10.8 | Essential type model / implicit conversions | Every conversion between fixed-width types and `size_t` goes through a checked `rte_cast_*` function (ADR-003); no bare narrowing casts exist elsewhere in `include`/`src` (`grep` for stray native `int`/`long`/`unsigned` outside `rte_types.h`'s byte-array storage macro returned nothing). |
 | Rule 17.2 / CLAUDE.md "no recursion" | No recursion | Manual review: no function in `src/` calls itself directly or indirectly; the call graph is flat (public API -> backend dispatch, one level). |
 | Rule 21.6 (required) | No `<stdio.h>` | `grep -rln "stdio.h" include src` -> zero hits. |
-| Rule 21.4 (required, contextual) / CLAUDE.md "no assert in production" | No `<setjmp.h>`/`<assert.h>`/`<errno.h>` in shipped code | `grep -rln "assert.h\|errno.h\|setjmp.h" include src` -> zero hits. (`tests/` uses both `<assert.h>` and, in `test_sapi_safestate.c`, `<setjmp.h>` - see section 4.) |
-| Rule 20.13/2.1 | No `goto`, no unreachable code | `grep -rn "goto" include src` -> zero hits. The one intentionally-infinite `for (;;)` (`sapi_safestate.c`, the defensive halt) is the last statement in its function, nothing follows it. |
+| Rule 21.4 (required, contextual) / CLAUDE.md "no assert in production" | No `<setjmp.h>`/`<assert.h>`/`<errno.h>` in shipped code | `grep -rln "assert.h\|errno.h\|setjmp.h" include src` -> zero hits. (`tests/` uses both `<assert.h>` and, in `test_rte_safestate.c`, `<setjmp.h>` - see section 4.) |
+| Rule 20.13/2.1 | No `goto`, no unreachable code | `grep -rn "goto" include src` -> zero hits. The one intentionally-infinite `for (;;)` (`rte_safestate.c`, the defensive halt) is the last statement in its function, nothing follows it. |
 | Rule 19.2 (advisory) | Avoid `union` | `grep -rn "union" include src` -> zero hits. |
 | Rule 8.7 | Objects/functions used only within one translation unit shall have internal linkage | Every per-service backend pointer (`s_backend`) and the safestate handler table (`s_handlers`) is declared `static`. |
-| Rule 16.1/16.4 (required) | Every `switch` shall have a `default` | Both `switch` statements in the codebase (`sapi_safestate.c`, `sapi_status.c`) have an explicit `default` clause. |
+| Rule 16.1/16.4 (required) | Every `switch` shall have a `default` | Both `switch` statements in the codebase (`rte_safestate.c`, `rte_status.c`) have an explicit `default` clause. |
 | Fixed-width types | Use `<stdint.h>` types, not native `int`/`long` | Every public API uses `uint8_t`.."uint64_t"/`int8_t`.."int64_t"/`size_t`/`bool`; no bare `int`/`long`/`short` appears in any public signature. |
-| `const` correctness | Immutable pointer targets marked `const` | Every read-only buffer/backend-vtable parameter is declared `const` (e.g. `const void *buffer`, `const sapi_timer_backend_t *backend`). |
-| Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `sapi_checkpoint.c`/`sapi_clocksync.c`: zero hits. `sapi_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `sapi_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `sapi_checksum.c`). |
-| Explicit status codes, no invented enum values | `sapi_checksum.c` fix | The pre-fix file referenced `SAPI_STATUS_ERROR`/`SAPI_STATUS_INVALID`, neither a member of `sapi_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `SAPI_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `SAPI_STATUS_INVALID_PARAM` for bad arguments, `SAPI_STATUS_ALREADY_INITIALIZED` for double-init. |
+| `const` correctness | Immutable pointer targets marked `const` | Every read-only buffer/backend-vtable parameter is declared `const` (e.g. `const void *buffer`, `const rte_timer_backend_t *backend`). |
+| Rule 21.6 (required) | No `<stdio.h>` (ADR-017 addition) | `rte_checkpoint.c`/`rte_clocksync.c`: zero hits. `rte_checksum.c` previously included `<stdio.h>` for printf-style logging calls that didn't compile against the real `rte_log_write()` signature (no varargs) - both the calls and the now-dead include were removed as part of making this file compile at all (see the file-level comment in `rte_checksum.c`). |
+| Explicit status codes, no invented enum values | `rte_checksum.c` fix | The pre-fix file referenced `RTE_STATUS_ERROR`/`RTE_STATUS_INVALID`, neither a member of `rte_status_t` - this alone was a hard compile error, not a style issue. Remapped to the closest real code by meaning: `RTE_STATUS_DATA_CORRUPTION` for CRC/sequence failures (matches the enum's own documented purpose - "Integrity check ... failed"), `RTE_STATUS_INVALID_PARAM` for bad arguments, `RTE_STATUS_ALREADY_INITIALIZED` for double-init. |
 
-**Update (2026-08-20): new module, `include/safeapi/notify/sapi_notify.h`
+**Update (2026-08-20): new module, `include/safeapi/notify/rte_notify.h`
 (ADR-034).** Header-only, no `src/` file to run the normal cppcheck pass
 against - reviewed manually instead. Rule 11.1 (function-pointer/other-type
 conversion) is the rule this module exists specifically to avoid violating:
@@ -1073,16 +1073,16 @@ was rejected for exactly this reason). Rule 17.7 (no ignored return values)
 is satisfied by construction in the header's own worked dispatch example: a
 veto-gate loop folds every registered validator's return value into a single
 `result` variable (nothing discarded), and NULL-guards every slot before
-calling it (`sapi_watchdog_create()`'s own established custom-callback
+calling it (`rte_watchdog_create()`'s own established custom-callback
 precedent, cited directly in the header doc). No dynamic memory, no
 recursion, no `<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes
 only `<stdint.h>`. Standalone compile check (`gcc -std=c99 -Wall -Wextra
 -Wpedantic`) of a worked instantiation: clean, zero warnings.
 
-**Update (2026-08-20): new module, `include/safeapi/memory/sapi_mem_util.h`
+**Update (2026-08-20): new module, `include/safeapi/memory/rte_mem_util.h`
 (ADR-031).** Header-only, no `src/` file to run the normal cppcheck pass
-against - reviewed manually instead. `sapi_mem_set()`/`sapi_mem_copy()`/
-`sapi_mem_compare()` are thin `static inline` wrappers over `memset()`/
+against - reviewed manually instead. `rte_mem_set()`/`rte_mem_copy()`/
+`rte_mem_compare()` are thin `static inline` wrappers over `memset()`/
 `memcpy()`/`memcmp()` - the ONE sanctioned call site for each, so
 downstream code (this session: `safeAPIRBC2oo2`, all ~90 direct
 `memset`/`memcpy`/`memcmp` call sites) routes through this header instead
@@ -1090,32 +1090,32 @@ of including `<string.h>` itself. No dynamic memory, no recursion, no
 `<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes only
 `<stddef.h>`/`<string.h>` (the latter is this module's own reason to
 exist, not something it hides from a reviewer). Every parameter is
-documented with its caller-ownership/NULL contract; `sapi_mem_compare()`'s
+documented with its caller-ownership/NULL contract; `rte_mem_compare()`'s
 own doc explicitly tells callers to rely only on the zero/nonzero
 distinction, never the sign, avoiding a fragile-comparison MISRA posture
 issue at every call site rather than in just one place. Standalone
 compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`): clean, zero
 warnings.
 
-**Update (2026-08-21): new module, `include/safeapi/mutex/sapi_mutex.h` +
-`include/safeapi_backend/mutex/sapi_mutex_backend.h` + `src/mutex/sapi_mutex.c`
+**Update (2026-08-21): new module, `include/safeapi/mutex/rte_mutex.h` +
+`include/safeapi_backend/mutex/rte_mutex_backend.h` + `src/mutex/rte_mutex.c`
 (ADR-033).** Added after an architecture review of `safeAPIRBC2oo2` found
 it calling `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`
 directly on a raw `pthread_mutex_t` application struct field - a real
 violation of this framework's own OAL premise (an application should
 depend only on this framework's portable API, never a platform threading
 primitive directly). `cmake --build build --target cppcheck` run against
-the new `src/mutex/sapi_mutex.c`: only rule 15.5 (single point of exit,
+the new `src/mutex/rte_mutex.c`: only rule 15.5 (single point of exit,
 the same accepted guard-clause deviation already documented above at
 scale - see the 387-count table entry) and `unusedFunction` (the same
 established false-positive class every other OAL dispatch file gets,
 since cppcheck's single-project analysis cannot see these public API
 functions called from a downstream consumer like `safeAPIRBC2oo2`) - no
-new rule category introduced beyond what `sapi_timer.c` (this module's
+new rule category introduced beyond what `rte_timer.c` (this module's
 own template) already carries; in fact strictly fewer findings than
-`sapi_timer.c`, since the pointer-cast rules (11.5/11.6/8.9) that
-`sapi_timer.c` triggers live only in the POSIX backend implementation
-for mutex (`safeAPIRBC2oo2/src/posix_backend/sapi_posix_backend_mutex.c`,
+`rte_timer.c`, since the pointer-cast rules (11.5/11.6/8.9) that
+`rte_timer.c` triggers live only in the POSIX backend implementation
+for mutex (`safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_mutex.c`,
 outside this repo's own cppcheck scope), not in the dispatch file itself.
 `cmake --build build` + `ctest --test-dir build`: full rebuild, 27/27
 pass. `safeAPIRBC2oo2` (downstream): migrated off `pthread_mutex_t`
@@ -1124,40 +1124,40 @@ entirely (`channel_ab_types.h`/`channel_ab.c`/`channel_ab_checkpoint.c`/
 `safeAPITestEnv` Robot Framework suite (11/11) all re-verified clean.
 
 **Update (2026-08-20): setup-phase lock coverage extended (ADR-032).**
-Fourteen functions across ten files (`sapi_timer_register_backend`,
-`sapi_ipc_register_backend`, `sapi_task_register_backend`,
-`sapi_netlink_register_backend`, `sapi_nvm_register_backend`,
-`sapi_log_register_backend`, `sapi_clocksync_register_backend`,
-`sapi_reboot_register_backend`, `sapi_mem_pool_register_backend`,
-`sapi_mem_pool_create`, `sapi_safestate_register_handler`,
-`sapi_ipc_pubsub_topic_create`, `sapi_ipc_rr_server_create`,
-`sapi_ipc_rr_client_create`) now call
-`sapi_lifecycle_check_setup_allowed()` as one of their first checks,
+Fourteen functions across ten files (`rte_timer_register_backend`,
+`rte_ipc_register_backend`, `rte_task_register_backend`,
+`rte_netlink_register_backend`, `rte_nvm_register_backend`,
+`rte_log_register_backend`, `rte_clocksync_register_backend`,
+`rte_reboot_register_backend`, `rte_mem_pool_register_backend`,
+`rte_mem_pool_create`, `rte_safestate_register_handler`,
+`rte_ipc_pubsub_topic_create`, `rte_ipc_rr_server_create`,
+`rte_ipc_rr_client_create`) now call
+`rte_lifecycle_check_setup_allowed()` as one of their first checks,
 closing a gap an integrator-requested audit found: these are the same
 class of one-time "wire this up" setup call ADR-026 already gated for
 timers/channels/voters/cross-comparators/watchdogs, just never covered
-when that ADR was written. `sapi_nvm_open()`/`sapi_log_init()` were
+when that ADR was written. `rte_nvm_open()`/`rte_log_init()` were
 evaluated and deliberately left ungated - see ADR-032's own "Deferred"
 note. `cmake --build build` + `ctest --test-dir build`: full rebuild and
 suite pass. `safeAPIRBC2oo2` (downstream): full rebuild, `ctest`, and
 `smoke.sh` re-verified against its established baseline. No new
 `malloc()`/`free()`/`realloc()` call site was added anywhere - a
 candidate malloc-backed default memory-pool backend was considered and
-rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_backend/sapi_posix_backend_memory.c`
+rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_backend/rte_posix_backend_memory.c`
 was confirmed to already implement a complete, malloc-free (static
 arena, bump allocator, intrusive free list) backend - the zero-`malloc`
 count for this repo's own `include/`/`src/` (section 1a's grep sweep)
 remains unchanged.
 
 **Update (2026-08-05, same day as the section 1a tooling fix): fixed.**
-`sapi_checksum.c`'s three CRC-64 lookup tables (`g_crc64_ertms_table`
+`rte_checksum.c`'s three CRC-64 lookup tables (`g_crc64_ertms_table`
 etc.) were incomplete placeholders - only ~24 of 256 entries populated
 for ERTMS, 2 of 256 for ISO/XZ, the rest implicitly zero per C array
 initialization rules, explicitly commented in the source as placeholders,
 and explicitly called out here as not real integrity protection. All
 three are now full, correctly generated 256-entry tables (standard
 reflected/right-shifting CRC table-generation algorithm against each
-polynomial already declared in `sapi_checksum.h`) - see `sapi_checksum.c`'s
+polynomial already declared in `rte_checksum.h`) - see `rte_checksum.c`'s
 own file-level note for detail, and `safeAPIRBC2oo2`'s A<->B peer-link
 CRC-64 integrity check (`channel_ab.c`) for the first real consumer of
 this fix.
@@ -1169,7 +1169,7 @@ Being transparent about these rather than silently non-compliant:
 - **Rule 15.5 (advisory) - single point of exit.** CLAUDE.md states single
   point of exit is "preferred," not mandatory, and this codebase
   consistently uses early-return guard clauses for parameter validation
-  instead (e.g. `sapi_timer_create` has 4-5 `return` statements: one per
+  instead (e.g. `rte_timer_create` has 4-5 `return` statements: one per
   invalid-argument check, then the dispatch). This is a deliberate,
   consistent choice across every function in the codebase: guard clauses
   keep each validation check flat and independently readable rather than
@@ -1183,32 +1183,32 @@ Being transparent about these rather than silently non-compliant:
 - **Rule 8.13 (advisory) - pointer parameters that could be `const` are
   not always.** Output parameters (`*out_handle`, `*out_value`, etc.) are
   correctly non-`const`; this has not been exhaustively re-verified
-  parameter-by-parameter across all 72 `sapi_cast_*` functions plus every
+  parameter-by-parameter across all 72 `rte_cast_*` functions plus every
   OAL service by a tool, only by design review during authoring.
 - **Rule 21.5 (required) - `<signal.h>` shall not be used.** Violated,
   deliberately, in exactly one place:
-  `sapi_appmanager_install_default_signal_handlers()`
-  (`src/appmanager/sapi_appmanager.c`, guarded by
-  `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS`). This is a real, confirmed hit
+  `rte_appmanager_install_default_signal_handlers()`
+  (`src/appmanager/rte_appmanager.c`, guarded by
+  `RTE_APPMANAGER_HAVE_POSIX_SIGNALS`). This is a real, confirmed hit
   (`misra-c2012-21.5`, cppcheck), not a tool artifact - `<signal.h>` is
   genuinely included and `sigaction()` genuinely called. Rationale: this
   is an explicitly opt-in, POSIX-only convenience for stopping a
-  long-running `sapi_appmanager_run()` loop from an operator (Ctrl+C) or
+  long-running `rte_appmanager_run()` loop from an operator (Ctrl+C) or
   process manager (SIGTERM) - see the function's own doc in
-  `sapi_appmanager.h` for the full reasoning, including why this module
+  `rte_appmanager.h` for the full reasoning, including why this module
   (already not backend-dispatched, unlike the seven ADR-005 OAL services)
   was judged the least-bad place for a narrow, explicitly-named exception
   rather than every downstream POSIX integrator reimplementing the same
   handful of lines. It is compiled out entirely (returns
-  `SAPI_STATUS_NOT_SUPPORTED`, no `<signal.h>` include at all) on any
-  target where `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS` is not defined, so a
+  `RTE_STATUS_NOT_SUPPORTED`, no `<signal.h>` include at all) on any
+  target where `RTE_APPMANAGER_HAVE_POSIX_SIGNALS` is not defined, so a
   SIL-rated build targeting a real RTOS/bare-metal backend never compiles
   this code path in the first place. The handler itself is minimal by
   design (writes one `volatile int`, calls nothing else - see
-  `sapi_appmanager_signal_handler()`'s own comment) specifically to avoid
+  `rte_appmanager_signal_handler()`'s own comment) specifically to avoid
   the underlying hazard Rule 21.5 exists to prevent (unbounded/unsafe
   work in signal-handler context). Not currently caller-configurable
-  (always exactly `SIGINT`+`SIGTERM` -> `sapi_appmanager_request_shutdown()`);
+  (always exactly `SIGINT`+`SIGTERM` -> `rte_appmanager_request_shutdown()`);
   a caller needing different signals or additional handler logic should
   install their own via `sigaction()` directly rather than using this
   convenience function.
@@ -1218,10 +1218,10 @@ Being transparent about these rather than silently non-compliant:
   feature-test macro) - a real GitHub Actions CI failure caught this,
   masked locally because macOS's libc does not gate these declarations the
   same way. Fixed by adding `#define _POSIX_C_SOURCE 200809L` before any
-  header include in `sapi_appmanager.c` (same pattern already used in
+  header include in `rte_appmanager.c` (same pattern already used in
   `safeAPIRBC2oo2`'s own POSIX application files). No change to the
   deviation itself - `<signal.h>` is still genuinely included and still
-  guarded by the same `SAPI_APPMANAGER_HAVE_POSIX_SIGNALS` compile-time
+  guarded by the same `RTE_APPMANAGER_HAVE_POSIX_SIGNALS` compile-time
   gate; this only fixes a portability bug in code that was already
   supposed to work.
 
@@ -1230,8 +1230,8 @@ Being transparent about these rather than silently non-compliant:
 Test code is not shipped as part of the framework and is not held to the
 same rules:
 
-- `tests/safestate/test_sapi_safestate.c` and, per the same pattern,
-  `tests/checkpoint/test_sapi_checkpoint.c` (ADR-017 - `sapi_checkpoint`
+- `tests/safestate/test_rte_safestate.c` and, per the same pattern,
+  `tests/checkpoint/test_rte_checkpoint.c` (ADR-017 - `rte_checkpoint`
   also triggers safe-state, on an insufficient-confirmation timeout) use
   `<setjmp.h>`/`longjmp` to safely exercise the documented "does not
   return" contract for `SAFE`/`REBOOT` levels without hanging the test
@@ -1240,13 +1240,13 @@ same rules:
   intentionally confined to test-only tooling.
 - All test files use `<assert.h>` per normal unit-test practice.
 
-**Update 2026-09-18:** new module `sapi_flow` (`include/safeapi/oal/flow/`,
-`include/safeapi_backend/flow/`, `src/oal/flow/sapi_flow.c` -
+**Update 2026-09-18:** new module `rte_flow` (`include/safeapi/oal/flow/`,
+`include/safeapi_backend/flow/`, `src/oal/flow/rte_flow.c` -
 OCORA PI-API-compatible name-addressed pub/sub Flow service, ADR-005
 backend seam, `SAFEAPI_ENABLE_FLOW`) added, same validate-then-dispatch
-shape as `sapi_netlink`. `cmake --build build --target cppcheck` re-run
+shape as `rte_netlink`. `cmake --build build --target cppcheck` re-run
 after adding it: zero new MISRA findings. `ctest` 31/31 (was 30/30) with
-`test_sapi_flow` added following `test_sapi_netlink`'s own pattern.
+`test_rte_flow` added following `test_rte_netlink`'s own pattern.
 
 ## 5. Recommended follow-up
 
@@ -1266,8 +1266,8 @@ missing:
   decision: real violation needing a fix, or a documented deviation to
   add to section 3, or (less likely, but possible without `--rule-texts`)
   a tool false-positive.
-- **`sapi_appmanager.c`'s confirmed `<stdio.h>` use** (Rule 21.6) - a
-  real, now-confirmed finding, not yet fixed. (`sapi_watchdog.c`'s own
+- **`rte_appmanager.c`'s confirmed `<stdio.h>` use** (Rule 21.6) - a
+  real, now-confirmed finding, not yet fixed. (`rte_watchdog.c`'s own
   contribution to this finding was fixed as of update 3 above - this
   section previously named both files together, which contradicted that
   update; corrected to name only the file that's actually still open.)
@@ -1281,17 +1281,17 @@ refreshed) whenever a new module is added or the un-triaged rule list
 above is worked through - don't let the "not yet triaged" framing above
 become permanent.
 
-- **Update (2026-09-18): new module `sapi_redundancy_config`** (RCA/OCORA
+- **Update (2026-09-18): new module `rte_redundancy_config`** (RCA/OCORA
   initiative - JSON-loaded 2oo2/2oo2_redundant/2oo3/NMR voting-topology
   config, `include/safeapi/redundancy/config/`, `src/redundancy/config/`).
   `cppcheck --addon=misra` findings, all in the same already-accepted
   buckets as the rest of the tree: Rule 15.5 (single-exit/guard-clause
   style, dominant everywhere), Rule 21.6 (`<stdio.h>` - `fopen`/`fread`/
   `fclose`, deliberate and load-time-only, same rationale as
-  `sapi_appmanager.c`'s own confirmed 21.6 use above and
+  `rte_appmanager.c`'s own confirmed 21.6 use above and
   `safeCommFreamwork`'s `safecomm_config_load`'s hand-written file
   loader), Rule 21.14/21.16 (`memcmp` pointer-arithmetic style, consistent
-  with `sapi_checksum.c`/codec modules elsewhere). New to this module:
+  with `rte_checksum.c`/codec modules elsewhere). New to this module:
   Rule 17.8 (a `size_t pos` scan-cursor parameter is reassigned inside
   `skip_ws()`/`parse_string_value()`/`parse_string_array()`) - accepted as
   a deviation: each is a small, single-purpose bounded scanner where `pos`
@@ -1300,21 +1300,21 @@ become permanent.
   (the function bodies are short, single-entry/single-loop, no aliasing).
   `ctest`: 32/32 (was 31/31), zero regressions.
 
-- **Update (2026-09-18): new module `sapi_channel_service_flow_backend`**
-  (RCA/OCORA Phase 4 - a `sapi_channel_service_backend_t` implementation over
-  `sapi_flow`, `include/safeapi/redundancy/channel_service/`,
+- **Update (2026-09-18): new module `rte_channel_service_flow_backend`**
+  (RCA/OCORA Phase 4 - a `rte_channel_service_backend_t` implementation over
+  `rte_flow`, `include/safeapi/redundancy/channel_service/`,
   `src/redundancy/channel_service/`). `cppcheck --addon=misra` findings, all
   in already-accepted buckets: Rule 15.5 (single-exit, dominant everywhere),
   Rule 11.5 (`void *` -> typed-pointer cast in `channel_state()`, identical
-  pattern to `safeAPIBackendPosix`'s own `sapi_posix_backend_channel_service.c`
+  pattern to `safeAPIBackendPosix`'s own `rte_posix_backend_channel_service.c`
   `channel_state()` helper), Rule 8.9 (file-scope `static const` vtable
   initializer, same pattern every other backend registration in this tree
   uses). `ctest`: 34/34 (was 32/32 after the redundancy_config update above -
-  this update also added `test_sapi_channel_service_flow_backend`, 6 cases).
+  this update also added `test_rte_channel_service_flow_backend`, 6 cases).
   **Update (2026-09-18, same day): lazy-open redesign.** `backend_setup()` was changed from
-  eager (`sapi_flow_open()` called immediately) to lazy (resolve+store only; the real open
+  eager (`rte_flow_open()` called immediately) to lazy (resolve+store only; the real open
   happens on the first `read()`/`send()`, bounded by THAT call's own `timeout_ms`) after a real
-  bug was found live against `safeAPIRBC2oo2GP`: eager open made `sapi_channel_service_setup()`
+  bug was found live against `safeAPIRBC2oo2GP`: eager open made `rte_channel_service_setup()`
   block for the full peer-handshake timeout and then fail outright for a channel whose peer
   legitimately isn't running yet, aborting the whole integrator process over one optional
   channel - see root `TODO.md`'s Phase 4 entry for the full story. No new MISRA rule categories
@@ -1322,30 +1322,30 @@ become permanent.
   re-verified 34/34 after the redesign (test file itself updated: 2 existing cases adjusted for
   lazy-open, 1 new case covering "absent peer fails only I/O calls, not setup()").
 
-- **Update (2026-09-18, same day): new module `sapi_state_transfer`** (RCA/OCORA hot/warm/cold
+- **Update (2026-09-18, same day): new module `rte_state_transfer`** (RCA/OCORA hot/warm/cold
   standby initiative - `include/safeapi/redundancy/state_transfer/`,
   `src/redundancy/state_transfer/`), plus a new `standby_mode` field on
-  `sapi_redundancy_config_t` (`"hot"`/`"warm"`/`"cold"`, default `"cold"`). Same already-accepted
+  `rte_redundancy_config_t` (`"hot"`/`"warm"`/`"cold"`, default `"cold"`). Same already-accepted
   rule buckets as every other module in this tree (15.5 single-exit, 21.16 `memcmp`/pointer
-  style via `sapi_mem_copy()`, 8.7 exported-function declarations) - no new categories from
-  either addition. `ctest`: 34/34 (`test_sapi_state_transfer` new, 6 cases;
-  `test_sapi_redundancy_config` gained 4 standby_mode cases, same executable/ctest entry).
+  style via `rte_mem_copy()`, 8.7 exported-function declarations) - no new categories from
+  either addition. `ctest`: 34/34 (`test_rte_state_transfer` new, 6 cases;
+  `test_rte_redundancy_config` gained 4 standby_mode cases, same executable/ctest entry).
 
-- **Update (2026-09-18, same day): `sapi_redundancy_config_register_capability()`** - a new
-  integrator-registered capability-query callback `sapi_redundancy_config_load()` consults
+- **Update (2026-09-18, same day): `rte_redundancy_config_register_capability()`** - a new
+  integrator-registered capability-query callback `rte_redundancy_config_load()` consults
   before returning success, so an integrator declares what it supports instead of re-checking
-  the loaded config itself. Same accepted buckets (15.5, 8.7); `test_sapi_redundancy_config`
+  the loaded config itself. Same accepted buckets (15.5, 8.7); `test_rte_redundancy_config`
   gained one new case (accept/reject/clear-callback).
 
-- **Update (2026-09-18, same day): `sapi_cross_comparator_execute_buffers()`** (RCA/OCORA
-  Phase 2b - a buffers-based comparator entry point needing no `sapi_channel_t` registration,
+- **Update (2026-09-18, same day): `rte_cross_comparator_execute_buffers()`** (RCA/OCORA
+  Phase 2b - a buffers-based comparator entry point needing no `rte_channel_t` registration,
   collapsing an integrator's hand-rolled channel-adapter boilerplate). Refactoring
-  `sapi_cross_comparator_execute()` to share its AGREED/DISAGREED/safestate tail with the new
+  `rte_cross_comparator_execute()` to share its AGREED/DISAGREED/safestate tail with the new
   function via a `cross_comparator_finish()` helper surfaced a REAL, previously-latent
   `cppcheck` finding, not just style: `buf_a` could reach that shared helper uninitialized on
-  the unhealthy-channel path (`local_result` forced to `SAPI_VOTING_INSUFFICIENT_QUORUM` before
+  the unhealthy-channel path (`local_result` forced to `RTE_VOTING_INSUFFICIENT_QUORUM` before
   `buf_a` is ever populated) - never dereferenced there in practice (that path can't produce
-  `SAPI_VOTING_AGREED`, the only branch that reads it), but a genuine defect, fixed by
+  `RTE_VOTING_AGREED`, the only branch that reads it), but a genuine defect, fixed by
   zero-initializing `buf_a` at declaration rather than leaving it as an accepted finding. Also
   fixed two `variableScope` findings (`buf_b`/`st_a`/`st_b` narrowed into the branch that
   actually uses them) surfaced by the same pass. No new MISRA rule categories beyond the

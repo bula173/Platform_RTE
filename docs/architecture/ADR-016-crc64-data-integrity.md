@@ -30,7 +30,7 @@ Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect d
 | **CRC-64** | Better error detection, ERTMS standard | Slightly more overhead |
 | **HMAC/Signature** | Cryptographic | Too slow for real-time, not needed for random errors |
 
-### Why CRC-64 is Right for SAPI
+### Why CRC-64 is Right for RTE
 
 1. **ERTMS Compliance:** Railway systems standardize on CRC-64-CCITT (polynomial 0x1D4F63B86E40E541)
 2. **Error Detection:** Catches ~99.99% of random errors (vs ~99.9% for CRC-32)
@@ -42,7 +42,7 @@ Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect d
 
 ## Decision
 
-**ACCEPTED:** Implement CRC-64 as a built-in SAPI module (`sapi_checksum`) with:
+**ACCEPTED:** Implement CRC-64 as a built-in RTE module (`rte_checksum`) with:
 
 1. **CRC-64 Computation**
    - Lookup-table based (pre-computed at compile-time)
@@ -51,17 +51,17 @@ Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect d
    - Full statistics and diagnostics
 
 2. **Vital Message Wrapper**
-   - `sapi_vital_message_t` structure with integrated CRC-64
+   - `rte_vital_message_t` structure with integrated CRC-64
    - Automatic CRC computation on send
    - Automatic CRC verification on receive
    - Sequence number checking (detect reordering)
    - Timestamp for latency analysis
 
 3. **Integration Points**
-   - Core checksum API: `sapi_checksum_crc64(data, size)`
-   - Message wrapper: `sapi_checksum_vital_message_*`
-   - Statistics: `sapi_checksum_get_stats()` for monitoring
-   - Error handling: Return `SAPI_STATUS_ERROR` on CRC mismatch
+   - Core checksum API: `rte_checksum_crc64(data, size)`
+   - Message wrapper: `rte_checksum_vital_message_*`
+   - Statistics: `rte_checksum_get_stats()` for monitoring
+   - Error handling: Return `RTE_STATUS_ERROR` on CRC mismatch
 
 ---
 
@@ -71,10 +71,10 @@ Safety-critical systems with redundant channels (2oo2, 2oo3, etc.) must detect d
 
 ```
 include/safeapi/checksum/
-├── sapi_checksum.h              # API definition
+├── rte_checksum.h              # API definition
 
 src/checksum/
-├── sapi_checksum.c              # Implementation with LUT tables
+├── rte_checksum.c              # Implementation with LUT tables
 ├── CMakeLists.txt               # Build configuration
 
 tests/checksum/
@@ -126,14 +126,14 @@ typedef struct {
     uint8_t  payload_size;       // Variable payload
     uint8_t  payload[248];       // Actual data
     uint64_t crc64;              // Data integrity
-} sapi_vital_message_t;
+} rte_vital_message_t;
 ```
 
 **Usage Pattern:**
-1. **Sender:** `sapi_checksum_vital_message_create()` → CRC computed
+1. **Sender:** `rte_checksum_vital_message_create()` → CRC computed
 2. **Network:** Send 256-byte message
-3. **Receiver:** `sapi_checksum_vital_message_verify()` → CRC checked
-4. **Mismatch:** Return `SAPI_STATUS_ERROR` → trigger safe-state
+3. **Receiver:** `rte_checksum_vital_message_verify()` → CRC checked
+4. **Mismatch:** Return `RTE_STATUS_ERROR` → trigger safe-state
 
 #### 4. Statistics & Monitoring
 
@@ -153,15 +153,15 @@ Track:
 ### With Redundancy Framework (Future v0.4.0+)
 
 ```
-Vital Channel (Future sapi_channel_t)
+Vital Channel (Future rte_channel_t)
     ↓
 Payload data
     ↓
-[THIS] sapi_checksum_vital_message_create()  ← CRC-64 wrapper
+[THIS] rte_checksum_vital_message_create()  ← CRC-64 wrapper
     ↓
 Network transmission
     ↓
-[THIS] sapi_checksum_vital_message_verify()  ← CRC-64 check
+[THIS] rte_checksum_vital_message_verify()  ← CRC-64 check
     ↓
 Voting Logic (detect if A vs B payloads differ after CRC OK)
     ↓
@@ -176,14 +176,14 @@ Output or Safe-State
 ### With Existing Modules
 
 **Depends on:**
-- `safeapi/types` — uint64_t, sapi_status_t
+- `safeapi/types` — uint64_t, rte_status_t
 - `safeapi/log` — Logging for diagnostics
 - `safeapi/safestate` — Trigger safe-state on error
 - `safeapi/timer` — Timestamp in vital messages
 
 **Used by:**
 - Application IPC code (wrap payloads)
-- Future `sapi_channel_t` (transparent CRC)
+- Future `rte_channel_t` (transparent CRC)
 - Service unit diagnostics (monitor stats)
 
 ---
@@ -220,7 +220,7 @@ Output or Safe-State
 CRC-64 optional but recommended for data integrity assurance:
 ```c
 // Optional defensive check
-sapi_checksum_crc64_verify(data, size, expected_crc, &result);
+rte_checksum_crc64_verify(data, size, expected_crc, &result);
 if (result.match == 0) {
     log_corruption_and_retry();
 }
@@ -231,13 +231,13 @@ if (result.match == 0) {
 CRC-64 **mandatory** for vital channel communication:
 ```c
 // Vital message with CRC
-sapi_checksum_vital_message_create(&msg, sender_id, seq, payload, len);
-sapi_ipc_send(vital_channel, &msg, sizeof(msg), timeout);
+rte_checksum_vital_message_create(&msg, sender_id, seq, payload, len);
+rte_ipc_send(vital_channel, &msg, sizeof(msg), timeout);
 
 // Receive and verify
-sapi_checksum_vital_message_verify(&msg, expected_seq, payload_out, ...);
-if (status != SAPI_STATUS_OK) {
-    sapi_safestate_trigger(REASON_DATA_CORRUPTION);
+rte_checksum_vital_message_verify(&msg, expected_seq, payload_out, ...);
+if (status != RTE_STATUS_OK) {
+    rte_safestate_trigger(REASON_DATA_CORRUPTION);
 }
 ```
 
@@ -253,7 +253,7 @@ if (status != SAPI_STATUS_OK) {
 - [ ] Documentation & examples
 
 ### Phase 2: Integration (v0.4.0)
-- [ ] Integrate with `sapi_channel_t` (when redundancy implemented)
+- [ ] Integrate with `rte_channel_t` (when redundancy implemented)
 - [ ] Transparent CRC for vital channels
 - [ ] Performance benchmarks
 - [ ] Production deployment support
@@ -330,7 +330,7 @@ if (status != SAPI_STATUS_OK) {
 ## Documentation
 
 ### API Documentation
-- Full Doxygen in `sapi_checksum.h`
+- Full Doxygen in `rte_checksum.h`
 - Example code for each function
 - Integration examples with redundancy
 

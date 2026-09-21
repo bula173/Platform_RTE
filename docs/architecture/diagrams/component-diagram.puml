@@ -96,7 +96,7 @@ qnx_backend -.-> baremetal: optional
 
 note bottom of rbc_app
   Never calls OS directly
-  All services through SAPI
+  All services through RTE
 end note
 
 note bottom of redundancy_mod

@@ -1,8 +1,8 @@
-# ADR-031: `sapi_mem_util` - one sanctioned call site per libc memory primitive
+# ADR-031: `rte_mem_util` - one sanctioned call site per libc memory primitive
 
 Status: Accepted
 Date: 2026-08-20
-Applies to: new `include/safeapi/memory/sapi_mem_util.h` (header-only, no
+Applies to: new `include/safeapi/memory/rte_mem_util.h` (header-only, no
 `src/`, no `SAFEAPI_ENABLE_*` option, no `tests/` executable of its own -
 see §2.2/§4).
 
@@ -17,7 +17,7 @@ are not a MISRA rule violation on their own, but this project's own
 posture (this repo's `CLAUDE.md`: "no dynamic memory... prefer a checked
 conversion helper over a bare C-style cast") already favors a single,
 reviewed, intention-revealing wrapper over scattered direct libc calls
-for other primitives (`sapi_buffer_t`'s own bounds-checked read/write
+for other primitives (`rte_buffer_t`'s own bounds-checked read/write
 helpers instead of raw pointer arithmetic being the closest existing
 precedent) - a downstream integrator asked for the same treatment here:
 route every fixed-size fill/copy/compare through one small framework
@@ -25,22 +25,22 @@ header instead of `<string.h>` directly, so an audit for "does this
 codebase call libc memory functions directly" has exactly one file to
 check.
 
-No such wrapper exists in this framework today - `sapi_memory.h` is a
-fixed-block POOL ALLOCATOR (`sapi_mem_pool_create()`/`_acquire()`/
+No such wrapper exists in this framework today - `rte_memory.h` is a
+fixed-block POOL ALLOCATOR (`rte_mem_pool_create()`/`_acquire()`/
 `_release()`), a completely different concern (managing a bounded set of
 reusable blocks, not filling/copying/comparing bytes within one already-
 owned buffer) - confirmed by a repository-wide search finding no
-`sapi_mem_set`/`_copy`/`_compare`-shaped function anywhere.
+`rte_mem_set`/`_copy`/`_compare`-shaped function anywhere.
 
 ## 2. Decision
 
 ### 2.1 Three trivial wrappers, no "safe string library" scope creep
 
-`sapi_mem_set(dest, value, count)` / `sapi_mem_copy(dest, src, count)` /
-`sapi_mem_compare(a, b, count)` wrap `memset()`/`memcpy()`/`memcmp()`
+`rte_mem_set(dest, value, count)` / `rte_mem_copy(dest, src, count)` /
+`rte_mem_compare(a, b, count)` wrap `memset()`/`memcpy()`/`memcmp()`
 exactly, with no bounds-checking of their own (callers already own both
 buffers and their sizes - the same "caller-owned storage, no hidden
-state" convention this framework's own `sapi_buffer_t` and every
+state" convention this framework's own `rte_buffer_t` and every
 downstream `channel_ab_*` module already follow) and no variable-length
 text handling (`strcpy`/`strcat`/`strlen`-style functions are
 deliberately out of scope - this framework and every application built
@@ -51,9 +51,9 @@ triggering request never asked for).
 
 ### 2.2 Header-only, no `SAFEAPI_ENABLE_*` option
 
-Same rationale as ADR-030 §2.3 (`sapi_notify.h`): these are `static
+Same rationale as ADR-030 §2.3 (`rte_notify.h`): these are `static
 inline` wrappers with no OS dependency and no runtime state of their own
-- they belong alongside `sapi_buffer`/`sapi_types`/`sapi_notify` as an
+- they belong alongside `rte_buffer`/`rte_types`/`rte_notify` as an
 always-available foundational header, not an optional subsystem with its
 own `.c`/dependency-graph entry per ADR-024.
 
@@ -65,17 +65,17 @@ own `.c`/dependency-graph entry per ADR-024.
   canary-fill-on-free or a bounds assertion later, without touching every
   call site.
 - Positive: matches this project's own established "wrap the primitive,
-  don't reinvent it" posture (`sapi_buffer_t` over raw pointer math,
-  `sapi_checksum_crc64()` over a hand-rolled CRC) rather than introducing
+  don't reinvent it" posture (`rte_buffer_t` over raw pointer math,
+  `rte_checksum_crc64()` over a hand-rolled CRC) rather than introducing
   a new pattern.
-- Negative: purely a naming/indirection layer - `sapi_mem_set()` behaves
+- Negative: purely a naming/indirection layer - `rte_mem_set()` behaves
   identically to `memset()`, so it adds no new safety property by itself;
   its value is entirely the "one call site to audit/extend later"
   argument in §3's first point, not a behavior change today.
-- Neutral: does not touch `sapi_memory.h`'s own pool allocator, a
+- Neutral: does not touch `rte_memory.h`'s own pool allocator, a
   genuinely different concern (§1) - both can coexist without confusion
-  since their names are deliberately distinct (`sapi_mem_pool_*` vs.
-  `sapi_mem_set`/`_copy`/`_compare`).
+  since their names are deliberately distinct (`rte_mem_pool_*` vs.
+  `rte_mem_set`/`_copy`/`_compare`).
 
 ## 4. Verification
 
@@ -90,5 +90,5 @@ own `.c`/dependency-graph entry per ADR-024.
 
 ## 5. Location
 
-- `include/safeapi/memory/sapi_mem_util.h` (new, header-only).
+- `include/safeapi/memory/rte_mem_util.h` (new, header-only).
 - No `src/`, no `tests/`, no `SAFEAPI_ENABLE_*` CMake option - see §2.2.

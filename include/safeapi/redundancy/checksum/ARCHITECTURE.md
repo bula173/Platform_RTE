@@ -6,12 +6,12 @@
  *
  * @section checksum_architecture_init Initialization
  *
- * sapi_checksum_init(polynomial) - Initialize lookup tables
+ * rte_checksum_init(polynomial) - Initialize lookup tables
  * Call once at startup before using CRC functions.
  *
  * @section checksum_architecture_compute Computation
  *
- * sapi_checksum_crc64(data, length) - Compute CRC-64
+ * rte_checksum_crc64(data, length) - Compute CRC-64
  * Returns 64-bit checksum for data integrity verification.
  *
  * @section checksum_architecture_performance O(n) Per Buffer

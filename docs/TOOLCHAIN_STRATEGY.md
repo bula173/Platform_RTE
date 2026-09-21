@@ -14,7 +14,7 @@
 > today - only `cmake/Toolchain-Linux.cmake` and `cmake/Toolchain-QNX.cmake` do, under different
 > names and without the macros this document proposes (checked directly: no real source file in
 > `include/` or `src/` reads or would benefit from those macros - endianness is already handled
-> per-call via `sapi_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
+> per-call via `rte_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
 > genuinely working, verified multi-architecture story today is Docker buildx/QEMU for the
 > RBC_GP app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
 > Builds" section and `RBC_Test_Env/etc/scripts/build_multiarch.sh`. Treat
@@ -509,12 +509,12 @@ add_compile_definitions(SAFEAPI_BIG_ENDIAN)
 
 ### 7.3 Buffer Operations (ADR-002)
 
-The `sapi_buffer` API handles endianness transparently:
+The `rte_buffer` API handles endianness transparently:
 
 ```c
 // Works correctly regardless of system endianness
-sapi_status_t sapi_buffer_read_uint32(sapi_buffer_t buf, uint32_t *out);
-sapi_status_t sapi_buffer_write_uint32(sapi_buffer_t buf, uint32_t value);
+rte_status_t rte_buffer_read_uint32(rte_buffer_t buf, uint32_t *out);
+rte_status_t rte_buffer_write_uint32(rte_buffer_t buf, uint32_t value);
 ```
 
 ---
@@ -556,7 +556,7 @@ message(STATUS "Detected architecture: ${SAFEAPI_ARCH}")
         uint8_t flag;
         uint8_t __pad1;        // Alignment padding
         uint16_t length;
-    } sapi_message_header_t;
+    } rte_message_header_t;
 #endif
 ```
 
@@ -736,8 +736,8 @@ Backend code (in `backends/<rtos>/`) handles:
 **Example: Timer backend for different CPUs**
 
 ```c
-// backends/qnx/src/sapi_timer_qnx.c
-sapi_status_t sapi_timer_create_impl(const char *name, sapi_timer_handle_t *out) {
+// backends/qnx/src/rte_timer_qnx.c
+rte_status_t rte_timer_create_impl(const char *name, rte_timer_handle_t *out) {
     // QNX timer implementation
     #if defined(SAFEAPI_ARCH_PPC)
         // PowerPC-specific: use decrementer timer

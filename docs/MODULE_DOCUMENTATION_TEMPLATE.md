@@ -21,7 +21,7 @@
  *  * @section quick_start Quick Start
  *  *
  *  * ### 1. Include Header
- *  * #include "safeapi/MODULE/sapi_MODULE.h"
+ *  * #include "safeapi/MODULE/rte_MODULE.h"
  *  *
  *  * ### 2. Initialize
  *  * Code example of initialization

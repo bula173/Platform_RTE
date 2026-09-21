@@ -39,10 +39,10 @@ it can be qualified or replaced independently.
 ```
 
 **Update:** the L1 slot above is now partially filled - see ADR-017
-(`sapi_checkpoint`, `sapi_clocksync`), which implements the bounded
+(`rte_checkpoint`, `rte_clocksync`), which implements the bounded
 checkpoint-rendezvous half of "inter-process safety-related messaging"
-directly on top of L0's `sapi_ipc`/`sapi_timer`. EN 50159-style message
-integrity (sequence number, CRC-64) is provided by `sapi_checksum`,
+directly on top of L0's `rte_ipc`/`rte_timer`. EN 50159-style message
+integrity (sequence number, CRC-64) is provided by `rte_checksum`,
 reused rather than duplicated by ADR-017; a real transport-authentication
 story for open (untrusted-network) deployments remains open (see ADR-017
 section 3).
@@ -86,14 +86,14 @@ since the RBC core it serves is SIL 4:
   its doxygen comment for traceability to a future requirements
   specification, per EN 50128 verification/traceability expectations.
 - Safety-related and non-safety-related code are kept in separate
-  translation units/services (e.g. `sapi_log` is diagnostic/non-safety,
+  translation units/services (e.g. `rte_log` is diagnostic/non-safety,
   clearly marked as such).
 
 ### 3.3 Naming conventions
 
-- Public functions/types: `sapi_<service>_<verb>`, e.g. `sapi_timer_create`.
-- Public macros/constants: `SAPI_<SERVICE>_<NAME>`.
-- Status/error enum: `sapi_status_t`, values `SAPI_STATUS_*`.
+- Public functions/types: `rte_<service>_<verb>`, e.g. `rte_timer_create`.
+- Public macros/constants: `RTE_<SERVICE>_<NAME>`.
+- Status/error enum: `rte_status_t`, values `RTE_STATUS_*`.
 - Each service gets one public header under `include/safeapi/os/`.
 - Header guards: `SAFEAPI_OS_<SERVICE>_H`.
 
@@ -104,14 +104,14 @@ channel) uses a **caller-owned static storage** pattern instead of
 heap allocation:
 
 ```c
-sapi_timer_storage_t   timer_storage;   /* caller-owned, e.g. static or on a
+rte_timer_storage_t   timer_storage;   /* caller-owned, e.g. static or on a
                                             long-lived stack frame */
-sapi_timer_handle_t    timer;           /* opaque handle bound to storage */
+rte_timer_handle_t    timer;           /* opaque handle bound to storage */
 
-sapi_status_t st = sapi_timer_create(&timer_storage, &config, &timer);
+rte_status_t st = rte_timer_create(&timer_storage, &config, &timer);
 ```
 
-`sapi_timer_storage_t` is an opaque, fixed-size, aligned byte buffer defined
+`rte_timer_storage_t` is an opaque, fixed-size, aligned byte buffer defined
 in the public header (size is part of the ABI). The implementation places
 its internal state inside that buffer. This gives static, analyzable memory
 usage while keeping the internal layout hidden from callers.
@@ -119,7 +119,7 @@ usage while keeping the internal layout hidden from callers.
 ### 3.5 Backend indirection
 
 Each service's implementation is reached through a function-pointer table
-(`sapi_<service>_backend_t`) selected at build/link time (e.g. POSIX
+(`rte_<service>_backend_t`) selected at build/link time (e.g. POSIX
 backend, FreeRTOS backend, vendor BSP backend). This is the C-ABI-compatible
 equivalent of a strategy pattern, chosen instead of C++ virtual dispatch for
 the reasons in 3.1. This ADR only defines the public API; backend
@@ -127,42 +127,42 @@ selection/registration is left to a follow-up ADR.
 
 ### 3.6 Error handling
 
-All fallible functions return `sapi_status_t`. Common codes (defined once in
-`sapi_status.h` and shared by every service):
+All fallible functions return `rte_status_t`. Common codes (defined once in
+`rte_status.h` and shared by every service):
 
 | Code | Meaning |
 |---|---|
-| `SAPI_STATUS_OK` | success |
-| `SAPI_STATUS_INVALID_PARAM` | null pointer / out-of-range argument |
-| `SAPI_STATUS_NOT_INITIALIZED` | used before `_create`/`_init` |
-| `SAPI_STATUS_ALREADY_INITIALIZED` | double init |
-| `SAPI_STATUS_TIMEOUT` | blocking call exceeded its deadline |
-| `SAPI_STATUS_RESOURCE_EXHAUSTED` | static pool/storage full |
-| `SAPI_STATUS_NOT_SUPPORTED` | valid request, backend can't do it |
-| `SAPI_STATUS_NOT_IMPLEMENTED` | stub only (current skeleton state) |
-| `SAPI_STATUS_HARDWARE_FAULT` | backend reported a HW-level fault |
-| `SAPI_STATUS_DATA_CORRUPTION` | NVM integrity check (CRC) failed |
-| `SAPI_STATUS_INTERNAL_ERROR` | should-never-happen / defensive catch-all |
+| `RTE_STATUS_OK` | success |
+| `RTE_STATUS_INVALID_PARAM` | null pointer / out-of-range argument |
+| `RTE_STATUS_NOT_INITIALIZED` | used before `_create`/`_init` |
+| `RTE_STATUS_ALREADY_INITIALIZED` | double init |
+| `RTE_STATUS_TIMEOUT` | blocking call exceeded its deadline |
+| `RTE_STATUS_RESOURCE_EXHAUSTED` | static pool/storage full |
+| `RTE_STATUS_NOT_SUPPORTED` | valid request, backend can't do it |
+| `RTE_STATUS_NOT_IMPLEMENTED` | stub only (current skeleton state) |
+| `RTE_STATUS_HARDWARE_FAULT` | backend reported a HW-level fault |
+| `RTE_STATUS_DATA_CORRUPTION` | NVM integrity check (CRC) failed |
+| `RTE_STATUS_INTERNAL_ERROR` | should-never-happen / defensive catch-all |
 
 ## 4. Scope of the first abstraction layer (OAL services)
 
 Six services, one header each:
 
-1. **Timer** (`sapi_timer.h`) — periodic/one-shot timers with
+1. **Timer** (`rte_timer.h`) — periodic/one-shot timers with
    millisecond-resolution deadlines, needed for ERTMS movement authority
    timeouts, cyclic supervision, watchdog-style deadlines.
-2. **NVM** (`sapi_nvm.h`) — non-volatile storage of safety-related persistent
+2. **NVM** (`rte_nvm.h`) — non-volatile storage of safety-related persistent
    data (e.g. train/track database state) with integrity checking
    (CRC/redundant storage) on read.
-3. **Memory reservation** (`sapi_memory.h`) — static memory pool
+3. **Memory reservation** (`rte_memory.h`) — static memory pool
    reservation/partitioning at init time; no `malloc` in the safety path.
-4. **Task/thread scheduling** (`sapi_task.h`) — creation of periodic/cyclic
+4. **Task/thread scheduling** (`rte_task.h`) — creation of periodic/cyclic
    safety tasks with fixed priorities, matching the cyclic processing model
    typical of RBC implementations.
-5. **Inter-process/inter-task communication** (`sapi_ipc.h`) — bounded
+5. **Inter-process/inter-task communication** (`rte_ipc.h`) — bounded
    message queues/channels between safety tasks, usable as the transport for
    a future L1 safety communication layer.
-6. **Logging/diagnostics** (`sapi_log.h`) — explicitly **non-safety-related**
+6. **Logging/diagnostics** (`rte_log.h`) — explicitly **non-safety-related**
    black-box-style event logging; must never be on any safety execution
    path (e.g. must not block or fail a caller).
 
@@ -181,7 +181,7 @@ safeAPIFreamwork/
   CMakeLists.txt                 top-level, options, adds subdirs
   cmake/CompilerWarnings.cmake   shared warning/hardening flags
   docs/architecture/             ADRs (this file)
-  include/safeapi/common/        sapi_status.h, sapi_types.h
+  include/safeapi/common/        rte_status.h, rte_types.h
   include/safeapi/os/            the six service headers
   src/os/                        stub backend implementations + CMakeLists.txt
   tests/                         CTest scaffold, one test file per service
@@ -211,7 +211,7 @@ OAL or a single service.
 - Confirm target OS/RTOS backends for the first reference implementation
   (POSIX/Linux is the natural first backend for host-based development and
   testing; a deterministic RTOS backend would follow for target hardware).
-- Define `sapi_timer_storage_t` etc. sizes once a first backend fixes real
+- Define `rte_timer_storage_t` etc. sizes once a first backend fixes real
   internal state layout (skeleton currently uses a conservative fixed size
   plus a compile-time size assertion hook).
 - Decide unit test framework (Unity/CMock are common choices for MISRA-C

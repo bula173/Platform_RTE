@@ -36,7 +36,7 @@
  * ### Callback Function Signature
  *
  * ```c
- * typedef void (*sapi_channel_callback_t)(
+ * typedef void (*rte_channel_callback_t)(
  *     const char *channel_name,        // Identifier: "online_to_standby_vital"
  *     const void *data,                // Received data
  *     size_t data_size,                // Size of data
@@ -56,9 +56,9 @@
  *     bool server_mode;
  *
  *     // NEW: Callback on data available
- *     sapi_channel_callback_t on_data_available;  // Optional callback
+ *     rte_channel_callback_t on_data_available;  // Optional callback
  *     void *callback_context;          // User context for callback
- * } sapi_ipc_config_tcp_t;
+ * } rte_ipc_config_tcp_t;
  * ```
  *
  * ### Example: Registering Callbacks
@@ -76,7 +76,7 @@
  * }
  *
  * // Configure channel with callback
- * sapi_ipc_config_tcp_t tcp_config = {
+ * rte_ipc_config_tcp_t tcp_config = {
  *     .name = "online_to_standby_vital",
  *     .remote_ip = "192.168.1.100",
  *     .remote_port = 5000,
@@ -90,8 +90,8 @@
  * };
  *
  * // Create channel
- * sapi_ipc_handle_t tcp_channel;
- * sapi_ipc_create_tcp(&tcp_channel, &tcp_config);
+ * rte_ipc_handle_t tcp_channel;
+ * rte_ipc_create_tcp(&tcp_channel, &tcp_config);
  * // OS backend will call on_command_received() when data arrives
  * ```
  *
@@ -165,7 +165,7 @@
  * }
  *
  * // Register
- * sapi_ipc_config_tcp_t vital_config = {
+ * rte_ipc_config_tcp_t vital_config = {
  *     .name = "online_to_standby_vital",
  *     // ... other config ...
  *     .on_data_available = on_vital_command,
@@ -258,8 +258,8 @@
  * ```c
  * typedef struct {
  *     const char *name;
- *     sapi_ipc_handle_t handle;
- *     sapi_channel_callback_t callback;
+ *     rte_ipc_handle_t handle;
+ *     rte_channel_callback_t callback;
  *     void *context;
  * } channel_registry_entry_t;
  *
@@ -274,12 +274,12 @@
  * // Register channels
  * void register_channel(channel_registry_t *reg,
  *                       const char *name,
- *                       sapi_ipc_handle_t handle,
- *                       sapi_channel_callback_t callback,
+ *                       rte_ipc_handle_t handle,
+ *                       rte_channel_callback_t callback,
  *                       void *context)
  * {
  *     if (reg->count >= MAX_CHANNELS) {
- *         return SAPI_STATUS_RESOURCE_EXHAUSTED;
+ *         return RTE_STATUS_RESOURCE_EXHAUSTED;
  *     }
  *
  *     reg->channels[reg->count] = {
@@ -289,7 +289,7 @@
  *         .context = context,
  *     };
  *     reg->count++;
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  *
  * // Look up by name

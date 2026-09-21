@@ -10,18 +10,18 @@
  *
  * @code
  * // Create task
- * sapi_task_t task = {
+ * rte_task_t task = {
  *     .priority = 50,
  *     .function = my_task_handler,
  *     .context = &context
  * };
  *
  * // Enqueue
- * sapi_task_queue_enqueue(&queue, &task);
+ * rte_task_queue_enqueue(&queue, &task);
  *
  * // Main loop: dequeue and execute
- * sapi_task_t next;
- * if (sapi_task_queue_dequeue(&queue, &next) == SAPI_STATUS_OK) {
+ * rte_task_t next;
+ * if (rte_task_queue_dequeue(&queue, &next) == RTE_STATUS_OK) {
  *     next.function(next.context);
  * }
  * @endcode

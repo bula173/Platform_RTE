@@ -19,17 +19,17 @@
  *   - Dispatcher callback pattern for mixed transports
  *   - Online/Standby examples with TCP/IP
  *
- * - @ref sapi_ipc_request_reply.h - Request-Reply pattern (RPC-style)
+ * - @ref rte_ipc_request_reply.h - Request-Reply pattern (RPC-style)
  *   - Client sends request, server replies
  *   - Deadlock-free with timeouts
  *   - Typical: Train controller queries signal database
  *
- * - @ref sapi_ipc_pubsub.h - Publish-Subscribe pattern (broadcast)
+ * - @ref rte_ipc_pubsub.h - Publish-Subscribe pattern (broadcast)
  *   - One publisher sends to multiple subscribers
  *   - Asynchronous, decoupled communication
  *   - Typical: Track database broadcasts state changes
  *
- * - @ref sapi_ipc.h - Base IPC API
+ * - @ref rte_ipc.h - Base IPC API
  *   - Backend vtable abstraction
  *   - OS-agnostic interface
  *   - Users can register custom backends
@@ -66,26 +66,26 @@
  *
  * **Step 2: Configure Channels** (See @ref channel_configuration)
  * ```c
- * sapi_ipc_config_tcp_t tcp_cfg = {
+ * rte_ipc_config_tcp_t tcp_cfg = {
  *     .remote_ip = "192.168.1.100",    // User provides standby IP
  *     .remote_port = 5000,             // User chooses port
  *     .timeout_ms = 1000,
  * };
  *
- * sapi_ipc_handle_t tcp_channel;
- * sapi_ipc_create_tcp(&tcp_channel, &tcp_cfg);  // OS backend implements
+ * rte_ipc_handle_t tcp_channel;
+ * rte_ipc_create_tcp(&tcp_channel, &tcp_cfg);  // OS backend implements
  * ```
  *
  * **Step 3: Wrap in Vital Channel** (See @ref vital_channel_architecture)
  * ```c
- * sapi_channel_config_t vital_cfg = {
- *     .voting_strategy = SAPI_VOTING_2OO2,
+ * rte_channel_config_t vital_cfg = {
+ *     .voting_strategy = RTE_VOTING_2OO2,
  *     .backend_send = your_dispatcher_send,
  *     .backend_recv = your_dispatcher_recv,
  * };
  *
  * void *channels[2] = { &tcp_channel, &udp_channel };
- * sapi_channel_init(&vital, &vital_cfg, channels, 2);
+ * rte_channel_init(&vital, &vital_cfg, channels, 2);
  * ```
  *
  * **Step 4: Use in App Manager** (See @ref system_architecture)
@@ -152,7 +152,7 @@
  * 1. Read @ref ipc_transport_selection to understand transport options
  * 2. Read @ref channel_configuration to learn configuration
  * 3. Check examples/channel_configuration_example.c for working code
- * 4. Implement OS-specific backends (sapi_ipc_create_tcp, etc.)
+ * 4. Implement OS-specific backends (rte_ipc_create_tcp, etc.)
  * 5. Integrate with vital_channel for voting/redundancy
  * 6. Review @ref system_architecture for complete system design
  *

@@ -4,20 +4,20 @@
 # Usage in downstream CMakeLists.txt:
 #   find_package(safeAPIFramework REQUIRED)
 #   include(SafeAPIHelpers)
-#   sapi_enable_cppcheck_misra(TARGET mytarget)
-#   sapi_apply_strict_warnings(TARGET mytarget)
+#   rte_enable_cppcheck_misra(TARGET mytarget)
+#   rte_apply_strict_warnings(TARGET mytarget)
 
-if(COMMAND sapi_enable_cppcheck_misra)
+if(COMMAND rte_enable_cppcheck_misra)
   return()  # Prevent multiple inclusions
 endif()
 
 # Enable cppcheck with MISRA C:2012 analysis for a target
-# Usage: sapi_enable_cppcheck_misra(TARGET mytarget [SUPPRESS_RULE_15_5])
-function(sapi_enable_cppcheck_misra)
+# Usage: rte_enable_cppcheck_misra(TARGET mytarget [SUPPRESS_RULE_15_5])
+function(rte_enable_cppcheck_misra)
   cmake_parse_arguments(ARGS "SUPPRESS_RULE_15_5" "TARGET" "" ${ARGN})
 
   if(NOT ARGS_TARGET)
-    message(FATAL_ERROR "sapi_enable_cppcheck_misra: TARGET argument required")
+    message(FATAL_ERROR "rte_enable_cppcheck_misra: TARGET argument required")
   endif()
 
   find_program(CPPCHECK_EXECUTABLE cppcheck)
@@ -44,12 +44,12 @@ endfunction()
 
 # Apply strict compiler warnings (matching safeAPIFramework standards)
 # This includes the shared CompilerWarnings module
-# Usage: sapi_apply_strict_warnings(TARGET mytarget)
-function(sapi_apply_strict_warnings)
+# Usage: rte_apply_strict_warnings(TARGET mytarget)
+function(rte_apply_strict_warnings)
   cmake_parse_arguments(ARGS "" "TARGET" "" ${ARGN})
 
   if(NOT ARGS_TARGET)
-    message(FATAL_ERROR "sapi_apply_strict_warnings: TARGET argument required")
+    message(FATAL_ERROR "rte_apply_strict_warnings: TARGET argument required")
   endif()
 
   include(CompilerWarnings OPTIONAL RESULT_VARIABLE _COMPILER_WARNINGS_FOUND)
@@ -65,8 +65,8 @@ function(sapi_apply_strict_warnings)
 endfunction()
 
 # Create a CMakePresets.json template for a downstream project
-# Usage: sapi_generate_presets_template(OUTPUT_FILE)
-function(sapi_generate_presets_template OUTPUT_FILE)
+# Usage: rte_generate_presets_template(OUTPUT_FILE)
+function(rte_generate_presets_template OUTPUT_FILE)
   set(PRESET_TEMPLATE
 "{
   \"version\": 3,
@@ -135,8 +135,8 @@ function(safeapi_require_feature FEATURE_VAR)
 endfunction()
 
 # Verify that project follows safeAPIFramework conventions
-# Usage: sapi_verify_conventions()
-function(sapi_verify_conventions)
+# Usage: rte_verify_conventions()
+function(rte_verify_conventions)
   message(STATUS "Verifying safeAPIFramework conventions...")
 
   # Check that C standard is set to at least C99

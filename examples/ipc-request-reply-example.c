@@ -21,7 +21,7 @@
 
 #include "safeapi/status.h"
 #include "safeapi/log.h"
-#include "safeapi/ipc/sapi_ipc_request_reply.h"
+#include "safeapi/ipc/rte_ipc_request_reply.h"
 
 /* ============================================================================
  * Message Definitions (Shared between client and server)
@@ -39,7 +39,7 @@ typedef struct {
  * @brief Reply message: Signal state and limits
  */
 typedef struct {
-    sapi_status_t status;           /**< Query result status */
+    rte_status_t status;           /**< Query result status */
     uint8_t signal_state;           /**< 0=RED, 1=YELLOW, 2=GREEN */
     uint32_t track_speed_limit;     /**< Speed limit in km/h */
     char description[32];           /**< Human-readable state (optional) */
@@ -59,10 +59,10 @@ typedef struct {
  * Simulates a real signal database that determines signal state based on
  * track conditions, occupancy, etc.
  */
-static sapi_status_t query_signal_database(const signal_query_t *query,
+static rte_status_t query_signal_database(const signal_query_t *query,
                                             signal_reply_t *reply)
 {
-    SAPI_LOG_DEBUG("Database query: train=%u, location=%u m",
+    RTE_LOG_DEBUG("Database query: train=%u, location=%u m",
                    query->train_id, query->location_m);
 
     /* Simple rules based on location */
@@ -80,8 +80,8 @@ static sapi_status_t query_signal_database(const signal_query_t *query,
         strcpy(reply->description, "Stop");
     }
 
-    reply->status = SAPI_STATUS_OK;
-    return SAPI_STATUS_OK;
+    reply->status = RTE_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
@@ -91,9 +91,9 @@ static sapi_status_t query_signal_database(const signal_query_t *query,
  */
 static int run_signal_server(void)
 {
-    sapi_ipc_rr_server_t server;
-    sapi_ipc_rr_request_t request;
-    sapi_status_t status;
+    rte_ipc_rr_server_t server;
+    rte_ipc_rr_request_t request;
+    rte_status_t status;
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -101,36 +101,36 @@ static int run_signal_server(void)
     printf("═══════════════════════════════════════════════════════════════\n");
     printf("\n");
 
-    SAPI_LOG_INFO("Starting signal server");
+    RTE_LOG_INFO("Starting signal server");
 
     /* Create server channel */
-    sapi_ipc_rr_server_config_t server_config = {
+    rte_ipc_rr_server_config_t server_config = {
         .name = "signal-database",
         .request_size = sizeof(signal_query_t),
         .reply_size = sizeof(signal_reply_t),
         .queue_depth = 10
     };
 
-    status = sapi_ipc_rr_server_create(&server, &server_config);
-    if (status != SAPI_STATUS_OK) {
-        SAPI_LOG_ERROR("Failed to create server: %d", status);
+    status = rte_ipc_rr_server_create(&server, &server_config);
+    if (status != RTE_STATUS_OK) {
+        RTE_LOG_ERROR("Failed to create server: %d", status);
         return EXIT_FAILURE;
     }
 
-    SAPI_LOG_INFO("Server ready, waiting for queries...");
+    RTE_LOG_INFO("Server ready, waiting for queries...");
 
     /* Process 10 queries then shutdown */
     for (int i = 0; i < 10; i++) {
         /* Wait for query (5 second timeout) */
-        status = sapi_ipc_rr_receive_request(&server, &request, 5000);
+        status = rte_ipc_rr_receive_request(&server, &request, 5000);
 
-        if (status == SAPI_STATUS_TIMEOUT) {
-            SAPI_LOG_WARN("No query received (timeout)");
+        if (status == RTE_STATUS_TIMEOUT) {
+            RTE_LOG_WARN("No query received (timeout)");
             continue;
         }
 
-        if (status != SAPI_STATUS_OK) {
-            SAPI_LOG_ERROR("Failed to receive request: %d", status);
+        if (status != RTE_STATUS_OK) {
+            RTE_LOG_ERROR("Failed to receive request: %d", status);
             break;
         }
 
@@ -138,27 +138,27 @@ static int run_signal_server(void)
         signal_query_t *query = (signal_query_t *)request.request_data;
         signal_reply_t reply = {0};
 
-        SAPI_LOG_INFO("Received query #%d from train %u (location=%u m)",
+        RTE_LOG_INFO("Received query #%d from train %u (location=%u m)",
                       i + 1, query->train_id, query->location_m);
 
         /* Query database */
         query_signal_database(query, &reply);
 
         /* Send reply */
-        status = sapi_ipc_rr_send_reply(&server, request.request_id,
+        status = rte_ipc_rr_send_reply(&server, request.request_id,
                                          &reply, sizeof(reply));
 
-        if (status == SAPI_STATUS_OK) {
-            SAPI_LOG_INFO("Replied: signal=%u, speed=%u km/h, \"%s\"",
+        if (status == RTE_STATUS_OK) {
+            RTE_LOG_INFO("Replied: signal=%u, speed=%u km/h, \"%s\"",
                           reply.signal_state, reply.track_speed_limit,
                           reply.description);
         } else {
-            SAPI_LOG_ERROR("Failed to send reply: %d", status);
+            RTE_LOG_ERROR("Failed to send reply: %d", status);
         }
     }
 
     /* Cleanup */
-    sapi_ipc_rr_server_destroy(&server);
+    rte_ipc_rr_server_destroy(&server);
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -178,8 +178,8 @@ static int run_signal_server(void)
  */
 static int run_train_controller(void)
 {
-    sapi_ipc_rr_client_t client;
-    sapi_status_t status;
+    rte_ipc_rr_client_t client;
+    rte_status_t status;
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -187,22 +187,22 @@ static int run_train_controller(void)
     printf("═══════════════════════════════════════════════════════════════\n");
     printf("\n");
 
-    SAPI_LOG_INFO("Starting train controller");
+    RTE_LOG_INFO("Starting train controller");
 
     /* Connect to signal server */
-    sapi_ipc_rr_client_config_t client_config = {
+    rte_ipc_rr_client_config_t client_config = {
         .server_name = "signal-database",
         .request_size = sizeof(signal_query_t),
         .reply_size = sizeof(signal_reply_t)
     };
 
-    status = sapi_ipc_rr_client_create(&client, &client_config);
-    if (status != SAPI_STATUS_OK) {
-        SAPI_LOG_ERROR("Failed to connect to signal server: %d", status);
+    status = rte_ipc_rr_client_create(&client, &client_config);
+    if (status != RTE_STATUS_OK) {
+        RTE_LOG_ERROR("Failed to connect to signal server: %d", status);
         return EXIT_FAILURE;
     }
 
-    SAPI_LOG_INFO("Connected to signal server");
+    RTE_LOG_INFO("Connected to signal server");
 
     /* Simulate train moving and querying signal state */
     uint32_t train_id = 42;
@@ -220,18 +220,18 @@ static int run_train_controller(void)
 
         signal_reply_t reply = {0};
 
-        SAPI_LOG_INFO("Query #%d: Train %u at location %u m",
+        RTE_LOG_INFO("Query #%d: Train %u at location %u m",
                       i + 1, query.train_id, query.location_m);
 
         /* Send request and wait for reply (5 second timeout) */
-        status = sapi_ipc_rr_request(&client,
+        status = rte_ipc_rr_request(&client,
                                       &query, sizeof(query),
                                       &reply, sizeof(reply),
                                       5000);
 
-        if (status == SAPI_STATUS_OK) {
+        if (status == RTE_STATUS_OK) {
             const char *signal_names[] = {"RED", "YELLOW", "GREEN"};
-            SAPI_LOG_INFO("Reply: signal=%s, speed=%u km/h (\"%s\")",
+            RTE_LOG_INFO("Reply: signal=%s, speed=%u km/h (\"%s\")",
                           signal_names[reply.signal_state],
                           reply.track_speed_limit,
                           reply.description);
@@ -249,11 +249,11 @@ static int run_train_controller(void)
                     printf("  → Train EMERGENCY STOP\n");
                     break;
             }
-        } else if (status == SAPI_STATUS_TIMEOUT) {
-            SAPI_LOG_ERROR("Server did not reply in time!");
+        } else if (status == RTE_STATUS_TIMEOUT) {
+            RTE_LOG_ERROR("Server did not reply in time!");
             return EXIT_FAILURE;
         } else {
-            SAPI_LOG_ERROR("RPC failed: %d", status);
+            RTE_LOG_ERROR("RPC failed: %d", status);
             return EXIT_FAILURE;
         }
 
@@ -262,7 +262,7 @@ static int run_train_controller(void)
     }
 
     /* Cleanup */
-    sapi_ipc_rr_client_destroy(&client);
+    rte_ipc_rr_client_destroy(&client);
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -289,7 +289,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    sapi_log_initialize();
+    rte_log_initialize();
 
     if (strcmp(argv[1], "server") == 0) {
         return run_signal_server();

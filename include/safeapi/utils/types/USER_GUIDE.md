@@ -31,7 +31,7 @@
  * @subsection types_user_guide_qs_include 1. Include Header
  *
  * @code
- * #include "safeapi/types/sapi_types.h"
+ * #include "safeapi/types/rte_types.h"
  * @endcode
  *
  * @subsection types_user_guide_qs_use 2. Use Fixed-Width Types

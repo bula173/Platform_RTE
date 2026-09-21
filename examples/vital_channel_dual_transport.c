@@ -4,7 +4,7 @@
  *
  * Demonstrates how to:
  * 1. Create two redundant communication links using different transports
- * 2. Register them into a sapi_voter_t for 2oo2 voting/redundancy (ADR-025)
+ * 2. Register them into a rte_voter_t for 2oo2 voting/redundancy (ADR-025)
  * 3. Support user selection of online/standby channel configurations
  * 4. Monitor health for fault detection
  *
@@ -15,10 +15,10 @@
  * - If one channel fails, voting detects and triggers safe-state
  *
  * ADR-025 split what used to be a single "vital channel" type (one
- * transport handle + built-in N-way voting) into sapi_channel (one
- * link) plus sapi_voter (voting across N registered links). This
- * example registers one sapi_channel_t per transport into one
- * sapi_voter_t configured for SAPI_VOTING_2OO2.
+ * transport handle + built-in N-way voting) into rte_channel (one
+ * link) plus rte_voter (voting across N registered links). This
+ * example registers one rte_channel_t per transport into one
+ * rte_voter_t configured for RTE_VOTING_2OO2.
  *
  * Compile:
  *   gcc -std=c99 -Wall -Wextra -o vital_dual_transport \
@@ -33,9 +33,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "safeapi/channel_link/sapi_channel.h"
-#include "safeapi/voter/sapi_voter.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/channel_link/rte_channel.h"
+#include "safeapi/voter/rte_voter.h"
+#include "safeapi/status/rte_status.h"
 
 /* ============================================================================
  * Transport Backend 1: Shared Memory Queue (Simulated)
@@ -51,38 +51,38 @@ typedef struct {
 /* For example purposes: one shared queue per channel */
 static shm_queue_t shm_queue_0 = {0};
 
-static sapi_status_t shm_send(shm_queue_t *q, const void *data, size_t size)
+static rte_status_t shm_send(shm_queue_t *q, const void *data, size_t size)
 {
     if (q->count >= 10) {
-        return SAPI_STATUS_TIMEOUT;  /* Queue full */
+        return RTE_STATUS_TIMEOUT;  /* Queue full */
     }
 
     if (size > 256) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
 
     memcpy(q->data[q->write_idx], data, size);
     q->write_idx = (q->write_idx + 1) % 10;
     q->count++;
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
-static sapi_status_t shm_recv(shm_queue_t *q, void *data, size_t size)
+static rte_status_t shm_recv(shm_queue_t *q, void *data, size_t size)
 {
     if (q->count == 0) {
-        return SAPI_STATUS_TIMEOUT;  /* Queue empty */
+        return RTE_STATUS_TIMEOUT;  /* Queue empty */
     }
 
     if (size < 256) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
 
     memcpy(data, q->data[q->read_idx], 256);
     q->read_idx = (q->read_idx + 1) % 10;
     q->count--;
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /* ============================================================================
@@ -98,14 +98,14 @@ typedef struct {
 
 static tcp_channel_t tcp_ch_0 = {.socket = 0, .connected = true};
 
-static sapi_status_t tcp_send(tcp_channel_t *ch, const void *data, size_t size)
+static rte_status_t tcp_send(tcp_channel_t *ch, const void *data, size_t size)
 {
     if (ch->socket < 0 || !ch->connected) {
-        return SAPI_STATUS_HARDWARE_FAULT;
+        return RTE_STATUS_HARDWARE_FAULT;
     }
 
     if (size > 256) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
 
     /* In real implementation:
@@ -115,17 +115,17 @@ static sapi_status_t tcp_send(tcp_channel_t *ch, const void *data, size_t size)
      */
 
     ch->packets_sent++;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
-static sapi_status_t tcp_recv(tcp_channel_t *ch, void *data, size_t size)
+static rte_status_t tcp_recv(tcp_channel_t *ch, void *data, size_t size)
 {
     if (ch->socket < 0 || !ch->connected) {
-        return SAPI_STATUS_HARDWARE_FAULT;
+        return RTE_STATUS_HARDWARE_FAULT;
     }
 
     if (size < 256) {
-        return SAPI_STATUS_RESOURCE_EXHAUSTED;
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
 
     /* In real implementation:
@@ -135,17 +135,17 @@ static sapi_status_t tcp_recv(tcp_channel_t *ch, void *data, size_t size)
      */
 
     ch->packets_recv++;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /* ============================================================================
- * Multi-Transport Backend Callbacks (each sapi_channel_t uses one of these)
+ * Multi-Transport Backend Callbacks (each rte_channel_t uses one of these)
  * ========================================================================== */
 
 /**
  * @brief Opaque channel type that hides whether it's SHM or TCP
  *
- * This allows each sapi_channel_t to wrap ANY transport. The callback
+ * This allows each rte_channel_t to wrap ANY transport. The callback
  * functions dispatch based on channel type.
  */
 typedef enum {
@@ -172,17 +172,17 @@ static multi_transport_channel_t g_channel_1 = {
 };
 
 /**
- * @brief Backend send callback for sapi_channel (dispatches to transport)
+ * @brief Backend send callback for rte_channel (dispatches to transport)
  *
- * Called by sapi_channel_send() for one link.
+ * Called by rte_channel_send() for one link.
  * The callback hides the specific transport implementation.
  */
-static sapi_status_t channel_backend_send(void *channel_handle, const void *data, size_t size)
+static rte_status_t channel_backend_send(void *channel_handle, const void *data, size_t size)
 {
     multi_transport_channel_t *ch = (multi_transport_channel_t *)channel_handle;
 
     if (ch == NULL) {
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 
     switch (ch->type) {
@@ -193,23 +193,23 @@ static sapi_status_t channel_backend_send(void *channel_handle, const void *data
         return tcp_send(ch->impl.tcp, data, size);
 
     default:
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 }
 
 /**
- * @brief Backend receive callback for sapi_channel (dispatches to transport)
+ * @brief Backend receive callback for rte_channel (dispatches to transport)
  *
- * Called by sapi_channel_receive() for one link.
+ * Called by rte_channel_receive() for one link.
  * The callback hides the specific transport implementation.
  */
-static sapi_status_t channel_backend_recv(void *channel_handle, void *data, size_t size,
+static rte_status_t channel_backend_recv(void *channel_handle, void *data, size_t size,
                                            uint32_t timeout_ms __attribute__((unused)))
 {
     multi_transport_channel_t *ch = (multi_transport_channel_t *)channel_handle;
 
     if (ch == NULL) {
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 
     switch (ch->type) {
@@ -220,7 +220,7 @@ static sapi_status_t channel_backend_recv(void *channel_handle, void *data, size
         return tcp_recv(ch->impl.tcp, data, size);
 
     default:
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 }
 
@@ -248,41 +248,41 @@ typedef struct {
  * - Channel 1: TCP/IP (remote standby, reliable backup)
  * - Voting: 2oo2 (both must agree)
  */
-static sapi_status_t example_setup_dual_redundancy(sapi_channel_t channels[CHANNEL_COUNT],
-                                                     sapi_voter_t *voter)
+static rte_status_t example_setup_dual_redundancy(rte_channel_t channels[CHANNEL_COUNT],
+                                                     rte_voter_t *voter)
 {
     static void * const backend_handles[CHANNEL_COUNT] = { &g_channel_0, &g_channel_1 };
-    sapi_voter_config_t voter_cfg = {0};
-    sapi_status_t rc;
+    rte_voter_config_t voter_cfg = {0};
+    rte_status_t rc;
     uint32_t i;
 
-    voter_cfg.voting_strategy = SAPI_VOTING_2OO2;
+    voter_cfg.voting_strategy = RTE_VOTING_2OO2;
     voter_cfg.channel_timeout_ms = 1000;
     voter_cfg.log_disagreements = true;
     voter_cfg.on_disagreement = NULL;
     voter_cfg.disagreement_context = NULL;
 
-    rc = sapi_voter_init(voter, &voter_cfg);
-    if (rc != SAPI_STATUS_OK) {
+    rc = rte_voter_init(voter, &voter_cfg);
+    if (rc != RTE_STATUS_OK) {
         printf("ERROR: Failed to initialize voter: %d\n", rc);
         return rc;
     }
 
     for (i = 0; i < CHANNEL_COUNT; i++) {
-        sapi_channel_config_t chan_cfg = {0};
+        rte_channel_config_t chan_cfg = {0};
 
         chan_cfg.channel_handle = backend_handles[i];
         chan_cfg.send = channel_backend_send;
         chan_cfg.recv = channel_backend_recv;
 
-        rc = sapi_channel_init(&channels[i], &chan_cfg);
-        if (rc != SAPI_STATUS_OK) {
+        rc = rte_channel_init(&channels[i], &chan_cfg);
+        if (rc != RTE_STATUS_OK) {
             printf("ERROR: Failed to initialize channel %u: %d\n", i, rc);
             return rc;
         }
 
-        rc = sapi_voter_register_channel(voter, &channels[i]);
-        if (rc != SAPI_STATUS_OK) {
+        rc = rte_voter_register_channel(voter, &channels[i]);
+        if (rc != RTE_STATUS_OK) {
             printf("ERROR: Failed to register channel %u: %d\n", i, rc);
             return rc;
         }
@@ -291,13 +291,13 @@ static sapi_status_t example_setup_dual_redundancy(sapi_channel_t channels[CHANN
     printf("Voter initialized with 2oo2 voting over 2 channels\n");
     printf("  Channel 0: Shared Memory (local standby)\n");
     printf("  Channel 1: TCP/IP (remote standby)\n");
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Send a train command to every registered channel (atomic broadcast)
  */
-static sapi_status_t send_train_command(sapi_voter_t *voter, const train_command_t *cmd)
+static rte_status_t send_train_command(rte_voter_t *voter, const train_command_t *cmd)
 {
     printf("\n>>> Broadcasting train command:\n");
     printf("    Command ID: %u\n", cmd->command_id);
@@ -305,30 +305,30 @@ static sapi_status_t send_train_command(sapi_voter_t *voter, const train_command
     printf("    Distance: %u m\n", cmd->target_distance_m);
     printf("    E-Stop: %s\n", cmd->emergency_stop ? "YES" : "NO");
 
-    sapi_status_t rc = sapi_voter_send(voter, cmd, sizeof(*cmd));
-    if (rc != SAPI_STATUS_OK) {
+    rte_status_t rc = rte_voter_send(voter, cmd, sizeof(*cmd));
+    if (rc != RTE_STATUS_OK) {
         printf("Send failed: %d (channel fault detected)\n", rc);
         return rc;
     }
 
     printf("Sent to both channels (atomic broadcast)\n");
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Receive a train command via the voter (with 2oo2 voting)
  */
-static sapi_status_t receive_train_command(sapi_voter_t *voter, train_command_t *cmd_out)
+static rte_status_t receive_train_command(rte_voter_t *voter, train_command_t *cmd_out)
 {
-    sapi_voting_result_t vote_result;
+    rte_voting_result_t vote_result;
     size_t bytes_received = 0;
 
     printf("\n<<< Receiving train command (with voting)...\n");
 
-    sapi_status_t rc = sapi_voter_receive(voter, cmd_out, sizeof(*cmd_out), &vote_result,
+    rte_status_t rc = rte_voter_receive(voter, cmd_out, sizeof(*cmd_out), &vote_result,
                                            &bytes_received);
 
-    if (rc != SAPI_STATUS_OK) {
+    if (rc != RTE_STATUS_OK) {
         printf("Receive failed: %d (voting result: %d)\n", rc, vote_result);
         return rc;
     }
@@ -336,21 +336,21 @@ static sapi_status_t receive_train_command(sapi_voter_t *voter, train_command_t 
     printf("Both channels agreed on data:\n");
     printf("    Command ID: %u\n", cmd_out->command_id);
     printf("    Speed Limit: %u km/h\n", cmd_out->speed_limit_kmh);
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Monitor channel health and detect faults
  */
-static void monitor_channel_health(sapi_channel_t channels[CHANNEL_COUNT], sapi_voter_t *voter)
+static void monitor_channel_health(rte_channel_t channels[CHANNEL_COUNT], rte_voter_t *voter)
 {
     printf("\n=== Channel Health Report ===\n");
 
     for (uint32_t i = 0; i < CHANNEL_COUNT; i++) {
-        sapi_channel_health_t health;
-        sapi_status_t rc = sapi_channel_get_health(&channels[i], &health);
+        rte_channel_health_t health;
+        rte_status_t rc = rte_channel_get_health(&channels[i], &health);
 
-        if (rc != SAPI_STATUS_OK) {
+        if (rc != RTE_STATUS_OK) {
             printf("  Channel %u: Error reading health\n", i);
             continue;
         }
@@ -363,7 +363,7 @@ static void monitor_channel_health(sapi_channel_t channels[CHANNEL_COUNT], sapi_
 
     uint32_t healthy_count = 0;
     uint32_t total_disagreements = 0;
-    sapi_voter_get_aggregated_health(voter, &healthy_count, &total_disagreements);
+    rte_voter_get_aggregated_health(voter, &healthy_count, &total_disagreements);
     printf("  Total healthy: %u/%u\n", healthy_count, CHANNEL_COUNT);
     printf("  Total disagreements: %u\n", total_disagreements);
 
@@ -381,10 +381,10 @@ int main(void)
     printf("Voted Channel: Dual Transport Example\n");
     printf("========================================\n");
 
-    sapi_channel_t channels[CHANNEL_COUNT];
-    sapi_voter_t voter;
+    rte_channel_t channels[CHANNEL_COUNT];
+    rte_voter_t voter;
 
-    if (example_setup_dual_redundancy(channels, &voter) != SAPI_STATUS_OK) {
+    if (example_setup_dual_redundancy(channels, &voter) != RTE_STATUS_OK) {
         return EXIT_FAILURE;
     }
 
@@ -397,7 +397,7 @@ int main(void)
         .emergency_stop = 0,
     };
 
-    if (send_train_command(&voter, &cmd) != SAPI_STATUS_OK) {
+    if (send_train_command(&voter, &cmd) != RTE_STATUS_OK) {
         printf("Send failed\n");
     }
 
@@ -409,7 +409,7 @@ int main(void)
     printf("TCP connection lost\n");
 
     cmd.command_id = 1002;
-    if (send_train_command(&voter, &cmd) != SAPI_STATUS_OK) {
+    if (send_train_command(&voter, &cmd) != RTE_STATUS_OK) {
         printf("Send failed (expected, channel down)\n");
     }
 
@@ -421,7 +421,7 @@ int main(void)
     printf("TCP connection restored\n");
 
     cmd.command_id = 1003;
-    if (send_train_command(&voter, &cmd) != SAPI_STATUS_OK) {
+    if (send_train_command(&voter, &cmd) != RTE_STATUS_OK) {
         printf("Send failed\n");
     }
 
@@ -430,9 +430,9 @@ int main(void)
     (void)receive_train_command; /* demonstrates the receive-side API; not driven in this example */
 
     /* Cleanup */
-    sapi_voter_destroy(&voter);
+    rte_voter_destroy(&voter);
     for (uint32_t i = 0; i < CHANNEL_COUNT; i++) {
-        sapi_channel_destroy(&channels[i]);
+        rte_channel_destroy(&channels[i]);
     }
     printf("\n========================================\n");
     printf("Example completed\n");

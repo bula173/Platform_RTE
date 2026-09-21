@@ -16,49 +16,49 @@
  *
  * @code
  * // 1. Create two underlying IPC channels (one per CPU)
- * sapi_buffer_t channel_a_buf, channel_b_buf;
- * sapi_buffer_init(&channel_a_buf, storage_a, capacity_a);
- * sapi_buffer_init(&channel_b_buf, storage_b, capacity_b);
+ * rte_buffer_t channel_a_buf, channel_b_buf;
+ * rte_buffer_init(&channel_a_buf, storage_a, capacity_a);
+ * rte_buffer_init(&channel_b_buf, storage_b, capacity_b);
  *
  * // 2. Create vital channel that wraps both with 2oo2 voting
- * sapi_buffer_t channels[2] = {channel_a_buf, channel_b_buf};
- * sapi_channel_config_t config = {
+ * rte_buffer_t channels[2] = {channel_a_buf, channel_b_buf};
+ * rte_channel_config_t config = {
  *     .name = "dual_redundant_signal",
- *     .strategy = SAPI_VOTING_2OO2,
+ *     .strategy = RTE_VOTING_2OO2,
  *     .channels = channels,
  *     .num_channels = 2,
  *     .on_disagreement = handle_cpu_fault,
  *     .timeout_ms = 100
  * };
  * 
- * sapi_channel_t vital_ch;
- * sapi_vital_channel_create(&vital_ch, &config);
+ * rte_channel_t vital_ch;
+ * rte_vital_channel_create(&vital_ch, &config);
  *
  * // 3. Send command to both CPUs
  * signal_command_t cmd = {.signal_id = 5, .state = SIGNAL_RED};
- * sapi_status_t status = sapi_vital_send(vital_ch, &cmd, sizeof(cmd), 100);
+ * rte_status_t status = rte_vital_send(vital_ch, &cmd, sizeof(cmd), 100);
  *
- * if (status != SAPI_STATUS_OK) {
- *     sapi_log_error("Send failed: %d", status);
- *     sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE);
+ * if (status != RTE_STATUS_OK) {
+ *     rte_log_error("Send failed: %d", status);
+ *     rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE);
  * }
  *
  * // 4. Receive reply from both CPUs (voting ensures agreement)
  * signal_reply_t reply;
- * status = sapi_vital_receive(vital_ch, &reply, sizeof(reply), 100);
+ * status = rte_vital_receive(vital_ch, &reply, sizeof(reply), 100);
  *
- * if (status == SAPI_STATUS_OK) {
+ * if (status == RTE_STATUS_OK) {
  *     // Both CPUs agreed - safe to use reply
  *     printf("Signal update confirmed by both CPUs\n");
  * } else {
  *     // CPUs disagreed - likely a CPU fault
- *     sapi_log_error("CPU disagreement detected!");
- *     sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE);
+ *     rte_log_error("CPU disagreement detected!");
+ *     rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE);
  * }
  *
  * // 5. Check health
- * sapi_channel_health_t health;
- * sapi_vital_get_health(vital_ch, &health);
+ * rte_channel_health_t health;
+ * rte_vital_get_health(vital_ch, &health);
  * printf("Messages: %u sent, %u received, %u disagreements\n",
  *        health.messages_sent, health.messages_received, health.disagreements);
  * @endcode
@@ -114,9 +114,9 @@
  * @code
  * void handle_cpu_fault(void *context) {
  *     // Called when voting fails
- *     sapi_log_error("CPU fault detected!");
+ *     rte_log_error("CPU fault detected!");
  *     // Trigger safe state
- *     sapi_safestate_enter(SAPI_SAFESTATE_LEVEL_SAFE);
+ *     rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE);
  * }
  * @endcode
  *
@@ -125,14 +125,14 @@
  * @code
  * // Periodic health check (e.g., in watchdog callback)
  * void monitor_vital_channels(void) {
- *     sapi_channel_health_t health;
- *     sapi_vital_get_health(vital_ch, &health);
+ *     rte_channel_health_t health;
+ *     rte_vital_get_health(vital_ch, &health);
  *
  *     if (health.disagreements > 0) {
- *         sapi_log_warning("Disagreements detected: %u", health.disagreements);
+ *         rte_log_warning("Disagreements detected: %u", health.disagreements);
  *     }
  *     if (health.errors > 0) {
- *         sapi_log_warning("Communication errors: %u", health.errors);
+ *         rte_log_warning("Communication errors: %u", health.errors);
  *     }
  * }
  * @endcode

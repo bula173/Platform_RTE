@@ -89,7 +89,7 @@ typedef struct {
 
 /* Reply structure */
 typedef struct {
-    sapi_status_t status;
+    rte_status_t status;
     uint32_t signal_state;
     uint32_t track_speed_limit;
 } cmd_reply_t;
@@ -101,41 +101,41 @@ typedef struct {
 /**
  * @brief Initialize QNX message channel
  */
-static sapi_status_t qnx_init_channel(void)
+static rte_status_t qnx_init_channel(void)
 {
     /* Create a channel for receiving messages */
     g_app.chid = ChannelCreate(0);
     if (g_app.chid == -1) {
-        SAPI_LOG_ERROR("Failed to create QNX channel: %d", errno);
-        return SAPI_STATUS_ERROR;
+        RTE_LOG_ERROR("Failed to create QNX channel: %d", errno);
+        return RTE_STATUS_ERROR;
     }
 
-    SAPI_LOG_INFO("QNX channel created: %d", g_app.chid);
+    RTE_LOG_INFO("QNX channel created: %d", g_app.chid);
 
     /* Register the channel in the name space */
     /* In production, would attach to well-known name */
-    SAPI_LOG_INFO("Message channel ready (PID=%d, CHID=%d)", getpid(), g_app.chid);
+    RTE_LOG_INFO("Message channel ready (PID=%d, CHID=%d)", getpid(), g_app.chid);
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Process train update message
  */
-static sapi_status_t process_train_update(const train_message_t *msg,
+static rte_status_t process_train_update(const train_message_t *msg,
                                            cmd_reply_t *reply)
 {
-    SAPI_ASSERT(msg != NULL);
-    SAPI_ASSERT(reply != NULL);
+    RTE_ASSERT(msg != NULL);
+    RTE_ASSERT(reply != NULL);
 
-    SAPI_LOG_DEBUG("Train update: ID=%u, Position=%u", msg->train_id, msg->position);
+    RTE_LOG_DEBUG("Train update: ID=%u, Position=%u", msg->train_id, msg->position);
 
     /* Validate train position */
     if (msg->position > 10000) {
-        SAPI_LOG_WARN("Train position out of valid range: %u", msg->position);
-        reply->status = SAPI_STATUS_ERROR;
+        RTE_LOG_WARN("Train position out of valid range: %u", msg->position);
+        reply->status = RTE_STATUS_ERROR;
         reply->signal_state = 0; /* Red signal - stop */
-        return SAPI_STATUS_ERROR;
+        return RTE_STATUS_ERROR;
     }
 
     /* Determine signal state based on position */
@@ -150,24 +150,24 @@ static sapi_status_t process_train_update(const train_message_t *msg,
         reply->track_speed_limit = 0;
     }
 
-    reply->status = SAPI_STATUS_OK;
+    reply->status = RTE_STATUS_OK;
 
-    SAPI_LOG_INFO("Train %u: signal=%u, speed_limit=%u",
+    RTE_LOG_INFO("Train %u: signal=%u, speed_limit=%u",
                   msg->train_id,
                   reply->signal_state,
                   reply->track_speed_limit);
 
     g_app.messages_processed++;
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Handle incoming message
  */
-static sapi_status_t handle_message(train_message_t *msg, int rcvid)
+static rte_status_t handle_message(train_message_t *msg, int rcvid)
 {
     cmd_reply_t reply = {
-        .status = SAPI_STATUS_OK,
+        .status = RTE_STATUS_OK,
         .signal_state = 0,
         .track_speed_limit = 0
     };
@@ -177,31 +177,31 @@ static sapi_status_t handle_message(train_message_t *msg, int rcvid)
     /* Dispatch based on message type */
     switch (msg->type) {
         case MSG_TYPE_PING:
-            SAPI_LOG_DEBUG("Received PING from client");
-            reply.status = SAPI_STATUS_OK;
+            RTE_LOG_DEBUG("Received PING from client");
+            reply.status = RTE_STATUS_OK;
             break;
 
         case MSG_TYPE_TRAIN_UPDATE:
-            SAPI_LOG_DEBUG("Processing TRAIN_UPDATE message");
+            RTE_LOG_DEBUG("Processing TRAIN_UPDATE message");
             process_train_update(msg, &reply);
             break;
 
         case MSG_TYPE_SIGNAL_QUERY:
-            SAPI_LOG_DEBUG("Received SIGNAL_QUERY");
+            RTE_LOG_DEBUG("Received SIGNAL_QUERY");
             reply.signal_state = 1; /* Default: green */
             reply.track_speed_limit = 80;
-            reply.status = SAPI_STATUS_OK;
+            reply.status = RTE_STATUS_OK;
             break;
 
         case MSG_TYPE_SHUTDOWN:
-            SAPI_LOG_INFO("Received SHUTDOWN request");
+            RTE_LOG_INFO("Received SHUTDOWN request");
             g_app.running = 0;
-            reply.status = SAPI_STATUS_OK;
+            reply.status = RTE_STATUS_OK;
             break;
 
         default:
-            SAPI_LOG_WARN("Unknown message type: %u", msg->type);
-            reply.status = SAPI_STATUS_ERROR;
+            RTE_LOG_WARN("Unknown message type: %u", msg->type);
+            reply.status = RTE_STATUS_ERROR;
             break;
     }
 
@@ -214,13 +214,13 @@ static sapi_status_t handle_message(train_message_t *msg, int rcvid)
 /**
  * @brief Main server loop
  */
-static sapi_status_t server_loop(void)
+static rte_status_t server_loop(void)
 {
     int rcvid;
     train_message_t msg;
     int rc;
 
-    SAPI_LOG_INFO("Starting QNX server loop");
+    RTE_LOG_INFO("Starting QNX server loop");
     g_app.state = STATE_LISTENING;
 
     while (g_app.running) {
@@ -229,14 +229,14 @@ static sapi_status_t server_loop(void)
 
         if (rcvid == -1) {
             /* Error receiving message */
-            SAPI_LOG_ERROR("MsgReceive failed: %d", errno);
+            RTE_LOG_ERROR("MsgReceive failed: %d", errno);
             g_app.errors++;
             continue;
         }
 
         if (rcvid == 0) {
             /* Pulse or special case */
-            SAPI_LOG_DEBUG("Received pulse or special message");
+            RTE_LOG_DEBUG("Received pulse or special message");
             continue;
         }
 
@@ -245,28 +245,28 @@ static sapi_status_t server_loop(void)
         rc = handle_message(&msg, rcvid);
         g_app.state = STATE_LISTENING;
 
-        if (rc != SAPI_STATUS_OK) {
+        if (rc != RTE_STATUS_OK) {
             g_app.errors++;
         }
 
         /* Log statistics every 10 messages */
         if ((g_app.messages_received % 10) == 0) {
-            SAPI_LOG_INFO("Stats: received=%u, processed=%u, errors=%u",
+            RTE_LOG_INFO("Stats: received=%u, processed=%u, errors=%u",
                           g_app.messages_received,
                           g_app.messages_processed,
                           g_app.errors);
         }
     }
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /**
  * @brief Shutdown application
  */
-static sapi_status_t app_shutdown(void)
+static rte_status_t app_shutdown(void)
 {
-    SAPI_LOG_INFO("Shutting down railway server");
+    RTE_LOG_INFO("Shutting down railway server");
 
     g_app.state = STATE_SHUTDOWN;
 
@@ -276,7 +276,7 @@ static sapi_status_t app_shutdown(void)
         g_app.chid = -1;
     }
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
 /* ============================================================================
@@ -288,7 +288,7 @@ int main(int argc, char *argv[])
     (void)argc;
     (void)argv;
 
-    sapi_status_t status;
+    rte_status_t status;
 
     printf("\n");
     printf("═══════════════════════════════════════════════════════════════\n");
@@ -297,25 +297,25 @@ int main(int argc, char *argv[])
     printf("PID: %d\n", getpid());
 
     /* Initialize logging */
-    status = sapi_log_initialize();
-    if (status != SAPI_STATUS_OK) {
+    status = rte_log_initialize();
+    if (status != RTE_STATUS_OK) {
         fprintf(stderr, "Failed to initialize logging\n");
         return EXIT_FAILURE;
     }
 
-    SAPI_LOG_INFO("Railway Control Server starting (QNX RTOS)");
+    RTE_LOG_INFO("Railway Control Server starting (QNX RTOS)");
 
     /* Initialize QNX message channel */
     status = qnx_init_channel();
-    if (status != SAPI_STATUS_OK) {
-        SAPI_LOG_ERROR("Failed to initialize QNX channel");
+    if (status != RTE_STATUS_OK) {
+        RTE_LOG_ERROR("Failed to initialize QNX channel");
         return EXIT_FAILURE;
     }
 
     /* Run server loop */
     status = server_loop();
-    if (status != SAPI_STATUS_OK) {
-        SAPI_LOG_ERROR("Server loop exited with error: %d", status);
+    if (status != RTE_STATUS_OK) {
+        RTE_LOG_ERROR("Server loop exited with error: %d", status);
     }
 
     /* Shutdown */
@@ -332,6 +332,6 @@ int main(int argc, char *argv[])
     printf("═══════════════════════════════════════════════════════════════\n");
     printf("\n");
 
-    sapi_log_shutdown();
+    rte_log_shutdown();
     return EXIT_SUCCESS;
 }

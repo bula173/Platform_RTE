@@ -3,7 +3,7 @@
 Date: 2026-08-05
 Status: Draft
 Applies to: the RBC core's 2-channel ("2oo2") vital computation, as
-supported by the `sapi_channel` module (ADR-008).
+supported by the `rte_channel` module (ADR-008).
 
 This document exists because EN 50129 requires an explicit CCF analysis
 for any redundant/voted safety architecture. It is not sufficient to
@@ -27,9 +27,9 @@ that constraint, what mitigates CCF risk, and what residual risk remains?
 | Compiler-specific codegen bug (e.g. a miscompilation triggered by a specific optimization pass) | High if both channels use the same compiler/flags | **Yes** — build diversity (ADR-008 section 2.1): channel A and B are compiled by independently-configured toolchains (different compiler where available, different optimization flags always). |
 | CPU-microarchitecture corner case tied to one specific instruction sequence appearing in the compiled output | Reduced by build diversity (different codegen is less likely to hit the same corner case), but not eliminated — the CPU family itself is unchanged | **Partially** — reduced likelihood, not eliminated. Not claimed as fully mitigated. |
 | CPU-silicon-family-wide errata (a defect present in every unit of that x86 family regardless of how the code was compiled) | High — both channels use the same CPU family | **No.** Build diversity does not change the CPU. This is an accepted residual risk under this ADR; true elimination requires hardware architecture diversity (ADR-008 section 2.1's deferred alternative). |
-| Specification/algorithm-level bug (the shared source implements the wrong behavior on purpose or by design error) | High — both channels run the same algorithm regardless of compiler | **No.** `sapi_channel_compare()` compares two runs of the *same* algorithm; if that algorithm is wrong, both channels agree on the wrong answer and no mismatch is raised. This is a fundamental limit of 2-channel comparison, not specific to build diversity, and is explicitly out of scope for `sapi_channel` (ADR-008 section 3). |
+| Specification/algorithm-level bug (the shared source implements the wrong behavior on purpose or by design error) | High — both channels run the same algorithm regardless of compiler | **No.** `rte_channel_compare()` compares two runs of the *same* algorithm; if that algorithm is wrong, both channels agree on the wrong answer and no mismatch is raised. This is a fundamental limit of 2-channel comparison, not specific to build diversity, and is explicitly out of scope for `rte_channel` (ADR-008 section 3). |
 | Shared power/environment fault (e.g. a single power rail or a single point of physical damage affecting both channels) | High if channels share power/enclosure/location | **No — outside Platform_RTE's scope.** Requires independent power supplies, independent clocking, and physical separation at the hardware/installation level; Platform_RTE cannot enforce this and it is not claimed to. |
-| Single-channel random hardware fault (e.g. a bit flip or component failure specific to one unit) | Low — this is exactly what channel comparison is designed to catch | **Yes** — `sapi_channel_compare()` / `sapi_channel_compare_and_enter_safestate()` detect any disagreement between the two channels' results and force `SAPI_SAFESTATE_LEVEL_SAFE`, regardless of which channel is at fault or why. |
+| Single-channel random hardware fault (e.g. a bit flip or component failure specific to one unit) | Low — this is exactly what channel comparison is designed to catch | **Yes** — `rte_channel_compare()` / `rte_channel_compare_and_enter_safestate()` detect any disagreement between the two channels' results and force `RTE_SAFESTATE_LEVEL_SAFE`, regardless of which channel is at fault or why. |
 
 ## 3. What "build diversity" is and is not
 
@@ -56,21 +56,21 @@ binaries from genuinely different compilers. Any deployment relying on
 this fallback should treat it as an interim state, not a final one, and
 track qualifying a real second compiler as follow-up work.
 
-## 4. What `sapi_channel` does and does not do
+## 4. What `rte_channel` does and does not do
 
 Does:
 - Gives each channel binary a compile-time-checked, unambiguous identity
-  (`sapi_channel_local_id()`), enforced by a build failure
+  (`rte_channel_local_id()`), enforced by a build failure
   (`#error`) if the channel isn't declared (REQ-COMMON-CHANNEL-001).
 - Compares the local channel's result against the peer's, byte-for-byte,
   with a length mismatch itself counting as a disagreement
   (REQ-COMMON-CHANNEL-002).
-- On disagreement, forces `SAPI_SAFESTATE_LEVEL_SAFE` via the existing
+- On disagreement, forces `RTE_SAFESTATE_LEVEL_SAFE` via the existing
   safe-state mechanism (ADR-004), which never returns to the caller.
 
 Does not:
 - Transport the peer channel's result — that's the caller's job, expected
-  to use `sapi_ipc` or an equivalent channel-to-channel link (ADR-001
+  to use `rte_ipc` or an equivalent channel-to-channel link (ADR-001
   section 4 service 5), designed in a future ADR.
 - Vote or select a "correct" result — with two channels there's no
   majority, so the only sound reaction to disagreement is "trust neither,

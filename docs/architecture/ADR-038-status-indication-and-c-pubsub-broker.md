@@ -44,7 +44,7 @@ decisions:
 
 ### 1. `SAFEAPI_EXAMPLE_RELAY_KIND_UTIL` - the 4th relay kind
 
-`sapi_example_relay_kind_t` gains `..._UTIL = 3`; `..._RELAY_KIND_COUNT`
+`rte_example_relay_kind_t` gains `..._UTIL = 3`; `..._RELAY_KIND_COUNT`
 becomes 4. It reuses **everything** the train/il/ctc kinds already have:
 
 - `common_config.h`: `C_FOR_A_UTIL_PORT_OFFSET` / `C_FOR_B_UTIL_PORT_OFFSET`
@@ -95,7 +95,7 @@ C99 A/B side and the C++ C side - `#ifdef __cplusplus extern "C"` guarded.
     the aggregator ages out.
   - No SIL constraints (C is non-vital): STL containers, exceptions off
     by build flag, RAII. Deterministic-enough for a monitoring path.
-- Transport under the broker is the existing `sapi_channel_service`
+- Transport under the broker is the existing `rte_channel_service`
   (netlink UDP). The status service binds:
   - `c-relay-util-a`, `c-relay-util-b` - A and B (one each).
   - `c-broker` - the local train/il/ctc gateway services (they CONNECT
@@ -103,7 +103,7 @@ C99 A/B side and the C++ C side - `#ifdef __cplusplus extern "C"` guarded.
   - `c-sim-status` - **not** a new sim socket: sims send their status on
     their EXISTING sim link (see §4), the owning gateway republishes it
     to the broker.
-  Each `sapi_channel_service` LISTEN takes one peer; where more than one
+  Each `rte_channel_service` LISTEN takes one peer; where more than one
   publisher must share (the 3 local gateways), the status service binds
   `c-broker-{train,il,ctc}` - three ports, same "one link per client"
   posture the rest of role C uses.
@@ -133,7 +133,7 @@ Also in the status service. Keeps `latest[source_id] = {payload, ts}`.
 Every `STATUS_PERIOD_MS` + at startup it composes and logs:
 
 ```
-sapi_log_write_event(INFO, site, 0, "STATUS", "-", "SUMMARY",
+rte_log_write_event(INFO, site, 0, "STATUS", "-", "SUMMARY",
                      "RBC <site> health", "<rolled-up k=v>")
 ```
 
@@ -150,7 +150,7 @@ likewise CTC. A stale source renders as `down`/`?`.
 Independently of the broker, **every** unit logs its own one-liner at
 startup + every `STATUS_PERIOD_MS`:
 
-- A/B/gateways: `sapi_log_write_event(INFO, site, cyc, unit, "-",
+- A/B/gateways: `rte_log_write_event(INFO, site, cyc, unit, "-",
   "STATUS", "self", "<same k=v it publishes>")` from a cheap per-cycle
   check in the executive (`cycle % (STATUS_PERIOD_MS / period_ms) == 0`).
 - Sims: a structured `[<sim>] [internal] [STATUS] [self] [<k=v>]` line

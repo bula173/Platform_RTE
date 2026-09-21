@@ -53,8 +53,8 @@
  *
  * | Transport | Backend Implementation |
  * |-----------|------------------------|
- * | IPC Request-Reply | Call sapi_ipc_rr_send() / sapi_ipc_rr_receive() |
- * | IPC Pub-Sub | Call sapi_ipc_pubsub_publish() / sapi_ipc_pubsub_receive() |
+ * | IPC Request-Reply | Call rte_ipc_rr_send() / rte_ipc_rr_receive() |
+ * | IPC Pub-Sub | Call rte_ipc_pubsub_publish() / rte_ipc_pubsub_receive() |
  * | Shared Memory | Direct memcpy to/from shared memory region |
  * | TCP | Call socket send()/recv() via wrapper |
  * | Custom Transport | User-defined send/recv functions |
@@ -63,7 +63,7 @@
  *
  * @section vital_channel_architecture_send_semantics Send Semantics (Atomic Broadcast)
  *
- * When sapi_channel_send() is called:
+ * When rte_channel_send() is called:
  *
  * 1. **Broadcast Phase**: Invoke backend_send() for each redundant channel
  *    - All channels receive the same data
@@ -71,14 +71,14 @@
  *
  * 2. **Atomicity**: ALL-or-NOTHING guarantee
  *    - If ANY channel fails or times out, return error (partial send never visible)
- *    - If ALL channels succeed, return SAPI_STATUS_OK
+ *    - If ALL channels succeed, return RTE_STATUS_OK
  *    - This prevents inconsistent system state (one receiver gets data, another doesn't)
  *
  * 3. **Health Tracking**: Update per-channel send counts and error counters
  *
  * @section vital_channel_architecture_receive_semantics Receive Semantics (Voting)
  *
- * When sapi_channel_receive() is called:
+ * When rte_channel_receive() is called:
  *
  * 1. **Collection Phase**: Invoke backend_recv() for each redundant channel
  *    - Store results in static voting buffers (one per channel)
@@ -92,12 +92,12 @@
  * 3. **Disagreement Handling**
  *    - Log disagreement (if log_disagreements=true)
  *    - Call optional on_disagreement callback
- *    - **CRITICAL**: Trigger SAFE-STATE automatically via SAPI_SAFESTATE macro
- *    - Return SAPI_STATUS_HARDWARE_FAULT to caller
+ *    - **CRITICAL**: Trigger SAFE-STATE automatically via RTE_SAFESTATE macro
+ *    - Return RTE_STATUS_HARDWARE_FAULT to caller
  *
  * 4. **Agreement Handling**
  *    - Copy agreed data to output buffer
- *    - Return SAPI_STATUS_OK
+ *    - Return RTE_STATUS_OK
  *
  * @section vital_channel_architecture_quorum Quorum Requirements
  *
@@ -108,7 +108,7 @@
  * - **NMR**: Need >= quorum_size healthy channels (tolerate M - quorum_size faults)
  *
  * If quorum is lost (e.g., both channels in 2oo2 become unhealthy), all operations
- * return SAPI_STATUS_HARDWARE_FAULT with voting result = SAPI_VOTING_INSUFFICIENT_QUORUM.
+ * return RTE_STATUS_HARDWARE_FAULT with voting result = RTE_VOTING_INSUFFICIENT_QUORUM.
  *
  * @section vital_channel_architecture_health_tracking Health Monitoring
  *
@@ -122,11 +122,11 @@
  *     uint32_t receive_error_count;     // Failed receives (timeout/error)
  *     uint32_t disagreement_count;      // Times this channel disagreed with majority
  *     bool is_healthy;                  // Current health state (true = healthy)
- *     sapi_status_t last_error;         // Last error code
- * } sapi_channel_health_t;
+ *     rte_status_t last_error;         // Last error code
+ * } rte_channel_health_t;
  * ```
  *
- * Applications can query this via sapi_channel_get_health() to:
+ * Applications can query this via rte_channel_get_health() to:
  * - Detect early signs of channel degradation (rising error counters)
  * - Isolate faulty channels (high disagreement_count)
  * - Implement predictive fault detection (before safe-state is triggered)
@@ -137,39 +137,39 @@
  *
  * ```c
  * // Step 1: Create transport-specific channels (e.g., IPC request-reply)
- * sapi_ipc_rr_server_t ch0, ch1;
- * sapi_ipc_rr_server_create(&ch0, &config);
- * sapi_ipc_rr_server_create(&ch1, &config);
+ * rte_ipc_rr_server_t ch0, ch1;
+ * rte_ipc_rr_server_create(&ch0, &config);
+ * rte_ipc_rr_server_create(&ch1, &config);
  * void *channels[2] = { &ch0, &ch1 };
  *
  * // Step 2: Define backend callbacks (how to invoke transport operations)
- * sapi_status_t backend_send(void *ch, const void *data, size_t size) {
- *     return sapi_ipc_rr_send((sapi_ipc_rr_server_t*)ch, data, size);
+ * rte_status_t backend_send(void *ch, const void *data, size_t size) {
+ *     return rte_ipc_rr_send((rte_ipc_rr_server_t*)ch, data, size);
  * }
  *
- * sapi_status_t backend_recv(void *ch, void *data, size_t size, uint32_t timeout) {
- *     return sapi_ipc_rr_receive((sapi_ipc_rr_server_t*)ch, data, size, timeout);
+ * rte_status_t backend_recv(void *ch, void *data, size_t size, uint32_t timeout) {
+ *     return rte_ipc_rr_receive((rte_ipc_rr_server_t*)ch, data, size, timeout);
  * }
  *
  * // Step 3: Initialize vital channel with callbacks
- * sapi_channel_config_t vital_config = {
- *     .voting_strategy = SAPI_VOTING_2OO2,
+ * rte_channel_config_t vital_config = {
+ *     .voting_strategy = RTE_VOTING_2OO2,
  *     .channel_timeout_ms = 1000,
  *     .log_disagreements = true,
  *     .backend_send = backend_send,      // Transport-specific callback
  *     .backend_recv = backend_recv,      // Transport-specific callback
  * };
  *
- * sapi_channel_storage_t vital;
- * sapi_channel_init(&vital, &vital_config, channels, 2);
+ * rte_channel_storage_t vital;
+ * rte_channel_init(&vital, &vital_config, channels, 2);
  *
  * // Step 4: Use vital channel for redundant communication
- * sapi_channel_send(&vital, &cmd, sizeof(cmd));  // Atomic broadcast
- * sapi_channel_receive(&vital, &result, sizeof(result), NULL, NULL);  // Voting
+ * rte_channel_send(&vital, &cmd, sizeof(cmd));  // Atomic broadcast
+ * rte_channel_receive(&vital, &result, sizeof(result), NULL, NULL);  // Voting
  *
  * // Step 5: Monitor health (watchdog role)
- * sapi_channel_health_t health;
- * sapi_channel_get_health(&vital, 0, &health);
+ * rte_channel_health_t health;
+ * rte_channel_get_health(&vital, 0, &health);
  * if (health.disagreement_count > THRESHOLD) {
  *     // Early warning: channel drifting, consider isolation
  * }
@@ -189,10 +189,10 @@
  *
  * The vital_channel implementation uses static voting buffers:
  * ```c
- * #define SAPI_VITAL_CHANNEL_MAX_MESSAGE_SIZE 256
+ * #define RTE_VITAL_CHANNEL_MAX_MESSAGE_SIZE 256
  * ```
  *
- * Messages larger than 256 bytes return SAPI_STATUS_RESOURCE_EXHAUSTED.
+ * Messages larger than 256 bytes return RTE_STATUS_RESOURCE_EXHAUSTED.
  * Applications needing larger messages should:
  * - Use chunked transfer over multiple messages
  * - Or reduce message size by refactoring data structures
@@ -206,7 +206,7 @@
  * Example: Train speed command from central interlocking to on-board computer.
  *
  * ```c
- * config.voting_strategy = SAPI_VOTING_2OO2;
+ * config.voting_strategy = RTE_VOTING_2OO2;
  * // Both channels must return identical data, or SAFE-STATE triggers
  * ```
  *
@@ -216,7 +216,7 @@
  * Example: Odometer reading from 3 CCTV-based vision systems (different sensors may drift).
  *
  * ```c
- * config.voting_strategy = SAPI_VOTING_2OO3;
+ * config.voting_strategy = RTE_VOTING_2OO3;
  * // If 2 channels agree, that's the result. If all 3 disagree, SAFE-STATE.
  * ```
  *
@@ -226,7 +226,7 @@
  * Example: 5 GNSS receivers; require 3 to agree within epsilon range.
  *
  * ```c
- * config.voting_strategy = SAPI_VOTING_NMR;
+ * config.voting_strategy = RTE_VOTING_NMR;
  * config.quorum_size = 3;  // At least 3 out of 5 must agree
  * ```
  *

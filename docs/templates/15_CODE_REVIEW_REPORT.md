@@ -52,8 +52,8 @@ This report documents the formal code review of [System Name] software against M
 
 #### safeAPIFramework Design Patterns
 - **ADR-001:** OS Abstraction Layer - layered architecture enforcement
-- **ADR-003:** Checked integer casting - all conversions through sapi_cast_*
-- **ADR-004:** Safe-state transitions - SAPI_ASSERT/SAFESTATE/REBOOT usage
+- **ADR-003:** Checked integer casting - all conversions through rte_cast_*
+- **ADR-004:** Safe-state transitions - RTE_ASSERT/SAFESTATE/REBOOT usage
 - **ADR-006:** Bounded string operations - no strcpy, sprintf
 
 ### 2.2 Review Process
@@ -117,7 +117,7 @@ Step 5: Report & Sign-Off
 
 #### Rule 21.6 — No stdio.h
 - [✓] No printf, sprintf, strcpy, strcat, strtok
-- [✓] All I/O through bounded sapi_string_*, sapi_log_*
+- [✓] All I/O through bounded rte_string_*, rte_log_*
 - **Findings:** [None / List violations]
 
 [Continue for all 10 Mandatory directives...]
@@ -131,7 +131,7 @@ Step 5: Report & Sign-Off
 
 #### Rule 10.1-10.8 — Type conversions
 - [✓] No implicit conversions
-- [✓] All int conversions through sapi_cast_*
+- [✓] All int conversions through rte_cast_*
 - [✓] Checked conversion functions handle out-of-range
 - **Findings:** [None / List violations]
 
@@ -181,15 +181,15 @@ Step 5: Report & Sign-Off
 
 ### 4.1 Critical Findings (Safety Risk)
 
-**Critical Finding #1:** Unvalidated pointer in sapi_ipc_send()
+**Critical Finding #1:** Unvalidated pointer in rte_ipc_send()
 
-**File:** src/ipc/sapi_ipc.c, lines 45-50  
+**File:** src/ipc/rte_ipc.c, lines 45-50  
 **Code:**
 ```c
-sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *msg) {
-    sapi_ipc_impl_t *impl = (sapi_ipc_impl_t *)handle;
+rte_status_t rte_ipc_send(rte_ipc_handle_t handle, const void *msg) {
+    rte_ipc_impl_t *impl = (rte_ipc_impl_t *)handle;
     impl->backend->send(msg);  // ← NULL check missing!
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 ```
 
@@ -198,7 +198,7 @@ sapi_status_t sapi_ipc_send(sapi_ipc_handle_t handle, const void *msg) {
 **Risk:** Crash if backend not initialized (SIL 4)  
 **Resolution:** [CORRECTED] Added NULL check:
 ```c
-if (!impl || !impl->backend) return SAPI_STATUS_NOT_INITIALIZED;
+if (!impl || !impl->backend) return RTE_STATUS_NOT_INITIALIZED;
 impl->backend->send(msg);
 ```
 
@@ -208,9 +208,9 @@ impl->backend->send(msg);
 
 ### 4.2 Major Findings (Non-Compliance)
 
-**Major Finding #1:** Implicit cast in sapi_timer_create()
+**Major Finding #1:** Implicit cast in rte_timer_create()
 
-**File:** src/timer/sapi_timer.c, line 78  
+**File:** src/timer/rte_timer.c, line 78  
 **Code:**
 ```c
 timeout = (uint32_t)milliseconds;  // ← Bare cast
@@ -219,10 +219,10 @@ timeout = (uint32_t)milliseconds;  // ← Bare cast
 **Issue:** Direct cast without range check  
 **Violation:** MISRA Rule 10.3 (use checked conversion)  
 **Risk:** Silent truncation if milliseconds > UINT32_MAX  
-**Resolution:** [CORRECTED] Use sapi_cast_int64_to_uint32():
+**Resolution:** [CORRECTED] Use rte_cast_int64_to_uint32():
 ```c
-sapi_status_t status = sapi_cast_int64_to_uint32(milliseconds, &timeout);
-if (status != SAPI_STATUS_OK) return status;
+rte_status_t status = rte_cast_int64_to_uint32(milliseconds, &timeout);
+if (status != RTE_STATUS_OK) return status;
 ```
 
 **Verification:** Unit test: test_timer_create_timeout_overflow()
@@ -233,14 +233,14 @@ if (status != SAPI_STATUS_OK) return status;
 
 **Minor Finding #1:** Missing Doxygen comment
 
-**File:** src/buffer/sapi_buffer.c, line 120  
+**File:** src/buffer/rte_buffer.c, line 120  
 **Issue:** Function `_buffer_crc_check()` lacks @brief  
 **Resolution:** Added comment block  
 
 **Minor Finding #2:** Inconsistent naming
 
-**File:** src/status/sapi_status.h  
-**Issue:** Macro `SAPI_STATUS_*` inconsistent with function `sapi_status_*`  
+**File:** src/status/rte_status.h  
+**Issue:** Macro `RTE_STATUS_*` inconsistent with function `rte_status_*`  
 **Resolution:** Documented as intentional (macros for constants, functions for operations)
 
 ---
@@ -260,10 +260,10 @@ if (status != SAPI_STATUS_OK) return status;
 
 | File | MISRA | EN 50128 | Total | Status |
 |------|:-----:|:--------:|:-----:|--------|
-| src/status/sapi_status.c | 0 | 0 | 0 | ✓ PASS |
-| src/buffer/sapi_buffer.c | 0 | 0 | 0 | ✓ PASS |
-| src/timer/sapi_timer.c | 1 | 1 | 2 | ⚠ CORRECTED |
-| src/ipc/sapi_ipc.c | 1 | 0 | 1 | ⚠ CORRECTED |
+| src/status/rte_status.c | 0 | 0 | 0 | ✓ PASS |
+| src/buffer/rte_buffer.c | 0 | 0 | 0 | ✓ PASS |
+| src/timer/rte_timer.c | 1 | 1 | 2 | ⚠ CORRECTED |
+| src/ipc/rte_ipc.c | 1 | 0 | 1 | ⚠ CORRECTED |
 | [Other files] | 0 | 0 | 0 | ✓ PASS |
 
 ---
@@ -295,11 +295,11 @@ if (status != SAPI_STATUS_OK) return status;
 
 | File | Avg Complexity | Max Complexity | Status |
 |------|:--------------:|:--------------:|--------|
-| sapi_status.c | 1.5 | 2 | ✓ OK |
-| sapi_buffer.c | 2.1 | 4 | ✓ OK |
-| sapi_timer.c | 3.2 | 6 | ✓ OK |
-| sapi_ipc.c | 2.8 | 5 | ✓ OK |
-| sapi_cast.c | 1.2 | 2 | ✓ OK |
+| rte_status.c | 1.5 | 2 | ✓ OK |
+| rte_buffer.c | 2.1 | 4 | ✓ OK |
+| rte_timer.c | 3.2 | 6 | ✓ OK |
+| rte_ipc.c | 2.8 | 5 | ✓ OK |
+| rte_cast.c | 1.2 | 2 | ✓ OK |
 
 **Target:** <10 per function  
 **Result:** All functions compliant ✓

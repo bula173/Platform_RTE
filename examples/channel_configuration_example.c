@@ -6,7 +6,7 @@
  * 1. Creating different channel types with user-specified parameters
  * 2. TCP/IP for remote standby communication (primary use case)
  * 3. Optional fallback channels (UDP, shared memory for local)
- * 4. Wrapping in sapi_voter for voting/redundancy (ADR-025)
+ * 4. Wrapping in rte_voter for voting/redundancy (ADR-025)
  * 5. Dispatcher pattern for mixed transport types
  *
  * User responsibility: Provide configuration values (IPs, ports, paths)
@@ -19,9 +19,9 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "safeapi/channel_link/sapi_channel.h"
-#include "safeapi/voter/sapi_voter.h"
-#include "safeapi/status/sapi_status.h"
+#include "safeapi/channel_link/rte_channel.h"
+#include "safeapi/voter/rte_voter.h"
+#include "safeapi/status/rte_status.h"
 
 /* ============================================================================
  * Channel Configuration Structures (User fills these in)
@@ -60,7 +60,7 @@ typedef struct {
  */
 typedef struct {
     const char *name;
-    const char *descriptor_path;     // e.g., "/dev/shm/sapi_channel"
+    const char *descriptor_path;     // e.g., "/dev/shm/rte_channel"
     size_t message_size;             // e.g., 256
     size_t queue_depth;              // e.g., 10
     uint32_t timeout_ms;             // e.g., 100
@@ -72,7 +72,7 @@ typedef struct {
  */
 typedef struct {
     const char *name;
-    const char *fifo_path;           // e.g., "/tmp/sapi_channel_fifo"
+    const char *fifo_path;           // e.g., "/tmp/rte_channel_fifo"
     size_t message_size;             // e.g., 256
     uint32_t timeout_ms;             // e.g., 500
     bool blocking;                   // true = blocking, false = non-blocking
@@ -107,12 +107,12 @@ typedef struct {
  * @brief Dispatcher send callback
  * Routes to appropriate transport based on channel type
  */
-static sapi_status_t app_backend_send(void *channel, const void *data, size_t size)
+static rte_status_t app_backend_send(void *channel, const void *data, size_t size)
 {
     channel_wrapper_t *wrapper = (channel_wrapper_t *)channel;
 
     if (wrapper == NULL) {
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 
     switch (wrapper->type) {
@@ -120,28 +120,28 @@ static sapi_status_t app_backend_send(void *channel, const void *data, size_t si
         // TODO: Call actual TCP send
         // return tcp_send(wrapper->impl, data, size, wrapper->timeout_ms);
         printf("[TCP] Sending %zu bytes\n", size);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_UDP:
         // TODO: Call actual UDP send
         // return udp_send(wrapper->impl, data, size, wrapper->timeout_ms);
         printf("[UDP] Sending %zu bytes\n", size);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_SHM:
         // TODO: Call actual SHM send
         // return shm_send(wrapper->impl, data, size, wrapper->timeout_ms);
         printf("[SHM] Sending %zu bytes\n", size);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_FIFO:
         // TODO: Call actual FIFO send
         // return fifo_send(wrapper->impl, data, size, wrapper->timeout_ms);
         printf("[FIFO] Sending %zu bytes\n", size);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     default:
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 }
 
@@ -149,13 +149,13 @@ static sapi_status_t app_backend_send(void *channel, const void *data, size_t si
  * @brief Dispatcher receive callback
  * Routes to appropriate transport based on channel type
  */
-static sapi_status_t app_backend_recv(void *channel, void *data, size_t size,
+static rte_status_t app_backend_recv(void *channel, void *data, size_t size,
                                       uint32_t timeout_ms)
 {
     channel_wrapper_t *wrapper = (channel_wrapper_t *)channel;
 
     if (wrapper == NULL) {
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 
     switch (wrapper->type) {
@@ -163,28 +163,28 @@ static sapi_status_t app_backend_recv(void *channel, void *data, size_t size,
         // TODO: Call actual TCP recv
         // return tcp_recv(wrapper->impl, data, size, timeout_ms);
         printf("[TCP] Receiving up to %zu bytes (timeout %ums)\n", size, timeout_ms);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_UDP:
         // TODO: Call actual UDP recv
         // return udp_recv(wrapper->impl, data, size, timeout_ms);
         printf("[UDP] Receiving up to %zu bytes (timeout %ums)\n", size, timeout_ms);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_SHM:
         // TODO: Call actual SHM recv
         // return shm_recv(wrapper->impl, data, size, timeout_ms);
         printf("[SHM] Receiving up to %zu bytes (timeout %ums)\n", size, timeout_ms);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     case CHANNEL_TYPE_FIFO:
         // TODO: Call actual FIFO recv
         // return fifo_recv(wrapper->impl, data, size, timeout_ms);
         printf("[FIFO] Receiving up to %zu bytes (timeout %ums)\n", size, timeout_ms);
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
 
     default:
-        return SAPI_STATUS_INVALID_PARAM;
+        return RTE_STATUS_INVALID_PARAM;
     }
 }
 
@@ -231,10 +231,10 @@ void example_tcp_based_redundancy(void)
     printf("    Local: %s:%u\n", udp_config_online.local_ip, udp_config_online.local_port);
     printf("    Remote: %s:%u\n", udp_config_online.remote_ip, udp_config_online.remote_port);
 
-    // Create wrapper channels, one sapi_channel_t per transport (ADR-025:
+    // Create wrapper channels, one rte_channel_t per transport (ADR-025:
     // a single "vital channel" type used to bundle N transports plus
-    // voting; that split into one sapi_channel_t per link registered
-    // into a separate sapi_voter_t for the voting itself).
+    // voting; that split into one rte_channel_t per link registered
+    // into a separate rte_voter_t for the voting itself).
     static channel_wrapper_t online_ch0 = {
         .type = CHANNEL_TYPE_TCP,
         .impl = (void *)0x1000,  // Placeholder (actual handle from OS backend)
@@ -248,42 +248,42 @@ void example_tcp_based_redundancy(void)
     };
 
     // Configure a voter for 2oo2 voting (both must agree)
-    sapi_voter_config_t voter_cfg_online = {
-        .voting_strategy = SAPI_VOTING_2OO2,
+    rte_voter_config_t voter_cfg_online = {
+        .voting_strategy = RTE_VOTING_2OO2,
         .channel_timeout_ms = 1000,
         .log_disagreements = true,
         .on_disagreement = NULL,
         .disagreement_context = NULL,
     };
 
-    static sapi_channel_t online_channels[2];
-    static sapi_voter_t voter_online;
+    static rte_channel_t online_channels[2];
+    static rte_voter_t voter_online;
 
-    sapi_status_t rc = sapi_voter_init(&voter_online, &voter_cfg_online);
-    if (rc == SAPI_STATUS_OK) {
-        sapi_channel_config_t chan_cfg0 = {
+    rte_status_t rc = rte_voter_init(&voter_online, &voter_cfg_online);
+    if (rc == RTE_STATUS_OK) {
+        rte_channel_config_t chan_cfg0 = {
             .channel_handle = &online_ch0,
             .send = app_backend_send,    // User's dispatcher
             .recv = app_backend_recv,
         };
-        sapi_channel_config_t chan_cfg1 = {
+        rte_channel_config_t chan_cfg1 = {
             .channel_handle = &online_ch1,
             .send = app_backend_send,
             .recv = app_backend_recv,
         };
 
-        rc = sapi_channel_init(&online_channels[0], &chan_cfg0);
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_voter_register_channel(&voter_online, &online_channels[0]);
+        rc = rte_channel_init(&online_channels[0], &chan_cfg0);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_voter_register_channel(&voter_online, &online_channels[0]);
         }
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_channel_init(&online_channels[1], &chan_cfg1);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_channel_init(&online_channels[1], &chan_cfg1);
         }
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_voter_register_channel(&voter_online, &online_channels[1]);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_voter_register_channel(&voter_online, &online_channels[1]);
         }
     }
-    if (rc == SAPI_STATUS_OK) {
+    if (rc == RTE_STATUS_OK) {
         printf("  ✓ Voter (2oo2) initialized over 2 channels\n");
     } else {
         printf("  ✗ Failed to initialize channels/voter\n");
@@ -336,34 +336,34 @@ void example_tcp_based_redundancy(void)
         .timeout_ms = 500,
     };
 
-    static sapi_channel_t standby_channels[2];
-    static sapi_voter_t voter_standby;
+    static rte_channel_t standby_channels[2];
+    static rte_voter_t voter_standby;
 
-    rc = sapi_voter_init(&voter_standby, &voter_cfg_online);
-    if (rc == SAPI_STATUS_OK) {
-        sapi_channel_config_t chan_cfg0 = {
+    rc = rte_voter_init(&voter_standby, &voter_cfg_online);
+    if (rc == RTE_STATUS_OK) {
+        rte_channel_config_t chan_cfg0 = {
             .channel_handle = &standby_ch0,
             .send = app_backend_send,
             .recv = app_backend_recv,
         };
-        sapi_channel_config_t chan_cfg1 = {
+        rte_channel_config_t chan_cfg1 = {
             .channel_handle = &standby_ch1,
             .send = app_backend_send,
             .recv = app_backend_recv,
         };
 
-        rc = sapi_channel_init(&standby_channels[0], &chan_cfg0);
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_voter_register_channel(&voter_standby, &standby_channels[0]);
+        rc = rte_channel_init(&standby_channels[0], &chan_cfg0);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_voter_register_channel(&voter_standby, &standby_channels[0]);
         }
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_channel_init(&standby_channels[1], &chan_cfg1);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_channel_init(&standby_channels[1], &chan_cfg1);
         }
-        if (rc == SAPI_STATUS_OK) {
-            rc = sapi_voter_register_channel(&voter_standby, &standby_channels[1]);
+        if (rc == RTE_STATUS_OK) {
+            rc = rte_voter_register_channel(&voter_standby, &standby_channels[1]);
         }
     }
-    if (rc == SAPI_STATUS_OK) {
+    if (rc == RTE_STATUS_OK) {
         printf("  ✓ Voter (2oo2) initialized over 2 channels\n");
     }
 
@@ -376,19 +376,19 @@ void example_tcp_based_redundancy(void)
     uint8_t command[256] = {0x42};  // Dummy command
 
     printf("  1. Online broadcasts command via the voter...\n");
-    rc = sapi_voter_send(&voter_online, command, 256);
+    rc = rte_voter_send(&voter_online, command, 256);
     printf("     Result: %d (broadcasts via TCP + UDP)\n", rc);
 
     printf("  2. Standby receives and votes...\n");
     uint8_t received[256] = {0};
-    sapi_voting_result_t vote = SAPI_VOTING_AGREED;
+    rte_voting_result_t vote = RTE_VOTING_AGREED;
     size_t bytes_received = 0;
-    rc = sapi_voter_receive(&voter_standby, received, 256, &vote, &bytes_received);
+    rc = rte_voter_receive(&voter_standby, received, 256, &vote, &bytes_received);
     printf("     Result: %d, Voting: %d\n", rc, vote);
 
     printf("  3. Check health...\n");
-    sapi_channel_health_t health;
-    rc = sapi_channel_get_health(&online_channels[0], &health);
+    rte_channel_health_t health;
+    rc = rte_channel_get_health(&online_channels[0], &health);
     printf("     Channel 0 health: sends=%u, errors=%u\n",
            health.send_count, health.send_error_count);
 }

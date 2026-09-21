@@ -9,32 +9,32 @@ Actively growing framework with SIL 4 safety focus.
 - Timer, IPC (base queue API only — see note below), Memory, NVM, Task/Thread, Logging, Reboot
 - AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String
 - Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions
-- Note: `sapi_ipc`'s pub/sub and request-reply variants
-  (`src/ipc/sapi_ipc_pubsub.c`, `sapi_ipc_request_reply.c`) are TODO-only
+- Note: `rte_ipc`'s pub/sub and request-reply variants
+  (`src/ipc/rte_ipc_pubsub.c`, `rte_ipc_request_reply.c`) are TODO-only
   stubs, excluded from the build (see their own file headers and
   `CMakeLists.txt`'s `SAFEAPI_ENABLE_IPC` comment) — only the base queue
-  API (`sapi_ipc_create`/`_send`/`_receive`/`_destroy`) is implemented.
+  API (`rte_ipc_create`/`_send`/`_receive`/`_destroy`) is implemented.
 
-**IMPLEMENTED:** Watchdog (`include/safeapi/watchdog/sapi_watchdog.h`,
-`src/watchdog/sapi_watchdog.c`)
+**IMPLEMENTED:** Watchdog (`include/safeapi/watchdog/rte_watchdog.h`,
+`src/watchdog/rte_watchdog.c`)
 - Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM)
   dispatched on timeout, real timer integration, full test coverage
-- Depended on directly by `sapi_checkpoint` and `sapi_appmanager`'s
+- Depended on directly by `rte_checkpoint` and `rte_appmanager`'s
   optional checkpoint stage (ADR-024's dependency graph)
 
 **IMPLEMENTED:** Redundancy Framework — vital channels, voting, checkpoints,
 data integrity (ADR-008/ADR-017; supersedes the "design phase" framing
 `docs/REDUNDANCY_ARCHITECTURE.md` originally described this as — that
 document is now a design *record*, not a proposal still to be built)
-- `sapi_channel` — 2oo2/2oo3/NMR quorum voting across redundant
+- `rte_channel` — 2oo2/2oo3/NMR quorum voting across redundant
   channels, disagreement/health tracking
-- `sapi_checksum` — CRC-64 data integrity and the `sapi_vital_message_t`
+- `rte_checksum` — CRC-64 data integrity and the `rte_vital_message_t`
   envelope (sequence + sender + CRC) both of the modules below build on
-- `sapi_checkpoint` — bounded checkpoint-ID rendezvous across vital
+- `rte_checkpoint` — bounded checkpoint-ID rendezvous across vital
   channels, correct even without wall-clock agreement between nodes;
-  fills in `sapi_channel_checkpoint()` as already specified (but not
+  fills in `rte_channel_checkpoint()` as already specified (but not
   previously built) in `docs/REDUNDANCY_ARCHITECTURE.md`
-- `sapi_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
+- `rte_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
   query (never the basis of vital-comparison correctness — see its header)
 - Example: `examples/geo_distributed_checkpoint_sync.c`
 - See `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1
@@ -46,49 +46,49 @@ document is now a design *record*, not a proposal still to be built)
   inputs" / "decide" / "send outputs" phases can be three named functions
   instead of one function with phase-numbered comments; both default to
   NULL (skipped) and are fully backward-compatible with every existing
-  `sapi_appmanager_operations_t` caller.
-- Optional built-in checkpoint stage — `sapi_appmanager_config_t::checkpoint`
-  (NULL by default) wires a bounded `sapi_channel_checkpoint()` (ADR-017)
+  `rte_appmanager_operations_t` caller.
+- Optional built-in checkpoint stage — `rte_appmanager_config_t::checkpoint`
+  (NULL by default) wires a bounded `rte_channel_checkpoint()` (ADR-017)
   rendezvous into the loop automatically, ahead of `pre_execute()`, so a
   dual/multi-channel application no longer hand-rolls that call itself.
-- Addendum (§5): relaxed `sapi_channel_init()`'s `channel_count`
-  floor from `>= 2` to `>= 1` (`SAPI_VOTING_NMR`, `quorum_size == 1` only —
+- Addendum (§5): relaxed `rte_channel_init()`'s `channel_count`
+  floor from `>= 2` to `>= 1` (`RTE_VOTING_NMR`, `quorum_size == 1` only —
   2oo2/2oo3 floors unchanged) to support a single-physical-link topology;
   see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md`
   for the full retrofit writeup (including the multiplexed-frame wire
   protocol needed to carry checkpoint traffic on an existing link), first
   live-verified in `RBC_GP`'s A/B channel.
 
-**IMPLEMENTED:** Structured message-trail logging (`sapi_log_write_event()`)
-- New addition to `sapi_log` alongside the existing free-text
-  `sapi_log_write()`: emits a fixed, space-separated `Key=Value` line -
+**IMPLEMENTED:** Structured message-trail logging (`rte_log_write_event()`)
+- New addition to `rte_log` alongside the existing free-text
+  `rte_log_write()`: emits a fixed, space-separated `Key=Value` line -
   `Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst>
   Type=<type> Info=<info>[ <extra_fields>]` - for logging an actual
   inter-channel message (a frame sent/received, a decision like AGREE/
   DISAGREE) — the mandatory fields a message-trail log needs, with room
   for caller-supplied extra `Key=Value` fields beyond those seven.
   Fixed-arity, no `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same backend
-  as `sapi_log_write()` receives it, so no backend changes are required.
+  as `rte_log_write()` receives it, so no backend changes are required.
   First real consumer: `RBC_GP`'s A/B/C/SITE cyclic executives
   now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
   DISAGREE, and SITE heartbeat this way.
 
-**IMPLEMENTED:** Dual-transfer state negotiation (`sapi_dual`, ADR-020)
-- `sapi_dual_state_t` — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY
+**IMPLEMENTED:** Dual-transfer state negotiation (`rte_dual`, ADR-020)
+- `rte_dual_state_t` — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY
   vocabulary for "which of two redundant instances is active, and how
   well-backed is the standby one", generalizing the ad hoc versions of
   this `RBC_GP`'s `site.c`/`channel_ab.c` each grew independently.
-- `sapi_dual_msgchannel_t` ("Channel") — one EN 50159-defended message
-  channel over a single `sapi_netlink_handle_t`, reusing the framework's
-  existing `sapi_vital_message_t` envelope (sequence/sender/CRC-64) plus a
+- `rte_dual_msgchannel_t` ("Channel") — one EN 50159-defended message
+  channel over a single `rte_netlink_handle_t`, reusing the framework's
+  existing `rte_vital_message_t` envelope (sequence/sender/CRC-64) plus a
   masquerade check against an expected peer ID.
-- `sapi_dual_channel_t` ("DualChannel") — wraps 1..N redundant Channels
+- `rte_dual_channel_t` ("DualChannel") — wraps 1..N redundant Channels
   with always-send + bounded-ACK-wait delivery (the real payload traffic
   itself is the liveness signal, never gated by negotiated state),
   aggregate `DOWN`/`DEGRADED`/`FULL` connection-status tracking with an
   optional change callback, and a second fire-and-forget frame flow for
   carrying a negotiator's own STATE beacons on the same links.
-- `sapi_dual_negotiator_t` — drives one round of state negotiation per
+- `rte_dual_negotiator_t` — drives one round of state negotiation per
   `execute()` call: older-startup-timestamp-wins tie-break for the initial
   ONLINE/STANDBY decision, and an asymmetric HOT/COLD rule where the
   *currently-ONLINE* side's own channel health (never the STANDBY side's
@@ -97,7 +97,7 @@ document is now a design *record*, not a proposal still to be built)
   DualChannel has no knowledge of the negotiator.
 - Framework-only in this pass — `RBC_GP`'s `site.c`/`channel_ab.c`
   keep their existing hand-rolled logic for now; retrofitting them to
-  `sapi_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
+  `rte_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
 - See `docs/architecture/ADR-020-dual-transfer-state-negotiation.md`.
 
 **Key Documentation:**
@@ -144,13 +144,13 @@ Common, layer-agnostic facilities, same per-feature layout: status codes
 (`status`) and fixed-width types (`types`), the cross-layer data buffer view
 with endianness-safe multi-byte access (`buffer`), checked integer casting
 between every fixed-width type and `size_t` (`cast`), safe-state transitions
-/ checked assertions (`safestate`: `SAPI_ASSERT`, `SAPI_SAFESTATE`,
-`SAPI_REBOOT`), bounded string manipulation replacing strcpy/strcat/
+/ checked assertions (`safestate`: `RTE_ASSERT`, `RTE_SAFESTATE`,
+`RTE_REBOOT`), bounded string manipulation replacing strcpy/strcat/
 sprintf/atoi/strtok (`string`), and application lifecycle management
 (`appmanager`: single entry point with init→execute→shutdown pattern).
 
 Every OAL service is reached through a **backend registered at startup**
-(`sapi_<service>_register_backend()`) rather than a hardcoded
+(`rte_<service>_register_backend()`) rather than a hardcoded
 implementation — this is how an integrator supplies their own
 implementation (POSIX for host-side dev/test, an RTOS backend for target
 hardware) without editing framework source. See

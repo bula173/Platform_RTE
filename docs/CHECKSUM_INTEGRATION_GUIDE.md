@@ -12,15 +12,15 @@
 ### 1. Initialize at Startup
 
 ```c
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/safestate/sapi_safestate.h"
+#include "safeapi/checksum/rte_checksum.h"
+#include "safeapi/safestate/rte_safestate.h"
 
 int main(void)
 {
     // Initialize CRC-64 with ERTMS polynomial
-    sapi_status_t status = sapi_checksum_crc64_init(SAPI_CRC64_ERTMS);
-    if (status != SAPI_STATUS_OK) {
-        sapi_safestate_trigger(REASON_INITIALIZATION_FAILED);
+    rte_status_t status = rte_checksum_crc64_init(RTE_CRC64_ERTMS);
+    if (status != RTE_STATUS_OK) {
+        rte_safestate_trigger(REASON_INITIALIZATION_FAILED);
     }
 
     // Rest of application initialization
@@ -36,7 +36,7 @@ int main(void)
 // Compute CRC-64 for any buffer
 train_command_t cmd = {...};
 
-sapi_crc64_t crc = sapi_checksum_crc64(
+rte_crc64_t crc = rte_checksum_crc64(
     (const uint8_t *)&cmd,
     sizeof(cmd) - sizeof(cmd->crc64)  // Exclude CRC field itself
 );
@@ -49,20 +49,20 @@ cmd.crc64 = crc;
 
 ```c
 train_command_t received_cmd = {...};
-sapi_checksum_result_t result;
+rte_checksum_result_t result;
 
-sapi_status_t status = sapi_checksum_crc64_verify(
+rte_status_t status = rte_checksum_crc64_verify(
     (const uint8_t *)&received_cmd,
     sizeof(received_cmd) - sizeof(received_cmd->crc64),
     received_cmd.crc64,  // Expected CRC from message
     &result
 );
 
-if (status != SAPI_STATUS_OK) {
+if (status != RTE_STATUS_OK) {
     // Data corrupted!
-    sapi_log_error("CRC mismatch: expected 0x%llx, got 0x%llx",
+    rte_log_error("CRC mismatch: expected 0x%llx, got 0x%llx",
                    result.expected, result.computed);
-    sapi_safestate_trigger(REASON_DATA_CORRUPTION);
+    rte_safestate_trigger(REASON_DATA_CORRUPTION);
 }
 ```
 
@@ -75,8 +75,8 @@ if (status != SAPI_STATUS_OK) {
 **Scenario:** Two safety-critical channels (A, B) compute same result; network transmits to backup site.
 
 ```c
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/ipc/sapi_ipc.h"
+#include "safeapi/checksum/rte_checksum.h"
+#include "safeapi/ipc/rte_ipc.h"
 
 typedef struct {
     uint32_t decision;
@@ -85,44 +85,44 @@ typedef struct {
 } vital_decision_t;
 
 /* Channel A computes and sends decision */
-void channel_a_send_decision(sapi_ipc_handle_t network_link)
+void channel_a_send_decision(rte_ipc_handle_t network_link)
 {
     vital_decision_t decision = {
         .decision = compute_movement_authority(),
-        .timestamp_ms = sapi_timer_get_ms(),
+        .timestamp_ms = rte_timer_get_ms(),
         .crc64 = 0
     };
 
     // Compute CRC (excluding crc64 field)
-    decision.crc64 = sapi_checksum_crc64(
+    decision.crc64 = rte_checksum_crc64(
         (const uint8_t *)&decision,
         sizeof(decision) - sizeof(decision.crc64)
     );
 
     // Send to network
-    sapi_ipc_send(network_link, &decision, sizeof(decision), 100);
+    rte_ipc_send(network_link, &decision, sizeof(decision), 100);
 }
 
 /* Backup site receives and verifies decision */
-void backup_site_receive_decision(sapi_ipc_handle_t network_link)
+void backup_site_receive_decision(rte_ipc_handle_t network_link)
 {
     vital_decision_t received;
-    sapi_checksum_result_t result;
+    rte_checksum_result_t result;
 
     // Receive from network
-    sapi_ipc_receive(network_link, &received, sizeof(received), 100);
+    rte_ipc_receive(network_link, &received, sizeof(received), 100);
 
     // Verify CRC
-    sapi_status_t status = sapi_checksum_crc64_verify(
+    rte_status_t status = rte_checksum_crc64_verify(
         (const uint8_t *)&received,
         sizeof(received) - sizeof(received.crc64),
         received.crc64,
         &result
     );
 
-    if (status != SAPI_STATUS_OK) {
-        sapi_log_error("Backup: Decision corrupted! Triggering safe-state");
-        sapi_safestate_trigger(REASON_DATA_CORRUPTION);
+    if (status != RTE_STATUS_OK) {
+        rte_log_error("Backup: Decision corrupted! Triggering safe-state");
+        rte_safestate_trigger(REASON_DATA_CORRUPTION);
         return;
     }
 
@@ -140,13 +140,13 @@ void backup_site_receive_decision(sapi_ipc_handle_t network_link)
 The framework provides a pre-built vital message structure with integrated CRC:
 
 ```c
-#include "safeapi/checksum/sapi_checksum.h"
+#include "safeapi/checksum/rte_checksum.h"
 
 // Sender: wrap payload with CRC
-sapi_vital_message_t msg;
+rte_vital_message_t msg;
 train_command_t payload = {...};
 
-sapi_status_t status = sapi_checksum_vital_message_create(
+rte_status_t status = rte_checksum_vital_message_create(
     &msg,
     SENDER_CHANNEL_A,           // sender ID
     ++sequence_counter,         // sequence number
@@ -154,19 +154,19 @@ sapi_status_t status = sapi_checksum_vital_message_create(
     sizeof(payload)
 );
 
-if (status == SAPI_STATUS_OK) {
+if (status == RTE_STATUS_OK) {
     // Send 256-byte message (includes CRC)
-    sapi_ipc_send(channel, &msg, sizeof(msg), 100);
+    rte_ipc_send(channel, &msg, sizeof(msg), 100);
 }
 
 // Receiver: unwrap and verify
-sapi_vital_message_t received_msg;
+rte_vital_message_t received_msg;
 uint8_t payload_buffer[256];
 uint8_t payload_size;
 
-sapi_ipc_receive(channel, &received_msg, sizeof(received_msg), 100);
+rte_ipc_receive(channel, &received_msg, sizeof(received_msg), 100);
 
-status = sapi_checksum_vital_message_verify(
+status = rte_checksum_vital_message_verify(
     &received_msg,
     expected_sequence + 1,      // expect next sequence
     payload_buffer,
@@ -174,17 +174,17 @@ status = sapi_checksum_vital_message_verify(
     &payload_size
 );
 
-if (status == SAPI_STATUS_OK) {
+if (status == RTE_STATUS_OK) {
     // Message valid and in sequence
     train_command_t *cmd = (train_command_t *)payload_buffer;
     process_command(cmd);
     expected_sequence = received_msg.sequence_number;
-} else if (status == SAPI_STATUS_ERROR) {
+} else if (status == RTE_STATUS_ERROR) {
     // CRC failed - data corrupted
-    sapi_safestate_trigger(REASON_DATA_CORRUPTION);
-} else if (status == SAPI_STATUS_INVALID) {
+    rte_safestate_trigger(REASON_DATA_CORRUPTION);
+} else if (status == RTE_STATUS_INVALID) {
     // Sequence out of order
-    sapi_safestate_trigger(REASON_MESSAGE_REORDERING);
+    rte_safestate_trigger(REASON_MESSAGE_REORDERING);
 }
 ```
 
@@ -197,7 +197,7 @@ if (status == SAPI_STATUS_OK) {
 When you have 3 redundant channels (future v0.4.0 vital channels):
 
 ```c
-// Pseudo-code for when sapi_channel_t is implemented
+// Pseudo-code for when rte_channel_t is implemented
 
 typedef struct {
     train_command_t cmd_a;
@@ -206,37 +206,37 @@ typedef struct {
     uint64_t        crc_a, crc_b, crc_c;
 } voting_inputs_t;
 
-sapi_status_t perform_2oo3_vote_with_crc(
+rte_status_t perform_2oo3_vote_with_crc(
     const voting_inputs_t *inputs,
     train_command_t *voted_output)
 {
-    sapi_checksum_result_t result_a, result_b, result_c;
+    rte_checksum_result_t result_a, result_b, result_c;
 
     // Verify CRC on each channel (catches transmission corruption)
-    sapi_status_t status_a = sapi_checksum_crc64_verify(
+    rte_status_t status_a = rte_checksum_crc64_verify(
         (const uint8_t *)&inputs->cmd_a,
         sizeof(inputs->cmd_a) - sizeof(inputs->crc_a),
         inputs->crc_a, &result_a
     );
 
-    sapi_status_t status_b = sapi_checksum_crc64_verify(
+    rte_status_t status_b = rte_checksum_crc64_verify(
         (const uint8_t *)&inputs->cmd_b,
         sizeof(inputs->cmd_b) - sizeof(inputs->crc_b),
         inputs->crc_b, &result_b
     );
 
-    sapi_status_t status_c = sapi_checksum_crc64_verify(
+    rte_status_t status_c = rte_checksum_crc64_verify(
         (const uint8_t *)&inputs->cmd_c,
         sizeof(inputs->cmd_c) - sizeof(inputs->crc_c),
         inputs->crc_c, &result_c
     );
 
     // Any CRC failure immediately triggers safe-state
-    if (status_a != SAPI_STATUS_OK ||
-        status_b != SAPI_STATUS_OK ||
-        status_c != SAPI_STATUS_OK) {
-        sapi_log_error("CRC failure in 2oo3 voting - safe-state");
-        return SAPI_STATUS_ERROR;
+    if (status_a != RTE_STATUS_OK ||
+        status_b != RTE_STATUS_OK ||
+        status_c != RTE_STATUS_OK) {
+        rte_log_error("CRC failure in 2oo3 voting - safe-state");
+        return RTE_STATUS_ERROR;
     }
 
     // All CRCs passed - now do voting
@@ -249,10 +249,10 @@ sapi_status_t perform_2oo3_vote_with_crc(
     if (matches >= 2) {
         // Majority vote
         *voted_output = inputs->cmd_a;
-        return SAPI_STATUS_OK;
+        return RTE_STATUS_OK;
     } else {
         // No majority - voting failed
-        return SAPI_STATUS_ERROR;
+        return RTE_STATUS_ERROR;
     }
 }
 ```
@@ -264,34 +264,34 @@ sapi_status_t perform_2oo3_vote_with_crc(
 ### Check Channel Health
 
 ```c
-#include "safeapi/checksum/sapi_checksum.h"
-#include "safeapi/log/sapi_log.h"
+#include "safeapi/checksum/rte_checksum.h"
+#include "safeapi/log/rte_log.h"
 
 void diagnose_channel_health(void)
 {
-    sapi_checksum_stats_t stats;
-    sapi_checksum_get_stats(&stats);
+    rte_checksum_stats_t stats;
+    rte_checksum_get_stats(&stats);
 
-    sapi_log_info("=== Checksum Statistics ===");
-    sapi_log_info("Total CRCs:           %u", stats.total_checksums);
-    sapi_log_info("Verification passes:  %u", stats.verification_passes);
-    sapi_log_info("Verification failures:%u", stats.verification_failures);
-    sapi_log_info("Sequence errors:      %u", stats.sequence_errors);
-    sapi_log_info("Payload oversizes:    %u", stats.payload_oversize);
+    rte_log_info("=== Checksum Statistics ===");
+    rte_log_info("Total CRCs:           %u", stats.total_checksums);
+    rte_log_info("Verification passes:  %u", stats.verification_passes);
+    rte_log_info("Verification failures:%u", stats.verification_failures);
+    rte_log_info("Sequence errors:      %u", stats.sequence_errors);
+    rte_log_info("Payload oversizes:    %u", stats.payload_oversize);
 
     // Calculate failure rate
     if (stats.total_checksums > 0) {
         uint32_t failure_rate = (stats.verification_failures * 100) /
                                 stats.total_checksums;
-        sapi_log_info("Failure rate:         %u%%", failure_rate);
+        rte_log_info("Failure rate:         %u%%", failure_rate);
 
         if (failure_rate > 1) {
-            sapi_log_warn("High CRC failure rate - check network/hardware!");
+            rte_log_warn("High CRC failure rate - check network/hardware!");
         }
     }
 
     // Reset for next period
-    sapi_checksum_reset_stats();
+    rte_checksum_reset_stats();
 }
 ```
 
@@ -302,17 +302,17 @@ void diagnose_channel_health(void)
 
 void health_monitor_task(void)
 {
-    uint32_t last_check_ms = sapi_timer_get_ms();
+    uint32_t last_check_ms = rte_timer_get_ms();
 
     while (1) {
-        uint32_t now_ms = sapi_timer_get_ms();
+        uint32_t now_ms = rte_timer_get_ms();
 
         if ((now_ms - last_check_ms) >= MONITORING_INTERVAL_MS) {
             diagnose_channel_health();
             last_check_ms = now_ms;
         }
 
-        sapi_task_sleep(100);  // Check every 100ms
+        rte_task_sleep(100);  // Check every 100ms
     }
 }
 ```
@@ -324,16 +324,16 @@ void health_monitor_task(void)
 ### Complete Pattern: Send → Verify → Act
 
 ```c
-sapi_status_t send_vital_data_with_crc(sapi_ipc_handle_t channel,
+rte_status_t send_vital_data_with_crc(rte_ipc_handle_t channel,
                                        const void *data,
                                        size_t size)
 {
     // Step 1: Compute CRC
     if (size == 0 || data == NULL) {
-        return SAPI_STATUS_ERROR;
+        return RTE_STATUS_ERROR;
     }
 
-    sapi_crc64_t crc = sapi_checksum_crc64(data, size);
+    rte_crc64_t crc = rte_checksum_crc64(data, size);
 
     // Step 2: Create message with CRC
     // (Could use vital_message_t for standard format)
@@ -344,24 +344,24 @@ sapi_status_t send_vital_data_with_crc(sapi_ipc_handle_t channel,
 
     message_t msg = {0};
     if (size > sizeof(msg.payload)) {
-        sapi_log_error("Data too large: %zu > %zu", size, sizeof(msg.payload));
-        return SAPI_STATUS_ERROR;
+        rte_log_error("Data too large: %zu > %zu", size, sizeof(msg.payload));
+        return RTE_STATUS_ERROR;
     }
 
     memcpy(msg.payload, data, size);
     msg.crc64 = crc;
 
     // Step 3: Send
-    sapi_status_t status = sapi_ipc_send(channel, &msg, sizeof(msg), 100);
-    if (status != SAPI_STATUS_OK) {
-        sapi_log_error("IPC send failed");
+    rte_status_t status = rte_ipc_send(channel, &msg, sizeof(msg), 100);
+    if (status != RTE_STATUS_OK) {
+        rte_log_error("IPC send failed");
         return status;
     }
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 
-sapi_status_t receive_vital_data_with_crc(sapi_ipc_handle_t channel,
+rte_status_t receive_vital_data_with_crc(rte_ipc_handle_t channel,
                                           void *data_out,
                                           size_t max_size)
 {
@@ -372,32 +372,32 @@ sapi_status_t receive_vital_data_with_crc(sapi_ipc_handle_t channel,
     } message_t;
 
     message_t msg = {0};
-    sapi_status_t status = sapi_ipc_receive(channel, &msg, sizeof(msg), 100);
-    if (status != SAPI_STATUS_OK) {
-        sapi_log_error("IPC receive failed");
+    rte_status_t status = rte_ipc_receive(channel, &msg, sizeof(msg), 100);
+    if (status != RTE_STATUS_OK) {
+        rte_log_error("IPC receive failed");
         return status;
     }
 
     // Step 2: Verify CRC
-    sapi_checksum_result_t result;
-    status = sapi_checksum_crc64_verify(
+    rte_checksum_result_t result;
+    status = rte_checksum_crc64_verify(
         (const uint8_t *)msg.payload,
         sizeof(msg.payload),
         msg.crc64,
         &result
     );
 
-    if (status != SAPI_STATUS_OK) {
-        sapi_log_error("CRC verification failed: expected 0x%llx, got 0x%llx",
+    if (status != RTE_STATUS_OK) {
+        rte_log_error("CRC verification failed: expected 0x%llx, got 0x%llx",
                        result.expected, result.computed);
         // Don't extract data - use safe state instead
-        return SAPI_STATUS_ERROR;
+        return RTE_STATUS_ERROR;
     }
 
     // Step 3: Extract payload
     memcpy(data_out, msg.payload, max_size);
 
-    return SAPI_STATUS_OK;
+    return RTE_STATUS_OK;
 }
 ```
 
@@ -453,11 +453,11 @@ Before deploying CRC-64 in your system:
 
 ### Problem: "CRC-64 not initialized" errors
 
-**Solution:** Ensure `sapi_checksum_crc64_init()` called at startup before any CRC operations.
+**Solution:** Ensure `rte_checksum_crc64_init()` called at startup before any CRC operations.
 
 ```c
 // In main():
-sapi_checksum_crc64_init(SAPI_CRC64_ERTMS);  // Must be before IPC!
+rte_checksum_crc64_init(RTE_CRC64_ERTMS);  // Must be before IPC!
 ```
 
 ### Problem: High CRC failure rate (>1%)
@@ -472,7 +472,7 @@ sapi_checksum_crc64_init(SAPI_CRC64_ERTMS);  // Must be before IPC!
 ```c
 // Log first few CRC failures for analysis
 if (result.match == 0) {
-    sapi_log_debug("CRC mismatch details: "
+    rte_log_debug("CRC mismatch details: "
                    "computed=0x%llx, expected=0x%llx, "
                    "data_size=%zu, sender=%u",
                    result.computed, result.expected,
@@ -496,7 +496,7 @@ if (result.match == 0) {
 
 ## Next Steps
 
-1. **Integrate with Voting (v0.4.0):** When `sapi_channel_t` is implemented, CRC-64 will be transparent
+1. **Integrate with Voting (v0.4.0):** When `rte_channel_t` is implemented, CRC-64 will be transparent
 2. **Performance Tuning:** Profile in your specific embedded target
 3. **Certification:** Incorporate into your EN 50128 safety case
 4. **Deployment:** Use vital_message_t wrapper in all redundant systems
@@ -506,6 +506,6 @@ if (result.match == 0) {
 ## References
 
 - **ADR-016:** `docs/architecture/ADR-016-crc64-data-integrity.md`
-- **API Docs:** `include/safeapi/checksum/sapi_checksum.h` (Doxygen)
+- **API Docs:** `include/safeapi/checksum/rte_checksum.h` (Doxygen)
 - **Standards:** EN 50126, EN 50128, ERTMS/ETCS specifications
 - **Polynomial Registry:** http://www.sunshine2k.de/articles/CRC_Polynomial_Selection_Guide.html

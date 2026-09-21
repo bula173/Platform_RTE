@@ -7,7 +7,7 @@ skinparam sequence {
 }
 
 participant "RBC Application" as app
-participant "SAPI Framework" as sapi
+participant "RTE Framework" as sapi
 participant "IPC" as ipc
 participant "Output" as output
 

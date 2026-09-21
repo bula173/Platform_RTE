@@ -26,7 +26,7 @@
  * if (cmd == NULL) {
  *     // 3ms critical deadline... out of memory?
  *     // Safety-critical failure mid-operation!
- *     SAPI_SAFESTATE(...);
+ *     RTE_SAFESTATE(...);
  * }
  *
  * // GOOD: Static allocation
@@ -39,7 +39,7 @@
  * @subsection memory_user_guide_qs_include 1. Include Header
  *
  * @code
- * #include "safeapi/memory/sapi_memory.h"
+ * #include "safeapi/memory/rte_memory.h"
  * @endcode
  *
  * @subsection memory_user_guide_qs_allocate 2. Allocate at Compile-Time or Initialization
@@ -50,8 +50,8 @@
  *
  * // Option B: Application state (initialized once)
  * typedef struct {
- *     sapi_channel_t vital_channel;
- *     sapi_timer_t heartbeat_timer;
+ *     rte_channel_t vital_channel;
+ *     rte_timer_t heartbeat_timer;
  *     uint8_t work_buffer[1024];
  * } app_t;
  *
@@ -71,8 +71,8 @@
  * #define BUFFER_SIZE    (MAX_CHANNELS * 256)
  *
  * typedef struct {
- *     sapi_channel_t channels[MAX_CHANNELS];  // 16 channels
- *     sapi_timer_t timers[MAX_TIMERS];              // 32 timers
+ *     rte_channel_t channels[MAX_CHANNELS];  // 16 channels
+ *     rte_timer_t timers[MAX_TIMERS];              // 32 timers
  *     task_t task_queue[MAX_TASKS];                 // 64 task slots
  *     uint8_t buffer[BUFFER_SIZE];                  // Shared buffer
  * } system_t;
@@ -105,11 +105,11 @@
  * @code
  * typedef struct {
  *     // Channels
- *     sapi_channel_t vital_channel;
- *     sapi_ipc_handle_t diag_channel;
+ *     rte_channel_t vital_channel;
+ *     rte_ipc_handle_t diag_channel;
  *
  *     // Services
- *     sapi_timer_t timers[MAX_TIMERS];
+ *     rte_timer_t timers[MAX_TIMERS];
  *     task_t tasks[MAX_TASKS];
  *
  *     // Buffers
@@ -185,13 +185,13 @@
  * @code
  * typedef struct {
  *     // Communication
- *     sapi_channel_t vital_from_online;
- *     sapi_channel_t vital_to_online;
- *     sapi_ipc_handle_t diagnostic_channel;
+ *     rte_channel_t vital_from_online;
+ *     rte_channel_t vital_to_online;
+ *     rte_ipc_handle_t diagnostic_channel;
  *
  *     // Timing
- *     sapi_timer_t main_loop_timer;
- *     sapi_timer_t watchdog_timer;
+ *     rte_timer_t main_loop_timer;
+ *     rte_timer_t watchdog_timer;
  *
  *     // State
  *     struct {
@@ -238,14 +238,14 @@
  *     rb->count = 0;
  * }
  *
- * sapi_status_t ring_buffer_write(ring_buffer_t *rb, uint8_t byte) {
+ * rte_status_t ring_buffer_write(ring_buffer_t *rb, uint8_t byte) {
  *     if (rb->count >= 256) {
- *         return SAPI_STATUS_RESOURCE_EXHAUSTED;
+ *         return RTE_STATUS_RESOURCE_EXHAUSTED;
  *     }
  *     rb->buffer[rb->write_pos] = byte;
  *     rb->write_pos = (rb->write_pos + 1) % 256;
  *     rb->count++;
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * @endcode
  *
@@ -263,15 +263,15 @@
  *
  * static message_t message_pool[16];  // 16 max messages
  *
- * sapi_status_t allocate_message(message_t **msg_out) {
+ * rte_status_t allocate_message(message_t **msg_out) {
  *     for (int i = 0; i < 16; i++) {
  *         if (!message_pool[i].in_use) {
  *             message_pool[i].in_use = true;
  *             *msg_out = &message_pool[i];
- *             return SAPI_STATUS_OK;
+ *             return RTE_STATUS_OK;
  *         }
  *     }
- *     return SAPI_STATUS_RESOURCE_EXHAUSTED;
+ *     return RTE_STATUS_RESOURCE_EXHAUSTED;
  * }
  *
  * void free_message(message_t *msg) {
@@ -291,14 +291,14 @@
  *     uint16_t count;
  * } queue_t;
  *
- * sapi_status_t queue_push(queue_t *q, const item_t *item) {
+ * rte_status_t queue_push(queue_t *q, const item_t *item) {
  *     if (q->count >= QUEUE_SIZE) {
- *         return SAPI_STATUS_RESOURCE_EXHAUSTED;
+ *         return RTE_STATUS_RESOURCE_EXHAUSTED;
  *     }
  *     q->items[q->tail] = *item;
  *     q->tail = (q->tail + 1) % QUEUE_SIZE;
  *     q->count++;
- *     return SAPI_STATUS_OK;
+ *     return RTE_STATUS_OK;
  * }
  * @endcode
  *
@@ -334,11 +334,11 @@
  * When allocation fails (pool exhausted):
  *
  * @code
- * sapi_status_t rc = allocate_message(&msg);
- * if (rc == SAPI_STATUS_RESOURCE_EXHAUSTED) {
+ * rte_status_t rc = allocate_message(&msg);
+ * if (rc == RTE_STATUS_RESOURCE_EXHAUSTED) {
  *     // Cannot proceed - trigger safe-state
- *     SAPI_SAFESTATE(SAPI_SAFESTATE_LEVEL_SAFE,
- *                   SAPI_SAFESTATE_REASON_UNSPECIFIED);
+ *     RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
+ *                   RTE_SAFESTATE_REASON_UNSPECIFIED);
  *     return rc;
  * }
  * @endcode
