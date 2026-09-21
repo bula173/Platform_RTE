@@ -338,7 +338,7 @@ while (running) {
 - Task (monitors scheduler liveness)
 - Logging (audit trail)
 
-**Design Doc:** [WATCHDOG_DESIGN.md](docs/WATCHDOG_DESIGN.md)
+**Design Doc:** [WATCHDOG_DESIGN.md](WATCHDOG_DESIGN.md)
 
 ---
 

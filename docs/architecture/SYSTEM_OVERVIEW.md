@@ -58,13 +58,13 @@
 
 
  +-------------------------------------------------------------------------+
-|                  Generic Platform (safeAPIRBC2oo2GP)                    |
+|                  Generic Platform (RBC_GP)                    |
 |      (ERTMS Procedures, Handover FSM, Route Management, 2oo2 Voter)     |
 +-------------------------------------------------------------------------+
                                     │
                                     ▼ (sapi_channel_open / sapi_flow_write)
 +-------------------------------------------------------------------------+
-|                Safe Computing Platform (safeAPIFreamwork)               |
+|                Safe Computing Platform (Platform_RTE)               |
 +-------------------------------------------------------------------------+
                                     │
            ┌────────────────────────┼────────────────────────┐
@@ -84,7 +84,7 @@
            │                     +--------------------------------------+
            ▼                                     ▼
 +-------------------------------------------------------------------------+
-|                       OSAdapter (safeAPIAdapterPosix)                   |
+|                       OSAdapter (Platform_OS_POSIX)                   |
 |                   (Timers, Memory Pools, Raw OS Sockets)                |
 +-------------------------------------------------------------------------+
  */

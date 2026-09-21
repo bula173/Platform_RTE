@@ -276,6 +276,6 @@ For hard real-time performance, see the QNX RTOS example.
 
 ## References
 
-- [safeapi::log](../../include/safeapi/log.h)
-- [safeapi::status](../../include/safeapi/status.h)
-- [safeapi::safestate](../../include/safeapi/safestate.h)
+- [safeapi::log](../../include/safeapi/oal/log/sapi_log.h)
+- [safeapi::status](../../include/safeapi/utils/status/sapi_status.h)
+- [safeapi::safestate](../../include/safeapi/utils/safestate/sapi_safestate.h)

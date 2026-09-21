@@ -16,8 +16,8 @@
 > `include/` or `src/` reads or would benefit from those macros - endianness is already handled
 > per-call via `sapi_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
 > genuinely working, verified multi-architecture story today is Docker buildx/QEMU for the
-> safeAPIRBC2oo2 app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
-> Builds" section and `safeAPIRBC2oo2TestEnv/etc/scripts/build_multiarch.sh`. Treat
+> RBC_GP app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
+> Builds" section and `RBC_Test_Env/etc/scripts/build_multiarch.sh`. Treat
 > everything below this notice as a forward-looking design reference, not a status report.
 
 ---
@@ -661,14 +661,14 @@ For each supported platform:
 
 | Platform | Doc | Compiler | Arch | Endian | Status |
 |----------|-----|----------|------|--------|--------|
-| Linux x86_64 | [build-linux.md](../examples/build-linux.md) | GCC/Clang | x86_64 | LE | ✅ |
-| Linux ARM64 | [build-arm64.md](../examples/build-arm64.md) | GCC/Clang | ARM64 | LE | ✅ |
-| Linux ARM32 | [build-arm32.md](../examples/build-arm32.md) | GCC | ARM32 | LE | ✅ |
-| QNX x86_64 | [build-qnx-x86.md](../examples/build-qnx-x86.md) | QCC | x86_64 | LE | ✅ |
-| QNX ARM64 | [build-qnx-arm64.md](../examples/build-qnx-arm64.md) | QCC | ARM64 | LE | ✅ |
-| QNX PowerPC32 | [build-qnx-ppc.md](../examples/build-qnx-ppc.md) | QCC | PPC32 | BE | ✅ |
-| VxWorks PPC64 | [build-vxworks.md](../examples/build-vxworks.md) | WindRiver | PPC64 | BE | ⏳ |
-| FreeRTOS ARM32 | [build-freertos.md](../examples/build-freertos.md) | GCC | ARM32 | LE | ⏳ |
+| Linux x86_64 | build-linux.md | GCC/Clang | x86_64 | LE | ✅ |
+| Linux ARM64 | build-arm64.md | GCC/Clang | ARM64 | LE | ✅ |
+| Linux ARM32 | build-arm32.md | GCC | ARM32 | LE | ✅ |
+| QNX x86_64 | build-qnx-x86.md | QCC | x86_64 | LE | ✅ |
+| QNX ARM64 | build-qnx-arm64.md | QCC | ARM64 | LE | ✅ |
+| QNX PowerPC32 | build-qnx-ppc.md | QCC | PPC32 | BE | ✅ |
+| VxWorks PPC64 | build-vxworks.md | WindRiver | PPC64 | BE | ⏳ |
+| FreeRTOS ARM32 | build-freertos.md | GCC | ARM32 | LE | ⏳ |
 
 ---
 

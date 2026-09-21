@@ -35,9 +35,9 @@ cmake --preset linux-native # POSIX backend
 ### Git Configuration
 | CM Plan Section | Actual File | Purpose |
 |---|---|---|
-| 4.1 - Git setup | [.git/config](.git/config) | User, email, core settings |
+| 4.1 - Git setup | .git/config | User, email, core settings |
 | 4.1 - Branch policy | [git](../.) | main, develop, feature/*, release/* |
-| 4.2 - Commit messages | [.git/hooks](.git/hooks) | [See commit examples] |
+| 4.2 - Commit messages | .git/hooks | [See commit examples] |
 | 4.3 - .gitignore | [.gitignore](../.gitignore) | Exclude build, IDE, OS files |
 
 ### Standard Branch Workflow
@@ -366,10 +366,10 @@ ls -l releases/                     # v0.1.0, v0.2.0 artifacts?
 | **Architecture** | Design rationale | [docs/architecture/](../docs/architecture/) |
 | **Requirements** | All requirements | [docs/requirements/SRS.md](../docs/requirements/) |
 | **MISRA** | Compliance status | [docs/MISRA_COMPLIANCE_REPORT.md](../docs/) |
-| **CM Plan** | This template | [docs/templates/03_CONFIGURATION_MANAGEMENT_PLAN.md](03_CONFIGURATION_MANAGEMENT_PLAN.md) |
+| **CM Plan** | This template | [docs/templates/03_CONFIGURATION_MANAGEMENT_PLAN.md](templates/03_CONFIGURATION_MANAGEMENT_PLAN.md) |
 | **Build presets** | Standardized configs | [CMakePresets.json](../CMakePresets.json) |
 | **License** | Community Improvement | [LICENSE.md](../LICENSE.md) |
-| **Roadmap** | Future work | [ROADMAP.md](../ROADMAP.md) |
+| **Roadmap** | Future work | [ROADMAP.md](ROADMAP.md) |
 
 ---
 
@@ -472,7 +472,7 @@ cp build/test-*.xml releases/v0.2.0/test-results/
 ## Questions?
 
 Refer to:
-- Full plan: [Configuration Management Plan](03_CONFIGURATION_MANAGEMENT_PLAN.md)
+- Full plan: [Configuration Management Plan](templates/03_CONFIGURATION_MANAGEMENT_PLAN.md)
 - Build help: [README.md](../README.md) 
 - Architecture: [ADRs](../docs/architecture/)
 - License: [LICENSE.md](../LICENSE.md)

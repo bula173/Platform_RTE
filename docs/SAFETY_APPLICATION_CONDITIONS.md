@@ -490,7 +490,7 @@ Use this checklist for your formal review of safeAPIFramework:
 For questions about these Safety Application Conditions:
 
 - **Framework Design:** See [docs/architecture/ADR-*.md](architecture/)
-- **EN 50128 Alignment:** See [docs/EN50128_ALIGNMENT.md](EN50128_ALIGNMENT.md)
+- **EN 50128 Alignment:** See [docs/EN50128_ALIGNMENT.md](EN_50128_ALIGNMENT.md)
 - **Integration Guide:** See [docs/INTEGRATION.md](INTEGRATION.md)
 - **Requirements Specification:** See [docs/requirements/SRS.md](requirements/SRS.md)
 

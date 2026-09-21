@@ -16,19 +16,19 @@ Quick visual tracker for feature implementation status. For full details, see [R
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 2-3 weeks
   - Blocks: #5, #3 (Diagnostics can consume HSM events; Watchdog monitors HSM)
-  - ADR: [ADR-008](docs/architecture/ADR-008-hierarchical-state-machine.md) (pending)
+  - ADR: ADR-008 (pending)
 
 - [ ] #2 Event/Message Queue (P1)
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 1-2 weeks
   - Blocks: None (independent)
-  - ADR: [ADR-009](docs/architecture/ADR-009-event-message-queue.md) (pending)
+  - ADR: ADR-009 (pending)
 
 - [ ] #3 Watchdog & Health Monitor (P1)
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 2-3 weeks
   - Depends on: Timer, Reboot (existing)
-  - ADR: [ADR-010](docs/architecture/ADR-010-watchdog-health-monitor.md) (pending)
+  - ADR: ADR-010 (pending)
 
 ### Tier 2: Testing & Observability
 - [ ] #5 Diagnostic Ring Buffer (P2)
@@ -54,7 +54,7 @@ Quick visual tracker for feature implementation status. For full details, see [R
 - [ ] #4 Protected Data / Synchronized Access (P1)
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 2-3 weeks
-  - ADR: [ADR-011](docs/architecture/ADR-011-protected-data-sync.md) (pending)
+  - ADR: ADR-011 (pending)
 
 ### Tier 2: Configuration & Scheduling
 - [ ] #6 Safe Configuration Manager (P2)
@@ -104,7 +104,7 @@ Quick visual tracker for feature implementation status. For full details, see [R
   - Status: `proposed` → `designing` → `in-progress` → `testing` → `done`
   - Effort: 1 week
   - Depends on: #10, #11
-  - ADR: [ADR-019](docs/architecture/ADR-019-static-config-certification.md) (pending)
+  - ADR: ADR-019 (pending)
 
 ---
 
@@ -133,7 +133,7 @@ Example:
 - [x] #1 Hierarchical State Machine (HSM) (P1)
   - Status: `done` ✅ (Released in v0.2.0)
   - Effort: 2-3 weeks
-  - ADR: [ADR-008](docs/architecture/ADR-008-hierarchical-state-machine.md)
+  - ADR: ADR-008
 ```
 
 ---

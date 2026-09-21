@@ -38,3 +38,11 @@
 - Maintain a compliance report at `docs/MISRA_COMPLIANCE_REPORT.md`: which rules were checked, how
   (tool output vs. manual review — state plainly when no tool was available), and any deviations with
   rationale. Update it whenever code changes; do not let it go stale relative to the source tree.
+## Packaging
+
+`dist/<platform>/` is produced by `cmake --install build --prefix .` (the CMake package config bakes in its own
+platform subdirectory, so the install layout and `cmake/safeAPIFrameworkConfig.cmake.in` must stay in step). The Conan
+recipe (`safeapiframework/0.1.0`) mirrors every `SAFEAPI_ENABLE_*` option as `with_*` and exposes components `core`,
+`oal`, `channels`, `appmanager`. Its `exports_sources` must include `tools/*` (a missed entry once broke
+`conan create`), and `package_info()` must translate Conan `os`/`arch` to the CMake platform string (Conan `armv8` is
+`arm64` on Darwin and `aarch64` on Linux). Keep both the plain and the Conan path working.

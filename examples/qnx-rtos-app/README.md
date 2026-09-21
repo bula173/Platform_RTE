@@ -487,5 +487,5 @@ done
 - [QNX Message Passing](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.user_guide/topic/message_passing_overview.html)
 - [QNX Microkernel](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.arch/topic/qnx_microkernel_intro.html)
 - [QNX Real-Time](https://www.qnx.com/developers/docs/7.0.0/#com.qnx.doc.neutrino.rtguide/)
-- [safeapi::log](../../include/safeapi/log.h)
-- [safeapi::status](../../include/safeapi/status.h)
+- [safeapi::log](../../include/safeapi/oal/log/sapi_log.h)
+- [safeapi::status](../../include/safeapi/utils/status/sapi_status.h)

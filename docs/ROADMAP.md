@@ -29,7 +29,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - IPC statistics and monitoring
   - Deadlock detection
 - **GitHub Issues:** #17–#23 (7 sub-features)
-- **ADR:** [ADR-020 through ADR-026](docs/architecture/) (pending)
+- **ADR:** [ADR-020 through ADR-026](architecture/) (pending)
 - **Est. Effort:** 3–4 weeks total (can parallelize some features)
 - **Dependencies:** Base IPC module (already exists)
 
@@ -77,7 +77,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Health status API (non-blocking diagnostics)
   - Integration with redundancy framework
 - **GitHub Issues:** #32–#35 (4 sub-features)
-- **Documentation:** [WATCHDOG_DESIGN.md](docs/WATCHDOG_DESIGN.md) ✓
+- **Documentation:** [WATCHDOG_DESIGN.md](WATCHDOG_DESIGN.md) ✓
 - **API Files:** 
   - `include/safeapi/watchdog/sapi_watchdog.h` ✓
   - `src/watchdog/sapi_watchdog.c` (stubs) ✓

@@ -1,313 +1,81 @@
-# Safe API Framework
+# Platform_RTE
 
-A layered C/C++ API framework for building safety-related applications whose
-layers communicate through well-defined software interfaces, so each layer
-can be developed and verified independently. The reference application
-driving the design is an ERTMS Radio Block Centre (RBC), a SIL 4 function
-under CENELEC EN 50128 / EN 50129.
+**Product:** Platform_RTE, the Safe Computing Platform core / RTE of the SAPI workspace
+(repository `safeAPIFreamwork`). C99, MISRA C:2012, EN 50128 SIL 4 target.
+**Layer:** RTE. **Assessment unit:** SAPI core (part of the RTE composition, see
+[../../docs/safety/CERTIFICATION_PLAN.md](../../docs/safety/CERTIFICATION_PLAN.md)).
 
-Applications never call OS/system APIs directly - every service is reached
-through SAPI, so an application can be retargeted to a different OS/RTOS by
-registering a different backend, without touching application code.
+## Responsibility
 
-## Status
+Platform_RTE is the only layer through which safety applications reach the OS, the network and each
+other. It owns:
 
-Actively growing framework with SIL 4 safety focus.
+- **Execution:** the cyclic application manager (init, execute, shutdown, optional pre/post hooks and a
+  built-in checkpoint stage) and the setup-phase lock.
+- **Redundancy:** N-way voting, 2-way cross-comparison, checkpoint rendezvous, dual-instance
+  ONLINE/STANDBY negotiation, state transfer on promotion, redundancy configuration.
+- **Safe state:** the single place where a transition to SAFE or REBOOT happens. Applications only
+  register a cleanup handler.
+- **Communication seam:** named channels and Flows over pluggable backends, checksums and the
+  vital-message envelope.
+- **OS abstraction (OAL):** timer, NVM, memory, task, mutex, IPC, log, reboot, netlink, platform
+  and clock sync, each reached through a backend registered at startup (ADR-005).
+- **Common utilities:** status codes, fixed-width types, checked casts, bounded strings, buffer views.
 
-**IMPLEMENTED (Production Ready):** 14 core modules
-- Timer, IPC (base queue API only — see note below), Memory, NVM, Task/Thread, Logging, Reboot
-- AppManager (lifecycle), SafeState (transitions), Status codes, Types, Buffer, Cast, String
-- Suitable for SIL 1-3 systems; can be integrated with external redundancy solutions
-- Note: `sapi_ipc`'s pub/sub and request-reply variants
-  (`src/ipc/sapi_ipc_pubsub.c`, `sapi_ipc_request_reply.c`) are TODO-only
-  stubs, excluded from the build (see their own file headers and
-  `CMakeLists.txt`'s `SAFEAPI_ENABLE_IPC` comment) — only the base queue
-  API (`sapi_ipc_create`/`_send`/`_receive`/`_destroy`) is implemented.
+It does **not** implement any operating-system backend (Platform_OS_POSIX), any transport protocol
+(Platform_Protocol_*), any railway logic (RBC_*), or any ERTMS message handling.
 
-**IMPLEMENTED:** Watchdog (`include/safeapi/watchdog/sapi_watchdog.h`,
-`src/watchdog/sapi_watchdog.c`)
-- Fault detection and recovery actions (LOG/SAFESTATE/REBOOT/FAILOVER/CUSTOM)
-  dispatched on timeout, real timer integration, full test coverage
-- Depended on directly by `sapi_checkpoint` and `sapi_appmanager`'s
-  optional checkpoint stage (ADR-024's dependency graph)
+## Interfaces exposed to other products
 
-**IMPLEMENTED:** Redundancy Framework — vital channels, voting, checkpoints,
-data integrity (ADR-008/ADR-017; supersedes the "design phase" framing
-`docs/REDUNDANCY_ARCHITECTURE.md` originally described this as — that
-document is now a design *record*, not a proposal still to be built)
-- `sapi_channel` — 2oo2/2oo3/NMR quorum voting across redundant
-  channels, disagreement/health tracking
-- `sapi_checksum` — CRC-64 data integrity and the `sapi_vital_message_t`
-  envelope (sequence + sender + CRC) both of the modules below build on
-- `sapi_checkpoint` — bounded checkpoint-ID rendezvous across vital
-  channels, correct even without wall-clock agreement between nodes;
-  fills in `sapi_channel_checkpoint()` as already specified (but not
-  previously built) in `docs/REDUNDANCY_ARCHITECTURE.md`
-- `sapi_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
-  query (never the basis of vital-comparison correctness — see its header)
-- Example: `examples/geo_distributed_checkpoint_sync.c`
-- See `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1
-  and ADR-024's dependency table for exactly what's wired to what.
+| Interface | Header directory | Consumed by | Notes |
+|---|---|---|---|
+| **PI-API** (`sapi_flow_*`) | `include/safeapi/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
+| **Application manager** | `include/safeapi/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
+| **Safe state** | `include/safeapi/utils/safestate/` | all | `SAPI_ASSERT`, `SAPI_SAFESTATE`, `SAPI_REBOOT`, cleanup handler registration |
+| **Redundancy services** | `include/safeapi/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.md` |
+| **Channel service** | `include/safeapi/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
+| **Redundancy configuration** | `include/safeapi/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
+| **State registration** | `include/safeapi/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
+| **Backend seams** | `include/safeapi/oal/<service>/*_backend.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `sapi_flow_backend_t`, `sapi_protocol_adapter_ops_t` |
+| **Utilities** | `include/safeapi/utils/` | all | Status, types, cast, buffer, string |
+| **Build artifacts** | `dist/<platform>/`, CMake package `safeAPIFramework`, Conan `safeapiframework/0.1.0` | all C products | Targets `safeapi::core`, `::oal`, `::channels`, `::appmanager` |
 
-**IMPLEMENTED:** AppManager cycle hooks + built-in checkpoint (ADR-019)
-- `pre_execute`/`post_execute` — optional per-cycle hooks bracketing the
-  existing mandatory `execute()`, so a cyclic application's "gather
-  inputs" / "decide" / "send outputs" phases can be three named functions
-  instead of one function with phase-numbered comments; both default to
-  NULL (skipped) and are fully backward-compatible with every existing
-  `sapi_appmanager_operations_t` caller.
-- Optional built-in checkpoint stage — `sapi_appmanager_config_t::checkpoint`
-  (NULL by default) wires a bounded `sapi_channel_checkpoint()` (ADR-017)
-  rendezvous into the loop automatically, ahead of `pre_execute()`, so a
-  dual/multi-channel application no longer hand-rolls that call itself.
-- Addendum (§5): relaxed `sapi_channel_init()`'s `channel_count`
-  floor from `>= 2` to `>= 1` (`SAPI_VOTING_NMR`, `quorum_size == 1` only —
-  2oo2/2oo3 floors unchanged) to support a single-physical-link topology;
-  see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md`
-  for the full retrofit writeup (including the multiplexed-frame wire
-  protocol needed to carry checkpoint traffic on an existing link), first
-  live-verified in `safeAPIRBC2oo2`'s A/B channel.
+Every public function has a Doxygen block with pre-conditions, post-conditions and requirement IDs.
+See [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) for the per-module guides.
 
-**IMPLEMENTED:** Structured message-trail logging (`sapi_log_write_event()`)
-- New addition to `sapi_log` alongside the existing free-text
-  `sapi_log_write()`: emits a fixed, space-separated `Key=Value` line -
-  `Timestamp=<ms> Level=<LEVEL> Cycle=<n> Source=<src> Destination=<dst>
-  Type=<type> Info=<info>[ <extra_fields>]` - for logging an actual
-  inter-channel message (a frame sent/received, a decision like AGREE/
-  DISAGREE) — the mandatory fields a message-trail log needs, with room
-  for caller-supplied extra `Key=Value` fields beyond those seven.
-  Fixed-arity, no `<stdarg.h>` (MISRA C:2012 Rule 17.1); the same backend
-  as `sapi_log_write()` receives it, so no backend changes are required.
-  First real consumer: `safeAPIRBC2oo2`'s A/B/C/SITE cyclic executives
-  now log every AB_SAMPLE, M136, checkpoint REQUEST/REPLY, AGREE/
-  DISAGREE, and SITE heartbeat this way.
+## Interfaces required
 
-**IMPLEMENTED:** Dual-transfer state negotiation (`sapi_dual`, ADR-020)
-- `sapi_dual_state_t` — shared IDLE/UNKNOWN/ONLINE/HOTSTANDBY/COLDSTANDBY
-  vocabulary for "which of two redundant instances is active, and how
-  well-backed is the standby one", generalizing the ad hoc versions of
-  this `safeAPIRBC2oo2`'s `site.c`/`channel_ab.c` each grew independently.
-- `sapi_dual_msgchannel_t` ("Channel") — one EN 50159-defended message
-  channel over a single `sapi_netlink_handle_t`, reusing the framework's
-  existing `sapi_vital_message_t` envelope (sequence/sender/CRC-64) plus a
-  masquerade check against an expected peer ID.
-- `sapi_dual_channel_t` ("DualChannel") — wraps 1..N redundant Channels
-  with always-send + bounded-ACK-wait delivery (the real payload traffic
-  itself is the liveness signal, never gated by negotiated state),
-  aggregate `DOWN`/`DEGRADED`/`FULL` connection-status tracking with an
-  optional change callback, and a second fire-and-forget frame flow for
-  carrying a negotiator's own STATE beacons on the same links.
-- `sapi_dual_negotiator_t` — drives one round of state negotiation per
-  `execute()` call: older-startup-timestamp-wins tie-break for the initial
-  ONLINE/STANDBY decision, and an asymmetric HOT/COLD rule where the
-  *currently-ONLINE* side's own channel health (never the STANDBY side's
-  self-report) determines the STANDBY side's HOTSTANDBY/COLDSTANDBY label.
-  One-directional dependency: the negotiator depends on a DualChannel, a
-  DualChannel has no knowledge of the negotiator.
-- Framework-only in this pass — `safeAPIRBC2oo2`'s `site.c`/`channel_ab.c`
-  keep their existing hand-rolled logic for now; retrofitting them to
-  `sapi_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
-- See `docs/architecture/ADR-020-dual-transfer-state-negotiation.md`.
+Only the C standard library and, at run time, one registered backend per OAL service used. A build
+that links no backend cannot run the services; `Platform_OS_POSIX` is the reference backend.
 
-**Key Documentation:**
-- [Test Coverage Report](coverage/index.html) — gcovr line/function/branch
-  coverage (generated by CI on every push to `master`/`develop`; only
-  live on the published GitHub Pages site, not in a plain repo checkout
-  — run `./scripts/coverage.sh` locally for the same report)
-- `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
-  016-019; 009-015 do not exist) + PlantUML diagrams
-- `docs/requirements/SRS.md` — Consolidated requirements specification
-- `docs/MISRA_COMPLIANCE_REPORT.md` — MISRA C:2012 conformance status
-- `docs/EN_50128_ALIGNMENT.md` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
-  - EN 50128 (Software safety) — All 10 mandatory techniques
-  - EN 50129 (Functional safety management) — Full support
-  - EN 50126 (RAM - Reliability/Availability/Maintainability) — Design features
-- `docs/REDUNDANCY_ARCHITECTURE.md` — Vital channels, voting, checkpoints (5-stage output gate)
-- `docs/WATCHDOG_DESIGN.md` — System/task/channel/checkpoint watchdog & recovery
-- `docs/HARDWARE_PATTERNS_GUIDE.md` — **Choose your SIL & Hardware** ← Start here to select a configuration
-  - SIL 1-2: Single system (1oo1, 1oo1+Watchdog)
-  - SIL 3: Dual-channel (2oo2, 2oo2D)
-  - SIL 4: Triple-channel (2oo3) **← Recommended for ERTMS RBC**
-  - SIL 4 alternatives: Online mode, Hot standby, NMR
-  - Comparison matrix & decision tree
-  - Cost estimates & implementation timeline
-  - Real-world use case examples
-- `docs/HARDWARE_CONFIGURATIONS.md` — **All 9 hardware setup options** ← Detailed technical specs
-  - Single system (non-redundant)
-  - 2oo2 dual-channel (SIL 3)
-  - 2oo3 triple-channel (SIL 4)
-  - NMR (N-modular)
-  - Online mode (active-active cluster)
-  - Hot standby (active-passive failover)
-  - Heterogeneous systems (mixed processors)
-  - Centralized voter topology
-  - Distributed gossip topology
-- `docs/FEATURE_EXPANSION.md` — Feature roadmap & design specs
-
-OAL services, each in its own `include/safeapi/<feature>/` +
-`src/<feature>/` directory (ADR-007): timer, non-volatile memory (NVM),
-static memory reservation, task/thread scheduling, inter-process/inter-task
-communication (IPC), logging/diagnostics, and controlled reboot.
-
-Common, layer-agnostic facilities, same per-feature layout: status codes
-(`status`) and fixed-width types (`types`), the cross-layer data buffer view
-with endianness-safe multi-byte access (`buffer`), checked integer casting
-between every fixed-width type and `size_t` (`cast`), safe-state transitions
-/ checked assertions (`safestate`: `SAPI_ASSERT`, `SAPI_SAFESTATE`,
-`SAPI_REBOOT`), bounded string manipulation replacing strcpy/strcat/
-sprintf/atoi/strtok (`string`), and application lifecycle management
-(`appmanager`: single entry point with init→execute→shutdown pattern).
-
-Every OAL service is reached through a **backend registered at startup**
-(`sapi_<service>_register_backend()`) rather than a hardcoded
-implementation — this is how an integrator supplies their own
-implementation (POSIX for host-side dev/test, an RTOS backend for target
-hardware) without editing framework source. See
-`docs/architecture/ADR-005-oal-backend-registration.md`.
-
-## Building
-
-### Using CMake Presets (recommended)
-
-CMake presets provide standardized build configurations. List available presets:
+## Build and verify
 
 ```sh
-cmake --list-presets
+cmake --preset debug && cmake --build --preset debug && ctest --preset debug
+cmake --preset ci                        # warnings as errors
+cmake --preset asan | ubsan | coverage   # sanitizers and coverage
+cmake --build build --target cppcheck    # MISRA C:2012 analysis (or ./scripts/run-cppcheck.sh)
+cmake --install build --prefix .         # produces dist/<platform>/ for consumers
 ```
 
-**Common workflows:**
-
-```sh
-# Debug build with tests
-cmake --preset debug
-cmake --build --preset debug
-ctest --preset debug
-
-# Release build (optimized)
-cmake --preset release
-cmake --build --preset release
-ctest --preset release
-
-# CI build (strict checks, fail on warnings)
-cmake --preset ci
-cmake --build --preset ci
-ctest --preset ci
-
-# Memory sanitizer (detect use-after-free, buffer overflows)
-cmake --preset asan
-cmake --build --preset asan
-ctest --preset asan
-
-# Undefined behavior sanitizer
-cmake --preset ubsan
-cmake --build --preset ubsan
-ctest --preset ubsan
-
-# Code coverage
-cmake --preset coverage
-cmake --build --preset coverage
-ctest --preset coverage
-```
-
-**Available presets:**
-- `debug` — Debug build, all warnings, tests enabled
-- `release` — Optimized release build, tests enabled
-- `ci` — CI strict mode (warnings→errors, stop on test failure)
-- `asan` — AddressSanitizer (memory errors)
-- `ubsan` — UndefinedBehaviorSanitizer (undefined behavior)
-- `coverage` — Code coverage instrumentation
-- `clang` / `gcc` — Explicit compiler selection
-- `minimal` — Headers only, no tests
-- `linux-native` — Native Linux build (POSIX OAL)
-- `linux-release` — Linux release build
-- `qnx` — QNX RTOS cross-compilation
-- `qnx-release` — QNX RTOS release build
-
-### Cross-Compilation (Linux, QNX, etc.)
-
-For detailed cross-compilation instructions, see [CROSS_COMPILATION.md](docs/CROSS_COMPILATION.md).
-
-**Quick start — Linux:**
-```sh
-./examples/build-linux-native.sh
-```
-
-**Quick start — QNX RTOS:**
-```sh
-export QNX_HOST=/opt/qnx7.0.0/host/linux/x86_64
-export QNX_TARGET=/opt/qnx7.0.0/target/qnx7.0.0/x86_64
-./examples/build-qnx.sh
-```
-
-### Manual CMake invocation
-
-```sh
-cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
-```
-
-## Static Analysis (MISRA C:2012)
-
-The project uses **cppcheck** with the MISRA addon to verify compliance with MISRA C:2012 Mandatory & Required rules.
-
-**Run analysis:**
-```sh
-# Via convenience script
-./scripts/run-cppcheck.sh
-
-# Via CMake target (requires cppcheck installed)
-cmake --build build --target cppcheck
-
-# Direct cppcheck invocation
-cppcheck --addon=misra --std=c99 --enable=all -I include src include
-```
-
-**Output formats:**
-```sh
-./scripts/run-cppcheck.sh              # Print to stdout
-./scripts/run-cppcheck.sh --html report.html  # Generate HTML report
-./scripts/run-cppcheck.sh --json report.json  # Generate JSON report
-```
-
-**Compliance status:**
-See `docs/MISRA_COMPLIANCE_REPORT.md` for current conformance status and documented deviations.
-Suppressions are managed in `.cppcheck-suppressions`.
+Cross-compilation targets and toolchain files: [docs/CROSS_COMPILATION.md](docs/CROSS_COMPILATION.md)
+and `platform/toolchains/`. Coding rules: [CLAUDE.md](CLAUDE.md). Conformance evidence:
+[docs/MISRA_COMPLIANCE_REPORT.md](docs/MISRA_COMPLIANCE_REPORT.md),
+[docs/COVERAGE_REPORT.md](docs/COVERAGE_REPORT.md), [docs/EN_50128_ALIGNMENT.md](docs/EN_50128_ALIGNMENT.md),
+[docs/SAFETY_APPLICATION_CONDITIONS.md](docs/SAFETY_APPLICATION_CONDITIONS.md).
 
 ## Layout
 
-```
-CMakeLists.txt                 top-level build
-cmake/CompilerWarnings.cmake   shared warning/hardening flags
-docs/architecture/             architecture decision records (ADRs)
-docs/requirements/              consolidated requirements specification (SRS)
-docs/MISRA_COMPLIANCE_REPORT.md MISRA C:2012 conformance status
-include/safeapi/<feature>/     one public header per feature (ADR-007):
-                                status, types, buffer, cast, safestate,
-                                string, timer, nvm, memory, task, ipc, log,
-                                reboot, appmanager, watchdog, checksum,
-                                vital_channel, clocksync, checkpoint, dual
-src/<feature>/                 matching implementation (ADR-007 directory
-                                layout is unchanged); compiled into one of
-                                4 grouped library targets - safeapi::core,
-                                safeapi::oal, safeapi::channels,
-                                safeapi::appmanager (ADR-023) - rather than
-                                one target per feature
-tests/<feature>/                matching CTest test file per feature
-examples/                      standalone example programs (see
-                                examples/README.md), e.g.
-                                geo_distributed_checkpoint_sync.c (ADR-017)
+```text
+include/safeapi/<area>/<feature>/   public header per feature (ADR-007)
+src/<feature>/                      implementation, built into 4 library targets (ADR-023)
+tests/<feature>/                    one CTest file per feature
+docs/                               guides, ADRs, requirements (SRS), safety, templates
+examples/                           standalone example programs
 ```
 
-## Design principles
+## Where to read next
 
-- Pure C ABI (`extern "C"`) for every public interface.
-- No dynamic memory allocation after initialization — callers own storage.
-- Every fallible call returns an explicit `sapi_status_t`; no exceptions.
-- MISRA C:2012-oriented source, aimed at SIL 3/4 (EN 50128) constraints.
-- Every conversion between integer types goes through a checked `sapi_cast_*`
-  function — no bare C-style casts.
-- Requirement-ID tags (`REQ-...`) on public API elements for traceability,
-  consolidated in `docs/requirements/SRS.md`.
-- All public headers documented in Doxygen format (`@file`/`@brief`/
-  `@param`/`@return`); see `Doxyfile` to generate HTML docs locally.
+- Module status and feature notes: [docs/MODULES.md](docs/MODULES.md)
+- Architecture: [docs/architecture/SYSTEM_OVERVIEW.md](docs/architecture/SYSTEM_OVERVIEW.md) and the ADRs
+- Workspace context: [../../docs/architecture/ARCHITECTURE.md](../../docs/architecture/ARCHITECTURE.md)

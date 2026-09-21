@@ -56,7 +56,7 @@
  *
  * ### System-Wide Documentation (`docs/`)
  *
- * - **SYSTEM_ARCHITECTURE.md** - Complete system design
+ * - **architecture/SYSTEM_OVERVIEW.md** - System layering and common-cause mitigation
  *   - Layered architecture (app manager, vital channels, IPC, OS)
  *   - Channel taxonomy (internal, inter-unit, inter-system)
  *   - Blocking semantics (vital, non-vital, async)
@@ -71,7 +71,7 @@
  * @section reading_paths Reading Paths by Role
  *
  * ### For System Architects
- * 1. Start: docs/SYSTEM_ARCHITECTURE.md
+ * 1. Start: docs/architecture/SYSTEM_OVERVIEW.md
  * 2. Then: include/safeapi/vital_channel/ARCHITECTURE.md
  * 3. Then: include/safeapi/vital_channel/CHANNEL_TOPOLOGIES.md
  * 4. Then: include/safeapi/ipc/IPC_GUIDE.md
@@ -88,7 +88,7 @@
  *    - Find your topology (2oo2 local, 2oo3 distributed, etc.)
  * 2. Then: include/safeapi/ipc/CHANNEL_CONFIGURATION.md
  *    - Configure your channels (IPs, ports, paths)
- * 3. Then: docs/SYSTEM_ARCHITECTURE.md (section on App Manager)
+ * 3. Then: docs/architecture/SYSTEM_OVERVIEW.md (section on App Manager)
  *    - Implement your main loop
  * 4. Code: See examples/channel_configuration_example.c
  *
@@ -99,7 +99,7 @@
  *    - Review redundancy patterns
  * 3. Then: include/safeapi/ipc/IPC_TRANSPORT_SELECTION.md
  *    - Understand transport reliability characteristics
- * 4. Reference: docs/SYSTEM_ARCHITECTURE.md
+ * 4. Reference: docs/architecture/SYSTEM_OVERVIEW.md
  *    - Understand timeout handling and error propagation
  *
  * @section document_structure Documentation Structure
@@ -129,8 +129,8 @@
  * | How do I configure a channel? | CHANNEL_CONFIGURATION.md |
  * | How does voting work? | vital_channel/ARCHITECTURE.md |
  * | What topology fits my system? | vital_channel/CHANNEL_TOPOLOGIES.md |
- * | How do I build the app manager? | SYSTEM_ARCHITECTURE.md |
- * | What is POSIX vs RTOS? | SYSTEM_ARCHITECTURE.md + IPC_TRANSPORT_SELECTION.md |
+ * | How do I build the app manager? | architecture/SYSTEM_OVERVIEW.md |
+ * | What is POSIX vs RTOS? | architecture/SYSTEM_OVERVIEW.md + IPC_TRANSPORT_SELECTION.md |
  * | Show me working code | examples/channel_configuration_example.c |
  *
  * @section generating_html Generating HTML Documentation
