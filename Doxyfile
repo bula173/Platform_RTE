@@ -1,4 +1,5 @@
 PROJECT_NAME           = "Safe API Framework"
+PROJECT_NUMBER         = $(PROJECT_NUMBER)  # set by docs.yml / a local build: "<VERSION file> build <short-sha>"
 PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)"
 OUTPUT_DIRECTORY       = docs/api
 INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.md docs/requirements docs/MODULES.md docs/REDUNDANCY_ARCHITECTURE.md
