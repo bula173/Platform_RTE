@@ -86,6 +86,37 @@ rte_status_t rte_channel_service_read(rte_channel_service_t *storage,
     return s_osadapter->read(storage, data, data_size, timeout_ms);
 }
 
+rte_status_t rte_channel_service_read_ex(rte_channel_service_t *storage,
+                                          void *data,
+                                          size_t data_size,
+                                          rte_duration_ms_t timeout_ms,
+                                          size_t *out_actual_size)
+{
+    rte_status_t status;
+
+    if ((storage == NULL) || (data == NULL) || (data_size == 0U) || (out_actual_size == NULL))
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    status = validate_osadapter();
+    if (status != RTE_STATUS_OK)
+    {
+        return status;
+    }
+    if (s_osadapter->read_ex != NULL)
+    {
+        return s_osadapter->read_ex(storage, data, data_size, timeout_ms, out_actual_size);
+    }
+    /* OSAdapter has no length-aware read: fall back to the plain one and report the whole
+     * buffer as received, matching every caller's behaviour before this function existed. */
+    status = s_osadapter->read(storage, data, data_size, timeout_ms);
+    if (status == RTE_STATUS_OK)
+    {
+        *out_actual_size = data_size;
+    }
+    return status;
+}
+
 rte_status_t rte_channel_service_send(rte_channel_service_t *storage,
                                          const void *data,
                                          size_t data_size,

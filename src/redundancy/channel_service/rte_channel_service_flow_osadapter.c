@@ -230,7 +230,8 @@ static const rte_osadapter_channel_service_t g_flow_osadapter = {
     osadapter_setup,
     osadapter_read,
     backend_send,
-    osadapter_close
+    osadapter_close,
+    NULL /* read_ex: not implemented here, rte_channel_service_read_ex() falls back to read() */
 };
 
 rte_status_t rte_channel_service_flow_osadapter_register_resolver(rte_channel_service_flow_resolve_fn resolver,
