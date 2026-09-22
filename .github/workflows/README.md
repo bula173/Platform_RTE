@@ -27,7 +27,7 @@ This directory contains automated CI/CD workflows for the RteFramework.
 
 **Status badge:**
 ```markdown
-![CI](https://github.com/bula173/safeAPIFreamwork/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/bula173/Platform_RTE/actions/workflows/ci.yml/badge.svg)
 ```
 
 ---
@@ -53,7 +53,7 @@ This directory contains automated CI/CD workflows for the RteFramework.
 - `doxygen-documentation` — Generated HTML docs (7-day retention)
 
 **GitHub Pages:**
-- Automatically published to: `https://bula173.github.io/safeAPIFreamwork/`
+- Automatically published to: `https://bula173.github.io/Platform_RTE/`
 - Only deployed on pushes to `master` or `develop`
 
 **Documentation includes:**
@@ -141,7 +141,7 @@ This directory contains automated CI/CD workflows for the RteFramework.
 ## Monitoring Builds
 
 ### GitHub Actions Dashboard
-Visit: https://github.com/bula173/safeAPIFreamwork/actions
+Visit: https://github.com/bula173/Platform_RTE/actions
 
 ### Recent Runs
 - Check status of latest workflow runs
@@ -151,9 +151,9 @@ Visit: https://github.com/bula173/safeAPIFreamwork/actions
 ### Status Badges
 Add to README:
 ```markdown
-![CI](https://github.com/bula173/safeAPIFreamwork/actions/workflows/ci.yml/badge.svg)
-![Docs](https://github.com/bula173/safeAPIFreamwork/actions/workflows/docs.yml/badge.svg)
-![Cross-Compile](https://github.com/bula173/safeAPIFreamwork/actions/workflows/cross-compile.yml/badge.svg)
+![CI](https://github.com/bula173/Platform_RTE/actions/workflows/ci.yml/badge.svg)
+![Docs](https://github.com/bula173/Platform_RTE/actions/workflows/docs.yml/badge.svg)
+![Cross-Compile](https://github.com/bula173/Platform_RTE/actions/workflows/cross-compile.yml/badge.svg)
 ```
 
 ---
