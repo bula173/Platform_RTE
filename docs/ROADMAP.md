@@ -43,7 +43,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Nested states with entry/exit actions
   - Orthogonal regions (AND states)
   - Static transition table allocation
-- **GitHub Issue:** [#1](https://github.com/bula173/safeAPIFreamwork/issues/1)
+- **GitHub Issue:** [#1](https://github.com/bula173/Platform_RTE/issues/1)
 - **ADR:** `docs/architecture/ADR-008-hierarchical-state-machine.md` (pending)
 - **MISRA Considerations:** Avoid function pointers in transitions; use indexed dispatch table instead
 - **Est. Effort:** 2–3 weeks (design + implementation + testing)
@@ -58,7 +58,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Multiple producer, single consumer (MPSC)
   - Overflow/underflow detection
   - Integration with task scheduler
-- **GitHub Issue:** [#2](https://github.com/bula173/safeAPIFreamwork/issues/2)
+- **GitHub Issue:** [#2](https://github.com/bula173/Platform_RTE/issues/2)
 - **ADR:** `docs/architecture/ADR-009-event-message-queue.md` (pending)
 - **MISRA Considerations:** Validate queue size at compile time; avoid dynamic growth
 - **Est. Effort:** 1–2 weeks
@@ -94,7 +94,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Read-write guards (no dynamic locks)
   - Deadlock prevention via strict lock ordering
   - Atomic compare-and-swap helpers
-- **GitHub Issue:** [#4](https://github.com/bula173/safeAPIFreamwork/issues/4)
+- **GitHub Issue:** [#4](https://github.com/bula173/Platform_RTE/issues/4)
 - **ADR:** `docs/architecture/ADR-011-protected-data-sync.md` (pending)
 - **MISRA Considerations:** Static lock ordering analysis required
 - **Est. Effort:** 2–3 weeks
@@ -113,7 +113,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - No allocation after initialization
   - Post-mortem analysis support
   - Survives task restart
-- **GitHub Issue:** [#5](https://github.com/bula173/safeAPIFreamwork/issues/5)
+- **GitHub Issue:** [#5](https://github.com/bula173/Platform_RTE/issues/5)
 - **ADR:** `docs/architecture/ADR-012-diagnostic-ring-buffer.md` (pending)
 - **Est. Effort:** 1–2 weeks
 
@@ -127,7 +127,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Corruption detection and recovery
   - Rollback support
   - NVM persistence
-- **GitHub Issue:** [#6](https://github.com/bula173/safeAPIFreamwork/issues/6)
+- **GitHub Issue:** [#6](https://github.com/bula173/Platform_RTE/issues/6)
 - **ADR:** `docs/architecture/ADR-013-safe-config-manager.md` (pending)
 - **MISRA Considerations:** All config writes must be validated before commit
 - **Est. Effort:** 2–3 weeks
@@ -142,7 +142,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Fletcher-16/32 checksums
   - Protocol payload verification
   - NVM integrity checking
-- **GitHub Issue:** [#7](https://github.com/bula173/safeAPIFreamwork/issues/7)
+- **GitHub Issue:** [#7](https://github.com/bula173/Platform_RTE/issues/7)
 - **ADR:** `docs/architecture/ADR-014-checksum-crc-utils.md` (pending)
 - **Est. Effort:** 1 week
 
@@ -155,7 +155,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Static time-slot allocation per task
   - Integration with timer layer
   - Deterministic WCET analysis
-- **GitHub Issue:** [#8](https://github.com/bula173/safeAPIFreamwork/issues/8)
+- **GitHub Issue:** [#8](https://github.com/bula173/Platform_RTE/issues/8)
 - **ADR:** `docs/architecture/ADR-015-cyclic-scheduler.md` (pending)
 - **Est. Effort:** 2–3 weeks
 
@@ -168,7 +168,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Build-time selectable mock OSAdapters for all OAL services
   - Time control for testing
   - Failure injection support
-- **GitHub Issue:** [#9](https://github.com/bula173/safeAPIFreamwork/issues/9)
+- **GitHub Issue:** [#9](https://github.com/bula173/Platform_RTE/issues/9)
 - **ADR:** `docs/architecture/ADR-016-mock-osadapter-harness.md` (pending)
 - **Est. Effort:** 2 weeks
 
@@ -181,7 +181,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P3
 - **Target Release:** 0.4.0 or later
 - **Scope:** WCET analysis, task profiling, resource usage tracking
-- **GitHub Issue:** [#10](https://github.com/bula173/safeAPIFreamwork/issues/10)
+- **GitHub Issue:** [#10](https://github.com/bula173/Platform_RTE/issues/10)
 - **Est. Effort:** 1–2 weeks
 
 ### Binary Serialization (ASN.1 / TLV)
@@ -189,7 +189,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P3
 - **Target Release:** 0.4.0 or later
 - **Scope:** Schema-aware message encoding for protocol payloads
-- **GitHub Issue:** [#11](https://github.com/bula173/safeAPIFreamwork/issues/11)
+- **GitHub Issue:** [#11](https://github.com/bula173/Platform_RTE/issues/11)
 - **Est. Effort:** 2–3 weeks (depends on ASN.1 complexity)
 
 ### CAN Bus Utilities
@@ -197,7 +197,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P3
 - **Target Release:** 0.4.0 or later (rail-specific)
 - **Scope:** CAN frame builder/parser, DBC support
-- **GitHub Issue:** [#12](https://github.com/bula173/safeAPIFreamwork/issues/12)
+- **GitHub Issue:** [#12](https://github.com/bula173/Platform_RTE/issues/12)
 - **Est. Effort:** 1–2 weeks
 
 ### Authenticated Encryption (AES-GCM Binding)
@@ -205,7 +205,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
 - **Priority:** P3
 - **Target Release:** 0.4.0 or later (depends on threat model)
 - **Scope:** Thin wrapper around proven crypto library (Mbed TLS, libsodium)
-- **GitHub Issue:** [#13](https://github.com/bula173/safeAPIFreamwork/issues/13)
+- **GitHub Issue:** [#13](https://github.com/bula173/Platform_RTE/issues/13)
 - **Est. Effort:** 1–2 weeks
 
 ---
@@ -220,7 +220,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - `RTE_ENABLE_<FEATURE>` options for each module
   - Conditional compilation and linking
   - Default-ON for current modules, default-OFF for new features
-- **GitHub Issue:** [#14](https://github.com/bula173/safeAPIFreamwork/issues/14)
+- **GitHub Issue:** [#14](https://github.com/bula173/Platform_RTE/issues/14)
 - **ADR:** `docs/architecture/ADR-017-feature-configuration.md` (pending)
 - **Est. Effort:** 1 week
 
@@ -232,7 +232,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - `rte_enable_feature()` API
   - Feature availability checks at runtime
   - Graceful degradation when features disabled
-- **GitHub Issue:** [#15](https://github.com/bula173/safeAPIFreamwork/issues/15)
+- **GitHub Issue:** [#15](https://github.com/bula173/Platform_RTE/issues/15)
 - **ADR:** `docs/architecture/ADR-018-runtime-feature-registry.md` (pending)
 - **Est. Effort:** 1–2 weeks
 
@@ -244,7 +244,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Generated `rte_config.h` with static feature flags
   - CMake verification of consistency
   - Locked configuration before testing
-- **GitHub Issue:** [#16](https://github.com/bula173/safeAPIFreamwork/issues/16)
+- **GitHub Issue:** [#16](https://github.com/bula173/Platform_RTE/issues/16)
 - **ADR:** `docs/architecture/ADR-019-static-config-certification.md` (pending)
 - **Est. Effort:** 1 week
 

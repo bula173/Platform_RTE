@@ -7,7 +7,7 @@ reproducible reconnect livelock specific to `a-east` restarting, not yet
 fixed. See §2.5 before treating this migration as fully closed.
 Date: 2026-08-18
 Applies to: `include/rte/netlink/rte_netlink.h` (doc contract only -
-no API/ABI change), `safeAPIRBC2oo2`'s
+no API/ABI change), `RBC_GP`'s
 `src/posix_osadapter/rte_posix_osadapter_netlink.c`,
 `src/application/AB/channel_ab_negotiate.c`/`channel_ab_io.c`/
 `channel_ab_types.h`, `src/application/C/monitor_c_io.c`/
@@ -16,7 +16,7 @@ no API/ABI change), `safeAPIRBC2oo2`'s
 
 ## 1. Context
 
-`safeAPIRBC2oo2`'s 6-container RBC topology communicated over real TCP via
+`RBC_GP`'s 6-container RBC topology communicated over real TCP via
 `rte_netlink`. A live field bug (a container whose peer restarted with a
 fresh TCP connection was never detected as dead, because a framework-level
 bug in `rte_dual_channel.c` was masking real transport failures as
@@ -51,7 +51,7 @@ This ADR was executed in two phases, both covered here:
 ### 2.1 New UDP backend, same file, same accessor (REQ-OAL-NETLINK-014)
 
 Per ADR-005/ADR-018 (concrete backends live in the consumer, not the
-framework), `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_netlink.c`
+framework), `RBC_GP/src/posix_osadapter/rte_posix_osadapter_netlink.c`
 was rewritten in place - same `rte_posix_osadapter_netlink()` accessor, so
 registration and every include site needed zero changes. This is an
 outright migration, not an opt-in toggle; no second backend file was kept.
@@ -103,7 +103,7 @@ depended on `HARDWARE_FAULT` specifically. This means `rte_dual_channel`/
 required **zero functional changes** to keep working correctly under UDP;
 this is a validation of that design, not a coincidence.
 
-**Added hardening** (small, `safeAPIRBC2oo2`-only, not a framework
+**Added hardening** (small, `RBC_GP`-only, not a framework
 change): a single dropped datagram is a routine, expected event under UDP
 even on a healthy link (no transport-level retransmission), unlike a TCP
 `ack_timeout_ms` genuinely meaning something was wrong. Tearing the
@@ -293,12 +293,12 @@ cases as evidence this class of issue is closed.
 ### 2.6 Deliberately not addressed by this ADR
 
 `rte_safechannel.c`'s voter channels: confirmed zero consumers in
-`safeAPIRBC2oo2` today, and already has no reconnect capability
+`RBC_GP` today, and already has no reconnect capability
 regardless of transport. Not touched by either phase.
 
 ## 3. Verification
 
-- `safeAPIRBC2oo2`'s `tests/posix_osadapter/test_rte_posix_osadapter.c`:
+- `RBC_GP`'s `tests/posix_osadapter/test_rte_posix_osadapter.c`:
   three new cases against the real UDP backend over loopback -
   `test_netlink_round_trip` (full handshake + bidirectional exchange,
   proves `open()` returning `OK` means genuinely usable, not just that a
@@ -309,13 +309,13 @@ regardless of transport. Not touched by either phase.
   REQ-OAL-NETLINK-002). `ctest --test-dir build`: 2/2 (this project has
   no ctest coverage of its own beyond the POSIX backend integration
   suite - framework-level dispatch logic is covered by
-  `safeAPIFreamwork`'s own `test_rte_netlink`, unaffected by this ADR
+  `Platform_RTE`'s own `test_rte_netlink`, unaffected by this ADR
   since it only exercises the transport-agnostic layer via a mock
   backend).
-- `safeAPIFreamwork`'s own `ctest --test-dir build`: 27/27, unaffected -
+- `Platform_RTE`'s own `ctest --test-dir build`: 27/27, unaffected -
   no framework source files changed in this phase (`rte_netlink.h`'s
   doc-comment-only update aside).
-- `.claude/skills/run-safeAPIRBC2oo2/smoke.sh`, both scenarios (basic
+- `.claude/skills/run-RBC_GP/smoke.sh`, both scenarios (basic
   negotiation/cross-compare/checkpoint, and the DISAGREE -> REBOOT ->
   TAKEOVER -> state-transfer failover chain): consistently clean across
   many runs after the §2.3/§2.4 fixes, versus reproducible failures
@@ -339,23 +339,23 @@ regardless of transport. Not touched by either phase.
 
 ## 4. Location
 
-- `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_netlink.c`
+- `RBC_GP/src/posix_osadapter/rte_posix_osadapter_netlink.c`
   (rewritten)
-- `safeAPIRBC2oo2/src/application/AB/channel_ab_types.h`,
+- `RBC_GP/src/application/AB/channel_ab_types.h`,
   `channel_ab_negotiate.c` (`neg_consecutive_send_miss` hysteresis);
   `channel_ab_io.c` (peer-link staleness reconnect trigger, AB_SAMPLE/
   SITE_STATE dedup, `checkpoint_pending_reenable`/
   `checkpoint_reenable_deadline_ms` deferred-checkpoint-reenable)
-- `safeAPIRBC2oo2/src/application/C/monitor_c_types.h`, `monitor_c_io.c`
+- `RBC_GP/src/application/C/monitor_c_types.h`, `monitor_c_io.c`
   (same staleness/dedup pattern for C's two links)
-- `safeAPIRBC2oo2/src/application/common_config.h`
+- `RBC_GP/src/application/common_config.h`
   (`RTE_EXAMPLE_NEG_SEND_MISS_THRESHOLD`,
   `RTE_EXAMPLE_AB_CHECKPOINT_MAX_DELAY_MS` raised to 450ms,
   `RTE_EXAMPLE_LINK_STALE_TIMEOUT_COUNT`,
   `RTE_EXAMPLE_CHECKPOINT_REENABLE_GRACE_MS`)
-- `safeAPIRBC2oo2/tests/posix_osadapter/test_rte_posix_osadapter.c` (new
+- `RBC_GP/tests/posix_osadapter/test_rte_posix_osadapter.c` (new
   netlink cases)
-- `safeAPIRBC2oo2/tests/robot/fault_injection.robot` (new - container
+- `RBC_GP/tests/robot/fault_injection.robot` (new - container
   reboot/network partition matrix, all 6 RBC services), `etc/run_robot_tests.sh`
   (`--full` flag to include it)
 - `include/rte/netlink/rte_netlink.h` (doc contract: `REQ-OAL-NETLINK-014`,

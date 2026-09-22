@@ -16,7 +16,7 @@ class RTEFrameworkConan(ConanFile):
         "safe-state transitions, and a redundancy framework (channels/voting, "
         "checksums, checkpoints, clock sync)."
     )
-    url = "https://github.com/bula173/safeAPIFreamwork"
+    url = "https://github.com/bula173/Platform_RTE"
     package_type = "static-library"
     settings = "os", "compiler", "build_type", "arch"
 
@@ -72,7 +72,7 @@ class RTEFrameworkConan(ConanFile):
         # Darwin/arm64), and CMAKE_SYSTEM_PROCESSOR for the same CPU family
         # differs BY OS too (arm64 on Darwin, aarch64 on Linux) - this table
         # covers exactly the platforms this workspace's own toolchain projects
-        # enumerate (LinuxMacOSToolchain's Toolchain-Linux.cmake, SAPIMacOSToolchain).
+        # enumerate (Platform_Toolchain_Linux's Toolchain-Linux.cmake, Platform_Toolchain_MacOS).
         # Duplicated per-project rather than shared, same convention
         # compute_version.sh already uses (every project here is independently
         # clonable).

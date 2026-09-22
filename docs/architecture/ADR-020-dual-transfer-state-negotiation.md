@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Two example-app files (`safeAPIRBC2oo2/src/application/SITE/site.c` and
+Two example-app files (`RBC_GP/src/application/SITE/site.c` and
 `.../AB/channel_ab.c`) each independently grew ad hoc versions of the same
 problem: "am I the active one or the standby, and how healthy is my own
 redundancy right now?"
@@ -227,7 +227,7 @@ reason `rte_dual_channel_t`'s connection-status callback exists.
 
 ### 4. Non-goals for this ADR
 
-- **No retrofit of `safeAPIRBC2oo2` in this pass.** `site.c` and
+- **No retrofit of `RBC_GP` in this pass.** `site.c` and
   `channel_ab.c` keep their existing hand-rolled logic; migrating them
   to `rte_dual` is a deliberate follow-up once this API has shipped and
   been exercised by its own tests, not bundled into the same change that
@@ -264,7 +264,7 @@ reason `rte_dual_channel_t`'s connection-status callback exists.
   `rte_dual_state_frame_t`) travel inside `rte_vital_message_t.payload`
   - both well under the 248-byte payload budget, no change to
   `rte_checksum.h` required.
-- `safeAPIRBC2oo2` is unchanged by this ADR; its own dual-transfer logic
+- `RBC_GP` is unchanged by this ADR; its own dual-transfer logic
   and this new module will temporarily overlap in *purpose* (not in
   code) until the follow-up retrofit lands.
 

@@ -384,7 +384,7 @@ ctest --preset asan
 ## Support
 
 For issues or questions:
-1. Check workflow logs: https://github.com/bula173/safeAPIFreamwork/actions
+1. Check workflow logs: https://github.com/bula173/Platform_RTE/actions
 2. Review example source code comments
 3. Refer to framework ADRs in `docs/architecture/`
 4. Check GitHub Issues for similar problems

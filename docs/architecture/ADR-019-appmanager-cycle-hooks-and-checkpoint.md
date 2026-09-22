@@ -10,7 +10,7 @@ Applies to: `rte_appmanager` (extended, backward-compatible), reusing
 Every application that uses `rte_appmanager_run()` today writes its own
 `execute()` callback as one undivided block, and if it is part of an A/B
 dual-channel pair it must hand-roll its own cross-channel cycle-sync check
-inside that block (see `safeAPIRBC2oo2/src/application/AB/channel_ab.c`,
+inside that block (see `RBC_GP/src/application/AB/channel_ab.c`,
 which currently has phases for reading, waiting for the peer's dual
 transfer, comparing, and forwarding, all inlined into one `execute()`).
 Two related requests came out of that experience:
@@ -56,7 +56,7 @@ typedef struct {
 
 `execute()`'s contract does not change — it remains the mandatory "main"
 stage; existing applications that only set `.execute` (every application
-in `safeAPIRBC2oo2` today) keep compiling and behaving identically, since
+in `RBC_GP` today) keep compiling and behaving identically, since
 a C struct's unset members are zero-initialized in a designated
 initializer and `rte_appmanager_run()` treats a NULL `pre_execute`/
 `post_execute` as "skip this stage", not an error.
@@ -105,7 +105,7 @@ unchanged; only the target type's shape moved.)
 
 `config->checkpoint == NULL` (the default) disables the feature entirely
 — zero behavior change and zero added latency for every application that
-is not part of a synchronized multi-channel group (in `safeAPIRBC2oo2`
+is not part of a synchronized multi-channel group (in `RBC_GP`
 today, that is SITE and C; only A/B would set this). This has to be
 opt-in rather than unconditional for two reasons: `rte_channel_checkpoint()`
 is a *blocking* call bounded by `max_delay_ms`, so turning it on
@@ -199,7 +199,7 @@ still call `rte_channel_checkpoint()` directly from its own
 gains a link dependency on `rte::checkpoint` for the optional
 checkpoint path only).
 
-## 5. Addendum: retrofitting `safeAPIRBC2oo2/src/application/AB/channel_ab.c`
+## 5. Addendum: retrofitting `RBC_GP/src/application/AB/channel_ab.c`
 
 Section 2's design was validated by actually wiring it into A/B's real
 topology, not just by unit test. Two gaps surfaced that were not visible

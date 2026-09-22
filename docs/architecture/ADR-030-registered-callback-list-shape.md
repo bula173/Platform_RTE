@@ -8,7 +8,7 @@ see §2.3/§5).
 
 ## 1. Context
 
-`safeAPIRBC2oo2` (downstream, separate repo) is introducing a GA/GP
+`RBC_GP` (downstream, separate repo) is introducing a GA/GP
 split inside its A/B redundant-channel application: a "GP" orchestrator
 module (the cyclic train-route connect sweep) needs to (a) ask its
 registered "GA" peers "is this proposed action OK" before proceeding -
@@ -92,7 +92,7 @@ consuming project opts into.
 
 ## 3. Consequences
 
-- Positive: gives `safeAPIRBC2oo2` (and any future integrator with the
+- Positive: gives `RBC_GP` (and any future integrator with the
   same "ask before proceeding" / "tell everyone after" need) a shared,
   reviewed storage shape instead of a fully hand-rolled one, without
   introducing macro-generated control flow or MISRA Rule 11.1-violating
@@ -122,9 +122,9 @@ consuming project opts into.
 - Standalone compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`,
   header include path only) of a worked instantiation matching
   `rte_notify.h`'s own doc example: clean, zero warnings.
-- `safeAPIRBC2oo2` (downstream consumer, separate repo): full clean
+- `RBC_GP` (downstream consumer, separate repo): full clean
   rebuild after wiring its new GA/GP callback lists against this header,
-  plus `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` matching its
+  plus `.claude/skills/run-RBC_GP/smoke.sh` matching its
   established baseline (no behavior change - the GA/GP notification
   path is additive/logging-only this pass, per that project's own
   design decision) - lesson from ADR-025 §3 applied directly: verify the

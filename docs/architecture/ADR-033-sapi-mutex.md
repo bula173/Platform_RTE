@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-safeAPIRBC2oo2 (the reference application built on this framework) guards
+RBC_GP (the reference application built on this framework) guards
 a netlink handle shared between its own cyclic-executive thread and a
 background relay-rx task with a mutex (`ctx->peer_send_mutex`, used by
 `channel_ab_checkpoint.c`'s own checkpoint send/recv adapter and
@@ -19,7 +19,7 @@ into an *application* header (`channel_ab_types.h`), not confined to a
 POSIX-backend implementation file.
 
 This violates this project's own foundational premise (ADR-001/ADR-005):
-an application built on safeAPIFreamwork should depend only on this
+an application built on Platform_RTE should depend only on this
 framework's own OS-Abstraction-Layer API, never on a specific platform's
 threading primitives directly - the whole point of the backend-dispatch
 pattern every other OAL service (`rte_timer`, `rte_task`, `rte_ipc`,
@@ -31,7 +31,7 @@ defeats that guarantee outright: porting this application to a target
 with no pthreads (a bare-metal RTOS, for instance) would require
 rewriting application code, not just registering a different backend.
 
-Checked before deciding on a fix: does safeAPIFreamwork already expose
+Checked before deciding on a fix: does Platform_RTE already expose
 *any* portable synchronization primitive under a different name (a
 critical-section API bundled into `rte_task`, for instance)? It does
 not - the OAL surface (`clocksync`/`ipc`/`log`/`memory`/`netlink`/`nvm`/
@@ -72,15 +72,15 @@ consumer/backend split every other OAL service uses (ADR-021):
 
 The POSIX backend implementation (`rte_posix_osadapter_mutex.c`, a thin
 wrapper over `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`)
-lives in safeAPIRBC2oo2's own `src/posix_osadapter/`, not in
-safeAPIFreamwork - matching every other OAL backend's location per
+lives in RBC_GP's own `src/posix_osadapter/`, not in
+Platform_RTE - matching every other OAL backend's location per
 ADR-018's own "a backend is integrator-supplied, not part of the
 reusable framework" philosophy. This is exactly where `pthread_mutex_t`
 usage belongs: confined to the one file whose entire job is adapting a
 specific platform to this framework's portable API, never leaking into
 application code above it.
 
-safeAPIRBC2oo2's own `channel_ab_types.h`/`channel_ab.c`/
+RBC_GP's own `channel_ab_types.h`/`channel_ab.c`/
 `channel_ab_checkpoint.c`/`channel_ab_io.c` were migrated to
 `rte_mutex_handle_t` + `rte_mutex_storage_t`, dropping `<pthread.h>`
 from application code entirely (the one remaining `pthread_join()` use
@@ -105,13 +105,13 @@ directly).
 
 ## Verification
 
-- safeAPIFreamwork: full clean rebuild + `ctest` (matching the existing
+- Platform_RTE: full clean rebuild + `ctest` (matching the existing
   suite's own pass/fail baseline - no test added specifically for
   `rte_mutex` beyond compilation, matching `rte_timer`'s own precedent
   of relying on downstream consumers, not a dedicated unit test, since
   the backend dispatch logic is identical in shape to every other
   already-tested OAL service).
-- safeAPIRBC2oo2: full clean rebuild + `ctest`, `smoke.sh`, and the real
+- RBC_GP: full clean rebuild + `ctest`, `smoke.sh`, and the real
   Docker-based `safeAPITestEnv` Robot Framework suite, after migrating
   off `pthread_mutex_t` - confirmed no behavior change (the POSIX mutex
   backend's own locking semantics are identical to what the application
@@ -122,5 +122,5 @@ directly).
 - `include/rte/mutex/rte_mutex.h`
 - `include/rte_osadapter/mutex/rte_osadapter_mutex.h`
 - `src/mutex/rte_mutex.c`
-- `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_mutex.c` (sibling
+- `RBC_GP/src/posix_osadapter/rte_posix_osadapter_mutex.c` (sibling
   project - the POSIX backend implementation itself)

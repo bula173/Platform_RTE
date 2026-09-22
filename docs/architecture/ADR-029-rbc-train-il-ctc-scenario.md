@@ -4,9 +4,9 @@ Status: Accepted (first simple logic pass, per the integrator's own
 explicit scope - protocol depth and full route-topology fidelity are
 deliberate follow-on work, not gaps in this pass).
 Date: 2026-08-18
-Applies to: `safeAPIFreamwork`'s cross-compare/state-transfer contract is
-unchanged (the widening described here is entirely `safeAPIRBC2oo2`-side
-usage of existing framework primitives); `safeAPIRBC2oo2`'s
+Applies to: `Platform_RTE`'s cross-compare/state-transfer contract is
+unchanged (the widening described here is entirely `RBC_GP`-side
+usage of existing framework primitives); `RBC_GP`'s
 `src/application/C/*`, `src/application/AB/*`, `src/application/rbc_wire*`,
 `sims/*.py`, `docker-compose.yml`.
 
@@ -39,7 +39,7 @@ message kind (P0, M136, M24/M15, ROUTE_ADD, M3, M146, and the three CTC
 indications) rides in ONE reused 28-byte struct (`rbc_envelope_t`,
 `src/application/rbc_wire_types.h`) rather than N distinct wire structs -
 fields not meaningful for a given kind are left zero. The codec
-(`rbc_wire.c`/`.h`) lives at the `safeAPIRBC2oo2` application root (not
+(`rbc_wire.c`/`.h`) lives at the `RBC_GP` application root (not
 under `C/` or `AB/`) because BOTH C and A/B need it: this same envelope
 now travels end-to-end, Train/IL -> C -> A/B -> C -> Train/CTC, with C
 translating nothing - it relays the identical bytes it receives (see
@@ -215,7 +215,7 @@ without that flag):
    peer-link stale/reconnect event; `gdb`'s `thread apply all bt` on the
    frozen main thread showed it stuck inside `rte_safestate_enter()`,
    called from the framework's own built-in `rte_channel_checkpoint()`
-   (`safeAPIFreamwork/src/checkpoint/rte_checkpoint.c`) - a deliberate,
+   (`Platform_RTE/src/checkpoint/rte_checkpoint.c`) - a deliberate,
    by-design, permanent halt (REQ-CHECKPOINT-003: once a checkpoint
    rendezvous fails to confirm within its budget, it MUST NOT silently
    continue). This is correct behavior for a genuinely dead peer, but
@@ -419,10 +419,10 @@ items 2-3.
 
 ### D. Location delta (post GP/GA/SA split)
 
-The paths in §4 predate the `safeAPIRBC2oo2` -> `safeAPIRBC2oo2GP/GA/SA`
-split. Current equivalents: `channel_ab*` -> `safeAPIRBC2oo2GP/src/application/AB/GP/com/ab_gp_channel*`;
-`monitor_c*` -> `safeAPIRBC2oo2GP/src/application/C/{gateway_c*,monitor_c*}`;
+The paths in §4 predate the `RBC_GP` -> `RBC_GP/GA/SA`
+split. Current equivalents: `channel_ab*` -> `RBC_GP/src/application/AB/GP/com/ab_gp_channel*`;
+`monitor_c*` -> `RBC_GP/src/application/C/{gateway_c*,monitor_c*}`;
 `src/application/{rbc_wire_types.h,common_config.h,site_config.*}` ->
-`safeAPIRBC2oo2GP/src/application/{AB,C}/common/`; `sims/*.py` -> the
-`SimCore` + `TrainRBCSim`/`ILRBCSim`/`CTCRBCSim` projects;
-`tests/robot/` -> `safeAPIRBC2oo2TestEnv/robot/`.
+`RBC_GP/src/application/{AB,C}/common/`; `sims/*.py` -> the
+`RBC_Test_Sim_Core` + `RBC_Test_Sim_Train`/`RBC_Test_Sim_IL`/`RBC_Test_Sim_CTC` projects;
+`tests/robot/` -> `RBC_Test_Env/robot/`.

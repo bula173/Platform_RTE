@@ -2,7 +2,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, `include/rte/common/rte_safestate.h`,
+Applies to: Platform_RTE, `include/rte/common/rte_safestate.h`,
 `include/rte/os/rte_reboot.h`
 
 ## 1. Context

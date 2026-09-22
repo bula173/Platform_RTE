@@ -7,7 +7,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, first abstraction layer (RBC core <-> Operating System)
+Applies to: Platform_RTE, first abstraction layer (RBC core <-> Operating System)
 
 ## 1. Context
 
@@ -182,7 +182,7 @@ Six services, one header each:
 > here unmodified as the historical record of this decision.
 
 ```
-safeAPIFreamwork/
+Platform_RTE/
   CMakeLists.txt                 top-level, options, adds subdirs
   cmake/CompilerWarnings.cmake   shared warning/hardening flags
   docs/architecture/             ADRs (this file)

@@ -115,8 +115,8 @@ updates 4/5/13/21). Manual MISRA C:2012 review of the change
   tool - flagged, not silently folded in).
 
 **2026-08-27, update 21 (ADR-035: new `rte_platform` OAL service - one-shot
-real-time platform bring-up moved out of a direct `safeAPIBackendPosix`
-call in `safeAPIRBC2oo2GP` startup):** no automated `cppcheck` run - the
+real-time platform bring-up moved out of a direct `Platform_OS_POSIX`
+call in `RBC_GP` startup):** no automated `cppcheck` run - the
 tool is not installed in the environment this change was made in (same
 "state plainly when no tool was available" posture as updates 4/5/13).
 Manual MISRA C:2012 review of the change:
@@ -143,7 +143,7 @@ Manual MISRA C:2012 review of the change:
   20's **1229** (the new `.c` was not run through the tool, so it
   contributes 0 counted findings - flagged here rather than silently
   folded in).
-- OSAdapter side (`safeAPIBackendPosix`, integrator code, not this
+- OSAdapter side (`Platform_OS_POSIX`, integrator code, not this
   framework's SIL scope): the `mlockall`/`SCHED_FIFO` body was **moved**
   from `rte_posix_osadapter.c` to a new `rte_posix_osadapter_platform.c`
   behind the vtable, with one behavioural fix (gate `MCL_FUTURE` on
@@ -153,7 +153,7 @@ Manual MISRA C:2012 review of the change:
 
 **2026-08-26, update 20 (dynamic analysis tooling added to the build:
 `RTE_ENABLE_ASAN`/`RTE_ENABLE_UBSAN` CMake options + a Valgrind
-`ctest -T memcheck` target - see `.claude/skills/run-safeAPIFreamwork/SKILL.md`'s
+`ctest -T memcheck` target - see `.claude/skills/run-Platform_RTE/SKILL.md`'s
 new "Sanitizers (ASan/UBSan) and Valgrind" section):** this update is
 about *dynamic* analysis (real execution under instrumentation), not
 `cppcheck`'s static MISRA pass - the total static finding count above
@@ -231,8 +231,8 @@ all three tools:
   else - no deviation, no new finding type.
 - Verified separately (not `cppcheck`): full `cmake --build build/native`
   and `ctest --test-dir build/native` on macOS - **29/29**, unchanged, and
-  a full downstream rebuild of `safeAPIRBC2oo2GP` (pulls in
-  `safeAPIBackendPosix`/`safeAPIRBC2oo2GA`/`safeAPIRBC2oo2SA`
+  a full downstream rebuild of `RBC_GP` (pulls in
+  `Platform_OS_POSIX`/`RBC_GA`/`RBC_SA`
   transitively) confirming no regression from the `rte_dual_channel.c`
   fix.
 
@@ -284,7 +284,7 @@ unchanged):
   no-handler-is-a-no-op (REQ-COMMON-SAFETYVIOLATION-002), NULL-handler
   rejection, correct dispatch of kind/file/line/message, and
   re-registration replacing rather than stacking). Downstream repos
-  (`safeAPIBackendPosix`/GP/GA/SA) and Docker were not rebuilt for this
+  (`Platform_OS_POSIX`/GP/GA/SA) and Docker were not rebuilt for this
   specific update - the safety-violation module's default (no handler
   registered) behavior is provably unchanged from the three primitives'
   existing return-code contracts, so no downstream consumer is affected
@@ -316,8 +316,8 @@ sections 1.4/2.3.1):** automated checker run performed (`cppcheck`,
   updated, nothing left pointing at a pre-move location) was verified
   separately, not by `cppcheck`: a full rebuild + `ctest` (28/28, up from 27 -
   the two new test binaries) of this repo, then of every downstream consumer
-  (`safeAPIBackendPosix`, `safeAPIRBC2oo2SA`, `safeAPIRBC2oo2GA`,
-  `safeAPIRBC2oo2GP`, confirming `safeAPIRBC2oo2GA`'s `.so` still has zero
+  (`Platform_OS_POSIX`, `RBC_SA`, `RBC_GA`,
+  `RBC_GP`, confirming `RBC_GA`'s `.so` still has zero
   unresolved symbols referencing GP), then a live Docker redeploy of the full
   11-container stack (all 6 RBC roles reaching real cycle-390 cross-compare
   AGREE/checkpoint traffic, zero reboots over a 3-minute observation window)
@@ -354,7 +354,7 @@ session, `cmake --build build --target cppcheck`,
   style-level output) for the conventions this project cares about most:
   no dynamic allocation (the checkpoint-mark encode buffer
   (`fold_buf[16]`), the mark text buffer (`text[128]`), and
-  `safeAPIRBC2oo2GP`'s new staged-send queue
+  `RBC_GP`'s new staged-send queue
   (`ab_gp_staged_send_t[AB_GP_MAX_STAGED_SENDS_PER_CYCLE]`) are all
   fixed-size, sized generously, checked with `RTE_STATUS_RESOURCE_EXHAUSTED`
   rather than silently overflowing); fixed-width types throughout
@@ -367,7 +367,7 @@ session, `cmake --build build --target cppcheck`,
   every new public function/type/macro in `rte_appmanager.h`/
   `ga_interface.h`/`ab_gp_channel_stage.h`. No deviation notes needed for
   the new code itself.
-- `safeAPIRBC2oo2GP`'s/`safeAPIRBC2oo2GA`'s own changes (the stage-then-
+- `RBC_GP`'s/`RBC_GA`'s own changes (the stage-then-
   commit queue, `RTE_CHECKPOINT_MARK()` call sites, the `ga_interface.h`
   `checkpoint_mark` field) are out of this repo's `cppcheck` scan scope
   per ADR-018's own established convention (3a's/15's own entries) -
@@ -383,14 +383,14 @@ unchanged):
 
 - Total MISRA findings: **1108** (`build/cppcheck-report.txt`) -
   UNCHANGED from update 15's own count. This ADR's entire change set
-  lives in `safeAPIRBC2oo2` (new files `rbc_wire.c`/`.h`/
+  lives in `RBC_GP` (new files `rbc_wire.c`/`.h`/
   `rbc_wire_types.h`; extensive changes to `src/application/C/*` and
-  `src/application/AB/*`; no `safeAPIFreamwork` source file touched at
-  all) - per ADR-018's own established scope, `safeAPIFreamwork`'s
+  `src/application/AB/*`; no `Platform_RTE` source file touched at
+  all) - per ADR-018's own established scope, `Platform_RTE`'s
   `cppcheck` target only scans this repo's own `include/`/`src/`, so a
-  purely-`safeAPIRBC2oo2`-side change is expected to leave this repo's
+  purely-`RBC_GP`-side change is expected to leave this repo's
   own finding count exactly unchanged, and it did.
-- Manual review only for the `safeAPIRBC2oo2`-side files, same posture
+- Manual review only for the `RBC_GP`-side files, same posture
   as update 15's own RBC-adjacent (ADR-028) entry: all new/changed code
   follows this codebase's already-established conventions - no dynamic
   allocation (the train-session table and every new queue are fixed-size
@@ -424,11 +424,11 @@ unchanged):
   `rbc_wire_types.h`). Both remain fixed-width (`uint32_t`/`#define`
   unsigned-suffixed literals), no dynamic allocation introduced, no
   control-flow change - manual review only, no re-run of `cppcheck`
-  needed (a `safeAPIRBC2oo2`-side numeric constant change, same
+  needed (a `RBC_GP`-side numeric constant change, same
   out-of-scope reasoning as this update's main entry above).
 
 **2026-08-18, update 15 (ADR-028: cyclic-executive checkpoint-starvation
-fix - REQ-APPMANAGER-011 - and its `safeAPIRBC2oo2` channel-down-reboot/
+fix - REQ-APPMANAGER-011 - and its `RBC_GP` channel-down-reboot/
 HOT-COLD-standby consumer; see `docs/requirements/SRS.md` and
 `docs/architecture/ADR-028-channel-down-reboot-and-executive-starvation-fix.md`):**
 automated checker run performed (`cppcheck` was available this session,
@@ -455,11 +455,11 @@ unchanged):
   watchdog timing fix), `monitor_c.c`/`monitor_c_io.c`/
   `monitor_c_types.h` (C-side channel-down-reboot), and
   `common_config.h` (new timing constants/reason codes) - all live in
-  `safeAPIRBC2oo2`, which per ADR-018's own scope has no formal MISRA
-  report or automated checker wired up (`safeAPIFreamwork`'s
+  `RBC_GP`, which per ADR-018's own scope has no formal MISRA
+  report or automated checker wired up (`Platform_RTE`'s
   `cppcheck` target only scans this repo's own `include/`/`src/`).
   Manual review only for those files: all follow the same conventions
-  already established elsewhere in `safeAPIRBC2oo2` - no dynamic
+  already established elsewhere in `RBC_GP` - no dynamic
   allocation, fixed-width types (`rte_timestamp_ms_t` for every new
   down-since field), explicit `NULL`-pointer checks before every new
   dereference, single point of exit in each new function
@@ -620,7 +620,7 @@ zero `.c`/`.h` files:
   untouched as files, appmanager's link line updated to the 3 new names.
 - Every consumer of the old per-feature target names was updated:
   `tests/CMakeLists.txt` (19 tests), the top-level `install(TARGETS ...)`
-  list, safeAPIRBC2oo2's `src/posix_osadapter/CMakeLists.txt` and top-level
+  list, RBC_GP's `src/posix_osadapter/CMakeLists.txt` and top-level
   `CMakeLists.txt`, and the `examples/qnx-rtos-app`/`examples/linux-posix-app`
   integration templates plus `examples/build-qnx.sh`'s doc string.
   Verified via a repository-wide grep for every old `rte::<feature>`
@@ -628,7 +628,7 @@ zero `.c`/`.h` files:
   `src/channel/CMakeLists.txt`, which was already excluded from the build
   before this change and stays that way.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
-  all 19 framework unit tests (all pass) plus a full safeAPIRBC2oo2
+  all 19 framework unit tests (all pass) plus a full RBC_GP
   rebuild and live two-process SITE WEST/EAST smoke run, compiling
   exactly the source-file groupings the new `CMakeLists.txt` targets
   specify. **Caveat specific to this update**: because the change is to
@@ -638,7 +638,7 @@ zero `.c`/`.h` files:
   (and no network access to install one) was available in this sandbox
   session. An actual `cmake --build` on a real toolchain remains the
   outstanding verification step for this specific change.
-- ADR-023 status: framework, safeAPIRBC2oo2, and example templates all
+- ADR-023 status: framework, RBC_GP, and example templates all
   updated; see ADR-023 for the full rationale and dependency-cluster
   reasoning.
 
@@ -673,7 +673,7 @@ verification:
   behavior, no new casts). This module had only ever been exercised
   through a mock netlink OSAdapter (`test_rte_dual_channel.c`) before
   this pass wired it to a real transport for the first time.
-- `safeAPIRBC2oo2/src/application/SITE/site.c`: removed its own direct
+- `RBC_GP/src/application/SITE/site.c`: removed its own direct
   `rte_netlink_open()`/`_send()`/`_receive()`/`_close()` calls and the
   manual CONNECT-retry loop it hand-rolled around them; now opens one
   `rte_safechannel_t` (`RTE_SAFECHANNEL_TYPE_DUAL_REDUNDANT`,
@@ -717,7 +717,7 @@ nature to update 8's `rte_timer` pilot:
   `test_rte_clocksync`, `test_rte_log`, `test_rte_dual_msgchannel`,
   `test_rte_dual_channel`, `test_rte_dual_negotiator`), the
   `examples/geo_distributed_checkpoint_sync.c` sample, and
-  safeAPIRBC2oo2's umbrella `rte_posix_osadapter.h` (now includes all 9
+  RBC_GP's umbrella `rte_posix_osadapter.h` (now includes all 9
   OSAdapter headers alongside their 9 consumer headers). No site needed a
   logic change; `task`, `ipc`, and `memory` have no dedicated framework
   unit tests, so only their `.c` implementation and the POSIX OSAdapter
@@ -725,7 +725,7 @@ nature to update 8's `rte_timer` pilot:
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all 16 framework unit tests (all pass, including the 8 directly
   touched by this change) plus a full rebuild and live 8-process run of
-  safeAPIRBC2oo2 (0 errors, clean shutdown, identical AGREE/checkpoint
+  RBC_GP (0 errors, clean shutdown, identical AGREE/checkpoint
   behavior to before) - see ADR-021 section 2.3.
 - ADR-021 status: all 9 osadapter-bearing OAL modules now have the
   consumer/osadapter header split in place.
@@ -747,12 +747,12 @@ is a pure declaration move, not new logic:
 - Every call site that referenced the vtable type
   (`tests/timer/test_rte_timer.c`, `tests/watchdog/test_rte_watchdog.c`,
   `tests/dual/test_rte_dual_negotiator.c`, `tests/log/test_rte_log.c`,
-  safeAPIRBC2oo2's `rte_posix_osadapter.h`/`rte_posix_osadapter_timer.c`)
+  RBC_GP's `rte_posix_osadapter.h`/`rte_posix_osadapter_timer.c`)
   gained the new `#include` and were rebuilt; no site needed a logic
   change.
 - Verified via manual `gcc -std=c99 -Wall -Wextra -Wpedantic` rebuild of
   all four affected framework unit tests (all pass) plus a full rebuild
-  and live 8-process run of safeAPIRBC2oo2 (0 errors, clean shutdown) -
+  and live 8-process run of RBC_GP (0 errors, clean shutdown) -
   see ADR-021 section 2.3.
 - **Not yet done:** the same split for the other eight osadapter-bearing
   modules (`nvm`, `memory`, `task`, `ipc`, `log`, `reboot`, `netlink`,
@@ -884,7 +884,7 @@ already-open findings instead of introducing new ones:
   change, not a new construct - no new type, no new header, no new
   control-flow shape; the existing `switch` on `voting_strategy` still has
   its `default` clause (Rule 16.1/16.4, section 2).
-- **`safeAPIRBC2oo2/src/application/AB/channel_ab.c` (separate repo,
+- **`RBC_GP/src/application/AB/channel_ab.c` (separate repo,
   already out of this report's stated scope, called out here only for
   completeness since it's the first real consumer of both changes
   above):** adds a `pthread_mutex_t` (`ctx->peer_send_mutex`) guarding
@@ -964,7 +964,7 @@ printing success (`CMAKE_EXPORT_COMPILE_COMMANDS` was never set, so
 once set, it was set as a plain `set()` instead of a `CACHE` variable,
 which only affects the setting directory and its descendants - meaning it
 never took effect for a downstream project's own targets when this
-framework is consumed via `add_subdirectory()`, e.g. by `safeAPIRBC2oo2`).
+framework is consumed via `add_subdirectory()`, e.g. by `RBC_GP`).
 Section 1a records what the first real run actually found. The three
 CRC-64 lookup tables flagged as incomplete placeholders in section 2 below
 have also been fixed (full, correctly generated 256-entry tables) - see
@@ -1011,7 +1011,7 @@ that file; verifying rule *text* against a licensed copy is still required
 before treating any of this as compliance evidence, exactly as section 5
 already said.
 
-Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
+Findings against `Platform_RTE/src/*` (826 total, by rule, top ones):
 
 | Rule | Count | Note |
 |---|---:|---|
@@ -1020,7 +1020,7 @@ Findings against `safeAPIFreamwork/src/*` (826 total, by rule, top ones):
 | 17.7 (ignored return value) | 34 | Needs triage - some are likely legitimate (`(void)`-cast calls the addon still flags), some may be real. |
 | 21.6 (banned `<stdio.h>`) | 28 (as originally counted) | **Confirmed real, not a tool artifact:** both hits were in `rte_appmanager.c` and `rte_watchdog.c` - exactly the two modules this report's own "Known gap" paragraph already named as never having been reviewed. **Update 3:** the `rte_watchdog.c` contribution to this count is now fixed (real rewrite, no `<stdio.h>` dependency, see the update-3 note above) - a fresh cppcheck run confirms no `21.6`/`missingIncludeSystem <stdio.h>` finding remains for that file. `rte_appmanager.c`'s `<stdio.h>` use is unrelated to this task and remains open. |
 | 12.1, 10.4, 11.5, 5.9, 20.9, 10.8, 8.9, 21.16, 10.2, 8.4 | 25/18/13/9/8/4/3/2/1/1 | Not yet triaged. |
-| `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `safeAPIRBC2oo2`); not necessarily a real problem, but not yet individually verified either. |
+| `unusedFunction` | 139 | Not a MISRA rule - cppcheck's own dead-code detector. Expected for a library where most public API functions aren't called from within the library itself (they're called by consumers like `RBC_GP`); not necessarily a real problem, but not yet individually verified either. |
 
 **This is the first ground truth this project has had from a real tool.**
 It broadly confirms section 3's documented 15.5 deviation at scale, and
@@ -1033,7 +1033,7 @@ individually, some likely tool noise without `--rule-texts`), a proper
 triage pass is a dedicated follow-up, not something folded into this
 update.
 
-`safeAPIRBC2oo2` (a separate project, out of this report's own stated
+`RBC_GP` (a separate project, out of this report's own stated
 scope) was also checked incidentally by the same run (496 findings) -
 its own compliance posture is that project's own responsibility to
 document; its README already discloses "No SIL-level V&V, no MISRA/
@@ -1084,7 +1084,7 @@ only `<stdint.h>`. Standalone compile check (`gcc -std=c99 -Wall -Wextra
 against - reviewed manually instead. `rte_mem_set()`/`rte_mem_copy()`/
 `rte_mem_compare()` are thin `static inline` wrappers over `memset()`/
 `memcpy()`/`memcmp()` - the ONE sanctioned call site for each, so
-downstream code (this session: `safeAPIRBC2oo2`, all ~90 direct
+downstream code (this session: `RBC_GP`, all ~90 direct
 `memset`/`memcpy`/`memcmp` call sites) routes through this header instead
 of including `<string.h>` itself. No dynamic memory, no recursion, no
 `<stdio.h>`/`<assert.h>`/`<errno.h>` - the header includes only
@@ -1099,7 +1099,7 @@ warnings.
 
 **Update (2026-08-21): new module, `include/rte/mutex/rte_mutex.h` +
 `include/rte_osadapter/mutex/rte_osadapter_mutex.h` + `src/mutex/rte_mutex.c`
-(ADR-033).** Added after an architecture review of `safeAPIRBC2oo2` found
+(ADR-033).** Added after an architecture review of `RBC_GP` found
 it calling `pthread_mutex_init()`/`_lock()`/`_unlock()`/`_destroy()`
 directly on a raw `pthread_mutex_t` application struct field - a real
 violation of this framework's own OAL premise (an application should
@@ -1110,15 +1110,15 @@ the same accepted guard-clause deviation already documented above at
 scale - see the 387-count table entry) and `unusedFunction` (the same
 established false-positive class every other OAL dispatch file gets,
 since cppcheck's single-project analysis cannot see these public API
-functions called from a downstream consumer like `safeAPIRBC2oo2`) - no
+functions called from a downstream consumer like `RBC_GP`) - no
 new rule category introduced beyond what `rte_timer.c` (this module's
 own template) already carries; in fact strictly fewer findings than
 `rte_timer.c`, since the pointer-cast rules (11.5/11.6/8.9) that
 `rte_timer.c` triggers live only in the POSIX OSAdapter implementation
-for mutex (`safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_mutex.c`,
+for mutex (`RBC_GP/src/posix_osadapter/rte_posix_osadapter_mutex.c`,
 outside this repo's own cppcheck scope), not in the dispatch file itself.
 `cmake --build build` + `ctest --test-dir build`: full rebuild, 27/27
-pass. `safeAPIRBC2oo2` (downstream): migrated off `pthread_mutex_t`
+pass. `RBC_GP` (downstream): migrated off `pthread_mutex_t`
 entirely (`channel_ab_types.h`/`channel_ab.c`/`channel_ab_checkpoint.c`/
 `channel_ab_io.c`), full rebuild, `ctest` (2/2), and the real Docker-based
 `safeAPITestEnv` Robot Framework suite (11/11) all re-verified clean.
@@ -1139,11 +1139,11 @@ timers/channels/voters/cross-comparators/watchdogs, just never covered
 when that ADR was written. `rte_nvm_open()`/`rte_log_init()` were
 evaluated and deliberately left ungated - see ADR-032's own "Deferred"
 note. `cmake --build build` + `ctest --test-dir build`: full rebuild and
-suite pass. `safeAPIRBC2oo2` (downstream): full rebuild, `ctest`, and
+suite pass. `RBC_GP` (downstream): full rebuild, `ctest`, and
 `smoke.sh` re-verified against its established baseline. No new
 `malloc()`/`free()`/`realloc()` call site was added anywhere - a
 candidate malloc-backed default memory-pool OSAdapter was considered and
-rejected (see ADR-032 §2) once `safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_memory.c`
+rejected (see ADR-032 §2) once `RBC_GP/src/posix_osadapter/rte_posix_osadapter_memory.c`
 was confirmed to already implement a complete, malloc-free (static
 arena, bump allocator, intrusive free list) OSAdapter - the zero-`malloc`
 count for this repo's own `include/`/`src/` (section 1a's grep sweep)
@@ -1158,7 +1158,7 @@ and explicitly called out here as not real integrity protection. All
 three are now full, correctly generated 256-entry tables (standard
 reflected/right-shifting CRC table-generation algorithm against each
 polynomial already declared in `rte_checksum.h`) - see `rte_checksum.c`'s
-own file-level note for detail, and `safeAPIRBC2oo2`'s A<->B peer-link
+own file-level note for detail, and `RBC_GP`'s A<->B peer-link
 CRC-64 integrity check (`channel_ab.c`) for the first real consumer of
 this fix.
 
@@ -1219,7 +1219,7 @@ Being transparent about these rather than silently non-compliant:
   masked locally because macOS's libc does not gate these declarations the
   same way. Fixed by adding `#define _POSIX_C_SOURCE 200809L` before any
   header include in `rte_appmanager.c` (same pattern already used in
-  `safeAPIRBC2oo2`'s own POSIX application files). No change to the
+  `RBC_GP`'s own POSIX application files). No change to the
   deviation itself - `<signal.h>` is still genuinely included and still
   guarded by the same `RTE_APPMANAGER_HAVE_POSIX_SIGNALS` compile-time
   gate; this only fixes a portability bug in code that was already
@@ -1289,7 +1289,7 @@ become permanent.
   style, dominant everywhere), Rule 21.6 (`<stdio.h>` - `fopen`/`fread`/
   `fclose`, deliberate and load-time-only, same rationale as
   `rte_appmanager.c`'s own confirmed 21.6 use above and
-  `safeCommFreamwork`'s `safecomm_config_load`'s hand-written file
+  `Platform_Protocol_SafeComm`'s `safecomm_config_load`'s hand-written file
   loader), Rule 21.14/21.16 (`memcmp` pointer-arithmetic style, consistent
   with `rte_checksum.c`/codec modules elsewhere). New to this module:
   Rule 17.8 (a `size_t pos` scan-cursor parameter is reassigned inside
@@ -1306,7 +1306,7 @@ become permanent.
   `src/redundancy/channel_service/`). `cppcheck --addon=misra` findings, all
   in already-accepted buckets: Rule 15.5 (single-exit, dominant everywhere),
   Rule 11.5 (`void *` -> typed-pointer cast in `channel_state()`, identical
-  pattern to `safeAPIBackendPosix`'s own `rte_posix_osadapter_channel_service.c`
+  pattern to `Platform_OS_POSIX`'s own `rte_posix_osadapter_channel_service.c`
   `channel_state()` helper), Rule 8.9 (file-scope `static const` vtable
   initializer, same pattern every other OSAdapter registration in this tree
   uses). `ctest`: 34/34 (was 32/32 after the redundancy_config update above -
@@ -1314,7 +1314,7 @@ become permanent.
   **Update (2026-09-18, same day): lazy-open redesign.** `osadapter_setup()` was changed from
   eager (`rte_flow_open()` called immediately) to lazy (resolve+store only; the real open
   happens on the first `read()`/`send()`, bounded by THAT call's own `timeout_ms`) after a real
-  bug was found live against `safeAPIRBC2oo2GP`: eager open made `rte_channel_service_setup()`
+  bug was found live against `RBC_GP`: eager open made `rte_channel_service_setup()`
   block for the full peer-handshake timeout and then fail outright for a channel whose peer
   legitimately isn't running yet, aborting the whole integrator process over one optional
   channel - see root `TODO.md`'s Phase 4 entry for the full story. No new MISRA rule categories

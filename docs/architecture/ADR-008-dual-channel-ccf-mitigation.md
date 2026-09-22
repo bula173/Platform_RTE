@@ -2,7 +2,7 @@
 
 Status: Draft
 Date: 2026-08-05
-Applies to: safeAPIFreamwork, RBC core's dual-channel (2-channel) vital
+Applies to: Platform_RTE, RBC core's dual-channel (2-channel) vital
 computation, and the new `rte_channel` module.
 
 ## 1. Context

@@ -8,7 +8,7 @@ see §2.2/§4).
 
 ## 1. Context
 
-`safeAPIRBC2oo2` (downstream, separate repo) calls libc `memset()`/
+`RBC_GP` (downstream, separate repo) calls libc `memset()`/
 `memcpy()`/`memcmp()` directly across ~25 of its own application files
 (~90 call sites) - fixed-size struct zeroing, buffer copies for the wire
 codecs, byte-for-byte session comparisons. This framework itself does the
@@ -81,8 +81,8 @@ own `.c`/dependency-graph entry per ADR-024.
 
 - Standalone compile check (`gcc -std=c99 -Wall -Wextra -Wpedantic`,
   header include path only): clean, zero warnings.
-- `safeAPIRBC2oo2` (downstream consumer, separate repo): full clean
-  rebuild plus `ctest` and `.claude/skills/run-safeAPIRBC2oo2/smoke.sh`
+- `RBC_GP` (downstream consumer, separate repo): full clean
+  rebuild plus `ctest` and `.claude/skills/run-RBC_GP/smoke.sh`
   matching its established baseline after every direct `<string.h>` call
   in that repo was replaced with these wrappers (pure mechanical
   substitution, no behavior change) - same "verify the downstream repo's

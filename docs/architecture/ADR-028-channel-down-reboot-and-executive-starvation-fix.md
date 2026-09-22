@@ -6,8 +6,8 @@ and its enabling framework fix are done and verified live; the
 inter-site link" mechanism is not yet designed (blocked on the operator
 interaction model) or implemented.
 Date: 2026-08-18
-Applies to: `safeAPIFreamwork`'s `src/appmanager/rte_appmanager.c`
-(framework fix, REQ-APPMANAGER-011); `safeAPIRBC2oo2`'s
+Applies to: `Platform_RTE`'s `src/appmanager/rte_appmanager.c`
+(framework fix, REQ-APPMANAGER-011); `RBC_GP`'s
 `src/application/AB/channel_ab.c`/`channel_ab_io.c`/
 `channel_ab_negotiate.c`/`channel_ab_types.h`, `src/application/C/monitor_c.c`/
 `monitor_c_io.c`/`monitor_c_types.h`, `src/application/common_config.h`,
@@ -23,7 +23,7 @@ by several network links (`rte_dual_channel_t` already supports up to
 *communicated*, not itself trigger a reaction - only the channel-level
 "no link at all" condition should escalate.
 
-Two distinct link categories exist in `safeAPIRBC2oo2`, and they needed
+Two distinct link categories exist in `RBC_GP`, and they needed
 different treatment:
 
 - **Same-site channels** (the A↔B peer link; each of A/B's own links
@@ -82,7 +82,7 @@ reachable at all during a real sustained outage.
 
 No reboot-on-down added here at all, per §1's split-brain concern. The
 framework already ships exactly the right primitive for this, unused by
-`safeAPIRBC2oo2` until now: `rte_dual_negotiator_t`'s own
+`RBC_GP` until now: `rte_dual_negotiator_t`'s own
 `RTE_DUAL_STATE_HOTSTANDBY`/`COLDSTANDBY` (REQ-DUAL-NEGOTIATOR-004) -
 a STANDBY instance's HOT/COLD label is derived from the *peer's own*
 reported channel-degradation bit, not a self-report, computed inside
@@ -129,7 +129,7 @@ network partition - confirmed live via `docker stats`: the affected
 process sat at ~100% CPU for 24+ seconds straight (past both the 10.5s
 negotiation-watchdog and 20s channel-down thresholds) with zero reboot.
 
-Root cause, traced to `rte_appmanager_run()` itself (`safeAPIFreamwork`,
+Root cause, traced to `rte_appmanager_run()` itself (`Platform_RTE`,
 not this example): `rte_watchdog_t` has no independent timer or thread
 of its own, by design (the integrator's own explicit direction: *"the
 intention is to not have threads... each cycle we are checking whether
@@ -139,7 +139,7 @@ when the application itself calls it, which `channel_ab.c` does from
 inside `channel_ab_execute()`. `rte_appmanager_run()`'s own per-cycle
 loop calls its checkpoint/pre_execute/execute/post_execute stages in
 strict sequence, each gated on the previous succeeding. When a link goes
-down, `safeAPIRBC2oo2` deliberately pauses the built-in checkpoint
+down, `RBC_GP` deliberately pauses the built-in checkpoint
 (`checkpoint_cfg.voter = NULL`) so a *known* outage doesn't also trip
 checkpoint's own independent SAFE-halt - but `rte_channel_checkpoint(NULL, ...)`
 returns `RTE_STATUS_INVALID_PARAM`, which the framework's own stage-
@@ -198,9 +198,9 @@ correlation until §2.5 is fixed separately.
 
 ## 3. Verification
 
-- `safeAPIFreamwork`'s own `ctest --test-dir build`: 27/27, including the
+- `Platform_RTE`'s own `ctest --test-dir build`: 27/27, including the
   two rewritten `test_rte_appmanager.c` cases above.
-- `safeAPIRBC2oo2` local `smoke.sh`: consistently clean across many runs
+- `RBC_GP` local `smoke.sh`: consistently clean across many runs
   after every fix in this ADR, no false-positive reboots observed.
 - Real 6-container Docker, manual `docker network disconnect` on
   `a-west` (ONLINE at the time): confirmed live, before §2.4's fix, the
@@ -222,19 +222,19 @@ correlation until §2.5 is fixed separately.
 
 ## 4. Location
 
-- `safeAPIFreamwork/src/appmanager/rte_appmanager.c` (REQ-APPMANAGER-011)
-- `safeAPIFreamwork/tests/appmanager/test_rte_appmanager.c` (two tests
+- `Platform_RTE/src/appmanager/rte_appmanager.c` (REQ-APPMANAGER-011)
+- `Platform_RTE/tests/appmanager/test_rte_appmanager.c` (two tests
   rewritten)
-- `safeAPIFreamwork/docs/requirements/SRS.md` (REQ-APPMANAGER-011,
+- `Platform_RTE/docs/requirements/SRS.md` (REQ-APPMANAGER-011,
   REQ-APPMANAGER-008 reworded)
-- `safeAPIRBC2oo2/src/application/AB/channel_ab.c` (`channel_ab_check_channel_down_reboot()`),
+- `RBC_GP/src/application/AB/channel_ab.c` (`channel_ab_check_channel_down_reboot()`),
   `channel_ab_io.c` (down-since marking, both rx tasks),
   `channel_ab_negotiate.c` (watchdog timeout formula, readable state-change logging),
   `channel_ab_types.h` (down-since fields)
-- `safeAPIRBC2oo2/src/application/C/monitor_c.c` (`monitor_c_check_channel_down_reboot()`),
+- `RBC_GP/src/application/C/monitor_c.c` (`monitor_c_check_channel_down_reboot()`),
   `monitor_c_io.c` (down-since marking, B's link deliberately excluded),
   `monitor_c_types.h` (down-since fields)
-- `safeAPIRBC2oo2/src/application/common_config.h`
+- `RBC_GP/src/application/common_config.h`
   (`RTE_EXAMPLE_CHANNEL_DOWN_REBOOT_MS`, new reason codes,
   `RTE_EXAMPLE_NEGOTIATION_WATCHDOG_TIMEOUT_MS` reworked)
-- `safeAPIRBC2oo2/tests/robot/fault_injection.robot` (two new extended-partition cases)
+- `RBC_GP/tests/robot/fault_injection.robot` (two new extended-partition cases)

@@ -77,7 +77,7 @@ C99 A/B side and the C++ C side - `#ifdef __cplusplus extern "C"` guarded.
 
 ### 2. The broker - C++, hosted by the status service
 
-`safeAPIRBC2oo2GP/src/application/C/status/` (C++17):
+`RBC_GP/src/application/C/status/` (C++17):
 
 - `broker.hpp` / `broker.cpp` - `class Broker`:
   - `on_frame(ClientRef from, const rbc_util_frame_t&)` - dispatch on
@@ -167,13 +167,13 @@ startup + every `STATUS_PERIOD_MS`:
   `rbc_util_frame.h` (pure header), the `common/` headers, the relay/wire
   types. A and B are vital.
 - **C++17 (new)**: `C/status/*.cpp` - the broker, the aggregator,
-  `main_c_status.cpp`. `safeAPIRBC2oo2GP/CMakeLists.txt` gains `CXX` to
+  `main_c_status.cpp`. `RBC_GP/CMakeLists.txt` gains `CXX` to
   `LANGUAGES`; the status target compiles as C++ and links
   `gateway_c_common` across an `extern "C"` boundary
   (`gateway_c_common.h` already C-linkage-clean; add the guard).
 - New binary `rte_gateway_c_status` (GP - it is platform/transport
   infra, like the train gateway). The `c-<site>` container entrypoint
-  (`gateway_c_entrypoint.sh`, safeAPIRBC2oo2SA) launches **four**
+  (`gateway_c_entrypoint.sh`, RBC_SA) launches **four**
   services now.
 
 ### 7. Cadence
@@ -198,7 +198,7 @@ startup + every `STATUS_PERIOD_MS`:
 
 ## Consequences
 
-- **C++ enters the C side.** The cross toolchains (LinuxMacOSToolchain,
+- **C++ enters the C side.** The cross toolchains (Platform_Toolchain_Linux,
   musl, QNX) must provide a C++ compiler; `build_toolchains.sh` /
   channel builds gain the status target. A/B and the framework are
   untouched C99.
@@ -218,8 +218,8 @@ startup + every `STATUS_PERIOD_MS`:
 
 ## Location
 
-- `safeAPIFreamwork/docs/architecture/` - this file.
-- `safeAPIRBC2oo2GP/src/application/{AB,C}/common/common_config.h` -
+- `Platform_RTE/docs/architecture/` - this file.
+- `RBC_GP/src/application/{AB,C}/common/common_config.h` -
   `RELAY_KIND_UTIL`, port offsets, `STATUS_PERIOD_MS`/`_STALE_MS`.
 - `.../C/common/site_config.{h,c}` - `RELAY_KIND_UTIL` case.
 - `.../C/common/rbc_util_frame.h` - new frame + codec.
@@ -230,9 +230,9 @@ startup + every `STATUS_PERIOD_MS`:
   `extern "C"` guard. `.../C/gateway_c_{train,il,ctc}_handler` +
   GA copies - publish self-status, republish sim `RBC_MSG_SIM_STATUS`.
 - `.../{AB,C}/common/rbc_wire_types.h` - `RBC_MSG_SIM_STATUS`.
-- `safeAPIRBC2oo2GP/CMakeLists.txt` - `LANGUAGES C CXX`, status target.
-- `safeAPIRBC2oo2SA` - entrypoint (4 services), installer.
-- `safeAPIRBC2oo2TestEnv` - compose, `setupLocalTestEnv.sh`,
+- `RBC_GP/CMakeLists.txt` - `LANGUAGES C CXX`, status target.
+- `RBC_SA` - entrypoint (4 services), installer.
+- `RBC_Test_Env` - compose, `setupLocalTestEnv.sh`,
   `_ALL_SERVICES`, new `robot/` status checks.
-- `SimCore` / `TrainRBCSim` / `ILRBCSim` / `CTCRBCSim` - self-status line
+- `RBC_Test_Sim_Core` / `RBC_Test_Sim_Train` / `RBC_Test_Sim_IL` / `RBC_Test_Sim_CTC` - self-status line
   + `RBC_MSG_SIM_STATUS` publish.

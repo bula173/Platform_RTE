@@ -6,9 +6,9 @@ Accepted
 
 ## Context
 
-`safeAPIRBC2oo2GP`'s process startup (`app_main_common.c`, both the AB and
+`RBC_GP`'s process startup (`app_main_common.c`, both the AB and
 C variants) called `rte_posix_osadapter_init_realtime(80U)` directly - a
-symbol exported by `safeAPIBackendPosix`, not by `safeAPIFreamwork`. That
+symbol exported by `Platform_OS_POSIX`, not by `Platform_RTE`. That
 is a layering violation: ADR-001 §3.5 and ADR-005 require application code
 to reach the OS *only* through the framework's OAL API, with the single
 exception of the composition-root wiring that registers a concrete backend
@@ -58,7 +58,7 @@ returns `RTE_STATUS_OK` - and, critically, must not leave the process
 unable to create threads afterwards. That last clause is what the POSIX
 backend's old code violated.
 
-### 2. POSIX implementation moves behind the vtable (`safeAPIBackendPosix`)
+### 2. POSIX implementation moves behind the vtable (`Platform_OS_POSIX`)
 
 - New `src/rte_posix_osadapter_platform.c`: the `mlockall` / stack
   pre-fault / `SCHED_FIFO` body moves here from
@@ -88,7 +88,7 @@ composition-root wiring; the RT call no longer is.
 
 ## Consequences
 
-- Application code no longer invokes any `safeAPIBackendPosix` *behaviour*
+- Application code no longer invokes any `Platform_OS_POSIX` *behaviour*
   symbol - only the registration seam. `rte_posix_osadapter_channel_service_register_resolver()`
   (in `gateway_c.c` / `ab_gp_channel.c`) and `rte_posix_osadapter_reboot_set_argv()`
   are the remaining direct backend touches; folding those behind

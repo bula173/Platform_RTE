@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Debugging a live `safeAPIRBC2oo2GP` reboot loop (A/WEST and B/WEST cycling
+Debugging a live `RBC_GP` reboot loop (A/WEST and B/WEST cycling
 reboots roughly every 40 seconds, never stabilizing) traced back to the
 built-in checkpoint integration `rte_appmanager_run()` provides (ADR-019):
 `rte_appmanager.c` set `checkpoint_cfg.checkpoint_id = g_app_state.iteration_count`
@@ -67,13 +67,13 @@ cycle, not from how many cycles it has run since its last reboot:
    discarding it on `committed == false`. Previously a diverged cycle's
    output could already have been transmitted by the time anything
    checked; now it is never sent at all.
-5. **GA exposure.** `safeAPIRBC2oo2GP`'s `ga_interface.h` (the existing
+5. **GA exposure.** `RBC_GP`'s `ga_interface.h` (the existing
    GP<->GA function-pointer handoff, see that project's own ADR) gained a
-   `checkpoint_mark` field so `safeAPIRBC2oo2GA`'s own IL/CTC decision
+   `checkpoint_mark` field so `RBC_GA`'s own IL/CTC decision
    functions can fold marks too, via a GA-side macro
    (`AB_GA_CHECKPOINT_MARK(iface)`) that captures GA's own call site.
 
-`safeAPIRBC2oo2GP`'s own staging is scoped narrowly: only the two real
+`RBC_GP`'s own staging is scoped narrowly: only the two real
 transport functions in `ab_gp_channel.c` are wrapped by staging helpers
 (`ab_gp_channel_stage_peer()`/`_stage_relay()` in the new
 `ab_gp_channel_stage.c`), and only at the call sites that build THIS

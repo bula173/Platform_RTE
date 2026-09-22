@@ -31,7 +31,7 @@ distinct but were forced through the same API:
 - **Cross-comparison** between exactly *two independent* peer
   computations (e.g. an A/B pair), where the interesting output is
   "did they agree," not a voted single value - a pattern
-  `safeAPIRBC2oo2`'s hand-rolled `channel_ab_crosscompare.c` had
+  `RBC_GP`'s hand-rolled `channel_ab_crosscompare.c` had
   already reimplemented outside the framework because no equivalent
   primitive existed here.
 
@@ -171,7 +171,7 @@ single value back. A cross-comparator checks whether two *independent*
 peer computations (e.g. an active/standby pair, or two different
 algorithms computing the same safety-relevant quantity) still agree -
 the caller wants a yes/no consistency signal, and in many real uses
-(such as `safeAPIRBC2oo2`'s original hand-rolled A/B pattern this
+(such as `RBC_GP`'s original hand-rolled A/B pattern this
 generalizes) doesn't even need the arbitrated value, just the
 disagreement signal itself. Sharing one type under a `strategy=2OO2`
 flag would blur that intent at every call site; keeping them separate
@@ -267,7 +267,7 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
 - Positive: the majority-vote bug fix (§2.2) is a real correctness
   improvement for every existing or future 2oo3/NMR(>2) deployment, not
   just a naming cleanup.
-- Positive: `rte_cross_comparator` gives `safeAPIRBC2oo2` (and any
+- Positive: `rte_cross_comparator` gives `RBC_GP` (and any
   future integrator with an A/B peer-comparison need) a tested framework
   primitive instead of requiring a hand-rolled reimplementation.
 - Positive: the old, dead ADR-008 module's disposition (an open question
@@ -275,7 +275,7 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
 - Negative: this is a breaking API change to `rte_vital_channel`'s
   public surface (rename, signature changes, struct-shape changes
   rippling into `rte_checkpoint`/`rte_safechannel`/`rte_appmanager`).
-  Pre-implementation exploration concluded `safeAPIRBC2oo2` did not
+  Pre-implementation exploration concluded `RBC_GP` did not
   consume this API directly - that turned out to be **wrong**: its
   `channel_ab*.c` files use `rte_vital_channel_t` directly, for the
   ADR-019 addendum's built-in-checkpoint wiring over the A/B peer link
@@ -283,7 +283,7 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
   `RTE_VOTING_NMR`/`quorum_size == 1` "single link" case), not through
   `channel_ab_crosscompare.c`'s hand-rolled cross-compare logic as
   assumed (that part genuinely is independent, as originally thought).
-  This was caught by a `safeAPIRBC2oo2` build failure after the rename
+  This was caught by a `RBC_GP` build failure after the rename
   landed, not by the original exploration - `channel_ab_types.h`,
   `channel_ab.c`, `channel_ab_io.c`, and `channel_ab_checkpoint.h`/`.c`
   needed the same rewiring as this framework's own `rte_checkpoint`:
@@ -292,8 +292,8 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
   (`channel_ab_context_t::checkpoint_voter`, `RTE_VOTING_NMR`,
   `quorum_size == 1`), with `rte_appmanager_checkpoint_config_t::voter`
   replacing the old `::vital_channel` field throughout. Fixed as part of
-  this same change; verified via `safeAPIRBC2oo2`'s own
-  `ctest` and `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` (which
+  this same change; verified via `RBC_GP`'s own
+  `ctest` and `.claude/skills/run-RBC_GP/smoke.sh` (which
   explicitly checks for "A/WEST checkpoint traffic" / "B/WEST checkpoint
   traffic" in the running processes' logs, so it exercises the live
   checkpoint path, not just that the binary links). Lesson for future
@@ -317,10 +317,10 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
   exercises the §2.2 bug fix: 3 channels where channel 0 disagrees but
   channels 1 and 2 agree - asserts the voter returns the channels-1/2
   majority data, not channel 0's.
-- `safeAPIRBC2oo2` (downstream consumer, separate repo, consumed via
+- `RBC_GP` (downstream consumer, separate repo, consumed via
   `add_subdirectory()`): `cmake --build build` clean;
   `ctest --test-dir build` (2/2 tests) pass;
-  `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` passes, including its
+  `.claude/skills/run-RBC_GP/smoke.sh` passes, including its
   explicit "A/WEST checkpoint traffic" / "B/WEST checkpoint traffic"
   log checks - the live, rewired `rte_channel_t`/`rte_voter_t`
   checkpoint path.
@@ -343,6 +343,6 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
   graph, §2.1, updated)
 - `docs/architecture/ADR-023-consolidate-cmake-libraries.md` (§5,
   pointer to this ADR added noting the old `channel/` module's removal)
-- `safeAPIRBC2oo2` (separate repo): `src/application/AB/channel_ab_types.h`,
+- `RBC_GP` (separate repo): `src/application/AB/channel_ab_types.h`,
   `channel_ab.c`, `channel_ab_io.c`, `channel_ab_checkpoint.h`/`.c` -
   the downstream consumer this ADR's exploration missed (§3)

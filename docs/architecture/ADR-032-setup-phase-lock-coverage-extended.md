@@ -11,7 +11,7 @@ Applies to: `src/timer/rte_timer.c`, `src/ipc/rte_ipc.c`,
 
 ## 1. Context
 
-A downstream integrator (`safeAPIRBC2oo2`) asked this framework to review
+A downstream integrator (`RBC_GP`) asked this framework to review
 itself end to end for exactly the class of gap ADR-026 introduced
 `rte_lifecycle_check_setup_allowed()` to close: "can a resource with
 process-lifetime scope still be created/registered after the application
@@ -75,7 +75,7 @@ see the "Deferred" note below.
 framework as part of this ADR.** This was raised as a candidate (a
 pluggable allocator, falling back to `malloc()` if no backend is
 registered) but rejected once a repository search found
-`safeAPIRBC2oo2/src/posix_osadapter/rte_posix_osadapter_memory.c` already
+`RBC_GP/src/posix_osadapter/rte_posix_osadapter_memory.c` already
 implements a complete, working `rte_osadapter_memory_t` using a static
 compile-time-sized arena (`g_arena[RTE_POSIX_MEM_ARENA_SIZE]`) with a
 bump allocator and intrusive free list - zero `malloc()`/`free()` calls.
@@ -125,8 +125,8 @@ at here.
   existing legitimate call site (all of which already run during
   `init()`, per ADR-026 §3's own "zero source changes required for any
   existing consumer" finding) regressed.
-- `safeAPIRBC2oo2` (downstream consumer): full clean rebuild, `ctest`,
-  and `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` matching its
+- `RBC_GP` (downstream consumer): full clean rebuild, `ctest`,
+  and `.claude/skills/run-RBC_GP/smoke.sh` matching its
   established baseline - confirms none of its own `_register_backend()`/
   `rte_mem_pool_create()`/etc. call sites (all setup-phase, per the same
   ADR-026 §3 finding) are affected either.

@@ -2,7 +2,7 @@
 
 Status: Accepted
 Date: 2026-08-07
-Applies to: safeAPIFreamwork (`rte_safechannel`, new), safeAPIRBC2oo2
+Applies to: Platform_RTE (`rte_safechannel`, new), RBC_GP
 (SITE/AB/C link usage).
 
 ## 1. Context
@@ -25,7 +25,7 @@ Investigating the current state surfaced two different problems, not one:
   abstraction, `rte_dual_channel` (ADR-020), still requires the *caller*
   to open the netlink link(s) itself and hand over already-open
   `rte_netlink_handle_t` values in its config. That gap is exactly why
-  safeAPIRBC2oo2's `channel_ab_types.h`, `monitor_c_types.h`, and
+  RBC_GP's `channel_ab_types.h`, `monitor_c_types.h`, and
   `site.c` all include `rte/netlink/rte_netlink.h` directly and call
   `rte_netlink_open()`/`_send()`/`_receive()`/`_close()` themselves - the
   "channel" layer that was supposed to make this unnecessary doesn't
@@ -126,7 +126,7 @@ through `rte_safechannel`; direct `rte_netlink`/`rte_ipc` use is a
 backend-or-channel-layer-only concern, the same posture ADR-021 already
 established for the backend vtables themselves.
 
-### 2.4 Migration scope in safeAPIRBC2oo2
+### 2.4 Migration scope in RBC_GP
 
 All three of SITE's heartbeat link, `monitor_c`'s two listen links, and
 `channel_ab`'s peer/C-forward links move to `rte_safechannel`
@@ -195,7 +195,7 @@ on this specific path.
 
 ## 3. Consequences
 
-- Positive: no application code anywhere in safeAPIRBC2oo2 includes
+- Positive: no application code anywhere in RBC_GP includes
   `rte_netlink.h`/`rte_ipc.h` or calls their functions directly after
   this change; "open a channel, pick a type" is now literally the API.
 - Positive: SITE's and `monitor_c`'s links gain EN 50159 defended-messaging

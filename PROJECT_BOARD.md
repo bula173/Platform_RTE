@@ -162,7 +162,7 @@ Example:
 
 To visualize this board in GitHub's native Project interface:
 
-1. Go to https://github.com/bula173/safeAPIFreamwork/projects
+1. Go to https://github.com/bula173/Platform_RTE/projects
 2. Click **New Project**
 3. Select **Table** or **Kanban** view
 4. Name: "RteFramework Roadmap"
@@ -181,6 +181,6 @@ This Markdown board serves as a quick reference; the GitHub Project provides vis
 
 - [ROADMAP.md](docs/ROADMAP.md) — Detailed roadmap with timelines
 - [FEATURE_EXPANSION.md](docs/FEATURE_EXPANSION.md) — Full feature specifications
-- [GitHub Issues](https://github.com/bula173/safeAPIFreamwork/issues) — Issue discussions (#1–#16)
+- [GitHub Issues](https://github.com/bula173/Platform_RTE/issues) — Issue discussions (#1–#16)
 - [ADRs](docs/architecture/) — Architecture Decision Records (to be created)
 - [SRS](docs/requirements/SRS.md) — Software Requirements Specification (to be updated)

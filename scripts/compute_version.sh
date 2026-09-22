@@ -17,7 +17,7 @@ if ! git -C "$PROJECT_ROOT" rev-parse --git-dir >/dev/null 2>&1; then
     echo "${STATIC_VERSION}+unknown"
 elif ! git -C "$PROJECT_ROOT" rev-parse HEAD >/dev/null 2>&1; then
     # A real git repo, but no commits yet (e.g. a freshly git-init'd
-    # project - see safeAPIRBC2oo2SA) - no SHA to report.
+    # project - see RBC_SA) - no SHA to report.
     echo "${STATIC_VERSION}+nocommit"
 else
     SHA="$(git -C "$PROJECT_ROOT" rev-parse --short=8 HEAD)"

@@ -7,7 +7,7 @@
 
 Status: Draft
 Date: 2026-08-02
-Applies to: safeAPIFreamwork, all `include/rte/os/*.h` services
+Applies to: Platform_RTE, all `include/rte/os/*.h` services
 
 ## 1. Context
 

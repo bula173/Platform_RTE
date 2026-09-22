@@ -31,7 +31,7 @@ framework's own design:
 3. **No threads: how do channels/dual-channels get serviced?** Raised as
    a related but *not yet acted on* concern - this ADR does not change
    this framework's threading model (`rte_task` remains available and
-   used, e.g. by `safeAPIRBC2oo2`'s own background reconnect tasks); it
+   used, e.g. by `RBC_GP`'s own background reconnect tasks); it
    is recorded here because the discussion that produced this ADR
    surfaced it, but no design decision follows from it in this ADR.
 
@@ -73,7 +73,7 @@ first checks, after NULL/param validation, before doing any real work):
 **Deliberately excluded**: `rte_netlink_open()`, `rte_dual_channel_init()`,
 `rte_dual_negotiator_init()`. All three are legitimately re-invoked
 *after* the setup phase locks by an application's own reconnect-after-
-link-loss logic - concretely, `safeAPIRBC2oo2`'s
+link-loss logic - concretely, `RBC_GP`'s
 `channel_ab_io.c`'s peer/C-link background reconnect tasks and
 `channel_ab_negotiate_reconnect()` (this framework's own consumer
 project, built immediately before this ADR) all call `rte_netlink_open()`
@@ -136,7 +136,7 @@ via a non-local jump) corrupts that call's own state.
   running, not just at the moment its source code is read.
 - Zero source changes required for any existing consumer whose own
   setup already completes inside `ops->init()` (the overwhelmingly
-  common, already-recommended pattern) - `safeAPIRBC2oo2` needed no
+  common, already-recommended pattern) - `RBC_GP` needed no
   changes at all (see Verification below).
 
 **Negative / accepted trade-offs:**
@@ -163,9 +163,9 @@ via a non-local jump) corrupts that call's own state.
 - `ctest --test-dir build`: 26/26 passing, including the pre-existing
   `test_rte_appmanager` sequential-multi-run suite and the `longjmp()`
   safestate test (now paired with `rte_appmanager_reset_state()`).
-- `safeAPIRBC2oo2` (this framework's own downstream consumer) rebuilt
+- `RBC_GP` (this framework's own downstream consumer) rebuilt
   against the updated framework and re-verified via
-  `.claude/skills/run-safeAPIRBC2oo2/smoke.sh` (negotiation, cross-compare,
+  `.claude/skills/run-RBC_GP/smoke.sh` (negotiation, cross-compare,
   and the full DISAGREE -> REBOOT -> TAKEOVER -> state-transfer failover
   chain) with zero source changes required - direct evidence that the
   netlink/dual exclusion (2.2) is scoped correctly for a real,

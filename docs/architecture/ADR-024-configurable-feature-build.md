@@ -2,7 +2,7 @@
 
 Status: Accepted
 Date: 2026-08-15
-Applies to: safeAPIFreamwork's top-level `CMakeLists.txt`,
+Applies to: Platform_RTE's top-level `CMakeLists.txt`,
 `tests/CMakeLists.txt`, `cmake/RTEHelpers.cmake`,
 `cmake/RteFrameworkConfig.cmake.in`, `src/appmanager/CMakeLists.txt`.
 
@@ -43,7 +43,7 @@ is now selectable.
 
 Add one `option(RTE_ENABLE_<NAME> ... ON)` per toggleable module to
 the top-level `CMakeLists.txt`. Default **ON** for every option, so an
-existing consumer (safeAPIRBC2oo2, the example templates) keeps
+existing consumer (RBC_GP, the example templates) keeps
 building exactly what it built before with zero CMake changes on their
 side. `CORE` (`status`, `types`, `buffer`, `cast`, `safestate`,
 `string`) has no option and is always compiled - it is the one cluster
@@ -176,14 +176,14 @@ top-level `CMakeLists.txt`.
   -DRTE_ENABLE_DUAL=OFF`) fails configure with a `FATAL_ERROR`
   naming the exact flag to add, rather than failing later at compile or
   link time with a confusing missing-header/undefined-symbol error.
-- safeAPIRBC2oo2 (which builds this project via `add_subdirectory()`
+- RBC_GP (which builds this project via `add_subdirectory()`
   with every option left at its `ON` default) still builds and its own
-  smoke test (`.claude/skills/run-safeAPIRBC2oo2/smoke.sh`) still
+  smoke test (`.claude/skills/run-RBC_GP/smoke.sh`) still
   passes unchanged.
 
 ## 5. Location
 
-- `CMakeLists.txt` (top-level, safeAPIFreamwork) - option declarations,
+- `CMakeLists.txt` (top-level, Platform_RTE) - option declarations,
   dependency enforcement, conditional source lists, install target list.
 - `cmake/RTEHelpers.cmake` - `rte_require_feature()`.
 - `cmake/RteFrameworkConfig.cmake.in` - unaffected by which options

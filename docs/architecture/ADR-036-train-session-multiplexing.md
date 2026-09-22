@@ -154,11 +154,11 @@ See the **ADR-029 Addendum** appended to that file. In brief:
   everywhere.
 - **One process per role**: one `train-sim`, one `il-sim`, one `ctc`
   (was 2 + 2 + 1). Each `train-sim`/`il-sim` process is dual-homed
-  (`SimCore.dual_link`) and hosts every train whose `home_site` it is
+  (`RBC_Test_Sim_Core.dual_link`) and hosts every train whose `home_site` it is
   responsible for; a single process may host both sites' trains in the
   local env. Config gains a `trains: [{nid_engine, home_site}, ...]`
   roster (or `active_trains: N` + `base_nid_engine` shorthand, expanded
-  by `SimCore`).
+  by `RBC_Test_Sim_Core`).
 - **Compose**: 11 containers -> **9** (6 RBC + `train` + `il` + `ctc`).
   `RTE_RBC_ACTIVE_TRAINS` is set once, shared by the RBC services and
   the sims.
@@ -213,35 +213,35 @@ vital sessions behind it.
 - **Route pool**: `RTE_EXAMPLE_MAX_ROUTES` tracks
   `active_trains * MAX_ROUTES_PER_TRAIN` at runtime but is sized for
   the 100-train ceiling; the static site topology
-  (`safeAPIRBC2oo2SA`'s `ab_site*_track_layout[]`) must define enough
+  (`RBC_SA`'s `ab_site*_track_layout[]`) must define enough
   distinct routes for the largest `N` a scenario exercises - generated,
   not hand-listed, past a handful.
 - **Simulator config schema change** (roster / `active_trains`) - a
   breaking change to `train-*.json` / `il-*.json`, versioned in
-  `SimCore.sim_config`.
+  `RBC_Test_Sim_Core.sim_config`.
 - A future real backend that wants genuine per-train EURORADIO
   termination is not precluded - it would add connections behind the
   same `session[]` table this ADR keeps.
 
 ## Location
 
-- `safeAPIRBC2oo2GP/src/application/{AB,C}/common/common_config.h`
+- `RBC_GP/src/application/{AB,C}/common/common_config.h`
   (`MAX_TRAINS`, `DEFAULT_ACTIVE_TRAINS`, port-offset chain,
   `SITE_EXTRA_PAYLOAD_SIZE`, `DB_WIRE_SIZE`, `SITE_XFER_WINDOW`)
-- `safeAPIRBC2oo2GP/src/application/C/common/site_config.{h,c}`
+- `RBC_GP/src/application/C/common/site_config.{h,c}`
   (port helpers lose `train_index`)
-- `safeAPIRBC2oo2GP/src/application/C/gateway_c*.{c,h}`,
+- `RBC_GP/src/application/C/gateway_c*.{c,h}`,
   `monitor_c*.{c,h}` (single link per kind, demux)
-- `safeAPIRBC2oo2GP/src/application/AB/GP/main/pre_execute.c`,
+- `RBC_GP/src/application/AB/GP/main/pre_execute.c`,
   `AB/GP/com/ab_gp_channel_io*.c`,
   `AB/GP/com/ab_gp_channel_negotiate.c` (relay demux, chunked
   encode/decode), `AB/common/rbc_wire_types.h` (unchanged frame,
   doc note)
-- `safeAPIRBC2oo2GA/src/AB/il/ab_ga_il.c`, `AB/ctc/ab_ga_ctc.c`
+- `RBC_GA/src/AB/il/ab_ga_il.c`, `AB/ctc/ab_ga_ctc.c`
   (relay codecs - per-instance iteration removed)
-- `safeAPIRBC2oo2SA` site topology (route pool for large N)
-- `SimCore/src/simcore/{sim_config,dual_link}.py`;
-  `TrainRBCSim`, `ILRBCSim`, `CTCRBCSim` sims + configs
-- `safeAPIRBC2oo2TestEnv/docker-compose.yml`,
+- `RBC_SA` site topology (route pool for large N)
+- `RBC_Test_Sim_Core/src/simcore/{sim_config,dual_link}.py`;
+  `RBC_Test_Sim_Train`, `RBC_Test_Sim_IL`, `RBC_Test_Sim_CTC` sims + configs
+- `RBC_Test_Env/docker-compose.yml`,
   `etc/scripts/setupLocalTestEnv.sh`, `robot/rbc_scenario/*`
 - This file; `ADR-029` Addendum.

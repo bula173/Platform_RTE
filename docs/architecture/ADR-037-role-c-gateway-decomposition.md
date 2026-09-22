@@ -35,7 +35,7 @@ channel between them.
 
 ### 1. Three service binaries, one shared library
 
-`safeAPIRBC2oo2GP` builds:
+`RBC_GP` builds:
 
 - `libgateway_c_common.a` (`gateway_c::common`) - the boilerplate lifted
   verbatim from `gateway_c.c`: `gateway_c_main()` (version banner + arg
@@ -64,14 +64,14 @@ are **removed**. `gateway_c.c` is deleted (its contents split between
 `gateway_c_common.c` and the three `main_c_<svc>.c`).
 
 **Project ownership follows the A/B-side split.** IL and CTC are
-`safeAPIRBC2oo2GA`'s domain (that project already owns `src/AB/il/ab_ga_il.c`
+`RBC_GA`'s domain (that project already owns `src/AB/il/ab_ga_il.c`
 and `src/AB/ctc/ab_ga_ctc.c`), so the IL and CTC gateway services live in
-GA too: `safeAPIRBC2oo2GA/src/C/il/{gateway_c_il_handler,gateway_c_logctl,main_c_il}.c`
-and `safeAPIRBC2oo2GA/src/C/ctc/{gateway_c_ctc_handler,main_c_ctc}.c` (one
+GA too: `RBC_GA/src/C/il/{gateway_c_il_handler,gateway_c_logctl,main_c_il}.c`
+and `RBC_GA/src/C/ctc/{gateway_c_ctc_handler,main_c_ctc}.c` (one
 subfolder per handler, mirroring `src/AB/{il,ctc}/`). GA builds
 `rte_gateway_c_il` / `_ctc`; GP keeps only `rte_gateway_c_train`.
 `gateway_c_common` is transport/lifecycle - platform scope - so it stays
-in GP, defined *before* GP's `add_subdirectory(safeAPIRBC2oo2GA)` so GA
+in GP, defined *before* GP's `add_subdirectory(RBC_GA)` so GA
 can link it; a standalone GA build (conan) just builds the `.so` and
 skips the two executables. Because GA is add_subdirectory()'d by GP, the
 two GA-built binaries install into GP's own `dist/<platform>/bin/`
@@ -93,7 +93,7 @@ shipped `/app/bin/gateway_c_entrypoint.sh <SITE>` launches the three
 service binaries and exits non-zero the moment **any** of them exits
 (`wait -n`, or a PID-poll fallback) - a crashed gateway service fails
 `c-west` loudly, the same "fail loud, don't limp" posture as the SA
-installer self-check (ADR notes in `safeAPIRBC2oo2SA/CLAUDE.md`).
+installer self-check (ADR notes in `RBC_SA/CLAUDE.md`).
 Consequences of keeping the container name:
 
 - Docker fault-injection (`docker restart c-west`,
@@ -148,7 +148,7 @@ three binaries.
 ## Consequences
 
 - 1 gateway binary -> 3 + 1 static lib; ~3 tiny new `main_c_*.c`;
-  `gateway_c.c` deleted. `safeAPIRBC2oo2GP/CMakeLists.txt` gains 3
+  `gateway_c.c` deleted. `RBC_GP/CMakeLists.txt` gains 3
   targets + the lib; the SA installer / `packaging.conf` / Dockerfile
   ship 3 binaries + the entrypoint script instead of one binary.
 - More processes at runtime (6 gateway processes vs 2) but the **same
@@ -161,16 +161,16 @@ three binaries.
 
 ## Location
 
-- `safeAPIRBC2oo2GP/src/application/C/`: new `gateway_c_common.{c,h}`,
+- `RBC_GP/src/application/C/`: new `gateway_c_common.{c,h}`,
   `main_c_train.c`, `main_c_il.c`, `main_c_ctc.c`; `gateway_c.c` +
   `gateway_c.h` removed; `gateway_c_types.h` +
   `gateway_c_{train,il,ctc}_handler.*` + `gateway_c_logctl.*` +
   `gateway_c_config.*` + `gateway_c_util.*` unchanged.
-- `safeAPIRBC2oo2GP/CMakeLists.txt` (3 targets + `gateway_c::common`).
-- `safeAPIRBC2oo2GP/src/application/C/main_c.c` removed.
-- `safeAPIRBC2oo2SA/Dockerfile`, `build_installers.sh`,
+- `RBC_GP/CMakeLists.txt` (3 targets + `gateway_c::common`).
+- `RBC_GP/src/application/C/main_c.c` removed.
+- `RBC_SA/Dockerfile`, `build_installers.sh`,
   `etc/config/packaging.conf` (3 binaries + `gateway_c_entrypoint.sh`).
-- `safeAPIRBC2oo2TestEnv/docker-compose.yml` (`c-west`/`c-east`
+- `RBC_Test_Env/docker-compose.yml` (`c-west`/`c-east`
   `command:` -> entrypoint script), `etc/scripts/setupLocalTestEnv.sh`
   (6 gateway launches), `robot/supportFunctions/ContainerSupportFunctions.py`
   (`get_container_log` local merge), `robot/supportFunctions/ContainerLogAttachListener.py`
