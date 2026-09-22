@@ -94,6 +94,101 @@ static uint32_t voter_count_healthy(const rte_voter_t *voter)
     return healthy;
 }
 
+/* rte_voter_receive()'s own receive phase, extracted: polls every healthy channel once, filling
+ * buffers[i] (valid only where responded[i] is subsequently true - unhealthy/non-responding
+ * channels' buffer slots are left whatever they were) and counting how many channels actually
+ * returned data. responded[] must already be all-false on entry (the caller zeroes it); this
+ * function only ever sets an entry true, never clears one. No logic changed from the loop this
+ * replaces - a pure extraction. */
+static uint32_t voter_receive_from_healthy_channels(rte_voter_t *voter, size_t data_size,
+                                                      uint8_t buffers[][RTE_VOTER_MAX_MESSAGE_SIZE],
+                                                      bool responded[], bool *out_saw_timeout)
+{
+    uint32_t successful = 0U;
+    uint32_t i;
+
+    *out_saw_timeout = false;
+    for (i = 0U; i < voter->channel_count; i++)
+    {
+        rte_channel_health_t h;
+        rte_status_t st;
+
+        (void)rte_channel_get_health(voter->channels[i], &h);
+        if (!h.is_healthy)
+        {
+            continue;
+        }
+
+        st = rte_channel_receive(voter->channels[i], buffers[i], data_size,
+                                         voter->config.channel_timeout_ms);
+        if (st == RTE_STATUS_OK)
+        {
+            responded[i] = true;
+            successful++;
+        }
+        else if (st == RTE_STATUS_TIMEOUT)
+        {
+            *out_saw_timeout = true;
+        }
+        else
+        {
+            /* Any other failure just doesn't count toward successful;
+             * saw_timeout stays as-is. */
+        }
+    }
+    return successful;
+}
+
+/* rte_voter_receive()'s own grouping phase, extracted: groups every channel whose response
+ * (buffers[i], for every i where responded[i] is true) mutually agrees with another's via
+ * voter_data_equal(), by the same plain O(n^2) pairwise scan the code being replaced used -
+ * group_id[i] names which group channel i landed in, group_count[g] is that group's current
+ * size, *out_num_groups is the total distinct-group count found. group_count[] must already be
+ * all-zero on entry (the caller zeroes it, same as before this extraction). No logic changed -
+ * a pure extraction; this is the function's single most deeply-nested block before this change
+ * and the main driver of its cognitive-complexity score. */
+static void voter_group_matching_responses(const rte_voter_t *voter,
+                                            const uint8_t buffers[][RTE_VOTER_MAX_MESSAGE_SIZE],
+                                            const bool responded[], size_t data_size,
+                                            uint32_t group_id[], uint32_t group_count[],
+                                            uint32_t *out_num_groups)
+{
+    uint32_t num_groups = 0U;
+    uint32_t i;
+    uint32_t j;
+
+    for (i = 0U; i < voter->channel_count; i++)
+    {
+        bool placed = false;
+
+        if (!responded[i])
+        {
+            continue;
+        }
+        for (j = 0U; j < i; j++)
+        {
+            if (!responded[j])
+            {
+                continue;
+            }
+            if (voter_data_equal(voter, buffers[i], buffers[j], data_size))
+            {
+                group_id[i] = group_id[j];
+                group_count[group_id[i]]++;
+                placed = true;
+                break;
+            }
+        }
+        if (!placed)
+        {
+            group_id[i] = num_groups;
+            group_count[num_groups] = 1U;
+            num_groups++;
+        }
+    }
+    *out_num_groups = num_groups;
+}
+
 rte_status_t rte_voter_init(rte_voter_storage_t *storage, const rte_voter_config_t *config)
 {
     rte_status_t lifecycle_status;
@@ -239,7 +334,6 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
     bool saw_timeout = false;
     rte_voting_result_t local_result;
     uint32_t i;
-    uint32_t j;
 
     if ((voter == NULL) || (data == NULL) || (data_size == 0U))
     {
@@ -272,34 +366,7 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
     }
     else
     {
-        for (i = 0U; i < voter->channel_count; i++)
-        {
-            rte_channel_health_t h;
-            rte_status_t st;
-
-            (void)rte_channel_get_health(voter->channels[i], &h);
-            if (!h.is_healthy)
-            {
-                continue;
-            }
-
-            st = rte_channel_receive(voter->channels[i], buffers[i], data_size,
-                                             voter->config.channel_timeout_ms);
-            if (st == RTE_STATUS_OK)
-            {
-                responded[i] = true;
-                successful++;
-            }
-            else if (st == RTE_STATUS_TIMEOUT)
-            {
-                saw_timeout = true;
-            }
-            else
-            {
-                /* Any other failure just doesn't count toward successful;
-                 * saw_timeout stays as-is. */
-            }
-        }
+        successful = voter_receive_from_healthy_channels(voter, data_size, buffers, responded, &saw_timeout);
 
         if (successful == 0U)
         {
@@ -311,35 +378,8 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
         }
         else
         {
-            for (i = 0U; i < voter->channel_count; i++)
-            {
-                bool placed = false;
-
-                if (!responded[i])
-                {
-                    continue;
-                }
-                for (j = 0U; j < i; j++)
-                {
-                    if (!responded[j])
-                    {
-                        continue;
-                    }
-                    if (voter_data_equal(voter, buffers[i], buffers[j], data_size))
-                    {
-                        group_id[i] = group_id[j];
-                        group_count[group_id[i]]++;
-                        placed = true;
-                        break;
-                    }
-                }
-                if (!placed)
-                {
-                    group_id[i] = num_groups;
-                    group_count[num_groups] = 1U;
-                    num_groups++;
-                }
-            }
+            voter_group_matching_responses(voter, buffers, responded, data_size, group_id, group_count,
+                                            &num_groups);
 
             for (i = 0U; i < num_groups; i++)
             {
