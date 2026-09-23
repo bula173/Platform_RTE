@@ -229,6 +229,127 @@ rte_status_t rte_dual_channel_init(rte_dual_channel_t *channel, const rte_dual_c
     return RTE_STATUS_OK;
 }
 
+/* rte_dual_channel_send()'s own per-link attempt, extracted: sends the frame on link index i,
+ * then (only if the send itself succeeded) polls that same link for its matching ACK. Every
+ * comment below on the stall-poll cap and the "no measurable time passed" allowance is unchanged
+ * from the loop body this replaces - REQ-DUAL-CHANNEL-007 still applies exactly as documented.
+ * *saw_hard_fault and *hard_fault_status are updated in place, once, the first time either the send
+ * or a poll reports RTE_STATUS_HARDWARE_FAULT across the WHOLE rte_dual_channel_send() call (not
+ * just this one link) - REQ-DUAL-CHANNEL-008, same "first, not last" choice as before this
+ * extraction. No logic changed. */
+static bool dual_channel_send_to_link_and_wait_ack(rte_dual_channel_t *channel, uint32_t i, const uint8_t *frame,
+                                                     uint8_t frame_size, bool *saw_hard_fault,
+                                                     rte_status_t *hard_fault_status)
+{
+    uint32_t      sent_sequence = 0U;
+    rte_status_t send_status;
+    bool          link_now_up = false;
+
+    send_status = rte_dual_msgchannel_send(&channel->links[i], frame, frame_size, channel->ack_timeout_ms,
+                                             &sent_sequence);
+    if ((send_status == RTE_STATUS_HARDWARE_FAULT) && (!*saw_hard_fault))
+    {
+        *saw_hard_fault    = true;
+        *hard_fault_status = send_status;
+    }
+    if (send_status == RTE_STATUS_OK)
+    {
+        rte_duration_ms_t   remaining = channel->ack_timeout_ms;
+        rte_timestamp_ms_t  start_ms = 0U;
+        /* Bounds how many consecutive polls may complete without
+         * rte_timer_now() showing any measurable progress since
+         * start_ms, before this loop gives up on this link for this
+         * round - see the "else" branch below for why this can
+         * legitimately happen more than once and must not itself be
+         * unbounded. RTE_DUAL_CHANNEL_STALL_POLL_LIMIT is a fixed,
+         * generous cap (a real exchange needs at most a handful of
+         * iterations - one per DATA/STATE/foreign-ACK frame handled
+         * as a side effect before this link's own matching ACK
+         * arrives), not a tuned timing value. */
+        uint32_t stall_polls = 0U;
+
+        (void)rte_timer_now(&start_ms);
+
+        while ((remaining > 0U) && (stall_polls < RTE_DUAL_CHANNEL_STALL_POLL_LIMIT))
+        {
+            dual_poll_result_t result;
+            rte_status_t       poll_status;
+            rte_timestamp_ms_t now_ms = 0U;
+
+            poll_status = dual_channel_poll_link_once(channel, i, remaining, &result);
+            if ((poll_status == RTE_STATUS_OK) && result.matched && (result.kind == RTE_DUAL_FRAME_KIND_ACK)
+                && (result.ack_sequence == sent_sequence))
+            {
+                link_now_up = true;
+                break;
+            }
+            if (poll_status == RTE_STATUS_HARDWARE_FAULT)
+            {
+                /* Genuinely broken (not just "no ACK frame arrived
+                 * yet this poll"), e.g. HARDWARE_FAULT from the peer
+                 * having closed/reset the connection - see this
+                 * function's own header. No point continuing to poll
+                 * a dead link for the rest of its own ack_timeout_ms
+                 * budget. */
+                if (!*saw_hard_fault)
+                {
+                    *saw_hard_fault    = true;
+                    *hard_fault_status = poll_status;
+                }
+                break;
+            }
+
+            /* Recompute the remaining budget from wall-clock elapsed
+             * time, not a fixed per-iteration decrement - a DATA/STATE
+             * frame handled as a side effect above may have consumed
+             * an arbitrary fraction of this link's own timeout
+             * already. */
+            (void)rte_timer_now(&now_ms);
+            if (now_ms > start_ms)
+            {
+                rte_timestamp_ms_t elapsed = now_ms - start_ms;
+
+                if (elapsed >= (rte_timestamp_ms_t)channel->ack_timeout_ms)
+                {
+                    remaining = 0U;
+                }
+                else
+                {
+                    remaining = channel->ack_timeout_ms - (rte_duration_ms_t)elapsed;
+                }
+                stall_polls = 0U;
+            }
+            else
+            {
+                /* REQ-DUAL-CHANNEL-007: now_ms == start_ms - no
+                 * measurable time has passed on rte_timer_now()'s own
+                 * tick resolution since this round started. This used
+                 * to be treated as "no timer
+                 * OSAdapter available, give up after one attempt"
+                 * (REQ-OAL-LOG-001-style "never spin on an
+                 * unmeasurable interval"), but a real localhost round
+                 * trip (connect, send DATA, receive the peer's own
+                 * DATA, auto-ACK it, receive the peer's own ACK)
+                 * routinely completes inside a single millisecond
+                 * tick, which made that same guard misfire as a false
+                 * "no timer" abort after exactly one poll - discovered
+                 * live via SITE's migration to rte_safechannel
+                 * (ADR-022), where both sites send their negotiation
+                 * beacon at nearly the same instant over a real
+                 * loopback TCP link. `remaining` is left unchanged so
+                 * a fast exchange like that one gets the extra polls
+                 * it needs; stall_polls bounds how many such
+                 * no-progress iterations are allowed before this loop
+                 * gives up anyway, so a link with a genuinely
+                 * non-advancing or absent timer still cannot spin
+                 * forever. */
+                stall_polls++;
+            }
+        }
+    }
+    return link_now_up;
+}
+
 rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel, const uint8_t *payload, uint8_t payload_size,
                                       uint32_t *out_ack_link_count)
 {
@@ -278,112 +399,8 @@ rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel, const uint8_t *p
 
     for (i = 0U; i < channel->link_count; i++)
     {
-        uint32_t      sent_sequence = 0U;
-        rte_status_t send_status;
-        bool          link_now_up = false;
-
-        send_status = rte_dual_msgchannel_send(&channel->links[i], frame, frame_size, channel->ack_timeout_ms,
-                                                 &sent_sequence);
-        if ((send_status == RTE_STATUS_HARDWARE_FAULT) && (!saw_hard_fault))
-        {
-            saw_hard_fault    = true;
-            hard_fault_status = send_status;
-        }
-        if (send_status == RTE_STATUS_OK)
-        {
-            rte_duration_ms_t   remaining = channel->ack_timeout_ms;
-            rte_timestamp_ms_t  start_ms = 0U;
-            /* Bounds how many consecutive polls may complete without
-             * rte_timer_now() showing any measurable progress since
-             * start_ms, before this loop gives up on this link for this
-             * round - see the "else" branch below for why this can
-             * legitimately happen more than once and must not itself be
-             * unbounded. RTE_DUAL_CHANNEL_STALL_POLL_LIMIT is a fixed,
-             * generous cap (a real exchange needs at most a handful of
-             * iterations - one per DATA/STATE/foreign-ACK frame handled
-             * as a side effect before this link's own matching ACK
-             * arrives), not a tuned timing value. */
-            uint32_t stall_polls = 0U;
-
-            (void)rte_timer_now(&start_ms);
-
-            while ((remaining > 0U) && (stall_polls < RTE_DUAL_CHANNEL_STALL_POLL_LIMIT))
-            {
-                dual_poll_result_t result;
-                rte_status_t       poll_status;
-                rte_timestamp_ms_t now_ms = 0U;
-
-                poll_status = dual_channel_poll_link_once(channel, i, remaining, &result);
-                if ((poll_status == RTE_STATUS_OK) && result.matched && (result.kind == RTE_DUAL_FRAME_KIND_ACK)
-                    && (result.ack_sequence == sent_sequence))
-                {
-                    link_now_up = true;
-                    break;
-                }
-                if (poll_status == RTE_STATUS_HARDWARE_FAULT)
-                {
-                    /* Genuinely broken (not just "no ACK frame arrived
-                     * yet this poll"), e.g. HARDWARE_FAULT from the peer
-                     * having closed/reset the connection - see this
-                     * function's own header. No point continuing to poll
-                     * a dead link for the rest of its own ack_timeout_ms
-                     * budget. */
-                    if (!saw_hard_fault)
-                    {
-                        saw_hard_fault    = true;
-                        hard_fault_status = poll_status;
-                    }
-                    break;
-                }
-
-                /* Recompute the remaining budget from wall-clock elapsed
-                 * time, not a fixed per-iteration decrement - a DATA/STATE
-                 * frame handled as a side effect above may have consumed
-                 * an arbitrary fraction of this link's own timeout
-                 * already. */
-                (void)rte_timer_now(&now_ms);
-                if (now_ms > start_ms)
-                {
-                    rte_timestamp_ms_t elapsed = now_ms - start_ms;
-
-                    if (elapsed >= (rte_timestamp_ms_t)channel->ack_timeout_ms)
-                    {
-                        remaining = 0U;
-                    }
-                    else
-                    {
-                        remaining = channel->ack_timeout_ms - (rte_duration_ms_t)elapsed;
-                    }
-                    stall_polls = 0U;
-                }
-                else
-                {
-                    /* REQ-DUAL-CHANNEL-007: now_ms == start_ms - no
-                     * measurable time has passed on rte_timer_now()'s own
-                     * tick resolution since this round started. This used
-                     * to be treated as "no timer
-                     * OSAdapter available, give up after one attempt"
-                     * (REQ-OAL-LOG-001-style "never spin on an
-                     * unmeasurable interval"), but a real localhost round
-                     * trip (connect, send DATA, receive the peer's own
-                     * DATA, auto-ACK it, receive the peer's own ACK)
-                     * routinely completes inside a single millisecond
-                     * tick, which made that same guard misfire as a false
-                     * "no timer" abort after exactly one poll - discovered
-                     * live via SITE's migration to rte_safechannel
-                     * (ADR-022), where both sites send their negotiation
-                     * beacon at nearly the same instant over a real
-                     * loopback TCP link. `remaining` is left unchanged so
-                     * a fast exchange like that one gets the extra polls
-                     * it needs; stall_polls bounds how many such
-                     * no-progress iterations are allowed before this loop
-                     * gives up anyway, so a link with a genuinely
-                     * non-advancing or absent timer still cannot spin
-                     * forever. */
-                    stall_polls++;
-                }
-            }
-        }
+        bool link_now_up = dual_channel_send_to_link_and_wait_ack(channel, i, frame, frame_size, &saw_hard_fault,
+                                                                    &hard_fault_status);
 
         channel->link_up[i] = link_now_up;
         if (link_now_up)
