@@ -126,6 +126,23 @@ typedef struct rte_dual_negotiator_config_s
     /** Opaque context passed back to state_change_callback. Ignored if
      *  state_change_callback is NULL. */
     void *state_change_callback_ctx;
+    /** Optional: seeds own_state instead of defaulting to RTE_DUAL_STATE_IDLE - for a caller
+     *  resuming an already-established identity across a transient reconnect (a fresh
+     *  channel/link, but not a fresh instance), where re-litigating the startup tie-break from
+     *  scratch would risk a spurious promotion/demotion flip-flop. RTE_DUAL_STATE_IDLE (the
+     *  zero value) means "no resume, use the default" - an existing, zero-initialized config
+     *  gets exactly today's behavior. peer_state always starts fresh at IDLE regardless (the
+     *  peer's own state is not something this instance can safely assume across a reconnect). */
+    rte_dual_state_t resume_own_state;
+    /** Optional: seeds own_startup_timestamp_ms instead of capturing a fresh rte_timer_now() -
+     *  same "resume an identity across reconnect" use case as resume_own_state above, but an
+     *  independent choice: a caller that is still negotiating (own_state not yet decided) may
+     *  still want its ORIGINAL startup timestamp preserved across a reconnect, so a fresh one
+     *  captured mid-negotiation cannot flip the tie-break outcome against its peer - resuming
+     *  the timestamp does not require also resuming own_state. 0 (the zero value, never a
+     *  legitimate timestamp) means "no resume, capture fresh" - an existing, zero-initialized
+     *  config gets exactly today's behavior. */
+    uint64_t resume_own_startup_timestamp_ms;
 } rte_dual_negotiator_config_t;
 
 /**
@@ -134,8 +151,11 @@ typedef struct rte_dual_negotiator_config_s
  *        no timer OSAdapter is registered - same best-effort posture as
  *        rte_log_write_event()'s Timestamp field) for use on every
  *        beacon this negotiator ever sends - see
- *        rte_dual_state_frame_t's own doc on why this must stay fixed.
- *        Both own and peer state start at RTE_DUAL_STATE_IDLE.
+ *        rte_dual_state_frame_t's own doc on why this must stay fixed -
+ *        UNLESS config->resume_own_state/resume_own_startup_timestamp_ms
+ *        opt into resuming a prior identity instead (see their own doc).
+ *        peer_state always starts at RTE_DUAL_STATE_IDLE; own_state does
+ *        too unless a resume was requested.
  * @param negotiator  Caller-owned storage to initialize. Must not be NULL.
  * @param config      Configuration. Must not be NULL; config->channel must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM otherwise.
@@ -209,6 +229,46 @@ rte_dual_state_t rte_dual_negotiator_get_own_state(const rte_dual_negotiator_t *
  * @return The current peer state.
  */
 rte_dual_state_t rte_dual_negotiator_get_peer_state(const rte_dual_negotiator_t *negotiator);
+
+/**
+ * @brief Returns this instance's own startup timestamp (captured at
+ *        rte_dual_negotiator_init() time, or resumed from config - see
+ *        rte_dual_negotiator_config_t::resume_own_startup_timestamp_ms).
+ *        Diagnostic use (e.g. logging alongside the peer's own, below) -
+ *        never itself consulted by this module's own tie-break logic
+ *        after init.
+ * @param negotiator  Negotiator to query. May be NULL (returns 0).
+ * @return The own startup timestamp, in milliseconds.
+ */
+uint64_t rte_dual_negotiator_get_own_startup_timestamp_ms(const rte_dual_negotiator_t *negotiator);
+
+/**
+ * @brief Returns this instance's last-known view of the peer's own
+ *        startup timestamp (0/unset until the first valid STATE frame
+ *        arrives). Diagnostic use only, same posture as
+ *        rte_dual_negotiator_get_own_startup_timestamp_ms() above.
+ * @param negotiator  Negotiator to query. May be NULL (returns 0).
+ * @return The peer's own last-reported startup timestamp, in milliseconds.
+ */
+uint64_t rte_dual_negotiator_get_peer_startup_timestamp_ms(const rte_dual_negotiator_t *negotiator);
+
+/**
+ * @brief Returns this instance's own tie-break identifier
+ *        (rte_dual_negotiator_config_t::own_id at init time). Diagnostic
+ *        use only.
+ * @param negotiator  Negotiator to query. May be NULL (returns 0).
+ * @return The own tie-break identifier.
+ */
+uint32_t rte_dual_negotiator_get_own_id(const rte_dual_negotiator_t *negotiator);
+
+/**
+ * @brief Returns the expected peer's tie-break identifier
+ *        (rte_dual_negotiator_config_t::peer_id at init time). Diagnostic
+ *        use only.
+ * @param negotiator  Negotiator to query. May be NULL (returns 0).
+ * @return The expected peer's tie-break identifier.
+ */
+uint32_t rte_dual_negotiator_get_peer_id(const rte_dual_negotiator_t *negotiator);
 
 #ifdef __cplusplus
 }

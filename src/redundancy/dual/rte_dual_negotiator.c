@@ -142,15 +142,16 @@ rte_status_t rte_dual_negotiator_init(rte_dual_negotiator_t *negotiator,
     negotiator->state_change_callback_ctx = config->state_change_callback_ctx;
 
     (void)rte_timer_now(&now_ms);
-    negotiator->own_startup_timestamp_ms = now_ms;
+    negotiator->own_startup_timestamp_ms =
+        (config->resume_own_startup_timestamp_ms != 0U) ? config->resume_own_startup_timestamp_ms : now_ms;
     negotiator->own_channel_degraded     = false;
 
     negotiator->have_peer_startup_timestamp = false;
     negotiator->peer_startup_timestamp_ms   = 0U;
     negotiator->peer_channel_degraded       = false;
 
-    negotiator->own_state  = RTE_DUAL_STATE_IDLE;
-    negotiator->peer_state = RTE_DUAL_STATE_IDLE;
+    negotiator->own_state  = config->resume_own_state; /* RTE_DUAL_STATE_IDLE (0) unless a resume was requested */
+    negotiator->peer_state = RTE_DUAL_STATE_IDLE; /* always fresh - see this field's own config doc */
 
     negotiator->have_last_peer_seen = false;
     negotiator->last_peer_seen_ms   = 0U;
@@ -209,4 +210,40 @@ rte_dual_state_t rte_dual_negotiator_get_peer_state(const rte_dual_negotiator_t 
         return RTE_DUAL_STATE_IDLE;
     }
     return negotiator->peer_state;
+}
+
+uint64_t rte_dual_negotiator_get_own_startup_timestamp_ms(const rte_dual_negotiator_t *negotiator)
+{
+    if (negotiator == NULL)
+    {
+        return 0U;
+    }
+    return negotiator->own_startup_timestamp_ms;
+}
+
+uint64_t rte_dual_negotiator_get_peer_startup_timestamp_ms(const rte_dual_negotiator_t *negotiator)
+{
+    if (negotiator == NULL)
+    {
+        return 0U;
+    }
+    return negotiator->peer_startup_timestamp_ms;
+}
+
+uint32_t rte_dual_negotiator_get_own_id(const rte_dual_negotiator_t *negotiator)
+{
+    if (negotiator == NULL)
+    {
+        return 0U;
+    }
+    return negotiator->own_id;
+}
+
+uint32_t rte_dual_negotiator_get_peer_id(const rte_dual_negotiator_t *negotiator)
+{
+    if (negotiator == NULL)
+    {
+        return 0U;
+    }
+    return negotiator->peer_id;
 }
