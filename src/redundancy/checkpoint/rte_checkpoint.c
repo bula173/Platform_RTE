@@ -195,6 +195,47 @@ static rte_duration_ms_t remaining_budget_ms(rte_timestamp_ms_t start_ms,
     return remaining;
 }
 
+/* rte_channel_checkpoint()'s own per-channel send+receive+confirm attempt, extracted: sends the
+ * arrival message to channel index i, and on a successful send, waits (bounded by round_cap_ms
+ * and whatever is left of the overall max_delay_ms budget from start_ms) for a reply confirming
+ * checkpoint_id. Reports the outcome only - updating channel_confirmed[]/confirmed_count stays
+ * the caller's job, same "do the I/O, let the caller interpret it" split
+ * rte_voter_receive()'s own extraction already established (see git history). *now_ms is
+ * updated (rte_timer_now() is called again before the receive, to size its own sub-budget
+ * accurately) - an out-parameter, not a return value, to match the loop variable it feeds back
+ * into on every call. No logic changed from the block this replaces. */
+static bool checkpoint_try_channel(rte_voter_t *voter, uint32_t i, const rte_vital_message_t *arrival_msg,
+                                    uint32_t checkpoint_id, rte_timestamp_ms_t start_ms, rte_timestamp_ms_t *now_ms,
+                                    rte_duration_ms_t max_delay_ms, rte_duration_ms_t round_cap_ms,
+                                    rte_status_t *out_last_send_status, rte_status_t *out_last_recv_status)
+{
+    rte_channel_t *channel;
+    rte_status_t send_status;
+    bool confirmed = false;
+
+    channel = rte_voter_get_channel(voter, i);
+    send_status = rte_channel_send(channel, arrival_msg, sizeof(*arrival_msg));
+    *out_last_send_status = send_status;
+    if (send_status == RTE_STATUS_OK)
+    {
+        rte_vital_message_t reply;
+        rte_duration_ms_t sub_budget_ms;
+        rte_status_t recv_status;
+
+        (void)rte_timer_now(now_ms);
+        sub_budget_ms = remaining_budget_ms(start_ms, *now_ms, max_delay_ms);
+        if (sub_budget_ms > round_cap_ms)
+        {
+            sub_budget_ms = round_cap_ms;
+        }
+
+        recv_status = rte_channel_receive(channel, &reply, sizeof(reply), sub_budget_ms);
+        *out_last_recv_status = recv_status;
+        confirmed = (recv_status == RTE_STATUS_OK) && reply_confirms_checkpoint(&reply, checkpoint_id);
+    }
+    return confirmed;
+}
+
 rte_status_t rte_channel_checkpoint(rte_voter_t *voter, const rte_checkpoint_config_t *config)
 {
     rte_status_t status = RTE_STATUS_OK;
@@ -266,42 +307,20 @@ rte_status_t rte_channel_checkpoint(rte_voter_t *voter, const rte_checkpoint_con
         {
             for (i = 0U; i < channel_count; i++)
             {
-                rte_channel_t *channel;
-                rte_status_t send_status;
-
                 if ((i < RTE_VOTER_MAX_CHANNELS) && channel_confirmed[i])
                 {
                     continue;
                 }
 
-                channel = rte_voter_get_channel(voter, i);
-                send_status = rte_channel_send(channel, &arrival_msg, sizeof(arrival_msg));
-
-                last_send_status = send_status;
-                if (send_status == RTE_STATUS_OK)
+                if (checkpoint_try_channel(voter, i, &arrival_msg, config->checkpoint_id, start_ms, &now_ms,
+                                            config->max_delay_ms, round_cap_ms, &last_send_status,
+                                            &last_recv_status))
                 {
-                    rte_vital_message_t reply;
-                    rte_duration_ms_t sub_budget_ms;
-                    rte_status_t recv_status;
-
-                    (void)rte_timer_now(&now_ms);
-                    sub_budget_ms = remaining_budget_ms(start_ms, now_ms, config->max_delay_ms);
-                    if (sub_budget_ms > round_cap_ms)
+                    if (i < RTE_VOTER_MAX_CHANNELS)
                     {
-                        sub_budget_ms = round_cap_ms;
+                        channel_confirmed[i] = true;
                     }
-
-                    recv_status = rte_channel_receive(channel, &reply, sizeof(reply), sub_budget_ms);
-
-                    last_recv_status = recv_status;
-                    if ((recv_status == RTE_STATUS_OK) && reply_confirms_checkpoint(&reply, config->checkpoint_id))
-                    {
-                        if (i < RTE_VOTER_MAX_CHANNELS)
-                        {
-                            channel_confirmed[i] = true;
-                        }
-                        confirmed_count++;
-                    }
+                    confirmed_count++;
                 }
             }
             (void)rte_timer_now(&now_ms);
