@@ -428,16 +428,156 @@ const char *rte_redundancy_config_standby_mode_to_string(rte_standby_mode_t mode
     return result;
 }
 
+/* Required "topology" and "replicas" keys, plus quorum_size (either the explicit "quorum" key,
+ * or the topology's own implicit default - 2oo2/2oo2_redundant and 2oo3 both default to 2; NMR
+ * has none, "quorum" is required in the file for it). Extracted from
+ * rte_redundancy_config_load()'s own former inline sequence - no behavior change. */
+static rte_status_t parse_topology_replicas_and_quorum(const char *buf, size_t len, rte_redundancy_config_t *result)
+{
+    size_t value_pos;
+    rte_status_t status;
+    char topology_name[24];
+    bool has_quorum;
+
+    status = find_key_value_pos(buf, len, "topology", &value_pos);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+    {
+        size_t end_pos;
+        status = parse_string_value(buf, len, value_pos, topology_name, sizeof(topology_name), &end_pos);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+    }
+    status = rte_redundancy_config_topology_from_string(topology_name, &result->topology);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+
+    status = find_key_value_pos(buf, len, "replicas", &value_pos);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+    status = parse_uint_value(buf, len, value_pos, &result->replica_count);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+    if ((result->replica_count < 1U) || (result->replica_count > RTE_REDUNDANCY_CONFIG_MAX_REPLICAS)) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+
+    has_quorum = false;
+    status = find_key_value_pos(buf, len, "quorum", &value_pos);
+    if (status == RTE_STATUS_OK) {
+        status = parse_uint_value(buf, len, value_pos, &result->quorum_size);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+        has_quorum = true;
+    }
+
+    if (!has_quorum) {
+        switch (result->topology) {
+            case RTE_REDUNDANCY_TOPOLOGY_2OO2:
+            case RTE_REDUNDANCY_TOPOLOGY_2OO2_REDUNDANT:
+                if (result->replica_count < 2U) {
+                    return RTE_STATUS_INVALID_STATE;
+                }
+                result->quorum_size = 2U;
+                break;
+            case RTE_REDUNDANCY_TOPOLOGY_2OO3:
+                if (result->replica_count != 3U) {
+                    return RTE_STATUS_INVALID_STATE;
+                }
+                result->quorum_size = 2U;
+                break;
+            case RTE_REDUNDANCY_TOPOLOGY_NMR:
+            default:
+                /* No implicit majority default for NMR - "quorum" is
+                 * required in the file for this topology (see header doc). */
+                return RTE_STATUS_INVALID_STATE;
+        }
+    }
+
+    if ((result->quorum_size < 1U) || (result->quorum_size > result->replica_count)) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+    return RTE_STATUS_OK;
+}
+
+/* Optional "standby_mode" key, defaulting to COLD. Extracted the same way as
+ * parse_topology_replicas_and_quorum() above - no behavior change. */
+static rte_status_t parse_optional_standby_mode(const char *buf, size_t len, rte_redundancy_config_t *result)
+{
+    size_t value_pos;
+    rte_status_t status;
+
+    result->standby_mode = RTE_STANDBY_MODE_COLD;
+    status = find_key_value_pos(buf, len, "standby_mode", &value_pos);
+    if (status == RTE_STATUS_OK) {
+        char standby_mode_name[8];
+        size_t end_pos;
+        status = parse_string_value(buf, len, value_pos, standby_mode_name, sizeof(standby_mode_name), &end_pos);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+        status = rte_redundancy_config_standby_mode_from_string(standby_mode_name, &result->standby_mode);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+    }
+    return RTE_STATUS_OK;
+}
+
+/* Optional "roles" key (a string array), defaulting to role_count=0 when absent. Extracted the
+ * same way as parse_topology_replicas_and_quorum() above - no behavior change. */
+static rte_status_t parse_optional_roles(const char *buf, size_t len, rte_redundancy_config_t *result)
+{
+    size_t value_pos;
+    rte_status_t status;
+
+    status = find_key_value_pos(buf, len, "roles", &value_pos);
+    if (status == RTE_STATUS_OK) {
+        status = parse_string_array(buf, len, value_pos, result->roles,
+                                     RTE_REDUNDANCY_CONFIG_MAX_REPLICAS, &result->role_count);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+    } else {
+        result->role_count = 0U;
+    }
+    return RTE_STATUS_OK;
+}
+
+/* Optional "channels" key (an array of channel objects), defaulting to channel_count=0 when
+ * absent. Extracted the same way as parse_topology_replicas_and_quorum() above - no behavior
+ * change. */
+static rte_status_t parse_optional_channels(const char *buf, size_t len, rte_redundancy_config_t *result)
+{
+    size_t value_pos;
+    rte_status_t status;
+
+    status = find_key_value_pos(buf, len, "channels", &value_pos);
+    if (status == RTE_STATUS_OK) {
+        status = parse_channels_array(buf, len, value_pos, result->channels,
+                                      RTE_CHANNEL_CONFIG_MAX_CHANNELS, &result->channel_count);
+        if (status != RTE_STATUS_OK) {
+            return RTE_STATUS_INVALID_STATE;
+        }
+    } else {
+        result->channel_count = 0U;
+    }
+    return RTE_STATUS_OK;
+}
+
 rte_status_t rte_redundancy_config_load(const char *path, rte_redundancy_config_t *out_config)
 {
     FILE *fp;
     static char buf[RTE_REDUNDANCY_CONFIG_MAX_FILE_SIZE];
     size_t len;
-    size_t value_pos;
     rte_status_t status;
-    char topology_name[24];
     rte_redundancy_config_t result;
-    bool has_quorum;
 
     if ((path == NULL) || (out_config == NULL)) {
         return RTE_STATUS_INVALID_PARAM;
@@ -458,106 +598,24 @@ rte_status_t rte_redundancy_config_load(const char *path, rte_redundancy_config_
 
     (void)memset(&result, 0, sizeof(result));
 
-    status = find_key_value_pos(buf, len, "topology", &value_pos);
+    status = parse_topology_replicas_and_quorum(buf, len, &result);
     if (status != RTE_STATUS_OK) {
-        return RTE_STATUS_INVALID_STATE;
+        return status;
     }
-    {
-        size_t end_pos;
-        status = parse_string_value(buf, len, value_pos, topology_name, sizeof(topology_name), &end_pos);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-    }
-    status = rte_redundancy_config_topology_from_string(topology_name, &result.topology);
+
+    status = parse_optional_standby_mode(buf, len, &result);
     if (status != RTE_STATUS_OK) {
-        return RTE_STATUS_INVALID_STATE;
+        return status;
     }
 
-    status = find_key_value_pos(buf, len, "replicas", &value_pos);
+    status = parse_optional_roles(buf, len, &result);
     if (status != RTE_STATUS_OK) {
-        return RTE_STATUS_INVALID_STATE;
+        return status;
     }
-    status = parse_uint_value(buf, len, value_pos, &result.replica_count);
+
+    status = parse_optional_channels(buf, len, &result);
     if (status != RTE_STATUS_OK) {
-        return RTE_STATUS_INVALID_STATE;
-    }
-    if ((result.replica_count < 1U) || (result.replica_count > RTE_REDUNDANCY_CONFIG_MAX_REPLICAS)) {
-        return RTE_STATUS_INVALID_STATE;
-    }
-
-    has_quorum = false;
-    status = find_key_value_pos(buf, len, "quorum", &value_pos);
-    if (status == RTE_STATUS_OK) {
-        status = parse_uint_value(buf, len, value_pos, &result.quorum_size);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-        has_quorum = true;
-    }
-
-    if (!has_quorum) {
-        switch (result.topology) {
-            case RTE_REDUNDANCY_TOPOLOGY_2OO2:
-            case RTE_REDUNDANCY_TOPOLOGY_2OO2_REDUNDANT:
-                if (result.replica_count < 2U) {
-                    return RTE_STATUS_INVALID_STATE;
-                }
-                result.quorum_size = 2U;
-                break;
-            case RTE_REDUNDANCY_TOPOLOGY_2OO3:
-                if (result.replica_count != 3U) {
-                    return RTE_STATUS_INVALID_STATE;
-                }
-                result.quorum_size = 2U;
-                break;
-            case RTE_REDUNDANCY_TOPOLOGY_NMR:
-            default:
-                /* No implicit majority default for NMR - "quorum" is
-                 * required in the file for this topology (see header doc). */
-                return RTE_STATUS_INVALID_STATE;
-        }
-    }
-
-    if ((result.quorum_size < 1U) || (result.quorum_size > result.replica_count)) {
-        return RTE_STATUS_INVALID_STATE;
-    }
-
-    result.standby_mode = RTE_STANDBY_MODE_COLD;
-    status = find_key_value_pos(buf, len, "standby_mode", &value_pos);
-    if (status == RTE_STATUS_OK) {
-        char standby_mode_name[8];
-        size_t end_pos;
-        status = parse_string_value(buf, len, value_pos, standby_mode_name, sizeof(standby_mode_name), &end_pos);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-        status = rte_redundancy_config_standby_mode_from_string(standby_mode_name, &result.standby_mode);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-    }
-
-    status = find_key_value_pos(buf, len, "roles", &value_pos);
-    if (status == RTE_STATUS_OK) {
-        status = parse_string_array(buf, len, value_pos, result.roles,
-                                     RTE_REDUNDANCY_CONFIG_MAX_REPLICAS, &result.role_count);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-    } else {
-        result.role_count = 0U;
-    }
-
-    status = find_key_value_pos(buf, len, "channels", &value_pos);
-    if (status == RTE_STATUS_OK) {
-        status = parse_channels_array(buf, len, value_pos, result.channels,
-                                      RTE_CHANNEL_CONFIG_MAX_CHANNELS, &result.channel_count);
-        if (status != RTE_STATUS_OK) {
-            return RTE_STATUS_INVALID_STATE;
-        }
-    } else {
-        result.channel_count = 0U;
+        return status;
     }
 
     if ((s_capability_fn != NULL) && (!s_capability_fn(result.topology, result.replica_count, s_capability_context))) {
