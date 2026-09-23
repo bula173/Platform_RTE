@@ -523,69 +523,8 @@ rte_status_t rte_dual_channel_send_heartbeat(rte_dual_channel_t *channel, uint32
 
     for (i = 0U; i < channel->link_count; i++)
     {
-        uint32_t sent_sequence = 0U;
-        rte_status_t send_status;
-        bool link_now_up = false;
-
-        send_status = rte_dual_msgchannel_send(&channel->links[i], (const uint8_t *)&frame,
-                                                 (uint8_t)sizeof(frame), channel->ack_timeout_ms,
-                                                 &sent_sequence);
-        if ((send_status == RTE_STATUS_HARDWARE_FAULT) && (!saw_hard_fault))
-        {
-            saw_hard_fault = true;
-            hard_fault_status = send_status;
-        }
-        if (send_status == RTE_STATUS_OK)
-        {
-            rte_duration_ms_t remaining = channel->ack_timeout_ms;
-            rte_timestamp_ms_t start_ms = 0U;
-            uint32_t stall_polls = 0U;
-
-            (void)rte_timer_now(&start_ms);
-
-            while ((remaining > 0U) && (stall_polls < RTE_DUAL_CHANNEL_STALL_POLL_LIMIT))
-            {
-                dual_poll_result_t result;
-                rte_status_t poll_status;
-                rte_timestamp_ms_t poll_now_ms = 0U;
-
-                poll_status = dual_channel_poll_link_once(channel, i, remaining, &result);
-                if ((poll_status == RTE_STATUS_OK) && result.matched && (result.kind == RTE_DUAL_FRAME_KIND_ACK)
-                    && (result.ack_sequence == sent_sequence))
-                {
-                    link_now_up = true;
-                    break;
-                }
-                if (poll_status == RTE_STATUS_HARDWARE_FAULT)
-                {
-                    if (!saw_hard_fault)
-                    {
-                        saw_hard_fault = true;
-                        hard_fault_status = poll_status;
-                    }
-                    break;
-                }
-
-                (void)rte_timer_now(&poll_now_ms);
-                if (poll_now_ms > start_ms)
-                {
-                    rte_timestamp_ms_t elapsed = poll_now_ms - start_ms;
-                    if (elapsed >= (rte_timestamp_ms_t)channel->ack_timeout_ms)
-                    {
-                        remaining = 0U;
-                    }
-                    else
-                    {
-                        remaining = channel->ack_timeout_ms - (rte_duration_ms_t)elapsed;
-                    }
-                    stall_polls = 0U;
-                }
-                else
-                {
-                    stall_polls++;
-                }
-            }
-        }
+        bool link_now_up = dual_channel_send_to_link_and_wait_ack(
+            channel, i, (const uint8_t *)&frame, (uint8_t)sizeof(frame), &saw_hard_fault, &hard_fault_status);
 
         channel->link_up[i] = link_now_up;
         if (link_now_up)
