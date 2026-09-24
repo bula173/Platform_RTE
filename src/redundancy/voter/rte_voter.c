@@ -378,8 +378,14 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
         }
         else
         {
-            voter_group_matching_responses(voter, buffers, responded, data_size, group_id, group_count,
-                                            &num_groups);
+            /* Explicit cast: T(*)[N] -> const T(*)[N] is not a standard implicit conversion
+             * before C2X (unlike a single-level T* -> const T*) - flagged by -Wpedantic on
+             * gcc (not clang), found via a real Linux/glibc x86_64 build (root TODO.md's
+             * "Verify an x86_64 gcc build" item). Value-safe: only adds a qualifier, never
+             * removes one. */
+            voter_group_matching_responses(
+                voter, (const uint8_t(*)[RTE_VOTER_MAX_MESSAGE_SIZE])buffers, responded, data_size, group_id,
+                group_count, &num_groups);
 
             for (i = 0U; i < num_groups; i++)
             {
