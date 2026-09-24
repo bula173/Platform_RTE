@@ -1352,3 +1352,19 @@ become permanent.
   already-accepted set for this module (15.5, 21.16, 20.7, 20.10, 2.3, 2.5, 8.7). `ctest`: 34/34
   (3 new cases: buffers-agreement, buffers-disagreement-triggers-safestate,
   buffers-validation).
+
+- **Update (2026-09-24): new module `rte_election`** (ADR-039 N-way election primitive -
+  `include/rte/redundancy/election/`, `src/redundancy/election/`). Additive only: no existing
+  module (`rte_dual_negotiator`, `rte_cross_comparator`, `rte_voter`) was modified, and nothing
+  yet calls this new one (ADR-039's own step 3, wiring it into RBC_GP's 2oo3/NMR path, is
+  separate, not-yet-started scope) - the 2oo2 path this workspace actually runs today is
+  unaffected by this module's existence. Transport-agnostic by design (unlike
+  `rte_dual_negotiator`, which owns an `rte_dual_channel_t`): takes a caller-gathered candidate
+  snapshot each `rte_election_execute()` call rather than owning any channel of its own, same
+  posture `rte_voter_t` already established for N-way operations in this codebase. Same
+  already-accepted rule buckets as every other module in this tree (15.5 single-exit, 8.7
+  exported-function declarations) - no new categories. `cppcheck --enable=warning,performance,
+  portability` clean. `ctest`: 36/36 (`test_rte_election` new, 10 cases covering the
+  oldest-timestamp-wins rule, the exact-timestamp-tie smallest-id fallback, the
+  winner-degradation-determines-every-standby's-HOT/COLD rule, the self-absent-from-snapshot and
+  empty-snapshot UNKNOWN cases, and the `RTE_REDUNDANCY_CONFIG_MAX_REPLICAS` boundary).

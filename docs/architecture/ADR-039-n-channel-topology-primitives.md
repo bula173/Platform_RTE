@@ -2,7 +2,8 @@
 
 ## Status
 
-Proposed (not implemented; this ADR records a scoping investigation, not a decision to build).
+Partially implemented (2026-09-24): step 2's N-way election half is done (`rte_election`, below).
+Steps 1, 3 and 4 remain open - this ADR's own scoping is otherwise unchanged.
 
 ## Context
 
@@ -100,6 +101,29 @@ one topology that works.
 None of steps 2-4 are scoped further here (state-machine details, wire layout, test topology) —
 that is real design work for its own follow-up ADR once someone is ready to commit to building
 this, not something to derive from this scoping pass alone.
+
+## Implementation note (2026-09-24)
+
+Step 2's N-way **election** half is done: `rte_election` (`include/rte/redundancy/election/`,
+`src/redundancy/election/`), generalizing `rte_dual_negotiator`'s pairwise older-startup-
+timestamp-wins tie-break (with the same exact-tie id fallback, and the same "winner's own
+degradation determines every standby's HOT/COLD label" rule) to
+`RTE_REDUNDANCY_CONFIG_MAX_REPLICAS` candidates. Deliberately **transport-agnostic** rather than
+owning an N-way `rte_dual_channel_t` equivalent (this ADR's own "shape TBD" note on the
+transport question, above) - it takes a caller-gathered candidate snapshot each
+`rte_election_execute()` call instead, the same posture `rte_voter_t` already established for
+N-way operations elsewhere in this codebase. See that module's own header for the full contract
+(REQ-ELECTION-001..005) and `docs/MISRA_COMPLIANCE_REPORT.md`'s own entry for verification
+detail (`ctest` 10/10 for this module).
+
+**Still not done, unchanged from this ADR's original scoping**: step 2's N-way cross-compare
+half (whether `rte_voter` is used directly or needs its own wrapper), step 1 (GP actually
+selecting `rte_election` for a 2oo3/NMR topology - `rte_election` has no caller yet, and
+2oo2 is completely unaffected by its existence), and step 4 (`RBC_Test_Env`'s third-replica
+scenario). `rte_election` also has no real N-way beacon transport wired up yet - a caller must
+still decide and build how it gathers each cycle's candidate snapshot (N pairwise
+`rte_dual_channel_t` instances is the most obvious option, but not the only one, and not decided
+here).
 
 ## Consequences
 

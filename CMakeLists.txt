@@ -360,6 +360,10 @@ if(RTE_ENABLE_DUAL)
         src/redundancy/dual/rte_dual_msgchannel.c
         src/redundancy/dual/rte_dual_channel.c
         src/redundancy/dual/rte_dual_negotiator.c
+        # ADR-039: N-way election primitive, additive alongside rte_dual_negotiator (which stays
+        # untouched, still backing the 2oo2 path). Depends on rte_dual_types.h (rte_dual_state_t)
+        # and rte_redundancy_config.h (RTE_REDUNDANCY_CONFIG_MAX_REPLICAS), same gate as dual.
+        src/redundancy/election/rte_election.c
     )
 endif()
 if(RTE_ENABLE_SAFECHANNEL)
