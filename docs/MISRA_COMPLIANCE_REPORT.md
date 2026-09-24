@@ -1387,3 +1387,26 @@ become permanent.
   original, mistaken `== RTE_STATUS_OK` assumption. Verified: `ctest` 36/36 in BOTH Debug and
   Release builds - the first time this binary has ever fully passed under Release. See
   ISSUES.md's own git history for the full investigation record (now closed).
+
+- **Update (2026-09-24): new function `rte_voter_vote_buffers()`** (ADR-039 N-way cross-compare
+  half - decided: `rte_voter` used directly, buffer-based, matching
+  `rte_cross_comparator_execute_buffers()`'s existing shape, over building a separate
+  primitive). Touches vital code (`rte_voter.c`) beyond pure addition, so recorded in full:
+  `voter_channel_count_matches_strategy()` and `voter_group_matching_responses()` (both
+  previously-`static` helpers `rte_voter_receive()` already used) were parameterized to take an
+  explicit `channel_count` instead of reading `voter->channel_count` directly, so the new
+  function can reuse the exact same strategy-validation and majority-grouping logic against a
+  caller-supplied buffer count instead of a registered-channel count (the same "ignores any
+  registered channels" posture `rte_cross_comparator_execute_buffers()` already established).
+  Both existing call sites (inside `rte_voter_send()`/`rte_voter_receive()`) were updated to
+  pass `voter->channel_count` explicitly - mechanical, same value, no behavior change, verified
+  by the full existing `test_rte_voter`/`test_rte_checkpoint` suites passing unchanged before
+  writing a single new test. The new function's own `RTE_VOTING_DISAGREED`/safestate tail is a
+  small, deliberate duplicate of `rte_voter_receive()`'s own (not factored into a shared
+  helper) - a conscious choice to keep `rte_voter_receive()`'s own body untouched beyond the two
+  mechanical parameterizations, given how vital and heavily-relied-upon this file is. Same
+  already-accepted rule buckets as the rest of this module (15.5, 21.16, 8.7) - no new
+  categories. `cppcheck --enable=warning,performance,portability` clean. `ctest`: 36/36 (4 new
+  cases in `test_rte_voter`: 2oo2 agreement, NMR majority agreement mirroring the existing
+  registered-channel NMR test, disagreement→safestate with its own `setjmp`, and invalid-param
+  coverage including the `RTE_VOTER_MAX_CHANNELS` boundary) in BOTH Debug and Release.

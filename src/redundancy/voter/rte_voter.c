@@ -13,22 +13,27 @@
 #include "rte/oal/log/rte_log.h"
 #include "rte/utils/safestate/rte_safestate.h"
 
-static bool voter_channel_count_matches_strategy(const rte_voter_t *voter)
+/* Takes channel_count as an explicit parameter (not read from voter->channel_count directly) so
+ * rte_voter_vote_buffers() below can reuse this same validation against a caller-supplied
+ * buffer count instead of registered-channel count - the same "ignores any registered channels"
+ * posture rte_cross_comparator_execute_buffers() already established for its own module. The
+ * one existing caller (rte_voter_receive()) passes voter->channel_count, unchanged behavior. */
+static bool voter_channel_count_matches_strategy(const rte_voter_t *voter, uint32_t channel_count)
 {
     bool ok;
 
     switch (voter->config.voting_strategy)
     {
         case RTE_VOTING_2OO2:
-            ok = (voter->channel_count == 2U);
+            ok = (channel_count == 2U);
             break;
         case RTE_VOTING_2OO3:
-            ok = (voter->channel_count == 3U);
+            ok = (channel_count == 3U);
             break;
         case RTE_VOTING_NMR:
-            ok = (voter->channel_count >= 1U) &&
+            ok = (channel_count >= 1U) &&
                  (voter->config.quorum_size >= 1U) &&
-                 (voter->config.quorum_size <= voter->channel_count);
+                 (voter->config.quorum_size <= channel_count);
             break;
         default:
             ok = false;
@@ -144,10 +149,14 @@ static uint32_t voter_receive_from_healthy_channels(rte_voter_t *voter, size_t d
  * voter_data_equal(), by the same plain O(n^2) pairwise scan the code being replaced used -
  * group_id[i] names which group channel i landed in, group_count[g] is that group's current
  * size, *out_num_groups is the total distinct-group count found. group_count[] must already be
- * all-zero on entry (the caller zeroes it, same as before this extraction). No logic changed -
- * a pure extraction; this is the function's single most deeply-nested block before this change
- * and the main driver of its cognitive-complexity score. */
-static void voter_group_matching_responses(const rte_voter_t *voter,
+ * all-zero on entry (the caller zeroes it, same as before this extraction).
+ *
+ * channel_count is an explicit parameter (not read from voter->channel_count) for the same
+ * reason voter_channel_count_matches_strategy() above takes one: rte_voter_vote_buffers()
+ * reuses this same grouping logic against a caller-supplied buffer count, which may differ from
+ * (or with zero registered channels, have nothing to do with) voter->channel_count. The one
+ * existing caller (rte_voter_receive()) passes voter->channel_count, unchanged behavior. */
+static void voter_group_matching_responses(const rte_voter_t *voter, uint32_t channel_count,
                                             const uint8_t buffers[][RTE_VOTER_MAX_MESSAGE_SIZE],
                                             const bool responded[], size_t data_size,
                                             uint32_t group_id[], uint32_t group_count[],
@@ -157,7 +166,7 @@ static void voter_group_matching_responses(const rte_voter_t *voter,
     uint32_t i;
     uint32_t j;
 
-    for (i = 0U; i < voter->channel_count; i++)
+    for (i = 0U; i < channel_count; i++)
     {
         bool placed = false;
 
@@ -277,7 +286,7 @@ rte_status_t rte_voter_send(rte_voter_t *voter, const void *data, size_t data_si
     {
         return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
-    if (!voter_channel_count_matches_strategy(voter))
+    if (!voter_channel_count_matches_strategy(voter, voter->channel_count))
     {
         return RTE_STATUS_INVALID_PARAM;
     }
@@ -347,7 +356,7 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
     {
         return RTE_STATUS_RESOURCE_EXHAUSTED;
     }
-    if (!voter_channel_count_matches_strategy(voter))
+    if (!voter_channel_count_matches_strategy(voter, voter->channel_count))
     {
         return RTE_STATUS_INVALID_PARAM;
     }
@@ -384,8 +393,8 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
              * "Verify an x86_64 gcc build" item). Value-safe: only adds a qualifier, never
              * removes one. */
             voter_group_matching_responses(
-                voter, (const uint8_t(*)[RTE_VOTER_MAX_MESSAGE_SIZE])buffers, responded, data_size, group_id,
-                group_count, &num_groups);
+                voter, voter->channel_count, (const uint8_t(*)[RTE_VOTER_MAX_MESSAGE_SIZE])buffers, responded,
+                data_size, group_id, group_count, &num_groups);
 
             for (i = 0U; i < num_groups; i++)
             {
@@ -464,6 +473,129 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
         /* Nothing further to do for a non-DISAGREED result with no
          * callback registered. */
     }
+
+    return RTE_STATUS_HARDWARE_FAULT;
+}
+
+rte_status_t rte_voter_vote_buffers(rte_voter_t *voter, const void *const *buffers, uint32_t buffer_count,
+                                       size_t data_size, rte_voting_result_t *result, void *out_data,
+                                       size_t *out_size)
+{
+    uint8_t local_buffers[RTE_VOTER_MAX_CHANNELS][RTE_VOTER_MAX_MESSAGE_SIZE];
+    bool responded[RTE_VOTER_MAX_CHANNELS];
+    uint32_t group_id[RTE_VOTER_MAX_CHANNELS];
+    uint32_t group_count[RTE_VOTER_MAX_CHANNELS];
+    uint32_t num_groups = 0U;
+    uint32_t required_quorum;
+    uint32_t best_group = 0U;
+    uint32_t best_count = 0U;
+    rte_voting_result_t local_result;
+    uint32_t i;
+
+    if ((voter == NULL) || (buffers == NULL) || (data_size == 0U))
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    if (!voter->initialized)
+    {
+        return RTE_STATUS_NOT_INITIALIZED;
+    }
+    if (data_size > RTE_VOTER_MAX_MESSAGE_SIZE)
+    {
+        return RTE_STATUS_RESOURCE_EXHAUSTED;
+    }
+    if (buffer_count > (uint32_t)RTE_VOTER_MAX_CHANNELS)
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    if (!voter_channel_count_matches_strategy(voter, buffer_count))
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    for (i = 0U; i < buffer_count; i++)
+    {
+        if (buffers[i] == NULL)
+        {
+            return RTE_STATUS_INVALID_PARAM;
+        }
+    }
+
+    required_quorum = voter_required_quorum(voter);
+
+    for (i = 0U; i < buffer_count; i++)
+    {
+        (void)memcpy(local_buffers[i], buffers[i], data_size);
+        responded[i] = true;
+        group_count[i] = 0U;
+    }
+
+    voter_group_matching_responses(voter, buffer_count, (const uint8_t(*)[RTE_VOTER_MAX_MESSAGE_SIZE])local_buffers,
+                                    responded, data_size, group_id, group_count, &num_groups);
+
+    for (i = 0U; i < num_groups; i++)
+    {
+        if (group_count[i] > best_count)
+        {
+            best_count = group_count[i];
+            best_group = i;
+        }
+    }
+
+    if (best_count >= required_quorum)
+    {
+        local_result = RTE_VOTING_AGREED;
+    }
+    else
+    {
+        local_result = RTE_VOTING_DISAGREED;
+    }
+
+    if (result != NULL)
+    {
+        *result = local_result;
+    }
+
+    if (local_result == RTE_VOTING_AGREED)
+    {
+        for (i = 0U; i < buffer_count; i++)
+        {
+            if (responded[i] && (group_id[i] == best_group))
+            {
+                if (out_data != NULL)
+                {
+                    (void)memcpy(out_data, local_buffers[i], data_size);
+                }
+                break;
+            }
+        }
+        if (out_size != NULL)
+        {
+            *out_size = data_size;
+        }
+        return RTE_STATUS_OK;
+    }
+
+    if (out_size != NULL)
+    {
+        *out_size = 0U;
+    }
+
+    /* Identical DISAGREED handling to rte_voter_receive() (REQ-VOTER-005) - deliberately kept
+     * as its own small copy here rather than factored into a shared helper, to avoid touching
+     * rte_voter_receive()'s own body any further than the two explicit-count parameterizations
+     * above (voter_channel_count_matches_strategy()/voter_group_matching_responses()) - this is
+     * vital, heavily-relied-upon code and the duplicated block is short enough that the lower
+     * blast radius was judged worth it. */
+    voter->total_disagreements++;
+    if (voter->config.log_disagreements)
+    {
+        rte_log_write(RTE_LOG_LEVEL_ERROR, "voter", "channels disagreed (buffers)");
+    }
+    if (voter->config.on_disagreement != NULL)
+    {
+        voter->config.on_disagreement(voter->config.disagreement_context, local_result);
+    }
+    RTE_SAFESTATE(voter->config.safestate_level, voter->config.safestate_reason);
 
     return RTE_STATUS_HARDWARE_FAULT;
 }

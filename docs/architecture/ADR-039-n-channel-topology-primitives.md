@@ -2,8 +2,9 @@
 
 ## Status
 
-Partially implemented (2026-09-24): step 2's N-way election half is done (`rte_election`, below).
-Steps 1, 3 and 4 remain open - this ADR's own scoping is otherwise unchanged.
+Partially implemented (2026-09-24): step 2's both halves are done (`rte_election` for N-way
+election, `rte_voter_vote_buffers()` for N-way cross-compare - both below). Steps 1, 3 and 4
+remain open - this ADR's own scoping is otherwise unchanged.
 
 ## Context
 
@@ -116,14 +117,26 @@ N-way operations elsewhere in this codebase. See that module's own header for th
 (REQ-ELECTION-001..005) and `docs/MISRA_COMPLIANCE_REPORT.md`'s own entry for verification
 detail (`ctest` 10/10 for this module).
 
-**Still not done, unchanged from this ADR's original scoping**: step 2's N-way cross-compare
-half (whether `rte_voter` is used directly or needs its own wrapper), step 1 (GP actually
-selecting `rte_election` for a 2oo3/NMR topology - `rte_election` has no caller yet, and
-2oo2 is completely unaffected by its existence), and step 4 (`RBC_Test_Env`'s third-replica
+Step 2's N-way **cross-compare** half is also done: `rte_voter_vote_buffers()`
+(`include/rte/redundancy/voter/rte_voter.h`) - the ADR's own first proposed option, decided:
+`rte_voter` used directly, with a buffer-based entry point matching
+`rte_cross_comparator_execute_buffers()`'s existing shape (no registered-channel I/O, same
+"a voter with zero registered channels is legitimate" posture), rather than a separate new
+primitive. Reuses `rte_voter_receive()`'s own majority-grouping logic exactly (two of its
+internal helpers were parameterized to take an explicit count instead of reading
+`voter->channel_count`, so both the registered-channel path and this new buffers path share one
+grouping implementation) - see `docs/MISRA_COMPLIANCE_REPORT.md`'s own entry for the full detail
+on what changed and why, and for verification (`ctest` 36/36, 4 new cases, in both Debug and
+Release).
+
+**Still not done, unchanged from this ADR's original scoping**: step 1 (GP actually selecting
+`rte_election`/`rte_voter_vote_buffers()` for a 2oo3/NMR topology - neither has a caller yet, and
+2oo2 is completely unaffected by either's existence), and step 4 (`RBC_Test_Env`'s third-replica
 scenario). `rte_election` also has no real N-way beacon transport wired up yet - a caller must
 still decide and build how it gathers each cycle's candidate snapshot (N pairwise
 `rte_dual_channel_t` instances is the most obvious option, but not the only one, and not decided
-here).
+here) - and the same transport gap applies to feeding `rte_voter_vote_buffers()` its own
+per-cycle buffer snapshot.
 
 ## Consequences
 

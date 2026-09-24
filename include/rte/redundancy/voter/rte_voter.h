@@ -248,6 +248,48 @@ rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t data_size,
                                   rte_voting_result_t *result, size_t *bytes_received);
 
 /**
+ * @brief N-way vote on caller-collected buffers, without any registered-channel I/O
+ *        (ADR-039's N-way cross-compare half: `rte_voter` used directly, buffer-based, matching
+ *        `rte_cross_comparator_execute_buffers()`'s existing shape - decided over building a
+ *        separate primitive). Same grouping/quorum logic as rte_voter_receive() (REQ-VOTER-004),
+ *        applied to @p buffers instead of polling registered channels - this function performs
+ *        no I/O and ignores any channels registered on @p voter (same posture
+ *        `rte_cross_comparator_execute_buffers()` already established for its own module: a
+ *        `voter` with zero registered channels is a legitimate, expected call shape here).
+ *
+ * @param[in]  voter      Voter handle (`rte_voter_init()`'d - registered channels, if any, are
+ *                        ignored). Must not be NULL.
+ * @param[in]  buffers    Array of @p buffer_count already-collected buffers (e.g. each
+ *                        replica's own value for the same logical quantity, gathered by the
+ *                        caller over whatever transport it uses). Must not be NULL.
+ * @param[in]  buffer_count Number of entries in @p buffers; must match voter->config.
+ *                        voting_strategy the same way rte_voter_receive()'s own registered-
+ *                        channel count must (REQ-VOTER-003, generalized to a caller-supplied
+ *                        count instead of a registered one) - RTE_STATUS_INVALID_PARAM
+ *                        otherwise. Must not exceed RTE_VOTER_MAX_CHANNELS.
+ * @param[in]  data_size  Bytes of each buffer to compare; must be > 0 and <=
+ *                        RTE_VOTER_MAX_MESSAGE_SIZE.
+ * @param[out] result     Voting outcome (always RTE_VOTING_AGREED or RTE_VOTING_DISAGREED -
+ *                        there is no I/O here, so TIMEOUT/INSUFFICIENT_QUORUM never occur, same
+ *                        as rte_cross_comparator_execute_buffers()). Can be NULL.
+ * @param[out] out_data   Receives the winning group's data on AGREED. Can be NULL.
+ * @param[out] out_size   Bytes written to out_data. Can be NULL.
+ *
+ * @return RTE_STATUS_OK if result is RTE_VOTING_AGREED.
+ * @return RTE_STATUS_INVALID_PARAM for a bad argument, buffer_count exceeding
+ *         RTE_VOTER_MAX_CHANNELS, or buffer_count not matching voter->config.voting_strategy.
+ * @return RTE_STATUS_HARDWARE_FAULT on RTE_VOTING_DISAGREED - but see @post: this function does
+ *         not return in that case.
+ *
+ * @post On RTE_VOTING_DISAGREED, identical to rte_voter_receive(): invokes
+ *       config->on_disagreement (if set) and then unconditionally enters
+ *       config->safestate_level.
+ */
+rte_status_t rte_voter_vote_buffers(rte_voter_t *voter, const void *const *buffers, uint32_t buffer_count,
+                                       size_t data_size, rte_voting_result_t *result, void *out_data,
+                                       size_t *out_size);
+
+/**
  * @brief Aggregated health across every registered channel.
  *
  * @param[in]  voter               Voter handle. Must not be NULL.

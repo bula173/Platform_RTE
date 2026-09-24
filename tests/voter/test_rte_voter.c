@@ -587,6 +587,149 @@ static void test_get_channel_by_name(void)
     assert(rte_voter_get_channel_by_name(&storage, NULL) == NULL);
 }
 
+/* --- rte_voter_vote_buffers() (ADR-039's N-way cross-compare half): no channel I/O at all -
+ * these tests never register a channel, matching rte_cross_comparator_execute_buffers()'s own
+ * "a voter with zero registered channels is a legitimate call shape" posture. */
+
+static void test_vote_buffers_2oo2_agree(void)
+{
+    rte_voter_storage_t storage;
+    rte_voter_config_t cfg;
+    uint8_t a[4] = {0x11U, 0x22U, 0x33U, 0x44U};
+    uint8_t b[4] = {0x11U, 0x22U, 0x33U, 0x44U};
+    const void *bufs[2] = {a, b};
+    uint8_t out[4] = {0U};
+    rte_voting_result_t result;
+    size_t out_size = 0U;
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.voting_strategy = RTE_VOTING_2OO2;
+    assert(rte_voter_init(&storage, &cfg) == RTE_STATUS_OK);
+
+    assert(rte_voter_vote_buffers(&storage, bufs, 2U, sizeof(a), &result, out, &out_size) == RTE_STATUS_OK);
+    assert(result == RTE_VOTING_AGREED);
+    assert(out_size == sizeof(a));
+    assert(memcmp(out, a, sizeof(a)) == 0);
+}
+
+static void test_vote_buffers_nmr_majority(void)
+{
+    rte_voter_storage_t storage;
+    rte_voter_config_t cfg;
+    uint8_t v0[4];
+    uint8_t v1[4];
+    uint8_t v2[4];
+    uint8_t v3[4];
+    uint8_t v4[4];
+    const void *bufs[5];
+    uint8_t out[4] = {0U};
+    rte_voting_result_t result;
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.voting_strategy = RTE_VOTING_NMR;
+    cfg.quorum_size = 3U;
+    assert(rte_voter_init(&storage, &cfg) == RTE_STATUS_OK);
+
+    /* 3 agree (quorum met exactly), 2 disagree with each other and the majority - mirrors
+     * test_nmr_voting()'s own registered-channel scenario, but via buffers. */
+    memset(v0, 0x77U, sizeof(v0));
+    memset(v1, 0x77U, sizeof(v1));
+    memset(v2, 0x77U, sizeof(v2));
+    memset(v3, 0x88U, sizeof(v3));
+    memset(v4, 0x99U, sizeof(v4));
+    bufs[0] = v0;
+    bufs[1] = v1;
+    bufs[2] = v2;
+    bufs[3] = v3;
+    bufs[4] = v4;
+
+    assert(rte_voter_vote_buffers(&storage, bufs, 5U, sizeof(v0), &result, out, NULL) == RTE_STATUS_OK);
+    assert(result == RTE_VOTING_AGREED);
+    assert(out[0] == 0x77U);
+}
+
+static void test_vote_buffers_disagreement_triggers_safestate(void)
+{
+    rte_voter_storage_t storage;
+    rte_voter_config_t cfg;
+    uint8_t a[4];
+    uint8_t b[4];
+    const void *bufs[2];
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.voting_strategy = RTE_VOTING_2OO2;
+    cfg.log_disagreements = true;
+    cfg.safestate_level = RTE_SAFESTATE_LEVEL_SAFE;
+    cfg.safestate_reason = RTE_SAFESTATE_REASON_UNSPECIFIED;
+    cfg.on_disagreement = disagreement_callback;
+    assert(rte_voter_init(&storage, &cfg) == RTE_STATUS_OK);
+
+    memset(a, 0xAAU, sizeof(a));
+    memset(b, 0xBBU, sizeof(b));
+    bufs[0] = a;
+    bufs[1] = b;
+
+    /* diverting_handler is already registered for RTE_SAFESTATE_LEVEL_SAFE by
+     * test_receive_disagreement_triggers_safestate() above, and stays registered - this test
+     * (like every diverting test in this file) must set its OWN g_jmp immediately before the
+     * call that may divert, never relying on a stale one (root ISSUES.md's own
+     * test_rte_checkpoint finding: a longjmp to a dead stack frame is undefined behavior). */
+    g_handler_calls = 0;
+    if (setjmp(g_jmp) == 0)
+    {
+        (void)rte_voter_vote_buffers(&storage, bufs, 2U, sizeof(a), NULL, NULL, NULL);
+        assert(0); /* must never return here */
+    }
+    else
+    {
+        assert(g_handler_calls == 1);
+        assert(g_captured_level == RTE_SAFESTATE_LEVEL_SAFE);
+    }
+
+    {
+        uint32_t disagreements = 0U;
+        assert(rte_voter_get_aggregated_health(&storage, NULL, &disagreements) == RTE_STATUS_OK);
+        assert(disagreements == 1U);
+    }
+}
+
+static void test_vote_buffers_invalid_params(void)
+{
+    rte_voter_storage_t storage;
+    rte_voter_storage_t not_init;
+    rte_voter_config_t cfg;
+    uint8_t a[4] = {0U};
+    uint8_t b[4] = {0U};
+    const void *bufs[2] = {a, b};
+    const void *bufs_with_null[2] = {a, NULL};
+    const void *too_many[(size_t)RTE_VOTER_MAX_CHANNELS + 1U];
+    uint8_t filler[4] = {0U};
+    uint32_t i;
+
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.voting_strategy = RTE_VOTING_2OO2;
+    assert(rte_voter_init(&storage, &cfg) == RTE_STATUS_OK);
+    memset(&not_init, 0, sizeof(not_init));
+
+    assert(rte_voter_vote_buffers(NULL, bufs, 2U, sizeof(a), NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_voter_vote_buffers(&storage, NULL, 2U, sizeof(a), NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_voter_vote_buffers(&storage, bufs, 2U, 0U, NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_voter_vote_buffers(&storage, bufs, 2U, RTE_VOTER_MAX_MESSAGE_SIZE + 1U, NULL, NULL, NULL) ==
+          RTE_STATUS_RESOURCE_EXHAUSTED);
+    assert(rte_voter_vote_buffers(&not_init, bufs, 2U, sizeof(a), NULL, NULL, NULL) == RTE_STATUS_NOT_INITIALIZED);
+    /* Wrong count for 2OO2 (needs exactly 2). */
+    assert(rte_voter_vote_buffers(&storage, bufs, 1U, sizeof(a), NULL, NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_voter_vote_buffers(&storage, bufs_with_null, 2U, sizeof(a), NULL, NULL, NULL) ==
+          RTE_STATUS_INVALID_PARAM);
+
+    for (i = 0U; i < ((uint32_t)RTE_VOTER_MAX_CHANNELS + 1U); i++)
+    {
+        too_many[i] = filler;
+    }
+    assert(rte_voter_vote_buffers(&storage, too_many, (uint32_t)RTE_VOTER_MAX_CHANNELS + 1U, sizeof(filler), NULL,
+                                   NULL, NULL) == RTE_STATUS_INVALID_PARAM);
+}
+
 int main(void)
 {
     test_init_validation();
@@ -600,6 +743,10 @@ int main(void)
     test_receive_timeout_and_insufficient_quorum();
     test_custom_compare_fn();
     test_nmr_voting();
+    test_vote_buffers_2oo2_agree();
+    test_vote_buffers_nmr_majority();
+    test_vote_buffers_disagreement_triggers_safestate();
+    test_vote_buffers_invalid_params();
     test_lifecycle_lock();
     test_destroy();
     return 0;
