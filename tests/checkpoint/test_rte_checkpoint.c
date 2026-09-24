@@ -453,14 +453,32 @@ static void test_send_failure_skips_channel(void)
     assert(g_handler_calls == 0);
 }
 
+/* ISSUES.md "test_rte_checkpoint: a second Release-only assertion failure" (found 2026-09-23,
+ * root-caused and fixed 2026-09-24): this test's own original body called
+ * rte_channel_checkpoint() with no setjmp(g_jmp) of its own, on the mistaken assumption
+ * (the old comment here said so explicitly) that a pre-seeded reply still counts even with
+ * max_delay_ms == 0. It does not: remaining_budget_ms()'s own "elapsed_ms >= max_delay_ms"
+ * check is already true on the very FIRST while-condition evaluation (elapsed_ms is 0 at that
+ * point, and 0 >= 0), so the retry loop's body - the only place a pre-seeded reply is ever
+ * actually read - never runs at all, regardless of build type or optimization level. The
+ * function correctly falls through to its own timeout path (REQ-CHECKPOINT-001: a caller
+ * passing a zero budget is saying "no time available," and the function must not claim success
+ * without even attempting a round) and calls rte_safestate_enter(SAFE, CHECKPOINT_TIMEOUT, ...).
+ *
+ * Because this test never called setjmp(g_jmp) itself, that safestate call's still-registered
+ * diverting_handler (registered once, above, by test_insufficient_confirmations_diverts())
+ * longjmp()'d back to whatever this file's shared g_jmp last held - the PRECEDING test's
+ * (test_correct_sequence_wrong_payload_does_not_count()) own setjmp() call site, whose stack
+ * frame had already returned by the time this test ran. Undefined behavior (a longjmp to a
+ * dead frame), confirmed via lldb (root TODO.md's own investigation): it happened to leave the
+ * process in a state satisfying `== RTE_STATUS_OK` under Debug's stack layout but not Release's
+ * - the "passes in Debug" finding was never actually exercising this test's own logic at all.
+ *
+ * Fixed by giving this test its own setjmp(g_jmp), matching every other diverting test in this
+ * file, and asserting what the function actually - correctly - does: diverts with
+ * CHECKPOINT_TIMEOUT, not returns OK. */
 static void test_zero_budget_hits_expired_remaining(void)
 {
-    /* max_delay_ms == 0 makes remaining_budget_ms()'s elapsed_ms >= max_delay_ms
-     * branch true on every iteration (elapsed_ms is unsigned, so it is
-     * always >= 0) - covers the "budget already exhausted" arm that a
-     * non-zero budget with fast in-process mocks never reaches. The mock
-     * recv() ignores timeout_ms, so the already-seeded reply still
-     * counts; only expected_node_count (1) needs to be met. */
     rte_channel_storage_t channels[TEST_CHANNEL_COUNT];
     rte_voter_t voter;
     rte_checkpoint_config_t cfg;
@@ -475,8 +493,19 @@ static void test_zero_budget_hits_expired_remaining(void)
     cfg.watchdog = NULL;
 
     g_handler_calls = 0;
-    assert(rte_channel_checkpoint(&voter, &cfg) == RTE_STATUS_OK);
-    assert(g_handler_calls == 0);
+    if (setjmp(g_jmp) == 0)
+    {
+        (void)rte_channel_checkpoint(&voter, &cfg);
+        /* Must never reach here: a zero budget always diverts (see this function's own
+         * header comment above). */
+        assert(0);
+    }
+    else
+    {
+        assert(g_handler_calls == 1);
+        assert(g_captured_level == RTE_SAFESTATE_LEVEL_SAFE);
+        assert(g_captured_reason == RTE_SAFESTATE_REASON_CHECKPOINT_TIMEOUT);
+    }
 }
 
 static void test_watchdog_kicked_on_success(void)

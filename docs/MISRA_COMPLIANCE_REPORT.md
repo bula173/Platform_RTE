@@ -1368,3 +1368,22 @@ become permanent.
   oldest-timestamp-wins rule, the exact-timestamp-tie smallest-id fallback, the
   winner-degradation-determines-every-standby's-HOT/COLD rule, the self-absent-from-snapshot and
   empty-snapshot UNKNOWN cases, and the `RTE_REDUNDANCY_CONFIG_MAX_REPLICAS` boundary).
+
+- **Update (2026-09-24): `test_rte_checkpoint`'s Release-only failure, root-caused and fixed -
+  test-only, no production code changed.** ISSUES.md carried this as two successive findings
+  (a `__stack_chk_fail` abort, fixed 2026-09-23; then a second, different assertion failure it
+  exposed). The second one is now understood completely: `test_zero_budget_hits_expired_
+  remaining()` never called its own `setjmp(g_jmp)` before invoking `rte_channel_checkpoint()`,
+  so when that call correctly diverted via the file's shared, still-registered
+  `diverting_handler` (REQ-CHECKPOINT-001: a zero `max_delay_ms` budget is exhausted before the
+  retry loop's body - the only place a pre-seeded reply is read - ever runs even once, so the
+  function correctly times out rather than claiming success), the resulting `longjmp()` landed
+  on the PRECEDING test's own `setjmp()` call site - a stack frame that had already returned.
+  Undefined behavior (a longjmp to a dead frame), not a code-path or timing divergence between
+  build types as originally suspected - confirmed via `lldb`, and by the fact that Debug's own
+  "pass" was never actually exercising this test's real logic at all. Fixed by giving this test
+  its own `setjmp(g_jmp)`, matching every other diverting test in this file, and asserting the
+  function's actual, correct behavior (diverts with `CHECKPOINT_TIMEOUT`) instead of the
+  original, mistaken `== RTE_STATUS_OK` assumption. Verified: `ctest` 36/36 in BOTH Debug and
+  Release builds - the first time this binary has ever fully passed under Release. See
+  ISSUES.md's own git history for the full investigation record (now closed).
