@@ -434,4 +434,4 @@
 ///- [CMake Toolchain Files](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html)
 ///- [CMake Presets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html)
 ///- QNX Documentation: https://www.qnx.com/developers/docs/
-///- \ref platformrte_docs_templates_README "README.md" — General build instructions
+///- <a href="https://github.com/bula173/Platform_RTE/blob/master/docs/templates/README.md">README.md</a> — General build instructions

@@ -172,7 +172,7 @@ Add to README:
 ### "MISRA analysis warnings"
 - Review `cppcheck-report.xml` artifact
 - Add exceptions to `.cppcheck-suppressions` if needed
-- Update compliance report: `docs/MISRA_COMPLIANCE_REPORT.md`
+- Update compliance report: `docs/MISRA_COMPLIANCE_REPORT.dox`
 
 ### "Preset validation failed"
 - Check CMakePresets.json syntax (valid JSON?)
@@ -199,7 +199,7 @@ Edit `.github/workflows/docs.yml` or `Doxyfile`:
 1. Create `cmake/Toolchain-NewPlatform.cmake`
 2. Add presets to `CMakePresets.json`
 3. Create test job in `cross-compile.yml`
-4. Document in `docs/CROSS_COMPILATION.md`
+4. Document in `docs/CROSS_COMPILATION.dox`
 
 ---
 

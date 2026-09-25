@@ -12,7 +12,7 @@ on:
       - 'cmake/**'
       - 'scripts/coverage.sh'
       - 'Doxyfile'
-      - 'README.dox'
+      - 'README.md'
       - '.github/workflows/docs.yml'
   pull_request:
     branches: [ master, develop ]
@@ -25,7 +25,7 @@ on:
       - 'cmake/**'
       - 'scripts/coverage.sh'
       - 'Doxyfile'
-      - 'README.dox'
+      - 'README.md'
   workflow_dispatch:  # Allow manual trigger
 
 permissions:

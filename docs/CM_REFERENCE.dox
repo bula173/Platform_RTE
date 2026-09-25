@@ -194,7 +194,7 @@
 ///| Architecture | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/</a> | Per phase gate | Git (ADR-*.md) |
 ///| Requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/</a> | Per phase gate | Git (SRS.dox) |
 ///| API Docs | Doxygen | Per commit | Auto from comments |
-///| Build Docs | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.dox">README.md</a> | Per release | Git |
+///| Build Docs | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.md">README.md</a> | Per release | Git |
 ///| Safety Docs | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">docs/</a> | Per assessment | Git (approved docs) |
 ///| Test Results | `build/test-*.xml` | Per test run | Archived (not git) |
 ///
@@ -362,7 +362,7 @@
 ///
 ///| Need | Document | File |
 ///|------|----------|------|
-///| **Build** | Build instructions | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.dox">README.md</a> |
+///| **Build** | Build instructions | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.md">README.md</a> |
 ///| **Architecture** | Design rationale | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/</a> |
 ///| **Requirements** | All requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/SRS.dox</a> |
 ///| **MISRA** | Compliance status | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">docs/MISRA_COMPLIANCE_REPORT.dox</a> |
@@ -473,6 +473,6 @@
 ///
 ///Refer to:
 ///- Full plan: \ref platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN "Configuration Management Plan"
-///- Build help: <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.dox">README.md</a>
+///- Build help: <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.md">README.md</a>
 ///- Architecture: <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADRs</a>
 ///- License: \ref platformrte_LICENSE "LICENSE.md"

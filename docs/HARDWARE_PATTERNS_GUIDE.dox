@@ -25,7 +25,7 @@ This guide describes hardware patterns that can be built with Platform_RTE. Stat
 
 **Project decision.** Sections below that recommend 2oo3 for an ERTMS RBC are general guidance from the time this
 guide was written. The reference RBC and the commercial project use **2oo2 with redundancy**; 2oo3 is kept as a possible
-future change (see `docs/architecture/ARCHITECTURE.md` in the workspace root). Redundancy is a configuration
+future change (see `docs/architecture/OVERVIEW.dox` in the workspace root). Redundancy is a configuration
 (a JSON file, see `rte_redundancy_config`), not application code.
 
 The framework is not independently assessed; see \ref platformrte_docs_SAFETY_APPLICATION_CONDITIONS "SAFETY_APPLICATION_CONDITIONS.dox".
@@ -438,7 +438,7 @@ The reference RBC and the commercial project use **2oo2 with redundancy** on the
 site by cross-comparison, availability from the second site through negotiated ONLINE and STANDBY roles, and a simple per-site
 design. Redundancy is a configuration (`rte_redundancy_config`) and the application is agnostic of it, so a later change to
 2oo3 is possible once mesh registration exists. See \ref platformrte_docs_REDUNDANCY_ARCHITECTURE "REDUNDANCY_ARCHITECTURE.dox" and the workspace
-`docs/architecture/ARCHITECTURE.md`.
+`docs/architecture/OVERVIEW.dox`.
 
 ---
 

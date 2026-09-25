@@ -1,42 +1,41 @@
-/**
-\page platformrte_docs_templates_README SIL 4 Assessment Document Templates
+# SIL 4 Assessment Document Templates
 
 This directory contains **ready-to-use templates** for all documents required to conduct a formal EN 50128:2011 SIL 4 assessment using RteFramework.
 
 ---
 
-\section platformrte_docs_templates_README_quick_start Quick Start
+## Quick Start
 
-\subsection platformrte_docs_templates_README_for_project_managers For Project Managers
-1. Read: \ref platformrte_docs_templates_00_DOCUMENT_CHECKLIST "`00_DOCUMENT_CHECKLIST.dox`"
+### For Project Managers
+1. Read: [`00_DOCUMENT_CHECKLIST.dox`](00_DOCUMENT_CHECKLIST.dox)
 2. Use the checklist to track document creation
 3. Use the timeline (6-12 months) for project scheduling
 
-\subsection platformrte_docs_templates_README_for_functional_safety_managers For Functional Safety Managers
-1. Read: \ref platformrte_docs_templates_01_SAFETY_PLAN "`01_SAFETY_PLAN.dox`"
+### For Functional Safety Managers
+1. Read: [`01_SAFETY_PLAN.dox`](01_SAFETY_PLAN.dox)
 2. Define your project's safety lifecycle
 3. Use as the basis for all other documents
 
-\subsection platformrte_docs_templates_README_for_architects For Architects
-1. Read: \ref platformrte_docs_templates_06_HARA_TEMPLATE "`06_HARA_TEMPLATE.dox`"
+### For Architects
+1. Read: [`06_HARA_TEMPLATE.dox`](06_HARA_TEMPLATE.dox)
 2. Identify hazards specific to your system
 3. Reference the RteFramework hazards as examples
 
-\subsection platformrte_docs_templates_README_for_qatesting_teams For QA/Testing Teams
-1. Read: \ref platformrte_docs_templates_15_CODE_REVIEW_REPORT "`15_CODE_REVIEW_REPORT.dox`"
+### For QA/Testing Teams
+1. Read: [`15_CODE_REVIEW_REPORT.dox`](15_CODE_REVIEW_REPORT.dox)
 2. Set up code review checklist and process
 3. Plan your testing strategy based on findings
 
-\subsection platformrte_docs_templates_README_for_safety_approvers For Safety Approvers
-1. Read: \ref platformrte_docs_templates_22_SAFETY_CASE "`22_SAFETY_CASE.dox`"
+### For Safety Approvers
+1. Read: [`22_SAFETY_CASE.dox`](22_SAFETY_CASE.dox)
 2. Understand the complete safety argument
 3. Use as approval criteria for SIL 4 release
 
 ---
 
-\section platformrte_docs_templates_README_document_overview Document Overview
+## Document Overview
 
-\subsection platformrte_docs_templates_README_essential_documents_start_here Essential Documents (Start Here)
+### Essential Documents (Start Here)
 
 | # | Document | Purpose | Audience | Effort |
 |---|----------|---------|----------|--------|
@@ -46,7 +45,7 @@ This directory contains **ready-to-use templates** for all documents required to
 | **15** | Code Review Report | Formal code quality assurance | Dev Lead, QA | 2 weeks |
 | **22** | Safety Case | Master argument for SIL 4 | FSM, Notified Body | 2 weeks |
 
-\subsection platformrte_docs_templates_README_how_the_templates_relate How the Templates Relate
+### How the Templates Relate
 
 ```
 Safety Plan (01)
@@ -65,9 +64,9 @@ Safety Plan (01)
 
 ---
 
-\section platformrte_docs_templates_README_how_to_use_these_templates How to Use These Templates
+## How to Use These Templates
 
-\subsection platformrte_docs_templates_README_step_1_customize_for_your_project Step 1: Customize for Your Project
+### Step 1: Customize for Your Project
 Each template has placeholder sections marked with `[...]`:
 ```markdown
 **Project:** [Railway System Name - e.g., ERTMS RBC]
@@ -77,31 +76,31 @@ Each template has placeholder sections marked with `[...]`:
 
 Replace these with your project-specific information.
 
-\subsection platformrte_docs_templates_README_step_2_follow_the_structure Step 2: Follow the Structure
+### Step 2: Follow the Structure
 Templates provide the required structure per EN 50128:2011. Don't remove major sections—add details instead.
 
-\subsection platformrte_docs_templates_README_step_3_add_your_evidence Step 3: Add Your Evidence
+### Step 3: Add Your Evidence
 Templates show examples. Replace examples with your project's actual:
 - Hazard analysis results
 - Code review findings
 - Test reports
 - Metrics and measurements
 
-\subsection platformrte_docs_templates_README_step_4_maintain_traceability Step 4: Maintain Traceability
+### Step 4: Maintain Traceability
 Link documents together:
 - Safety Case references Hazard Analysis
 - Hazard Analysis drives Safety Requirements
 - Safety Requirements trace to Code
 - Code Review findings documented as Deviations
 
-\subsection platformrte_docs_templates_README_step_5_review_approve Step 5: Review & Approve
+### Step 5: Review & Approve
 Each template includes approval sections. Don't skip sign-off—these are formal safety documents.
 
 ---
 
-\section platformrte_docs_templates_README_complete_document_list_29_total Complete Document List (29 Total)
+## Complete Document List (29 Total)
 
-\subsection platformrte_docs_templates_README_phase_1_planning_before_design Phase 1: Planning (Before Design)
+### Phase 1: Planning (Before Design)
 ```
 01_SAFETY_PLAN.dox ...................... Overall safety lifecycle approach
 02_VERIFICATION_VALIDATION_PLAN.md .... Testing and verification strategy
@@ -109,7 +108,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 04_TOOL_QUALIFICATION.md ............... If using specialized MISRA tools
 ```
 
-\subsection platformrte_docs_templates_README_phase_2_requirements_requirements_phase Phase 2: Requirements (Requirements Phase)
+### Phase 2: Requirements (Requirements Phase)
 ```
 05_SRS_TEMPLATE.md ..................... System Requirements Specification
 06_HARA_TEMPLATE.dox .................... Hazard Analysis & Risk Assessment
@@ -117,7 +116,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 08_RTE_INTEGRATION_PLAN.md ......... How RteFramework is used
 ```
 
-\subsection platformrte_docs_templates_README_phase_3_design_design_phase Phase 3: Design (Design Phase)
+### Phase 3: Design (Design Phase)
 ```
 09_ARCHITECTURE_DESIGN.md .............. System and software architecture
 10_DETAILED_DESIGN.md .................. Module-level design specifications
@@ -126,7 +125,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 13_DESIGN_REVIEW_REPORT.md ............ Findings from design review
 ```
 
-\subsection platformrte_docs_templates_README_phase_4_implementation_implementation_phase Phase 4: Implementation (Implementation Phase)
+### Phase 4: Implementation (Implementation Phase)
 ```
 14_CODE_REVIEW_CHECKLIST.md ........... MISRA + EN 50128 review checklist
 15_CODE_REVIEW_REPORT.dox .............. Formal code review results
@@ -138,7 +137,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 21_COVERAGE_ANALYSIS.md ............... Code coverage metrics & analysis
 ```
 
-\subsection platformrte_docs_templates_README_phase_5_assessment_assessment_phase Phase 5: Assessment (Assessment Phase)
+### Phase 5: Assessment (Assessment Phase)
 ```
 22_SAFETY_CASE.dox ..................... Main argument for system safety
 23_FUNCTIONAL_SAFETY_ASSESSMENT.md .... SIL verification evidence
@@ -147,7 +146,7 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 26_ASSESSMENT_READINESS.md ............ Pre-assessment verification checklist
 ```
 
-\subsection platformrte_docs_templates_README_phase_6_certification_assessment_phase Phase 6: Certification (Assessment Phase)
+### Phase 6: Certification (Assessment Phase)
 ```
 27_ASSESSMENT_REPORT.md ............... Notified Body official assessment
 28_FINDING_CLOSURE.md ................. Resolution of assessment findings
@@ -158,23 +157,23 @@ Each template includes approval sections. Don't skip sign-off—these are formal
 
 ---
 
-\section platformrte_docs_templates_README_effort_estimates Effort Estimates
+## Effort Estimates
 
-\subsection platformrte_docs_templates_README_minimal_assessment_mvp_6_9_months Minimal Assessment (MVP - 6-9 months)
+### Minimal Assessment (MVP - 6-9 months)
 Use documents: 01, 05, 06, 09, 15, 19, 22
 
 **Effort:** ~1-2 people × 6 months  
 **Cost:** ~€50k-100k  
 **Suitable for:** Simple systems, small teams
 
-\subsection platformrte_docs_templates_README_standard_assessment_recommended_9_12_months Standard Assessment (Recommended - 9-12 months)
+### Standard Assessment (Recommended - 9-12 months)
 Use documents: All except 02, 03, 04, 23, 25, 26, 28, 29
 
 **Effort:** ~2-3 people × 9 months  
 **Cost:** ~€100k-200k  
 **Suitable for:** Typical railway projects
 
-\subsection platformrte_docs_templates_README_complete_assessment_belt_suspenders_12_18_months Complete Assessment (Belt & Suspenders - 12-18 months)
+### Complete Assessment (Belt & Suspenders - 12-18 months)
 Use all 29 documents
 
 **Effort:** ~3-5 people × 12 months  
@@ -183,7 +182,7 @@ Use all 29 documents
 
 ---
 
-\section platformrte_docs_templates_README_document_submission_package Document Submission Package
+## Document Submission Package
 
 When ready to submit to a Notified Body, package should include:
 
@@ -224,9 +223,9 @@ When ready to submit to a Notified Body, package should include:
 
 ---
 
-\section platformrte_docs_templates_README_common_mistakes_to_avoid Common Mistakes to Avoid
+## Common Mistakes to Avoid
 
-\subsection platformrte_docs_templates_README_dont ❌ Don't
+### ❌ Don't
 
 - **Omit document structure** — EN 50128 sections are mandatory
 - **Skip approval signatures** — Unsigned documents aren't evidence
@@ -236,7 +235,7 @@ When ready to submit to a Notified Body, package should include:
 - **Ignore traceability** — Every requirement must link to design/code/test
 - **Use stubs for evidence** — Real tool outputs needed, not hand-crafted examples
 
-\subsection platformrte_docs_templates_README_do ✓ Do
+### ✓ Do
 
 - **Customize templates** — Make them fit your project
 - **Get early feedback** — Share drafts with Notified Body before formal submission
@@ -248,7 +247,7 @@ When ready to submit to a Notified Body, package should include:
 
 ---
 
-\section platformrte_docs_templates_README_rteframework_specific_sections RteFramework-Specific Sections
+## RteFramework-Specific Sections
 
 Each template has a section addressing RteFramework usage:
 
@@ -268,7 +267,7 @@ Each template has a section addressing RteFramework usage:
 
 ---
 
-\section platformrte_docs_templates_README_external_references External References
+## External References
 
 - **SAFETY_APPLICATION_CONDITIONS.dox** — Describes how to use RteFramework in a safety project
 - **EN50128_ALIGNMENT.md** — Detailed mapping of framework design to EN 50128 sections
@@ -276,9 +275,9 @@ Each template has a section addressing RteFramework usage:
 
 ---
 
-\section platformrte_docs_templates_README_getting_help Getting Help
+## Getting Help
 
-\subsection platformrte_docs_templates_README_questions_about Questions About...
+### Questions About...
 
 | Topic | Reference |
 |-------|-----------|
@@ -289,7 +288,7 @@ Each template has a section addressing RteFramework usage:
 | RteFramework usage | Read SAFETY_APPLICATION_CONDITIONS.dox |
 | Overall SIL 4 path | Read Safety Case template + EN50128_ALIGNMENT.md |
 
-\subsection platformrte_docs_templates_README_template_support Template Support
+### Template Support
 
 These templates are provided as-is with:
 - Real-world examples for guidance
@@ -301,7 +300,7 @@ For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document 
 
 ---
 
-\section platformrte_docs_templates_README_version_license Version & License
+## Version & License
 
 **RteFramework Templates Version:** 0.1  
 **For Use With:** RteFramework v0.1.0+  
@@ -311,22 +310,22 @@ For detailed MISRA C:2012 guidance, refer to the MISRA C:2012 standard document 
 
 ---
 
-\section platformrte_docs_templates_README_quick_links Quick Links
+## Quick Links
 
-- **Full Document List:** \ref platformrte_docs_templates_00_DOCUMENT_CHECKLIST "00_DOCUMENT_CHECKLIST.dox"
-- **Start Here:** \ref platformrte_docs_templates_01_SAFETY_PLAN "01_SAFETY_PLAN.dox"
-- **Hazard Analysis:** \ref platformrte_docs_templates_06_HARA_TEMPLATE "06_HARA_TEMPLATE.dox"
-- **Code Review:** \ref platformrte_docs_templates_15_CODE_REVIEW_REPORT "15_CODE_REVIEW_REPORT.dox"
-- **Safety Approval:** \ref platformrte_docs_templates_22_SAFETY_CASE "22_SAFETY_CASE.dox"
-- **RteFramework Usage:** \ref platformrte_docs_SAFETY_APPLICATION_CONDITIONS "../SAFETY_APPLICATION_CONDITIONS.dox"
-
----
-
-**Ready to build a SIL 4 railway system? Start with \ref platformrte_docs_templates_01_SAFETY_PLAN "01_SAFETY_PLAN.dox"** 🚂🛡️
+- **Full Document List:** [00_DOCUMENT_CHECKLIST.dox](00_DOCUMENT_CHECKLIST.dox)
+- **Start Here:** [01_SAFETY_PLAN.dox](01_SAFETY_PLAN.dox)
+- **Hazard Analysis:** [06_HARA_TEMPLATE.dox](06_HARA_TEMPLATE.dox)
+- **Code Review:** [15_CODE_REVIEW_REPORT.dox](15_CODE_REVIEW_REPORT.dox)
+- **Safety Approval:** [22_SAFETY_CASE.dox](22_SAFETY_CASE.dox)
+- **RteFramework Usage:** [../SAFETY_APPLICATION_CONDITIONS.dox](../SAFETY_APPLICATION_CONDITIONS.dox)
 
 ---
 
-\section platformrte_docs_templates_README_license_community_contributions License & Community Contributions
+**Ready to build a SIL 4 railway system? Start with [01_SAFETY_PLAN.dox](01_SAFETY_PLAN.dox)** 🚂🛡️
+
+---
+
+## License & Community Contributions
 
 **These templates are shared under the Community Improvement License (CIL).**
 
@@ -337,5 +336,4 @@ By using these templates:
 
 **Why?** Railway safety is a shared responsibility. Your verification work, bug fixes, and Notified Body feedback help everyone build safer systems.
 
-See <a href="https://github.com/bula173/Platform_RTE/blob/master/LICENSE.md">LICENSE.md</a> for full terms.
-*/
+See [LICENSE.md](../../LICENSE.md) for full terms.

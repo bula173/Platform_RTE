@@ -2,10 +2,10 @@ PROJECT_NAME           = "Safe API Framework"
 PROJECT_NUMBER         = $(PROJECT_NUMBER)  # set by docs.yml / a local build: "<VERSION file> build <short-sha>"
 PROJECT_BRIEF          = "Layered API framework for safety-related applications (ERTMS RBC reference targeting CENELEC EN 50128 SIL 4)"
 OUTPUT_DIRECTORY       = docs/api
-INPUT                  = README.dox include src docs/architecture docs/CROSS_COMPILATION.dox docs/requirements docs/MODULES.dox docs/REDUNDANCY_ARCHITECTURE.dox PROJECT_BOARD.dox docs examples
-FILE_PATTERNS          = *.h *.c *.dox
+INPUT                  = README.md include src docs/architecture docs/CROSS_COMPILATION.dox docs/requirements docs/MODULES.dox docs/REDUNDANCY_ARCHITECTURE.dox PROJECT_BOARD.dox docs examples DOCUMENTATION.dox
+FILE_PATTERNS          = *.h *.c *.dox *.md
 RECURSIVE              = YES
-USE_MDFILE_AS_MAINPAGE =
+USE_MDFILE_AS_MAINPAGE = README.md
 
 GENERATE_HTML          = YES
 GENERATE_LATEX         = NO
