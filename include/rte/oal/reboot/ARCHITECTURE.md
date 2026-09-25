@@ -1,81 +1,78 @@
-/**
- * @page reboot_architecture Reboot Module - Architecture
- *
- * @section reboot_architecture_overview Design Overview
- *
- * Minimal layer providing single entry point: rte_reboot_request(reason).
- * Integrator registers platform-specific OSAdapter via rte_osadapter_reboot_register().
- * No dynamic allocation; single OSAdapter pointer storage.
- *
- * @section reboot_architecture_api Public API
- *
- * @code
- * rte_status_t rte_reboot_request(uint16_t reason_code);
- * @endcode
- *
- * Requests controlled system restart. Does not return on success (CPU resets).
- *
- * @code
- * rte_status_t rte_osadapter_reboot_register(const rte_osadapter_reboot_t *OSAdapter);
- * @endcode
- *
- * Registers platform-specific reboot implementation. Called at startup.
- *
- * @section reboot_architecture_osadapter OSAdapter Interface
- *
- * @code
- * typedef struct {
- *     rte_status_t (*request)(uint16_t reason_code);
- * } rte_osadapter_reboot_t;
- * @endcode
- *
- * OSAdapter implements platform-specific reset mechanism:
- * - Trigger hardware watchdog
- * - Execute CPU reset instruction
- * - Send command to supervisory processor
- * - etc.
- *
- * @section reboot_architecture_flow Reboot Flow
- *
- * @verbatim
- * rte_reboot_request(reason)
- *     │
- *     └─ Retrieve registered OSAdapter
- *        ├─ If no OSAdapter: return NOT_INITIALIZED
- *        └─ If has OSAdapter: call osadapter->request(reason)
- *               │
- *               ├─ On success: CPU resets (no return)
- *               └─ On failure: return error code
- * @endverbatim
- *
- * @section reboot_architecture_reason Reason Code Handling
- *
- * 16-bit reason code identifies why reboot requested. OSAdapter can:
- * - Log to syslog
- * - Persist to NVM/flash (black box)
- * - Send to supervisory processor
- * - Use in post-reboot diagnostics
- *
- * Reason code is osadapter-interpreted; framework defines none.
- *
- * @section reboot_architecture_resource Resource Model
- *
- * Single static OSAdapter pointer. No allocation. Minimal state:
- *
- * @verbatim
- * osadapter_ptr: NULL or pointer to rte_osadapter_reboot_t
- * @endverbatim
- *
- * @section reboot_architecture_misra MISRA Compliance
- *
- * ✓ No dynamic allocation
- * ✓ Single responsibility (request only)
- * ✓ Function pointer via struct (vtable pattern)
- * ✓ No global function pointers
- *
- * @section reboot_architecture_see_also See Also
- *
- * - @ref reboot_user_guide for usage patterns
- * - @ref safestate_architecture for safe-state integration
- *
- */
+@page reboot_architecture Reboot Module - Architecture
+
+@section reboot_architecture_overview Design Overview
+
+Minimal layer providing single entry point: rte_reboot_request(reason).
+Integrator registers platform-specific OSAdapter via rte_osadapter_reboot_register().
+No dynamic allocation; single OSAdapter pointer storage.
+
+@section reboot_architecture_api Public API
+
+@code
+rte_status_t rte_reboot_request(uint16_t reason_code);
+@endcode
+
+Requests controlled system restart. Does not return on success (CPU resets).
+
+@code
+rte_status_t rte_osadapter_reboot_register(const rte_osadapter_reboot_t *OSAdapter);
+@endcode
+
+Registers platform-specific reboot implementation. Called at startup.
+
+@section reboot_architecture_osadapter OSAdapter Interface
+
+@code
+typedef struct {
+    rte_status_t (*request)(uint16_t reason_code);
+} rte_osadapter_reboot_t;
+@endcode
+
+OSAdapter implements platform-specific reset mechanism:
+- Trigger hardware watchdog
+- Execute CPU reset instruction
+- Send command to supervisory processor
+- etc.
+
+@section reboot_architecture_flow Reboot Flow
+
+@verbatim
+rte_reboot_request(reason)
+    │
+    └─ Retrieve registered OSAdapter
+       ├─ If no OSAdapter: return NOT_INITIALIZED
+       └─ If has OSAdapter: call osadapter->request(reason)
+              │
+              ├─ On success: CPU resets (no return)
+              └─ On failure: return error code
+@endverbatim
+
+@section reboot_architecture_reason Reason Code Handling
+
+16-bit reason code identifies why reboot requested. OSAdapter can:
+- Log to syslog
+- Persist to NVM/flash (black box)
+- Send to supervisory processor
+- Use in post-reboot diagnostics
+
+Reason code is osadapter-interpreted; framework defines none.
+
+@section reboot_architecture_resource Resource Model
+
+Single static OSAdapter pointer. No allocation. Minimal state:
+
+@verbatim
+osadapter_ptr: NULL or pointer to rte_osadapter_reboot_t
+@endverbatim
+
+@section reboot_architecture_misra MISRA Compliance
+
+✓ No dynamic allocation
+✓ Single responsibility (request only)
+✓ Function pointer via struct (vtable pattern)
+✓ No global function pointers
+
+@section reboot_architecture_see_also See Also
+
+- @ref reboot_user_guide for usage patterns
+- @ref safestate_architecture for safe-state integration

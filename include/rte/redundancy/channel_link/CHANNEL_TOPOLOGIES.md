@@ -1,400 +1,397 @@
-/**
- * @page vital_channel_topologies Channel Topologies and Redundancy Patterns
- *
- * @section vital_channel_topologies_topology_overview Channel Topology Patterns
- *
- * This document describes common redundancy topologies and how they map to
- * vital_channel configurations. Each pattern supports different failure
- * scenarios and recovery characteristics.
- *
- * @section vital_channel_topologies_pattern_single_2oo2 Pattern 1: Single-System 2oo2 (A ↔ B → C)
- *
- * **Your Question: A and B on same unit, communicate with C**
- *
- * Architecture:
- * ```
- * Online (A)        Standby (B)
- *     |                 |
- *     +─────────────────+  Channel 0: Shared Memory
- *     |                 |  (bidirectional heartbeat)
- *     +─────────────────+  Channel 1: FIFO
- *     |                 |  (bidirectional fallback)
- *     v                 v
- *     [Vital Channel: 2oo2 Voting]
- *     |
- *     v
- * Non-Vital Service (C)
- * (Diagnostics, Logging, Telemetry)
- * ```
- *
- * **Use Case:**
- * Railway ERTMS single board with redundant cores or processes on same CPU.
- * App Manager coordinates between Online (A) and Standby (B), sends diagnostics
- * to Non-Vital Service (C).
- *
- * **Characteristics:**
- * - Scope: Single CPU/board
- * - Latency: <1ms (no network jitter)
- * - Failure Tolerance: 0 (if both A and B fail = entire system offline)
- * - Recovery: None (hardware failure) / Automatic (process restart)
- * - Suitable for: High-speed systems (>100Hz control loops)
- *
- * **Channel Configuration:**
- * ```c
- * // Vital Channels (A ↔ B)
- * Channel 0: rte_channel (2oo2 voting)
- * ├─ Transport 0: Shared Memory Queue
- * │  ├─ Latency: <1µs
- * │  ├─ Reliability: FIFO queue (atomic)
- * │  ├─ Use: Fast heartbeat & state sync
- * │  └─ Timeout: 100ms
- * │
- * └─ Transport 1: FIFO (Named Pipe)
- *    ├─ Latency: 1-5ms
- *    ├─ Reliability: Ordered pipe
- *    ├─ Use: Fallback (if SHM unavailable)
- *    └─ Timeout: 500ms
- *
- * // Non-Vital Channels (A,B → C)
- * Channel 1: Shared Memory (non-blocking)
- * ├─ Type: Unidirectional (A,B → C)
- * ├─ Blocking: NO (C drops data if not ready)
- * ├─ Use: Diagnostics, telemetry, logs
- * └─ Timeout: 0 (fire-and-forget)
- * ```
- *
- * **App Manager Flow:**
- * ```
- * 1. READ: Receive vital input from A/B (blocking, 100ms timeout)
- *          vital_channel_recv(&vital, &cmd, timeout=100ms)
- *
- * 2. PROCESS: Compute state
- *          execute_command(&cmd)
- *
- * 3. SEND: Broadcast vital output to A/B (atomic 2oo2)
- *          vital_channel_send(&vital, &state)
- *
- * 4. SEND: Diagnostics to C (non-blocking)
- *          ipc_send(&diag_channel, &telemetry, timeout=0)
- * ```
- *
- * **Failure Scenarios:**
- * | Scenario | A Status | B Status | Result |
- * |----------|----------|----------|--------|
- * | Normal | OK | OK | ✓ Voting passes, data output |
- * | A crashes | TIMEOUT | OK | ✗ Insufficient data, try again next cycle |
- * | B crashes | OK | TIMEOUT | ✗ Insufficient data, try again next cycle |
- * | Both crash | TIMEOUT | TIMEOUT | ✗ VOTING_TIMEOUT, trigger SAFE_STATE |
- * | A ≠ B | OK (A) | OK (B) | ✗ VOTING_DISAGREED, trigger SAFE_STATE |
- *
- * @section vital_channel_topologies_pattern_distributed_2oo2 Pattern 2: Distributed 2oo2 (A ↔ B Across Network)
- *
- * **For remote standby on different host**
- *
- * Architecture:
- * ```
- * Host 1 (Online A)      [Network]    Host 2 (Standby B)
- *         |                            |
- *         +──────────TCP:5000──────────+
- *         |      (reliable, ordered)   |
- *         +──────────UDP:5001──────────+
- *         |     (fast, best-effort)    |
- *         |                            |
- *     [Vital Channel: 2oo2]        [Vital Channel: 2oo2]
- *         |                            |
- *         v                            v
- *   Online: Make decision        Standby: Verify data
- *   Send to external              Report health
- * ```
- *
- * **Use Case:**
- * Regional redundancy where Online is in main datacenter, Standby in backup
- * facility or different geographic location.
- *
- * **Characteristics:**
- * - Scope: Network (LAN/WAN)
- * - Latency: 10-100ms (network dependent)
- * - Failure Tolerance: 0 (both fail = offline, but unlikely if geographically separated)
- * - Recovery: Network reconnection (seconds to minutes)
- * - Suitable for: Geographic redundancy, multi-site HA
- *
- * **Channel Configuration:**
- * ```c
- * // Primary transport: TCP/IP (ordered, reliable)
- * Channel 0: TCP/IP
- * ├─ Endpoint: standby.example.com:5000
- * ├─ Latency: 30-50ms (LAN) or 100-500ms (WAN)
- * ├─ Reliability: 100% delivery (connection-aware)
- * ├─ Timeout: 1000ms (allow for network jitter)
- * └─ Use: Critical state sync, commands
- *
- * // Fallback transport: UDP (fast, best-effort)
- * Channel 1: UDP
- * ├─ Endpoint: standby.example.com:5001
- * ├─ Latency: <10ms (same network)
- * ├─ Reliability: Best-effort (~99% on LAN)
- * ├─ Timeout: 500ms (quick detect)
- * └─ Use: Quick heartbeat, fast path
- * ```
- *
- * **Handling Network Failures:**
- * ```
- * If TCP succeeds, UDP times out:
- *   ✓ Use TCP result (already reliable)
- *
- * If TCP times out, UDP succeeds:
- *   ✓ Use UDP result (better than nothing)
- *
- * If both timeout:
- *   ✗ VOTING_TIMEOUT, trigger SAFE_STATE
- *
- * If both succeed but disagree:
- *   ✗ VOTING_DISAGREED, trigger SAFE_STATE
- *   (indicates network corruption or Byzantine failure)
- * ```
- *
- * @section vital_channel_topologies_pattern_mirror_hot_standby Pattern 3: Hot Standby with Mirroring
- *
- * **For automatic failover without data loss**
- *
- * Architecture:
- * ```
- * Online (A)              Standby/Mirror (B)
- *   │                          │
- *   ├──[Channel 0: SHM]────────┤  Real-time sync
- *   │                          │  (command echo)
- *   ├──[Channel 1: FIFO]───────┤  Heartbeat
- *   │                          │  (backup link)
- *   ├──[Channel 2: Voting]─────┤  State verification
- *   │                          │  (both publish result)
- *   v                          v
- * Input                    Input
- * Process             ←→   Process
- * Decision                 Decision
- *
- * Output (to external systems, A only unless failover)
- *     ↓
- *   [Channel 3] ──→ External Device
- *
- * Failover on A crash:
- *   B detects 3 consecutive timeouts
- *   → B takes over sending output
- *   → No interruption to external system
- * ```
- *
- * **Use Case:**
- * Zero-downtime redundancy where standby must take over immediately when
- * online fails. Both processes maintain identical state (mirror).
- *
- * **Characteristics:**
- * - Scope: Can be same system or distributed
- * - Latency: <1ms (same) or 50-100ms (distributed)
- * - Failure Tolerance: 0 during operation, but automatic failover (<100ms)
- * - Recovery Time: <100ms (automatic, no manual intervention)
- * - Suitable for: Critical systems needing zero-downtime failover
- *
- * **Channel Configuration:**
- * ```c
- * // Real-time synchronization (command echo)
- * Channel 0: Shared Memory Queue (same system) or TCP (distributed)
- * ├─ A → B: "Execute command X"
- * ├─ B → A: "Ack, executing"
- * ├─ Latency: <1µs (SHM) or 20-50ms (TCP)
- * ├─ Timeout: 50ms (fail fast on crash)
- * └─ Use: Command propagation & echo verification
- *
- * // Health heartbeat
- * Channel 1: FIFO (same system) or UDP (distributed)
- * ├─ A → B: "I'm alive (seq 42)"
- * ├─ B → A: "Ack (seq 42)"
- * ├─ Latency: 5-10ms
- * ├─ Timeout: 200ms (allow for network jitter)
- * └─ Use: Presence detection
- *
- * // State voting (mutual verification)
- * Channel 2: Shared Memory Queue (2oo2 voting)
- * ├─ A publishes: "State = X"
- * ├─ B publishes: "State = X" (verified match)
- * ├─ Voting layer: Compare A vs B
- * ├─ Mismatch: SAFE_STATE (corruption detected)
- * └─ Timeout: 100ms (state update cycle)
- *
- * // Output channel (A primary, B takes over on failover)
- * Channel 3: to External Device
- * ├─ A sends normally (while online)
- * ├─ B sends only after failover detected
- * ├─ Arbitration: Only one sender at a time
- * └─ Use: Safety-critical output to external system
- * ```
- *
- * **Failover State Machine:**
- * ```
- * Normal Operation:
- *   Online (A)           Standby (B)
- *   ├─ Receive input     ├─ Receive input
- *   ├─ Compute state     ├─ Verify A's state
- *   ├─ Send output       ├─ Monitor A alive
- *   └─ Verify B echo     └─ Ready to takeover
- *
- * Failover Trigger (B detects A is down):
- *   Condition: 3 consecutive timeouts on Channel 0/1
- *   Action: B state becomes ONLINE
- *           B starts sending output
- *           A→B links become B→A (role swap)
- *
- * Failover Complete:
- *   Online (B)           Standby (A)
- *   ├─ Receive input     ├─ Monitor B alive
- *   ├─ Compute state     ├─ Wait for re-sync
- *   ├─ Send output       └─ Ready to recover
- *   └─ Verify A online?
- *
- * Recovery (A restarts):
- *   Action: A detects B is now online
- *           A requests full state sync from B
- *           A verifies state matches B
- *           A resumes as standby
- *           Optionally: failback to A (depends on policy)
- * ```
- *
- * **Advantages:**
- * - ✓ Automatic failover (<100ms)
- * - ✓ No manual intervention
- * - ✓ Both systems always in sync (mirror)
- * - ✓ No data loss
- * - ✓ Voting ensures consistency
- *
- * **Challenges:**
- * - ✗ 2x processing overhead (both compute)
- * - ✗ Complex state synchronization
- * - ✗ Split-brain risk if A/B network partition
- *   (both think they're online, both send output)
- *   → Solution: Use arbitration (quorum, UUID-based tie-breaking)
- *
- * @section vital_channel_topologies_pattern_2oo3 Pattern 4: Triple Redundancy (2oo3)
- *
- * **For highest reliability (tolerate 1 fault)**
- *
- * Architecture:
- * ```
- * Online (A)    Standby 1 (B)    Standby 2 (C)
- *     |             |                |
- *     +──────TCP────+                |
- *     |             |                |
- *     +──────TCP────────────────────+
- *     |             |                |
- *     +──────UDP────+──────UDP──────+
- *     |             |                |
- *     v             v                v
- *     [Vital Channel: 2oo3]
- *
- * Voting: 2 or 3 channels agree → RESULT
- *         0-1 channels available → TIMEOUT
- *         No majority → DISAGREED → SAFE_STATE
- * ```
- *
- * **Voting Decision Table:**
- * | Ch0 | Ch1 | Ch2 | Decision | Action |
- * |-----|-----|-----|----------|--------|
- * | A   | A   | A   | AGREED | ✓ Use A |
- * | A   | A   | B   | AGREED | ✓ Use A (2 agree) |
- * | A   | B   | B   | AGREED | ✓ Use B (2 agree) |
- * | A   | B   | C   | DISAGREED | ✗ SAFE_STATE |
- * | TO  | A   | A   | AGREED | ✓ Use A (ignore timeout) |
- * | TO  | TO  | A   | INSUFFICIENT | ✗ TIMEOUT |
- * | TO  | TO  | TO  | TIMEOUT | ✗ SAFE_STATE |
- *
- * **Use Case:**
- * Mission-critical systems (aircraft, medical devices, nuclear plants)
- * where losing 1 component must not cause failure.
- *
- * **Characteristics:**
- * - Scope: Network (distributed systems)
- * - Latency: 50-150ms
- * - Failure Tolerance: 1 (if 1 fails, other 2 still decide)
- * - Recovery: Automatic (no manual intervention)
- * - Suitable for: SIL 4 / ASIL D systems, zero-downtime requirements
- *
- * **Channel Configuration:**
- * ```c
- * // 3 channels using different transports or endpoints
- * Channel 0: TCP to Standby 1
- * ├─ Timeout: 1000ms
- * └─ Use: Primary communication
- *
- * Channel 1: TCP to Standby 2
- * ├─ Timeout: 1000ms
- * └─ Use: Backup communication
- *
- * Channel 2: UDP multicast to both standbies
- * ├─ Timeout: 500ms
- * └─ Use: Fast path, best-effort
- *
- * // Voting configuration
- * rte_channel_config_t cfg = {
- *     .voting_strategy = RTE_VOTING_2OO3,
- *     .channel_count = 3,
- *     .channel_timeout_ms = 1000,
- *     .log_disagreements = true,
- * };
- * ```
- *
- * **Advantages:**
- * - ✓ Tolerates 1 faulty channel
- * - ✓ Automatic recovery (no manual intervention)
- * - ✓ Voted result trusted (majority)
- * - ✓ Highest reliability available
- * - ✓ Suitable for SIL 4 / ASIL D
- *
- * **Challenges:**
- * - ✗ 3x communication overhead
- * - ✗ Complex voting logic
- * - ✗ Requires 3 independent systems
- * - ✗ Higher cost
- *
- * @section vital_channel_topologies_topology_comparison Summary Comparison
- *
- * | Topology | Channels | Transport | Latency | Tolerance | Failover | Best For |
- * |----------|----------|-----------|---------|-----------|----------|----------|
- * | 2oo2 Local | 2 | SHM+FIFO | <1ms | 0 | None | High-speed same-board |
- * | 2oo2 Dist. | 2 | TCP+UDP | 50-100ms | 0 | None | Regional active-standby |
- * | Hot Standby | 3 | SHM+FIFO+... | <1ms | 0 ops, <100ms failover | Auto | Zero-downtime HA |
- * | 2oo3 | 3 | TCP×3 | 50-150ms | 1 | Auto | Mission-critical SIL 4 |
- * | NMR | N | Mixed | Varies | M-quorum | Auto | Distributed consensus |
- *
- * @section vital_channel_topologies_selecting_topology How to Choose a Topology
- *
- * **Question 1: What's the failure tolerance requirement?**
- * - Need to tolerate 0 faults (2oo2) → Must have perfect communication
- * - Need to tolerate 1 fault (2oo3) → Use triple redundancy
- * - Need to tolerate N faults → Use NMR with appropriate quorum
- *
- * **Question 2: Are the redundant units on the same system?**
- * - YES (same CPU/board) → Use shared memory (fastest)
- * - NO (different systems) → Use TCP/IP (reliable) or UDP (fast)
- *
- * **Question 3: Do you need automatic failover?**
- * - YES (hot standby) → Use mirroring pattern + heartbeat
- * - NO (cold standby) → Use simple 2oo2 or 2oo3
- *
- * **Question 4: What's the acceptable latency?**
- * - <1ms → Shared memory (local only)
- * - 1-10ms → FIFO or local UDP
- * - 10-100ms → TCP/IP (LAN)
- * - 100-1000ms → TCP/IP (WAN) or async patterns
- *
- * **Decision Tree:**
- * ```
- * Tolerance = 1 fault?
- *   NO → 2oo2 topology
- *        Same system?
- *          YES → Shared Memory + FIFO
- *          NO → TCP + UDP
- *
- *   YES → 2oo3 topology
- *         Need failover?
- *           YES → Hot standby + mirror
- *           NO → 2oo3 simple voting
- * ```
- *
- */
+@page vital_channel_topologies Channel Topologies and Redundancy Patterns
+
+@section vital_channel_topologies_topology_overview Channel Topology Patterns
+
+This document describes common redundancy topologies and how they map to
+vital_channel configurations. Each pattern supports different failure
+scenarios and recovery characteristics.
+
+@section vital_channel_topologies_pattern_single_2oo2 Pattern 1: Single-System 2oo2 (A ↔ B → C)
+
+**Your Question: A and B on same unit, communicate with C**
+
+Architecture:
+```
+Online (A)        Standby (B)
+    |                 |
+    +─────────────────+  Channel 0: Shared Memory
+    |                 |  (bidirectional heartbeat)
+    +─────────────────+  Channel 1: FIFO
+    |                 |  (bidirectional fallback)
+    v                 v
+    [Vital Channel: 2oo2 Voting]
+    |
+    v
+Non-Vital Service (C)
+(Diagnostics, Logging, Telemetry)
+```
+
+**Use Case:**
+Railway ERTMS single board with redundant cores or processes on same CPU.
+App Manager coordinates between Online (A) and Standby (B), sends diagnostics
+to Non-Vital Service (C).
+
+**Characteristics:**
+- Scope: Single CPU/board
+- Latency: <1ms (no network jitter)
+- Failure Tolerance: 0 (if both A and B fail = entire system offline)
+- Recovery: None (hardware failure) / Automatic (process restart)
+- Suitable for: High-speed systems (>100Hz control loops)
+
+**Channel Configuration:**
+```c
+// Vital Channels (A ↔ B)
+Channel 0: rte_channel (2oo2 voting)
+├─ Transport 0: Shared Memory Queue
+│  ├─ Latency: <1µs
+│  ├─ Reliability: FIFO queue (atomic)
+│  ├─ Use: Fast heartbeat & state sync
+│  └─ Timeout: 100ms
+│
+└─ Transport 1: FIFO (Named Pipe)
+   ├─ Latency: 1-5ms
+   ├─ Reliability: Ordered pipe
+   ├─ Use: Fallback (if SHM unavailable)
+   └─ Timeout: 500ms
+
+// Non-Vital Channels (A,B → C)
+Channel 1: Shared Memory (non-blocking)
+├─ Type: Unidirectional (A,B → C)
+├─ Blocking: NO (C drops data if not ready)
+├─ Use: Diagnostics, telemetry, logs
+└─ Timeout: 0 (fire-and-forget)
+```
+
+**App Manager Flow:**
+```
+1. READ: Receive vital input from A/B (blocking, 100ms timeout)
+         vital_channel_recv(&vital, &cmd, timeout=100ms)
+
+2. PROCESS: Compute state
+         execute_command(&cmd)
+
+3. SEND: Broadcast vital output to A/B (atomic 2oo2)
+         vital_channel_send(&vital, &state)
+
+4. SEND: Diagnostics to C (non-blocking)
+         ipc_send(&diag_channel, &telemetry, timeout=0)
+```
+
+**Failure Scenarios:**
+| Scenario | A Status | B Status | Result |
+|----------|----------|----------|--------|
+| Normal | OK | OK | ✓ Voting passes, data output |
+| A crashes | TIMEOUT | OK | ✗ Insufficient data, try again next cycle |
+| B crashes | OK | TIMEOUT | ✗ Insufficient data, try again next cycle |
+| Both crash | TIMEOUT | TIMEOUT | ✗ VOTING_TIMEOUT, trigger SAFE_STATE |
+| A ≠ B | OK (A) | OK (B) | ✗ VOTING_DISAGREED, trigger SAFE_STATE |
+
+@section vital_channel_topologies_pattern_distributed_2oo2 Pattern 2: Distributed 2oo2 (A ↔ B Across Network)
+
+**For remote standby on different host**
+
+Architecture:
+```
+Host 1 (Online A)      [Network]    Host 2 (Standby B)
+        |                            |
+        +──────────TCP:5000──────────+
+        |      (reliable, ordered)   |
+        +──────────UDP:5001──────────+
+        |     (fast, best-effort)    |
+        |                            |
+    [Vital Channel: 2oo2]        [Vital Channel: 2oo2]
+        |                            |
+        v                            v
+  Online: Make decision        Standby: Verify data
+  Send to external              Report health
+```
+
+**Use Case:**
+Regional redundancy where Online is in main datacenter, Standby in backup
+facility or different geographic location.
+
+**Characteristics:**
+- Scope: Network (LAN/WAN)
+- Latency: 10-100ms (network dependent)
+- Failure Tolerance: 0 (both fail = offline, but unlikely if geographically separated)
+- Recovery: Network reconnection (seconds to minutes)
+- Suitable for: Geographic redundancy, multi-site HA
+
+**Channel Configuration:**
+```c
+// Primary transport: TCP/IP (ordered, reliable)
+Channel 0: TCP/IP
+├─ Endpoint: standby.example.com:5000
+├─ Latency: 30-50ms (LAN) or 100-500ms (WAN)
+├─ Reliability: 100% delivery (connection-aware)
+├─ Timeout: 1000ms (allow for network jitter)
+└─ Use: Critical state sync, commands
+
+// Fallback transport: UDP (fast, best-effort)
+Channel 1: UDP
+├─ Endpoint: standby.example.com:5001
+├─ Latency: <10ms (same network)
+├─ Reliability: Best-effort (~99% on LAN)
+├─ Timeout: 500ms (quick detect)
+└─ Use: Quick heartbeat, fast path
+```
+
+**Handling Network Failures:**
+```
+If TCP succeeds, UDP times out:
+  ✓ Use TCP result (already reliable)
+
+If TCP times out, UDP succeeds:
+  ✓ Use UDP result (better than nothing)
+
+If both timeout:
+  ✗ VOTING_TIMEOUT, trigger SAFE_STATE
+
+If both succeed but disagree:
+  ✗ VOTING_DISAGREED, trigger SAFE_STATE
+  (indicates network corruption or Byzantine failure)
+```
+
+@section vital_channel_topologies_pattern_mirror_hot_standby Pattern 3: Hot Standby with Mirroring
+
+**For automatic failover without data loss**
+
+Architecture:
+```
+Online (A)              Standby/Mirror (B)
+  │                          │
+  ├──[Channel 0: SHM]────────┤  Real-time sync
+  │                          │  (command echo)
+  ├──[Channel 1: FIFO]───────┤  Heartbeat
+  │                          │  (backup link)
+  ├──[Channel 2: Voting]─────┤  State verification
+  │                          │  (both publish result)
+  v                          v
+Input                    Input
+Process             ←→   Process
+Decision                 Decision
+
+Output (to external systems, A only unless failover)
+    ↓
+  [Channel 3] ──→ External Device
+
+Failover on A crash:
+  B detects 3 consecutive timeouts
+  → B takes over sending output
+  → No interruption to external system
+```
+
+**Use Case:**
+Zero-downtime redundancy where standby must take over immediately when
+online fails. Both processes maintain identical state (mirror).
+
+**Characteristics:**
+- Scope: Can be same system or distributed
+- Latency: <1ms (same) or 50-100ms (distributed)
+- Failure Tolerance: 0 during operation, but automatic failover (<100ms)
+- Recovery Time: <100ms (automatic, no manual intervention)
+- Suitable for: Critical systems needing zero-downtime failover
+
+**Channel Configuration:**
+```c
+// Real-time synchronization (command echo)
+Channel 0: Shared Memory Queue (same system) or TCP (distributed)
+├─ A → B: "Execute command X"
+├─ B → A: "Ack, executing"
+├─ Latency: <1µs (SHM) or 20-50ms (TCP)
+├─ Timeout: 50ms (fail fast on crash)
+└─ Use: Command propagation & echo verification
+
+// Health heartbeat
+Channel 1: FIFO (same system) or UDP (distributed)
+├─ A → B: "I'm alive (seq 42)"
+├─ B → A: "Ack (seq 42)"
+├─ Latency: 5-10ms
+├─ Timeout: 200ms (allow for network jitter)
+└─ Use: Presence detection
+
+// State voting (mutual verification)
+Channel 2: Shared Memory Queue (2oo2 voting)
+├─ A publishes: "State = X"
+├─ B publishes: "State = X" (verified match)
+├─ Voting layer: Compare A vs B
+├─ Mismatch: SAFE_STATE (corruption detected)
+└─ Timeout: 100ms (state update cycle)
+
+// Output channel (A primary, B takes over on failover)
+Channel 3: to External Device
+├─ A sends normally (while online)
+├─ B sends only after failover detected
+├─ Arbitration: Only one sender at a time
+└─ Use: Safety-critical output to external system
+```
+
+**Failover State Machine:**
+```
+Normal Operation:
+  Online (A)           Standby (B)
+  ├─ Receive input     ├─ Receive input
+  ├─ Compute state     ├─ Verify A's state
+  ├─ Send output       ├─ Monitor A alive
+  └─ Verify B echo     └─ Ready to takeover
+
+Failover Trigger (B detects A is down):
+  Condition: 3 consecutive timeouts on Channel 0/1
+  Action: B state becomes ONLINE
+          B starts sending output
+          A→B links become B→A (role swap)
+
+Failover Complete:
+  Online (B)           Standby (A)
+  ├─ Receive input     ├─ Monitor B alive
+  ├─ Compute state     ├─ Wait for re-sync
+  ├─ Send output       └─ Ready to recover
+  └─ Verify A online?
+
+Recovery (A restarts):
+  Action: A detects B is now online
+          A requests full state sync from B
+          A verifies state matches B
+          A resumes as standby
+          Optionally: failback to A (depends on policy)
+```
+
+**Advantages:**
+- ✓ Automatic failover (<100ms)
+- ✓ No manual intervention
+- ✓ Both systems always in sync (mirror)
+- ✓ No data loss
+- ✓ Voting ensures consistency
+
+**Challenges:**
+- ✗ 2x processing overhead (both compute)
+- ✗ Complex state synchronization
+- ✗ Split-brain risk if A/B network partition
+  (both think they're online, both send output)
+  → Solution: Use arbitration (quorum, UUID-based tie-breaking)
+
+@section vital_channel_topologies_pattern_2oo3 Pattern 4: Triple Redundancy (2oo3)
+
+**For highest reliability (tolerate 1 fault)**
+
+Architecture:
+```
+Online (A)    Standby 1 (B)    Standby 2 (C)
+    |             |                |
+    +──────TCP────+                |
+    |             |                |
+    +──────TCP────────────────────+
+    |             |                |
+    +──────UDP────+──────UDP──────+
+    |             |                |
+    v             v                v
+    [Vital Channel: 2oo3]
+
+Voting: 2 or 3 channels agree → RESULT
+        0-1 channels available → TIMEOUT
+        No majority → DISAGREED → SAFE_STATE
+```
+
+**Voting Decision Table:**
+| Ch0 | Ch1 | Ch2 | Decision | Action |
+|-----|-----|-----|----------|--------|
+| A   | A   | A   | AGREED | ✓ Use A |
+| A   | A   | B   | AGREED | ✓ Use A (2 agree) |
+| A   | B   | B   | AGREED | ✓ Use B (2 agree) |
+| A   | B   | C   | DISAGREED | ✗ SAFE_STATE |
+| TO  | A   | A   | AGREED | ✓ Use A (ignore timeout) |
+| TO  | TO  | A   | INSUFFICIENT | ✗ TIMEOUT |
+| TO  | TO  | TO  | TIMEOUT | ✗ SAFE_STATE |
+
+**Use Case:**
+Mission-critical systems (aircraft, medical devices, nuclear plants)
+where losing 1 component must not cause failure.
+
+**Characteristics:**
+- Scope: Network (distributed systems)
+- Latency: 50-150ms
+- Failure Tolerance: 1 (if 1 fails, other 2 still decide)
+- Recovery: Automatic (no manual intervention)
+- Suitable for: SIL 4 / ASIL D systems, zero-downtime requirements
+
+**Channel Configuration:**
+```c
+// 3 channels using different transports or endpoints
+Channel 0: TCP to Standby 1
+├─ Timeout: 1000ms
+└─ Use: Primary communication
+
+Channel 1: TCP to Standby 2
+├─ Timeout: 1000ms
+└─ Use: Backup communication
+
+Channel 2: UDP multicast to both standbies
+├─ Timeout: 500ms
+└─ Use: Fast path, best-effort
+
+// Voting configuration
+rte_channel_config_t cfg = {
+    .voting_strategy = RTE_VOTING_2OO3,
+    .channel_count = 3,
+    .channel_timeout_ms = 1000,
+    .log_disagreements = true,
+};
+```
+
+**Advantages:**
+- ✓ Tolerates 1 faulty channel
+- ✓ Automatic recovery (no manual intervention)
+- ✓ Voted result trusted (majority)
+- ✓ Highest reliability available
+- ✓ Suitable for SIL 4 / ASIL D
+
+**Challenges:**
+- ✗ 3x communication overhead
+- ✗ Complex voting logic
+- ✗ Requires 3 independent systems
+- ✗ Higher cost
+
+@section vital_channel_topologies_topology_comparison Summary Comparison
+
+| Topology | Channels | Transport | Latency | Tolerance | Failover | Best For |
+|----------|----------|-----------|---------|-----------|----------|----------|
+| 2oo2 Local | 2 | SHM+FIFO | <1ms | 0 | None | High-speed same-board |
+| 2oo2 Dist. | 2 | TCP+UDP | 50-100ms | 0 | None | Regional active-standby |
+| Hot Standby | 3 | SHM+FIFO+... | <1ms | 0 ops, <100ms failover | Auto | Zero-downtime HA |
+| 2oo3 | 3 | TCP×3 | 50-150ms | 1 | Auto | Mission-critical SIL 4 |
+| NMR | N | Mixed | Varies | M-quorum | Auto | Distributed consensus |
+
+@section vital_channel_topologies_selecting_topology How to Choose a Topology
+
+**Question 1: What's the failure tolerance requirement?**
+- Need to tolerate 0 faults (2oo2) → Must have perfect communication
+- Need to tolerate 1 fault (2oo3) → Use triple redundancy
+- Need to tolerate N faults → Use NMR with appropriate quorum
+
+**Question 2: Are the redundant units on the same system?**
+- YES (same CPU/board) → Use shared memory (fastest)
+- NO (different systems) → Use TCP/IP (reliable) or UDP (fast)
+
+**Question 3: Do you need automatic failover?**
+- YES (hot standby) → Use mirroring pattern + heartbeat
+- NO (cold standby) → Use simple 2oo2 or 2oo3
+
+**Question 4: What's the acceptable latency?**
+- <1ms → Shared memory (local only)
+- 1-10ms → FIFO or local UDP
+- 10-100ms → TCP/IP (LAN)
+- 100-1000ms → TCP/IP (WAN) or async patterns
+
+**Decision Tree:**
+```
+Tolerance = 1 fault?
+  NO → 2oo2 topology
+       Same system?
+         YES → Shared Memory + FIFO
+         NO → TCP + UDP
+
+  YES → 2oo3 topology
+        Need failover?
+          YES → Hot standby + mirror
+          NO → 2oo3 simple voting
+```
