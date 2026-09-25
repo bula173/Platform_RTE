@@ -1,40 +1,52 @@
 /**
 \page platformrte_documentation Platform_RTE documentation
 
-All documentation pages of Platform_RTE, grouped by directory. The overview is the main page.
+All documentation pages of Platform_RTE, grouped by topic. The overview is the main page.
 
-\section index_docs Pages
+\section platformrte_contents Contents
 
+- \subpage platformrte_cat_architecture - Architecture (5)
+- \subpage platformrte_cat_adr - Architecture decision records (32)
+- \subpage platformrte_cat_modules - Module documentation (35)
+- \subpage platformrte_cat_safety - Safety, requirements and quality (7)
+- \subpage platformrte_cat_guides - Guides (9)
+- \subpage platformrte_cat_examples - Examples (4)
+- \subpage platformrte_cat_templates - Templates (6)
+- \subpage platformrte_cat_planning - Planning (3)
+*/
 
-\subsection index_docs_1 docs
+/**
+\page platformrte_cat_architecture Architecture
 
-- \subpage channel_callbacks - Channel Naming and Callback Registration
-- \subpage platformrte_docs_COVERAGE_REPORT - Unit Test Coverage Report
-- \subpage documentation_index - Documentation Index
-- \subpage platformrte_docs_EN_50128_ALIGNMENT - EN 50128 Alignment & Safety Case
-- \subpage platformrte_docs_FEATURE_EXPANSION - RteFramework Feature Expansion
-- \subpage platformrte_docs_HARDWARE_PATTERNS_GUIDE - Hardware patterns guide
-- \subpage platformrte_docs_INTEGRATION - Integrating RteFramework into Your Project
+Structure and design of the product.
+
+- \subpage platformrte_docs_architecture_DIAGRAMS_GUIDE - Architecture Diagrams with PlantUML & Doxygen
 - \subpage platformrte_docs_MODULES - Module status and feature notes
-- \subpage platformrte_docs_PACKAGE_README - RteFramework as a Reusable Package
 - \subpage platformrte_docs_REDUNDANCY_ARCHITECTURE - Redundancy architecture
-- \subpage platformrte_docs_ROADMAP - RteFramework Roadmap
-- \subpage platformrte_docs_SAFETY_APPLICATION_CONDITIONS - Safety Application Conditions (SAC) for RteFramework
+- \subpage system_architecture - System Architecture Overview
 - \subpage platformrte_docs_TOOLCHAIN_STRATEGY - Toolchain Strategy & Multi-Platform Support
+*/
 
-\subsection index_docs_2 Top level
+/**
+\page platformrte_cat_adr Architecture decision records
 
-- \subpage platformrte_PROJECT_BOARD - RteFramework Project Board
+One page per decision: context, decision and consequences.
 
-\subsection index_docs_3 docs/architecture
-
+- \subpage platformrte_docs_architecture_ADR_001_os_abstraction_layer - ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework
+- \subpage platformrte_docs_architecture_ADR_002_cross_layer_data_buffers - ADR-002: Cross-Layer Data Buffer Abstraction
+- \subpage platformrte_docs_architecture_ADR_003_checked_integer_casting - ADR-003: Checked Integer Casting
+- \subpage platformrte_docs_architecture_ADR_004_safe_state_transitions - ADR-004: Safe-State Transitions and Checked Assertions
 - \subpage platformrte_docs_architecture_ADR_005_oal_osadapter_registration - ADR-005: OAL Backend Registration via Callbacks
+- \subpage platformrte_docs_architecture_ADR_006_string_and_endian_buffer_access - ADR-006: Safe String Manipulation and Endianness-Safe Buffer Access
 - \subpage platformrte_docs_architecture_ADR_007_per_feature_directory_layout - ADR-007: Per-Feature Directory Layout
 - \subpage platformrte_docs_architecture_ADR_008_dual_channel_ccf_mitigation - ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity
 - \subpage platformrte_docs_architecture_ADR_016_crc64_data_integrity - ADR-016: CRC-64 Data Integrity for Redundant Channels
 - \subpage platformrte_docs_architecture_ADR_017_checkpoint_and_clock_sync - ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels
 - \subpage platformrte_docs_architecture_ADR_018_posix_oal_osadapter - ADR-018: A Real POSIX/Linux OAL Backend
+- \subpage platformrte_docs_architecture_ADR_019_appmanager_cycle_hooks_and_checkpoint - ADR-019: AppManager Cycle Hooks and Built-In Checkpoint Rendezvous
+- \subpage platformrte_docs_architecture_ADR_020_dual_transfer_state_negotiation - ADR-020: Dual-Transfer State Negotiation (`rte_dual`)
 - \subpage platformrte_docs_architecture_ADR_021_consumer_osadapter_header_split - ADR-021: Consumer / OS-Backend Header Separation
+- \subpage platformrte_docs_architecture_ADR_022_unified_safechannel_factory - ADR-022: Unified `rte_safechannel` Factory (Hiding IPC/Netlink from App Code)
 - \subpage platformrte_docs_architecture_ADR_023_consolidate_cmake_libraries - ADR-023: Consolidate 22 CMake Library Targets into 4
 - \subpage platformrte_docs_architecture_ADR_024_configurable_feature_build - ADR-024: Per-Module Feature Selection at Configure Time
 - \subpage platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split - ADR-025: Split `rte_vital_channel` into `rte_channel` + `rte_voter` + `rte_cross_comparator`
@@ -52,111 +64,161 @@ All documentation pages of Platform_RTE, grouped by directory. The overview is t
 - \subpage platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition - ADR-037: Role C gateway - decomposition into per-client-type service binaries
 - \subpage platformrte_docs_architecture_ADR_038_status_indication_and_c_pubsub_broker - ADR-038: Status indication - a C-side pub/sub broker + an A/B↔C util channel
 - \subpage platformrte_docs_architecture_ADR_039_n_channel_topology_primitives - ADR-039: What N-channel (2oo3+) topologies need from the redundancy primitives
-- \subpage system_architecture - System Architecture Overview
+*/
 
-\subsection index_docs_4 docs/requirements
+/**
+\page platformrte_cat_modules Module documentation
 
-- \subpage rte_srs - Software Requirements Specification (SRS)
+Architecture and user guide of each module, grouped by module.
 
-\subsection index_docs_5 docs/safety
-
-- \subpage platformrte_docs_safety_CCF_ANALYSIS - Common-Cause-Failure (CCF) Analysis — Dual-Channel Vital Core
-
-\subsection index_docs_6 docs/templates
-
-- \subpage platformrte_docs_templates_00_DOCUMENT_CHECKLIST - SIL 4 Assessment - Document Checklist
-- \subpage platformrte_docs_templates_01_SAFETY_PLAN - Safety Plan
-- \subpage platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN - Configuration Management Plan
-- \subpage platformrte_docs_templates_06_HARA_TEMPLATE - Hazard Analysis and Risk Assessment (HARA)
-- \subpage platformrte_docs_templates_15_CODE_REVIEW_REPORT - Code Review Report
-- \subpage platformrte_docs_templates_22_SAFETY_CASE - Safety Case
-
-\subsection index_docs_7 examples
-
-- \subpage platformrte_examples_IPC_EXAMPLES - IPC Communication Patterns - Examples
-
-\subsection index_docs_8 include/rte/app/appmanager
+\section platformrte_mod_0 rte/app/appmanager
 
 - \subpage appmanager_integration - App Manager Integration with Channels
 
-\subsection index_docs_9 include/rte/oal/ipc
+\section platformrte_mod_1 rte/oal/ipc
 
 - \subpage channel_configuration - Channel Configuration Guide
 - \subpage ipc_guide - IPC (Inter-Process Communication) Guide
 - \subpage ipc_transport_selection - IPC Transport Selection Guide
 
-\subsection index_docs_10 include/rte/oal/log
+\section platformrte_mod_2 rte/oal/log
 
 - \subpage log_architecture - Log Module - Architecture
 - \subpage log_user_guide - Logging Module - User Guide
 
-\subsection index_docs_11 include/rte/oal/memory
+\section platformrte_mod_3 rte/oal/memory
 
 - \subpage memory_architecture - Memory Module - Architecture
 - \subpage memory_user_guide - Memory Module - User Guide
 
-\subsection index_docs_12 include/rte/oal/nvm
+\section platformrte_mod_4 rte/oal/nvm
 
 - \subpage nvm_architecture - Non-Volatile Memory Architecture
 - \subpage nvm_user_guide - Non-Volatile Memory User Guide
 
-\subsection index_docs_13 include/rte/oal/reboot
+\section platformrte_mod_5 rte/oal/reboot
 
 - \subpage reboot_architecture - Reboot Module - Architecture
 - \subpage reboot_user_guide - Reboot Module - User Guide
 
-\subsection index_docs_14 include/rte/oal/task
+\section platformrte_mod_6 rte/oal/task
 
 - \subpage task_architecture - Task Queue Module - Architecture
 - \subpage task_user_guide - Task Queue Module - User Guide
 
-\subsection index_docs_15 include/rte/oal/timer
+\section platformrte_mod_7 rte/oal/timer
 
 - \subpage timer_architecture - Timer Module - Architecture
 - \subpage timer_user_guide - Timer Module - User Guide
 
-\subsection index_docs_16 include/rte/redundancy/channel_link
+\section platformrte_mod_8 rte/redundancy/channel_link
 
 - \subpage vital_channel_architecture - Vital Channel Communication Architecture
 - \subpage vital_channel_topologies - Channel Topologies and Redundancy Patterns
 - \subpage vital_channel_user_guide - Vital Channel Module - User Guide
 
-\subsection index_docs_17 include/rte/redundancy/checksum
+\section platformrte_mod_9 rte/redundancy/checksum
 
 - \subpage checksum_architecture - Checksum Module - Architecture
 - \subpage checksum_user_guide - Checksum Module - User Guide
 
-\subsection index_docs_18 include/rte/redundancy/watchdog
+\section platformrte_mod_10 rte/redundancy/watchdog
 
 - \subpage watchdog_architecture - Watchdog Module - Architecture
 - \subpage watchdog_user_guide - Watchdog Module - User Guide
 
-\subsection index_docs_19 include/rte/utils/buffer
+\section platformrte_mod_11 rte/utils/buffer
 
 - \subpage buffer_architecture - Buffer Module - Architecture
 - \subpage buffer_user_guide - Buffer Module - User Guide
 
-\subsection index_docs_20 include/rte/utils/cast
+\section platformrte_mod_12 rte/utils/cast
 
 - \subpage cast_architecture - Cast Module - Architecture
 - \subpage cast_user_guide - Cast Module - User Guide
 
-\subsection index_docs_21 include/rte/utils/safestate
+\section platformrte_mod_13 rte/utils/safestate
 
 - \subpage safestate_architecture - Safe-State Module - Architecture
 - \subpage safestate_user_guide - Safe-State Module - User Guide
 
-\subsection index_docs_22 include/rte/utils/status
+\section platformrte_mod_14 rte/utils/status
 
 - \subpage status_architecture - Status Module - Architecture
+- \subpage status_user_guide - Status Module - User Guide
 
-\subsection index_docs_23 include/rte/utils/string
+\section platformrte_mod_15 rte/utils/string
 
 - \subpage string_architecture - String Module - Architecture
 - \subpage string_user_guide - String Module - User Guide
 
-\subsection index_docs_24 include/rte/utils/types
+\section platformrte_mod_16 rte/utils/types
 
 - \subpage types_architecture - Types Module - Architecture
 - \subpage types_user_guide - Types Module - User Guide
+
+*/
+
+/**
+\page platformrte_cat_safety Safety, requirements and quality
+
+Requirements, safety conditions, MISRA and coverage reports, analyses.
+
+- \subpage platformrte_docs_safety_CCF_ANALYSIS - Common-Cause-Failure (CCF) Analysis — Dual-Channel Vital Core
+- \subpage platformrte_docs_EN_50128_ALIGNMENT - EN 50128 Alignment & Safety Case
+- \subpage platformrte_docs_MISRA_COMPLIANCE_REPORT - MISRA C:2012 Compliance Report
+- \subpage platformrte_docs_SAFETY_APPLICATION_CONDITIONS - Safety Application Conditions (SAC) for RteFramework
+- \subpage rte_srs - Software Requirements Specification (SRS)
+- \subpage platformrte_docs_COVERAGE_REPORT - Unit Test Coverage Report
+- \subpage platformrte_docs_WATCHDOG_DESIGN - Watchdog Mechanism - Platform_RTE Design
+*/
+
+/**
+\page platformrte_cat_guides Guides
+
+How to integrate, build and use the product.
+
+- \subpage channel_callbacks - Channel Naming and Callback Registration
+- \subpage platformrte_docs_CM_REFERENCE - Configuration Management Reference
+- \subpage platformrte_docs_CHECKSUM_INTEGRATION_GUIDE - CRC-64 Checksum Integration Guide
+- \subpage platformrte_docs_CROSS_COMPILATION - Cross-Compilation Guide
+- \subpage documentation_index - Documentation Index
+- \subpage platformrte_docs_HARDWARE_PATTERNS_GUIDE - Hardware patterns guide
+- \subpage platformrte_docs_INTEGRATION - Integrating RteFramework into Your Project
+- \subpage module_documentation_template - Module Documentation Template
+- \subpage platformrte_docs_PACKAGE_README - RteFramework as a Reusable Package
+*/
+
+/**
+\page platformrte_cat_examples Examples
+
+Example applications.
+
+- \subpage platformrte_examples_ARCHITECTURE - Application Manager Architecture
+- \subpage platformrte_examples_IPC_EXAMPLES - IPC Communication Patterns - Examples
+- \subpage platformrte_examples_2oo2_geographic_redundancy_MULTI_PROCESS_ARCHITECTURE - Multi-Process Geographic Redundancy Architecture
+- \subpage platformrte_examples_2oo2_cross_comparison_RTE_INTEGRATION - RTEFramework Integration in 2oo2 Examples
+*/
+
+/**
+\page platformrte_cat_templates Templates
+
+Document templates.
+
+- \subpage platformrte_docs_templates_15_CODE_REVIEW_REPORT - Code Review Report
+- \subpage platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN - Configuration Management Plan
+- \subpage platformrte_docs_templates_06_HARA_TEMPLATE - Hazard Analysis and Risk Assessment (HARA)
+- \subpage platformrte_docs_templates_22_SAFETY_CASE - Safety Case
+- \subpage platformrte_docs_templates_01_SAFETY_PLAN - Safety Plan
+- \subpage platformrte_docs_templates_00_DOCUMENT_CHECKLIST - SIL 4 Assessment - Document Checklist
+*/
+
+/**
+\page platformrte_cat_planning Planning
+
+Roadmap and project board.
+
+- \subpage platformrte_docs_FEATURE_EXPANSION - RteFramework Feature Expansion
+- \subpage platformrte_PROJECT_BOARD - RteFramework Project Board
+- \subpage platformrte_docs_ROADMAP - RteFramework Roadmap
 */
