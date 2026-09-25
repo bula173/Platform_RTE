@@ -1,0 +1,499 @@
+/**
+\page platformrte_docs_SAFETY_APPLICATION_CONDITIONS Safety Application Conditions (SAC) for RteFramework
+
+**Document Type:** Safety Application Conditions  
+**Status:** DRAFT - For use in projects implementing EN 50128:2011  
+**Version:** 0.1.0  
+**Date:** 2026-08-02  
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_executive_summary Executive Summary
+
+**RteFramework is NOT a pre-certified, pre-assessed library.**
+
+It is a **reference template and design pattern** demonstrating EN 50128:2011 alignment. Any project using RteFramework must:
+
+1. **Treat it as new software** developed under the project's formal processes
+2. **Perform formal code review** against EN 50128 requirements
+3. **Conduct full static analysis** using certified tools
+4. **Generate complete verification evidence** (tests, traceability, analysis)
+5. **Submit to independent assessment** by a Notified Body (for SIL 3/4)
+6. **Document these conditions** in the project's Safety Case
+
+This SAC defines the conditions under which RteFramework may be used as a foundation for a safety-critical system.
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_1_component_status 1. Component Status
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_11_what_rteframework_is 1.1 What RteFramework IS
+
+- ✅ A reference implementation of EN 50128 design principles
+- ✅ An OS Abstraction Layer (OAL) demonstrating layered architecture
+- ✅ MISRA C:2012 compliant source code (manually verified)
+- ✅ A modular system suitable for SIL 3/4 railway applications
+- ✅ Demonstrated patterns for:
+  - Checked integer casting
+  - Safe-state transitions
+  - Fail-safe defaults
+  - Module isolation
+  - Endianness-safe buffer operations
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_12_what_rteframework_is_not 1.2 What RteFramework is NOT
+
+- ❌ A certified or assessed library
+- ❌ Pre-verified for use in any specific railway project
+- ❌ Exempt from formal code review
+- ❌ Exempt from functional testing in your system
+- ❌ Exempt from static analysis verification
+- ❌ A standalone SIL 3/4 component (requires project-level assessment)
+- ❌ Suitable for deployment without formal safety processes
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_13_assessment_status 1.3 Assessment Status
+
+| Artifact | Status | Notes |
+|----------|--------|-------|
+| Architecture & design patterns | ✅ Complete | 7 ADRs documented |
+| Code structure (modularity) | ✅ Complete | 13 independent modules |
+| MISRA C:2012 compliance | ⚠️ Partial | Manual review only; no certified tool used |
+| Unit tests | ✅ Complete | 8 test modules, >80% coverage |
+| Static analysis setup | ✅ Complete | cppcheck integrated; not certified tool |
+| Functional safety assessment | ❌ NOT DONE | Must be done by integrator |
+| SIL verification | ❌ NOT DONE | Must be done in project context |
+| Notified Body assessment | ❌ NOT DONE | Must be done for deployed systems |
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_2_conditions_for_use_in_safety_critical_projects 2. Conditions for Use in Safety-Critical Projects
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_21_mandatory_verification_activities_project_res 2.1 Mandatory Verification Activities (Project Responsibility)
+
+Any project using RteFramework must perform:
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_a_formal_code_review A. Formal Code Review
+- **Requirement:** EN 50128:2011, Section 7.2
+- **What:** Every source file in RteFramework must be reviewed against:
+  - MISRA C:2012 Mandatory & Required rules
+  - EN 50128 Section 6 (technical requirements)
+  - CENELEC safety critical coding practices
+  - Project-specific coding guidelines
+- **Who:** Project's qualified code review team
+- **Output:** Code review report with sign-off
+- **Evidence for Safety Case:** Formal review matrix (file × rule × findings)
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_b_static_analysis_verification B. Static Analysis Verification
+- **Requirement:** EN 50128:2011, Section 7.3
+- **Minimum:** Run `cppcheck --addon=misra --std=c99` on all RteFramework code
+- **Recommended:** Use certified MISRA tool (LDRA, Parasoft, PC-lint Plus, Polyspace)
+- **Not Sufficient:** Running cppcheck alone; must use qualified tool for SIL 3/4
+- **Output:** MISRA compliance report with tool evidence
+- **Evidence for Safety Case:** Tool output, deviation analysis, suppression rationale
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_c_functional_testing C. Functional Testing
+- **Requirement:** EN 50128:2011, Section 7.4
+- **What:** Unit and integration tests for all RteFramework components
+  - Test coverage: Minimum 80% line coverage (recommend >90% for SIL 3/4)
+  - Test each module's OSAdapter interface separately
+  - Test error handling paths (RTE_STATUS_* return values)
+  - Test safe-state transitions (RTE_ASSERT, RTE_SAFESTATE, RTE_REBOOT)
+- **Output:** Test report with coverage metrics
+- **Evidence for Safety Case:** Test cases, coverage report, traceability matrix
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_d_requirement_traceability D. Requirement Traceability
+- **Requirement:** EN 50128:2011, Section 6.4
+- **What:** Link every RteFramework requirement to:
+  - Design element (ADR or design document)
+  - Implementation (code file & line)
+  - Test case(s)
+- **Starting Point:** `docs/requirements/SRS.md` (preliminary)
+- **Project's Responsibility:** Adapt SRS to project context, verify traceability
+- **Output:** Traceability Matrix (TRM)
+- **Evidence for Safety Case:** TRM document, reviewed & signed
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_e_hazard_analysis E. Hazard Analysis
+- **Requirement:** EN 50128:2011, Section 5
+- **What:** Identify failure modes in RteFramework context:
+  - OSAdapter not registered (NULL pointer dereference)
+  - Buffer overflow in string operations
+  - Race condition in inter-task communication (IPC)
+  - Non-volatile memory (NVM) corruption
+  - Timer not initialized
+  - Resource pool exhaustion
+- **Output:** Hazard Register, risk scores, mitigation strategies
+- **Evidence for Safety Case:** HARA report
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_f_osadapter_implementation_verification F. OSAdapter Implementation Verification
+- **Requirement:** Special (ADR-005 OSAdapter registration)
+- **What:** For each RTOS/OS OSAdapter you implement:
+  - Formal design review
+  - Implementation code review
+  - Unit testing against interface contract
+  - Integration testing with RteFramework
+  - Static analysis (your OSAdapter code must also be MISRA compliant)
+- **Output:** OSAdapter verification report
+- **Evidence for Safety Case:** OSAdapter documentation, test results
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_22_assessment_certification_project_responsibili 2.2 Assessment & Certification (Project Responsibility)
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_before_deployment Before Deployment
+1. **Internal Assessment:**
+   - Project QA signs off on formal verification
+   - All code review, testing, and analysis complete
+   - Safety Case draft prepared
+
+2. **Independent Assessment (Notified Body):**
+   - Engage CENELEC-certified assessment lab
+   - Provide all verification artifacts
+   - Participate in assessment interviews
+   - Resolve findings
+   - Receive assessment report
+
+3. **Railway Authority Certification:**
+   - Submit Safety Case + assessment report
+   - Obtain approval for deployment
+   - (Timeline: 3-6 months typically)
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_3_usage_restrictions_assumptions 3. Usage Restrictions & Assumptions
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_31_allowed_uses 3.1 Allowed Uses
+
+✅ **Allowed:**
+- Reference implementation in new railway software projects
+- Component in systems undergoing formal EN 50128 development
+- OSAdapter for distributed systems (where project controls each OSAdapter)
+- Basis for training on EN 50128 patterns
+- Non-deployed research & simulation
+
+❌ **NOT Allowed:**
+- Direct deployment without formal assessment
+- SIL 3/4 systems without Notified Body involvement
+- Systems deployed to revenue service without safety approval
+- Reliance on this document as certification evidence (it's not)
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_32_technical_assumptions 3.2 Technical Assumptions
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_architecture_assumptions Architecture Assumptions
+- **Assumption:** OS/RTOS layer provides thread-safe OSAdapter implementations
+- **Project Must Verify:** OSAdapter implementations are thread-safe (if multi-threaded)
+
+- **Assumption:** RteFramework services are called from single or properly-synchronized threads
+- **Project Must Verify:** Calling code doesn't violate this assumption
+
+- **Assumption:** OSAdapters are registered before any service is used
+- **Project Must Verify:** Initialization order and OSAdapter registration in main()
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_memory_assumptions Memory Assumptions
+- **Assumption:** No dynamic memory allocation post-initialization
+- **Project Must Verify:** Callers provide static buffers to all Platform_RTE functions
+
+- **Assumption:** Buffer sizes are statically known
+- **Project Must Verify:** No buffer overflow due to untrusted input sizes
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_type_safety_assumptions Type Safety Assumptions
+- **Assumption:** All integer conversions use rte_cast_* functions
+- **Project Must Verify:** Static analysis confirms no bare casts in application code
+
+\subsubsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_timing_assumptions Timing Assumptions
+- **Assumption:** Timer OSAdapters provide sufficient precision for application
+- **Project Must Verify:** Timer jitter is within safety requirements
+
+- **Assumption:** NVM operations complete within timeout bounds
+- **Project Must Verify:** NVM OSAdapter latency is characterized
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_33_known_limitations 3.3 Known Limitations
+
+| Limitation | Impact | Mitigation |
+|-----------|--------|-----------|
+| **Manual MISRA review** | Not certified; possible missed violations | Use certified MISRA tool in your project |
+| **No formal assessment** | No evidence RteFramework is correct | Formal assessment is your project's responsibility |
+| **Limited test coverage** | Reference tests only; not exhaustive | Expand tests in your system context |
+| **No real RTOS OSAdapters** | Reference OSAdapters are stubs | Implement and verify actual RTOS OSAdapters |
+| **No multi-core verification** | Assumes single-threaded or synchronized | Verify thread safety for your RTOS |
+| **No real hardware testing** | Only tested on development machine | Hardware integration testing is your responsibility |
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_4_required_documentation_in_your_safety_case 4. Required Documentation in Your Safety Case
+
+When using RteFramework, your project's Safety Case must include:
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_41_component_architecture_traceability 4.1 Component Architecture & Traceability
+```
+1. System Architecture Document
+   - Role of RteFramework in system
+   - How OAL isolates application from OS
+   - OSAdapter architecture diagram
+   - Integration points with application logic
+
+2. Traceability Matrix
+   - Requirements → Design (ADRs)
+   - Design → Implementation (source files)
+   - Implementation → Tests
+
+3. Requirement Specification (SRS)
+   - List all RteFramework requirements
+   - Reference to SRS.md + project-specific modifications
+   - Verification method for each requirement
+```
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_42_design_documentation 4.2 Design Documentation
+```
+1. Architecture Decision Records (existing: ADR-001 through ADR-007)
+   - Reference the provided ADRs
+   - Document any project-specific modifications
+
+2. OSAdapter Design Document (new)
+   - Thread safety model
+   - Resource management strategy
+   - Failure modes and recovery
+
+3. Interface Design (existing: public header comments)
+   - Reference Doxygen documentation
+   - Document any deviations from contracts
+```
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_43_verification_evidence 4.3 Verification Evidence
+```
+1. Code Review Report
+   - Checklist of MISRA rules reviewed
+   - Findings (violations vs. deviations)
+   - Sign-off by review team
+
+2. Static Analysis Report
+   - Tool used (e.g., cppcheck, LDRA)
+   - MISRA compliance results
+   - Any suppressions and rationale
+   - Version of code analyzed
+
+3. Test Report
+   - Unit test results (all modules)
+   - Code coverage metrics (>80% recommended)
+   - Test case traceability to requirements
+   - Integration test results (with application)
+
+4. Hazard Analysis Report (HARA)
+   - Failure modes identified
+   - Risk scores (severity × likelihood)
+   - Mitigation measures
+   - Residual risk assessment
+```
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_44_assessment_certification 4.4 Assessment & Certification
+```
+1. Notified Body Assessment Report
+   - Findings (critical, major, minor)
+   - Evidence of resolution
+   - Final assessment decision (Pass/Fail)
+
+2. Railway Authority Approval
+   - Safety approval letter
+   - Deployment authorization
+   - Operational constraints (if any)
+```
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_5_safety_application_conditions_template 5. Safety Application Conditions Template
+
+**Use this template for your project's Safety Case:**
+
+```markdown
+# RteFramework - Safety Application Conditions
+
+**Project:** [RBC/Signaling System Name]  
+**SIL Target:** [2/3/4]  
+**Integrator:** [Your Company]  
+**Date:** [Date]  
+
+## Usage Declaration
+
+This project uses RteFramework v0.1.0 as the basis for the OS Abstraction Layer (OAL).
+
+RteFramework provides:
+- ✅ Layered architecture (application ↔ OAL ↔ RTOS)
+- ✅ MISRA C:2012 compliant code patterns
+- ✅ 13 modular services (timer, NVM, IPC, etc.)
+- ✅ Reference design patterns (ADR-001 through ADR-007)
+
+RteFramework does NOT provide:
+- ❌ SIL certification (project's responsibility)
+- ❌ Formal assessment evidence (project must generate)
+- ❌ OS/RTOS OSAdapters (project must implement)
+- ❌ Safety Case (project must write)
+
+## Formal Verification Performed
+
+### Code Review
+- [ ] MISRA C:2012 review completed
+- [ ] CLAUDE.md coding standards review completed
+- [ ] EN 50128 Section 6 compliance review completed
+- Review Report: [filename]
+- Review Sign-off: [Name, Date]
+
+### Static Analysis
+- [ ] cppcheck run: [version, date]
+- [ ] Certified MISRA tool run: [tool name, version, date]
+- Static Analysis Report: [filename]
+
+### Testing
+- [ ] Unit test coverage: [%]
+- [ ] Integration tests: [number of tests]
+- [ ] All tests passed: [Yes/No]
+- Test Report: [filename]
+
+### Traceability
+- [ ] Requirements traced to design
+- [ ] Design traced to implementation
+- [ ] Implementation traced to tests
+- Traceability Matrix: [filename]
+
+### Hazard Analysis
+- [ ] HARA completed
+- [ ] Failure modes identified
+- [ ] Risk scores assigned
+- [ ] Mitigations defined
+- HARA Report: [filename]
+
+### Assessment
+- [ ] Notified Body assessment scheduled: [date]
+- [ ] Assessment completed: [date]
+- [ ] Findings resolved: [Yes/No]
+- Assessment Report: [filename]
+
+## Assumptions & Constraints
+
+[Document your project-specific assumptions:]
+
+1. OSAdapter implementations are thread-safe
+2. Application uses synchronization for multi-threaded access
+3. Timer precision is ±[X]ms (acceptable for safety logic)
+4. NVM block size is [Y] bytes (application designed for this)
+5. [Add more...]
+
+## Scope & Limitations
+
+- RteFramework code is verified per this SAC
+- Application code using RteFramework is verified separately
+- OS/RTOS layer is verified by [vendor/in-house]
+- Hardware is qualified per EN 50128 hardware section
+
+## Approval
+
+| Role | Name | Signature | Date |
+|------|------|-----------|------|
+| Project Safety Manager | | | |
+| QA Lead | | | |
+| System Architect | | | |
+| Functional Safety Assessor | | | |
+```
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_6_formal_code_review_checklist 6. Formal Code Review Checklist
+
+Use this checklist for your formal review of RteFramework:
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_misra_c2012_mandatory_rules MISRA C:2012 Mandatory Rules
+- [ ] Dir 1.1 — Code in C (not C++)
+- [ ] Dir 4.1 — Restrictions on declarations
+- [ ] Dir 4.3 — No implicit function declarations
+- [ ] Dir 4.4 — No include guards
+- [ ] Dir 4.9 — Restrict function-like macros
+- [Continue for all Mandatory rules...]
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_misra_c2012_required_rules MISRA C:2012 Required Rules
+- [ ] Rule 1.2 — Language extensions
+- [ ] Rule 1.3 — Fixed-width integer types
+- [ ] Rule 2.1 — No unreachable code
+- [ ] Rule 2.2 — No dead variables
+- [ ] Rule 2.5 — No unused macros
+- [ ] Rule 5.1 — Identifier length
+- [ ] Rule 8.1 — Functions must have prototypes
+- [ ] Rule 8.6 — Functions must have unique names across TUs
+- [ ] Rule 8.7 — Objects with internal linkage
+- [ ] Rule 10.1-10.8 — Type conversions
+- [ ] Rule 11.1-11.9 — Pointer type conversions
+- [ ] Rule 13.1 — Constraints on expression operators
+- [ ] Rule 14.2 — Use of nullptr
+- [ ] Rule 15.5 — Single point of exit (deviation documented)
+- [ ] Rule 16.1 — switch must have default
+- [ ] Rule 17.2 — No recursion
+- [ ] Rule 20.1 — include guards
+- [ ] Rule 20.5 — No trigraphs
+- [ ] Rule 20.10-20.16 — Library restrictions
+- [ ] Rule 21.6 — No stdio.h (strcpy, sprintf, etc.)
+- [Continue for all Required rules...]
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_en_50128_technical_requirements_section_6 EN 50128 Technical Requirements (Section 6)
+- [ ] Layered architecture correctly implemented
+- [ ] Module interfaces clearly defined
+- [ ] State machine for safe-state transitions correct
+- [ ] Error handling explicit (no exceptions)
+- [ ] Resource allocation static (no dynamic memory)
+- [ ] Pointer validation on all entries
+- [ ] Type conversions checked and bounded
+- [ ] Timing assumptions documented
+- [ ] No undefined behavior or implementation-defined behavior
+- [ ] Bounded operations (no strcpy, sprintf, etc.)
+
+\subsection platformrte_docs_SAFETY_APPLICATION_CONDITIONS_project_specific_requirements Project-Specific Requirements
+- [ ] [Add your organization's coding standards]
+- [ ] [Add your specific railway safety requirements]
+- [ ] [Add your RTOS/platform specific requirements]
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_7_deviation_recording 7. Deviation Recording
+
+**Important:** Every MISRA violation found must be documented:
+
+```markdown
+## MISRA Deviations
+
+| Rule | File | Line | Violation | Rationale | Risk | Mitigation | Approval |
+|------|------|------|-----------|-----------|------|-----------|----------|
+| 15.5 | src/status/rte_status.c | 25 | Multiple return statements | Guard clauses improve readability vs nested else | Low | Code review confirms pattern consistency | [Manager] |
+| [Add findings...] | | | | | | | |
+```
+
+**Every deviation must be:**
+1. Explicitly documented
+2. Justified with technical rationale
+3. Risk-assessed
+4. Mitigated (if needed)
+5. Approved by project safety authority
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_8_references 8. References
+
+- **EN 50128:2011** — Railway applications - Software on board rolling stock - Software safety
+- **EN 50129:2018** — Railway applications - Communication, signalling and processing systems - Functional safety and technical safety
+- **MISRA C:2012** — Guidelines for the use of the C language in critical systems
+- **CENELEC Assessment Procedures** — For Notified Body review criteria
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_9_approval_revision 9. Approval & Revision
+
+| Version | Date | Author | Change | Approval |
+|---------|------|--------|--------|----------|
+| 0.1.0 | 2026-08-02 | Framework Team | Initial SAC | [Pending] |
+| | | | | |
+
+---
+
+\section platformrte_docs_SAFETY_APPLICATION_CONDITIONS_10_contact_questions 10. Contact & Questions
+
+For questions about these Safety Application Conditions:
+
+- **Framework Design:** See <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/ADR-*.md</a>
+- **EN 50128 Alignment:** See \ref platformrte_docs_EN_50128_ALIGNMENT "docs/EN50128_ALIGNMENT.md"
+- **Integration Guide:** See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.md"
+- **Requirements Specification:** See \ref rte_srs "docs/requirements/SRS.md"
+
+**Important:** This document is guidance only. Your project's Functional Safety Manager is responsible for defining actual Safety Application Conditions based on your system requirements and regulatory context. All commitments in your Safety Application Conditions must be approved by your railway system's certification authority.
+*/

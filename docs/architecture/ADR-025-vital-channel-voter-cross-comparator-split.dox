@@ -1,0 +1,350 @@
+/**
+\page platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split ADR-025: Split `rte_vital_channel` into `rte_channel` + `rte_voter` + `rte_cross_comparator`
+
+Status: Accepted
+Date: 2026-08-16
+Applies to: `include/rte/vital_channel/` -> `include/rte/channel_link/`,
+new `include/rte/voter/`, new `include/rte/cross_comparator/`,
+`src/vital_channel/` -> `src/channel_link/`, new `src/voter/`, new
+`src/cross_comparator/`, `src/checkpoint/`, `src/safechannel/`,
+`src/appmanager/`, the top-level `CMakeLists.txt` and
+`tests/CMakeLists.txt`, and the retirement of the old, dead ADR-008
+`include/rte/channel/` / `src/channel/` / `tests/channel/`.
+
+\section platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_1_context 1. Context
+
+Before this ADR, `rte_vital_channel_t` conflated two separate
+responsibilities into one type:
+
+1. **A single redundant link** - an opaque transport handle plus
+   send/recv callbacks, with its own health/error bookkeeping.
+2. **An N-way voting bundle** - `rte_vital_channel_init()` took a whole
+   array of backend handles plus a `voting_strategy` and internally
+   managed `channel_count` sub-links, running majority-vote logic
+   inside `rte_vital_channel_receive()`.
+
+This made it impossible to express two use cases that are conceptually
+distinct but were forced through the same API:
+
+- **N-modular redundancy voting** (2oo2/2oo3/NMR) on multiple redundant
+  copies of *the same* computation, feeding a single arbitrated result
+  back to the caller.
+- **Cross-comparison** between exactly *two independent* peer
+  computations (e.g. an A/B pair), where the interesting output is
+  "did they agree," not a voted single value - a pattern
+  `RBC_GP`'s hand-rolled `channel_ab_crosscompare.c` had
+  already reimplemented outside the framework because no equivalent
+  primitive existed here.
+
+Exploration during this redesign also surfaced a real bug in the old
+voting algorithm: `rte_vital_channel_receive()` compared every
+channel's data *pairwise against the first successful channel's data
+only*. With 3 channels where channel B and C agree but A disagrees,
+this reported `RTE_VOTING_DISAGREED` instead of the correct 2-of-3
+majority result. This was not an edge case found by inspection alone -
+it is the direct consequence of "compare everyone to channel 0" not
+being equivalent to "find the largest group of mutually-agreeing
+channels," and it would misbehave on every 2oo3/NMR(>2) deployment
+where the *first* configured channel happens to be the outlier.
+
+Additionally, `rte_vital_channel_t`'s old multi-channel shape was
+directly and deeply embedded in two other modules, meaning any
+redesign had to account for a ripple effect, not just the type itself:
+
+- `rte_channel_checkpoint()` took a `rte_vital_channel_t *handle`
+  directly and reached into `handle->channel_count`,
+  `handle->channels[i]`, `handle->config.backend_send`/`backend_recv`.
+- `rte_safechannel_t`'s `RTE_SAFECHANNEL_TYPE_VITAL_VOTED` path
+  embedded one whole multi-channel `rte_vital_channel_t` directly
+  inside its `impl` union and called the old
+  `rte_vital_channel_init/_send/_receive/_get_aggregated_health` on it
+  with all links passed at once.
+
+Separately, the framework already had a long-dead, never-compiled
+ADR-008 module at `include/rte/channel/` / `src/channel/` (excluded
+from every build since before ADR-023, per that ADR's own §2.1/§5)
+whose intended purpose - a simple 2-channel comparator - is exactly
+what `rte_cross_comparator` now provides for real, tested and
+buildable. That dead module has been removed outright as part of this
+ADR rather than left to bit-rot alongside its live replacement.
+
+**Explicitly out of scope for this ADR**: the dual-transfer
+online-to-standby callback and timer/task RESTART/CONTINUE/ASK_USER
+switchover policy that motivated this whole investigation. Exploration
+found zero precedent for it anywhere in either repository -
+`rte_dual_channel` is deliberately negotiator-unaware per ADR-020 §3,
+and no timer/task transfer mechanism exists in any form yet. That
+remains a separate, future piece of work.
+
+\section platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_2_decision 2. Decision
+
+Split the old `rte_vital_channel` into three modules along the
+responsibility boundary described above.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_21_rte_channel_renamed_from_rte_vital_channel_si 2.1 `rte_channel` (renamed from `rte_vital_channel`, single link)
+
+`include/rte/channel_link/rte_channel.h` /
+`src/channel_link/rte_channel.c` - reduced to exactly one redundant
+link: an opaque `channel_handle` plus `send`/`recv` callbacks, with its
+own `rte_channel_health_t` (send/recv counts, error counts,
+`is_healthy`). No voting, no quorum, no multi-channel bookkeeping - just
+validate-then-dispatch, the same shape already established by
+`rte_timer`/`rte_nvm`.
+
+```c
+rte_status_t rte_channel_init(rte_channel_storage_t *storage, const rte_channel_config_t *config);
+rte_status_t rte_channel_send(rte_channel_t *handle, const void *data, size_t size);
+rte_status_t rte_channel_receive(rte_channel_t *handle, void *data, size_t size, uint32_t timeout_ms);
+rte_status_t rte_channel_get_health(const rte_channel_t *handle, rte_channel_health_t *out_health);
+rte_status_t rte_channel_set_healthy(rte_channel_t *handle, bool is_healthy);
+rte_status_t rte_channel_destroy(rte_channel_t *handle);
+```
+
+Renamed from `rte_vital_channel` to `rte_channel` because it is no
+longer specific to "vital" (safety-rated) computers - it is a generic
+single-link primitive any two endpoints can use, vital or not. Placed
+in a **new** directory, `channel_link/`, rather than reusing the
+now-freed `channel/` name, to avoid any risk of confusion with the just
+-retired ADR-008 module during the transition and to keep "channel" as
+a word free for use in prose without a specific-directory implication.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_22_rte_voter_new_n_way_voting_with_the_majority 2.2 `rte_voter` (new) - N-way voting, with the majority-vote bug fixed
+
+`include/rte/voter/rte_voter.h` / `src/voter/rte_voter.c` -
+registers up to `RTE_VOTER_MAX_CHANNELS` (8) `rte_channel_t`
+instances and performs 2oo2/2oo3/NMR voting over them.
+
+```c
+rte_status_t rte_voter_init(rte_voter_storage_t *storage, const rte_voter_config_t *config);
+rte_status_t rte_voter_register_channel(rte_voter_t *voter, rte_channel_t *channel);
+rte_status_t rte_voter_send(rte_voter_t *voter, const void *data, size_t size);
+rte_status_t rte_voter_receive(rte_voter_t *voter, void *data, size_t size,
+                                  rte_voting_result_t *result, size_t *bytes_received);
+rte_status_t rte_voter_get_aggregated_health(const rte_voter_t *voter, uint32_t *healthy_count,
+                                                uint32_t *total_disagreements);
+uint32_t rte_voter_get_channel_count(const rte_voter_t *voter);
+rte_channel_t *rte_voter_get_channel(const rte_voter_t *voter, uint32_t index);
+rte_status_t rte_voter_destroy(rte_voter_t *voter);
+```
+
+**Bug fix (behavior change, deliberate):** `rte_voter_receive()`
+groups the N successfully-received buffers by equality (via the
+configured `compare` callback, or `memcmp` by default - see §2.4) and
+picks the *largest* group, reporting `RTE_VOTING_AGREED` with that
+group's data if its size meets the configured strategy's quorum,
+`RTE_VOTING_DISAGREED` otherwise. This replaces the old
+compare-everyone-to-channel-0 logic and changes observable behavior for
+any 2oo3/NMR(>2) deployment where the first-registered channel was the
+one in the minority - that deployment now correctly returns AGREED with
+the majority's data instead of a spurious DISAGREED.
+
+`get_channel_count()`/`get_channel()` were added only because
+`rte_channel_checkpoint()` needs to iterate a voter's registered
+channels directly (§2.5) - this is a deliberately narrow accessor pair,
+not a general-purpose iteration API.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_23_rte_cross_comparator_new_2_way_peer_compariso 2.3 `rte_cross_comparator` (new) - 2-way peer comparison
+
+`include/rte/cross_comparator/rte_cross_comparator.h` /
+`src/cross_comparator/rte_cross_comparator.c` - structurally similar
+to `rte_voter` but fixed at exactly 2 registered channels and no
+strategy/quorum configuration (only "both agree" is meaningful at
+N=2). A 3rd `rte_cross_comparator_register_channel()` call returns
+`RTE_STATUS_RESOURCE_EXHAUSTED`.
+
+```c
+rte_status_t rte_cross_comparator_init(rte_cross_comparator_storage_t *storage,
+                                          const rte_cross_comparator_config_t *config);
+rte_status_t rte_cross_comparator_register_channel(rte_cross_comparator_t *cmp, rte_channel_t *channel);
+rte_status_t rte_cross_comparator_execute(rte_cross_comparator_t *cmp, size_t data_size,
+                                             rte_voting_result_t *result, void *out_data, size_t *out_size);
+rte_status_t rte_cross_comparator_get_aggregated_health(const rte_cross_comparator_t *cmp,
+                                                           uint32_t *healthy_count,
+                                                           uint32_t *total_disagreements);
+rte_status_t rte_cross_comparator_destroy(rte_cross_comparator_t *cmp);
+```
+
+**Why this is a separate module, not just "Voter with N=2":** this is a
+conceptual distinction the framework's API should make explicit, not
+merely a technical one. A voter arbitrates redundant copies of *the
+same* computation down to one authoritative answer - the caller wants a
+single value back. A cross-comparator checks whether two *independent*
+peer computations (e.g. an active/standby pair, or two different
+algorithms computing the same safety-relevant quantity) still agree -
+the caller wants a yes/no consistency signal, and in many real uses
+(such as `RBC_GP`'s original hand-rolled A/B pattern this
+generalizes) doesn't even need the arbitrated value, just the
+disagreement signal itself. Sharing one type under a `strategy=2OO2`
+flag would blur that intent at every call site; keeping them separate
+means a reader immediately knows which relationship between the
+registered channels is meant.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_24_shared_comparison_semantics 2.4 Shared comparison semantics
+
+Both `rte_voter` and `rte_cross_comparator` accept an optional
+`rte_voter_compare_fn compare` callback (`bool (*)(const void *a, const
+void *b, size_t size, void *user_ctx)`). If not registered, the default
+is a full byte compare (`memcmp(a, b, size) == 0`) of the received
+payloads. This is a deliberate default, not a placeholder: CRC64
+(`rte_checksum`) already covers transport-integrity verification
+elsewhere in the stack and is not itself "the comparison" - conflating
+the two would silently accept two payloads that pass their own
+individual integrity checks but differ from each other, which is
+exactly the disagreement case these two modules exist to catch.
+
+Both modules are **caller-driven**: there is no internal timer or
+thread inside either component. "Cyclic" checking, if a caller wants
+it, means calling `rte_voter_receive()` / `rte_cross_comparator_execute()`
+periodically from the caller's own loop - the same pattern
+`rte_channel_checkpoint()` already used from `rte_appmanager`'s cycle
+hook (ADR-019) before this ADR, and unchanged by it.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_25_rewiring_rte_checkpoint 2.5 Rewiring `rte_checkpoint`
+
+`rte_channel_checkpoint()`'s first parameter changed from
+`rte_vital_channel_t *handle` to `rte_voter_t *voter`. Internals swap
+the old direct field reads
+(`handle->channel_count`/`handle->channels[i]`/
+`handle->config.backend_send`/`backend_recv`) for
+`rte_voter_get_channel_count()`/`rte_voter_get_channel()` plus
+`rte_channel_send()`/`rte_channel_receive()` on each individual
+channel. `rte_appmanager_checkpoint_config_t`'s field was renamed from
+`vital_channel` to `voter` to match
+(`include/rte/appmanager/rte_appmanager.h`,
+`src/appmanager/rte_appmanager.c`).
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_26_rewiring_rte_safechannels_voted_path 2.6 Rewiring `rte_safechannel`'s voted path
+
+`rte_safechannel_t`'s `impl.vital` union member changed from one
+embedded multi-channel `rte_vital_channel_t` to:
+
+```c
+struct {
+    rte_channel_t channels[RTE_SAFECHANNEL_MAX_LINKS];
+    rte_voter_t   voter;
+} vital;
+```
+
+`safechannel_open_vital()` now opens each endpoint, creates the voter,
+then creates one `rte_channel_t` per opened endpoint and registers
+each into the voter. `rte_safechannel_send/_receive/_get_status/_close`
+call `rte_voter_send/_receive/_get_aggregated_health/_destroy` instead
+of the old `rte_vital_channel_*` equivalents. The
+`on_disagreement` callback signature changed from
+`(void *, const rte_voting_result_t *)` to `(void *,
+rte_voting_result_t)` (by value) to match `rte_voter_config_t`'s own
+simplified signature.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_27_retirement_of_the_old_adr_008_channel_module 2.7 Retirement of the old ADR-008 `channel` module
+
+`include/rte/channel/`, `src/channel/`, and `tests/channel/` (the
+dead, never-built ADR-008 2-channel comparator ADR-023 §2.1/§5 had
+already flagged as excluded from every build) are removed outright.
+`rte_cross_comparator` (§2.3) covers its intended use case for real,
+tested, and buildable. This closes the "retire-or-fix" open question
+ADR-023 deferred for that module.
+
+\subsection platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_28_build_configuration_adr_024 2.8 Build configuration (ADR-024)
+
+`RTE_ENABLE_VITAL_CHANNEL` renamed to `RTE_ENABLE_CHANNEL_LINK`.
+Two new options added, both default `ON`:
+
+```
+RTE_ENABLE_VOTER            needs CHANNEL_LINK, LOG
+RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
+```
+
+`RTE_ENABLE_CHECKPOINT`, `RTE_ENABLE_SAFECHANNEL`, and
+`RTE_ENABLE_APPMANAGER` each gained a dependency on
+`RTE_ENABLE_VOTER` (previously only on `VITAL_CHANNEL`/
+`CHANNEL_LINK`). See ADR-024 §2.1 for the updated full dependency graph.
+
+\section platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_3_consequences 3. Consequences
+
+- Positive: the API now matches the mental model an integrator actually
+  reasons in - "one link," "vote across N links," "cross-check 2
+  independent peers" are three distinct, independently testable
+  concerns instead of one overloaded type.
+- Positive: the majority-vote bug fix (§2.2) is a real correctness
+  improvement for every existing or future 2oo3/NMR(>2) deployment, not
+  just a naming cleanup.
+- Positive: `rte_cross_comparator` gives `RBC_GP` (and any
+  future integrator with an A/B peer-comparison need) a tested framework
+  primitive instead of requiring a hand-rolled reimplementation.
+- Positive: the old, dead ADR-008 module's disposition (an open question
+  since ADR-023) is now closed - removed, superseded.
+- Negative: this is a breaking API change to `rte_vital_channel`'s
+  public surface (rename, signature changes, struct-shape changes
+  rippling into `rte_checkpoint`/`rte_safechannel`/`rte_appmanager`).
+  Pre-implementation exploration concluded `RBC_GP` did not
+  consume this API directly - that turned out to be **wrong**: its
+  `channel_ab*.c` files use `rte_vital_channel_t` directly, for the
+  ADR-019 addendum's built-in-checkpoint wiring over the A/B peer link
+  (one `rte_vital_channel_t` with `channel_count == 1`, the
+  `RTE_VOTING_NMR`/`quorum_size == 1` "single link" case), not through
+  `channel_ab_crosscompare.c`'s hand-rolled cross-compare logic as
+  assumed (that part genuinely is independent, as originally thought).
+  This was caught by a `RBC_GP` build failure after the rename
+  landed, not by the original exploration - `channel_ab_types.h`,
+  `channel_ab.c`, `channel_ab_io.c`, and `channel_ab_checkpoint.h`/`.c`
+  needed the same rewiring as this framework's own `rte_checkpoint`:
+  one `rte_channel_t` (`channel_ab_context_t::checkpoint_vc`)
+  registered into one `rte_voter_t`
+  (`channel_ab_context_t::checkpoint_voter`, `RTE_VOTING_NMR`,
+  `quorum_size == 1`), with `rte_appmanager_checkpoint_config_t::voter`
+  replacing the old `::vital_channel` field throughout. Fixed as part of
+  this same change; verified via `RBC_GP`'s own
+  `ctest` and `.claude/skills/run-RBC_GP/smoke.sh` (which
+  explicitly checks for "A/WEST checkpoint traffic" / "B/WEST checkpoint
+  traffic" in the running processes' logs, so it exercises the live
+  checkpoint path, not just that the binary links). Lesson for future
+  ADRs with a similar blast radius: a downstream repo's own build is
+  part of verification, not just its exploration - grep-based
+  exploration of a downstream consumer can miss a real dependency that
+  a full build immediately surfaces.
+- Neutral: the dual-transfer online-to-standby callback and timer/task
+  switchover policy that originally motivated this investigation remains
+  out of scope (§1) - a future ADR, not this one.
+
+\section platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_4_verification 4. Verification
+
+- `cmake -S . -B build -DRTE_BUILD_TESTS=ON && cmake --build build`:
+  clean build, zero warnings (default `RTE_WARNINGS_AS_ERRORS=ON`).
+- `ctest --test-dir build --output-on-failure`: all 26 test executables
+  pass, including new `test_rte_voter`/`test_rte_cross_comparator` and
+  the rewired `test_rte_channel` (formerly `test_rte_vital_channel`),
+  `test_rte_checkpoint`, `test_rte_appmanager`, `test_rte_safechannel`.
+- `test_rte_voter`'s `test_receive_majority_vote_fix` specifically
+  exercises the §2.2 bug fix: 3 channels where channel 0 disagrees but
+  channels 1 and 2 agree - asserts the voter returns the channels-1/2
+  majority data, not channel 0's.
+- `RBC_GP` (downstream consumer, separate repo, consumed via
+  `add_subdirectory()`): `cmake --build build` clean;
+  `ctest --test-dir build` (2/2 tests) pass;
+  `.claude/skills/run-RBC_GP/smoke.sh` passes, including its
+  explicit "A/WEST checkpoint traffic" / "B/WEST checkpoint traffic"
+  log checks - the live, rewired `rte_channel_t`/`rte_voter_t`
+  checkpoint path.
+- Manual repository-wide grep for `rte_vital_channel`/
+  `RTE_ENABLE_VITAL_CHANNEL` confirmed no remaining reference to a
+  symbol or option name that no longer exists in any file the build
+  actually compiles (`src/`, `include/`, `tests/`, `CMakeLists.txt`,
+  `tests/CMakeLists.txt`).
+
+\section platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split_5_location 5. Location
+
+- `include/rte/channel_link/`, `src/channel_link/`, `tests/channel_link/`
+- `include/rte/voter/`, `src/voter/`, `tests/voter/`
+- `include/rte/cross_comparator/`, `src/cross_comparator/`, `tests/cross_comparator/`
+- `src/checkpoint/rte_checkpoint.c`, `include/rte/checkpoint/rte_checkpoint.h`
+- `src/safechannel/rte_safechannel.c`, `include/rte/safechannel/rte_safechannel.h`
+- `src/appmanager/rte_appmanager.c`, `include/rte/appmanager/rte_appmanager.h`
+- `CMakeLists.txt` (top-level), `tests/CMakeLists.txt`
+- `docs/architecture/ADR-024-configurable-feature-build.md` (dependency
+  graph, §2.1, updated)
+- `docs/architecture/ADR-023-consolidate-cmake-libraries.md` (§5,
+  pointer to this ADR added noting the old `channel/` module's removal)
+- `RBC_GP` (separate repo): `src/application/AB/channel_ab_types.h`,
+  `channel_ab.c`, `channel_ab_io.c`, `channel_ab_checkpoint.h`/`.c` -
+  the downstream consumer this ADR's exploration missed (§3)
+*/

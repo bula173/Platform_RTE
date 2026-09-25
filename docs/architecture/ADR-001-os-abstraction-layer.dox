@@ -1,0 +1,224 @@
+///\page platformrte_docs_architecture_ADR_001_os_abstraction_layer ADR-001: OS Abstraction Layer (OAL) for the Safe API Framework
+///
+///> **Terminology update (2026-09):** "backend" is now called **OSAdapter**. `rte_<service>_backend_t` is `rte_osadapter_<service>_t`,
+///> `rte_<service>_register_backend()` is `rte_osadapter_<service>_register()`, headers moved from `rte_backend/` to
+///> `rte_osadapter/`, and the POSIX implementation is `rte_posix_osadapter_*` (`Platform_OS_POSIX`). The text below keeps the
+///> original wording as a historical record.
+///
+///Status: Draft
+///Date: 2026-08-02
+///Applies to: Platform_RTE, first abstraction layer (RBC core <-> Operating System)
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_1_context 1. Context
+///
+///The goal of this project is a universal API that lets independently developed
+///layers of a safety-related application communicate through well-defined
+///software interfaces, so each layer can be developed, verified and (where
+///required) certified in isolation. The reference application used to drive the
+///design is an ERTMS Radio Block Centre (RBC), a SIL 4 function under
+///EN 50129 / EN 50128 (CENELEC).
+///
+///This ADR defines the first abstraction layer: the boundary between the RBC
+///core (the ERTMS application logic) and the underlying operating system /
+///board support package. The RBC core must never call OS or vendor APIs
+///directly; it calls only this layer. This keeps the safety-related core
+///portable across OS/hardware targets and keeps the OS-facing code isolated so
+///it can be qualified or replaced independently.
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_2_layered_architecture 2. Layered architecture
+///
+///```
+///+-----------------------------------------------------+
+///| L2  Application Layer  (RBC core, ERTMS functions)   |
+///+-----------------------------------------------------+
+///| L1  Safety Communication Layer (future ADR)          |
+///|     inter-layer / inter-process safety-related        |
+///|     messaging, EN 50159 style defenses                |
+///+-----------------------------------------------------+
+///| L0  OS Abstraction Layer (OAL)   <-- this ADR         |
+///|     timers, NVM, memory reservation, task/thread      |
+///|     scheduling, IPC, logging/diagnostics               |
+///+-----------------------------------------------------+
+///| OS / RTOS / BSP  (Linux, QNX, VxWorks, bare-metal...)|
+///+-----------------------------------------------------+
+///```
+///
+///**Update:** the L1 slot above is now partially filled - see ADR-017
+///(`rte_checkpoint`, `rte_clocksync`), which implements the bounded
+///checkpoint-rendezvous half of "inter-process safety-related messaging"
+///directly on top of L0's `rte_ipc`/`rte_timer`. EN 50159-style message
+///integrity (sequence number, CRC-64) is provided by `rte_checksum`,
+///reused rather than duplicated by ADR-017; a real transport-authentication
+///story for open (untrusted-network) deployments remains open (see ADR-017
+///section 3).
+///
+///Only L0 (OAL) is scoped for this ADR. L1 is referenced so that OAL's IPC
+///primitives are designed to be usable as a transport underneath it, but L1's
+///message-level safety mechanisms (sequence numbers, timeouts, CRC/ authentication,
+///per EN 50159) are out of scope here.
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_3_decision 3. Decision
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_31_interface_style_pure_c_abi 3.1 Interface style: pure C ABI
+///
+///All OAL interfaces are exposed as a **pure C ABI** (`extern "C"`), not C++
+///classes or virtual interfaces.
+///
+///Rationale:
+///- Matches the project's C/C++ stack while remaining callable from either.
+///- Avoids vtable dispatch, which complicates WCET analysis and is restricted
+///  or banned outright by some SIL 3/4 coding guidelines and qualified
+///  toolchains.
+///- Function-pointer tables (see 3.5) give us swappable backends without C++
+///  runtime polymorphism.
+///- Easiest form to bind to other qualified languages/tools if ever required.
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_32_target_integrity_level_sil_34 3.2 Target integrity level: SIL 3/4
+///
+///The OAL is designed to the constraints implied by EN 50128 SIL 3/4 software,
+///since the RBC core it serves is SIL 4:
+///
+///- MISRA C:2012 compliant source (mandatory/required rules; documented
+///  deviations only where justified).
+///- **No dynamic memory allocation after initialization.** Callers provide
+///  storage for every handle (see 3.4); the OAL never calls `malloc`/`free`
+///  internally past init.
+///- Deterministic, bounded execution time for every API call (no unbounded
+///  loops, no recursion).
+///- Every function validates its parameters and returns an explicit status
+///  code; no exceptions, no `errno`-style side channels.
+///- Every public API element carries a requirement-ID tag (`REQ-OAL-...`) in
+///  its doxygen comment for traceability to a future requirements
+///  specification, per EN 50128 verification/traceability expectations.
+///- Safety-related and non-safety-related code are kept in separate
+///  translation units/services (e.g. `rte_log` is diagnostic/non-safety,
+///  clearly marked as such).
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_33_naming_conventions 3.3 Naming conventions
+///
+///- Public functions/types: `rte_<service>_<verb>`, e.g. `rte_timer_create`.
+///- Public macros/constants: `RTE_<SERVICE>_<NAME>`.
+///- Status/error enum: `rte_status_t`, values `RTE_STATUS_*`.
+///- Each service gets one public header under `include/rte/os/`.
+///- Header guards: `RTE_OS_<SERVICE>_H`.
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_34_handle_pattern_no_dynamic_allocation 3.4 Handle pattern (no dynamic allocation)
+///
+///Every stateful OAL object (timer, NVM region, memory pool, task, IPC
+///channel) uses a **caller-owned static storage** pattern instead of
+///heap allocation:
+///
+///```c
+///rte_timer_storage_t   timer_storage;   /* caller-owned, e.g. static or on a
+///                                            long-lived stack frame */
+///rte_timer_handle_t    timer;           /* opaque handle bound to storage */
+///
+///rte_status_t st = rte_timer_create(&timer_storage, &config, &timer);
+///```
+///
+///`rte_timer_storage_t` is an opaque, fixed-size, aligned byte buffer defined
+///in the public header (size is part of the ABI). The implementation places
+///its internal state inside that buffer. This gives static, analyzable memory
+///usage while keeping the internal layout hidden from callers.
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_35_backend_indirection 3.5 Backend indirection
+///
+///Each service's implementation is reached through a function-pointer table
+///(`rte_<service>_backend_t`) selected at build/link time (e.g. POSIX
+///backend, FreeRTOS backend, vendor BSP backend). This is the C-ABI-compatible
+///equivalent of a strategy pattern, chosen instead of C++ virtual dispatch for
+///the reasons in 3.1. This ADR only defines the public API; backend
+///selection/registration is left to a follow-up ADR.
+///
+///\subsection platformrte_docs_architecture_ADR_001_os_abstraction_layer_36_error_handling 3.6 Error handling
+///
+///All fallible functions return `rte_status_t`. Common codes (defined once in
+///`rte_status.h` and shared by every service):
+///
+///| Code | Meaning |
+///|---|---|
+///| `RTE_STATUS_OK` | success |
+///| `RTE_STATUS_INVALID_PARAM` | null pointer / out-of-range argument |
+///| `RTE_STATUS_NOT_INITIALIZED` | used before `_create`/`_init` |
+///| `RTE_STATUS_ALREADY_INITIALIZED` | double init |
+///| `RTE_STATUS_TIMEOUT` | blocking call exceeded its deadline |
+///| `RTE_STATUS_RESOURCE_EXHAUSTED` | static pool/storage full |
+///| `RTE_STATUS_NOT_SUPPORTED` | valid request, backend can't do it |
+///| `RTE_STATUS_NOT_IMPLEMENTED` | stub only (current skeleton state) |
+///| `RTE_STATUS_HARDWARE_FAULT` | backend reported a HW-level fault |
+///| `RTE_STATUS_DATA_CORRUPTION` | NVM integrity check (CRC) failed |
+///| `RTE_STATUS_INTERNAL_ERROR` | should-never-happen / defensive catch-all |
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_4_scope_of_the_first_abstraction_layer_oal_servi 4. Scope of the first abstraction layer (OAL services)
+///
+///Six services, one header each:
+///
+///1. **Timer** (`rte_timer.h`) — periodic/one-shot timers with
+///   millisecond-resolution deadlines, needed for ERTMS movement authority
+///   timeouts, cyclic supervision, watchdog-style deadlines.
+///2. **NVM** (`rte_nvm.h`) — non-volatile storage of safety-related persistent
+///   data (e.g. train/track database state) with integrity checking
+///   (CRC/redundant storage) on read.
+///3. **Memory reservation** (`rte_memory.h`) — static memory pool
+///   reservation/partitioning at init time; no `malloc` in the safety path.
+///4. **Task/thread scheduling** (`rte_task.h`) — creation of periodic/cyclic
+///   safety tasks with fixed priorities, matching the cyclic processing model
+///   typical of RBC implementations.
+///5. **Inter-process/inter-task communication** (`rte_ipc.h`) — bounded
+///   message queues/channels between safety tasks, usable as the transport for
+///   a future L1 safety communication layer.
+///6. **Logging/diagnostics** (`rte_log.h`) — explicitly **non-safety-related**
+///   black-box-style event logging; must never be on any safety execution
+///   path (e.g. must not block or fail a caller).
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_5_directory_build_structure 5. Directory / build structure
+///
+///> **Superseded by ADR-007.** The `include/rte/common/` /
+///> `include/rte/os/` (and matching `src/`/`tests/`) grouping described
+///> below was the original layout. ADR-007 replaced it with one directory
+///> per feature (`include/rte/timer/`, `src/timer/`, `tests/timer/`,
+///> etc.), dropping the `common`/`os` grouping folder while keeping the
+///> conceptual distinction it represented (see ADR-007 section 2.1). Left
+///> here unmodified as the historical record of this decision.
+///
+///```
+///Platform_RTE/
+///  CMakeLists.txt                 top-level, options, adds subdirs
+///  cmake/CompilerWarnings.cmake   shared warning/hardening flags
+///  docs/architecture/             ADRs (this file)
+///  include/rte/common/        rte_status.h, rte_types.h
+///  include/rte/os/            the six service headers
+///  src/os/                        stub backend implementations + CMakeLists.txt
+///  tests/                         CTest scaffold, one test file per service
+///```
+///
+///Each service is built as its own CMake object/static library target under a
+///top-level `rte_os` interface library, so a consumer can link the whole
+///OAL or a single service.
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_6_consequences 6. Consequences
+///
+///- Positive: portable RBC core, independent V&V of the OAL, no heap
+///  fragmentation/non-determinism risk, straightforward MISRA-C audit surface,
+///  swappable backends per target OS.
+///- Negative: caller-owned storage pattern pushes sizing knowledge to call
+///  sites (mitigated by `sizeof`-based static asserts in headers); pure C ABI
+///  means no compile-time generics/templates for convenience wrappers (a thin
+///  optional C++ RAII wrapper can be layered on top later without touching the
+///  ABI).
+///- Deferred to follow-up ADRs: backend registration/build selection, L1
+///  safety communication layer design, formal requirements specification and
+///  MISRA deviation register, unit test framework selection for SIL 3/4
+///  qualification evidence.
+///
+///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_7_open_items 7. Open items
+///
+///- Confirm target OS/RTOS backends for the first reference implementation
+///  (POSIX/Linux is the natural first backend for host-based development and
+///  testing; a deterministic RTOS backend would follow for target hardware).
+///- Define `rte_timer_storage_t` etc. sizes once a first backend fixes real
+///  internal state layout (skeleton currently uses a conservative fixed size
+///  plus a compile-time size assertion hook).
+///- Decide unit test framework (Unity/CMock are common choices for MISRA-C
+///  SIL 3/4 projects) — current skeleton uses a minimal assert-based harness
+///  under CTest as a placeholder.

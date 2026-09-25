@@ -1,0 +1,831 @@
+/**
+\page platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN Configuration Management Plan
+
+**Document ID:** [PROJECT]-CM-PLAN-26.08  
+**Project:** [Railway System Name]  
+**SIL Target:** 4  
+**Version:** 1.0  
+**Date:** [Date]  
+**Status:** [DRAFT / APPROVED]  
+**CM Manager:** [Name]  
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_1_introduction 1. Introduction
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_11_purpose 1.1 Purpose
+This Configuration Management Plan defines how RteFramework and project artifacts are managed, controlled, versioned, and released throughout the development lifecycle.
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_12_scope 1.2 Scope
+- RteFramework source code (src/, include/, tests/)
+- Project implementation
+- Build system (CMake, presets, toolchain files)
+- Documentation (requirements, design, test reports)
+- Assessment artifacts (safety case, compliance reports)
+- Assessment templates and examples
+- Excluded: Third-party RTOS, external tools
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_13_cm_responsibilities 1.3 CM Responsibilities
+- **CM Manager:** Overall CM strategy and oversight
+- **Configuration Auditor:** Verify compliance with this plan
+- **Build Manager:** Build system administration
+- **Release Manager:** Package and release management
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_2_project_structure 2. Project Structure
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_21_directory_layout 2.1 Directory Layout
+
+```
+RteFramework/
+├── .git/                           Version control repository
+├── .github/                        GitHub workflows, templates
+│   ├── workflows/                  CI/CD automation
+│   └── issue_templates/            Issue templates
+│
+├── .claude/                        Claude Code configuration
+│   ├── SKILL.md                    Skill definitions
+│   └── references/                 Architecture patterns, checklists
+│
+├── CMakePresets.json              Standardized build configurations
+├── CMakeLists.txt                 Main build definition
+├── Doxyfile                       Documentation generation config
+├── LICENSE.md                     Community Improvement License
+│
+├── cmake/                         CMake modules & toolchains
+│   ├── CompilerWarnings.cmake     Strict warning flags
+│   ├── RTEHelpers.cmake       Helper functions for downstream
+│   ├── Toolchain-Linux.cmake      POSIX OSAdapter toolchain
+│   ├── Toolchain-QNX.cmake        QNX RTOS toolchain
+│   └── [other toolchains]
+│
+├── include/rte/               Public API headers (13 modules)
+│   ├── types/
+│   ├── status/
+│   ├── buffer/
+│   ├── cast/
+│   ├── safestate/
+│   ├── string/
+│   ├── timer/
+│   ├── nvm/
+│   ├── memory/
+│   ├── task/
+│   ├── ipc/
+│   ├── log/
+│   └── reboot/
+│
+├── src/                          Implementation (13 modules)
+│   ├── status/
+│   │   ├── CMakeLists.txt
+│   │   └── rte_status.c
+│   ├── buffer/
+│   ├── cast/
+│   ├── safestate/
+│   ├── string/
+│   ├── timer/
+│   ├── nvm/
+│   ├── memory/
+│   ├── task/
+│   ├── ipc/
+│   ├── log/
+│   └── reboot/
+│
+├── tests/                        Unit tests (per module)
+│   ├── CMakeLists.txt
+│   ├── status/test_rte_status.c
+│   ├── buffer/test_rte_buffer.c
+│   ├── [other test files]
+│   └── common/test_rte_safestate.c
+│
+├── scripts/                      Helper scripts
+│   ├── run-cppcheck.sh          Static analysis runner
+│   ├── build-linux.sh           Linux build helper
+│   ├── build-qnx.sh             QNX build helper
+│   └── generate-docs.sh         Documentation generation
+│
+├── examples/                     Example OSAdapters & integrations
+│   ├── posix-osadapter/           POSIX (Linux/development)
+│   ├── qnx-osadapter/             QNX RTOS OSAdapter
+│   └── rtos-template/           Template for new RTOS
+│
+├── docs/                         Documentation
+│   ├── README.md                Main documentation
+│   ├── INTEGRATION.md           Integration guide
+│   ├── SAFETY_APPLICATION_CONDITIONS.md
+│   ├── EN50128_ALIGNMENT.md
+│   ├── PACKAGE_README.md
+│   ├── MISRA_COMPLIANCE_REPORT.md
+│   │
+│   ├── architecture/            Architecture Decision Records
+│   │   ├── ADR-001-os-abstraction-layer.md
+│   │   ├── ADR-002-cross-layer-data-buffers.md
+│   │   ├── ... (7 total)
+│   │   └── README.md
+│   │
+│   ├── requirements/            Requirements specifications
+│   │   ├── SRS.md              Consolidated SRS
+│   │   └── REQUIREMENTS.md     Traceability matrix
+│   │
+│   └── templates/              SIL 4 assessment templates
+│       ├── README.md
+│       ├── 00_DOCUMENT_CHECKLIST.md
+│       ├── 01_SAFETY_PLAN.md
+│       ├── 06_HARA_TEMPLATE.md
+│       ├── 15_CODE_REVIEW_REPORT.md
+│       └── 22_SAFETY_CASE.md
+│
+├── build/                       Build outputs (not version controlled)
+│   ├── compile_commands.json   For static analysis
+│   ├── librte_*.a          Static libraries
+│   └── test_rte_*             Test executables
+│
+└── ROADMAP.md                  Future development roadmap
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_22_artifact_categories 2.2 Artifact Categories
+
+| Category | Location | Control | Retention |
+|----------|----------|---------|-----------|
+| **Source Code** | src/, include/ | Git (full history) | Permanent |
+| **Tests** | tests/ | Git (full history) | Permanent |
+| **Build Config** | CMake*, scripts/ | Git (full history) | Permanent |
+| **Documentation** | docs/ | Git (full history) | Permanent |
+| **Build Outputs** | build/ | Not version controlled | Per-build |
+| **Test Results** | build/test-results/ | Archived per release | 5 years (SIL 4) |
+| **Static Analysis** | build/cppcheck-report.* | Archived per release | 5 years (SIL 4) |
+| **Coverage Reports** | build/coverage/ | Archived per release | 5 years (SIL 4) |
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_3_build_system_configuration 3. Build System Configuration
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_31_cmake_structure 3.1 CMake Structure
+
+**Root CMakeLists.txt:**
+```cmake
+cmake_minimum_required(VERSION 3.16)
+project(RteFramework VERSION 0.1.0)
+
+# Global settings
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+# Build options
+option(RTE_BUILD_TESTS "Build unit tests" ON)
+option(RTE_WARNINGS_AS_ERRORS "Treat warnings as errors" ON)
+
+# Per-module subdirectories (ADR-007)
+foreach(feature status types buffer cast safestate string
+                timer nvm memory task ipc log reboot)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${feature}/CMakeLists.txt")
+        add_subdirectory(src/${feature})
+    endif()
+endforeach()
+
+# Tests
+if(RTE_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
+# Static analysis (cppcheck)
+find_program(CPPCHECK_EXECUTABLE cppcheck)
+if(CPPCHECK_EXECUTABLE)
+    add_custom_target(cppcheck
+        COMMAND ${CPPCHECK_EXECUTABLE} ...
+        COMMENT "Running MISRA C:2012 analysis"
+    )
+endif()
+```
+
+**Per-module CMakeLists.txt:**
+```cmake
+add_library(rte_status STATIC rte_status.c)
+target_include_directories(rte_status PUBLIC ${CMAKE_SOURCE_DIR}/include)
+add_library(rte::status ALIAS rte_status)
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_32_cmake_presets_build_configurations 3.2 CMake Presets (Build Configurations)
+
+**Available presets (CMakePresets.json):**
+
+| Preset | Purpose | Use Case | Tests |
+|--------|---------|----------|-------|
+| **debug** | Development | Daily development, debugging | ON |
+| **release** | Production | Optimized release builds | ON |
+| **ci** | Continuous Integration | Automated checks, strict | ON (fail-fast) |
+| **asan** | Memory debugging | AddressSanitizer (detect leaks) | ON |
+| **ubsan** | Behavior debugging | UndefinedBehaviorSanitizer | ON |
+| **coverage** | Test coverage | Code coverage analysis | ON |
+| **clang** | Compiler testing | Clang/LLVM compiler | ON |
+| **gcc** | Compiler testing | GCC compiler | ON |
+| **linux-native** | POSIX OSAdapter | Linux development | OFF |
+| **qnx** | QNX RTOS | QNX cross-compile | OFF |
+| **minimal** | Fast build | Headers-only check | OFF |
+
+**Example usage:**
+```bash
+# Configure
+cmake --preset debug
+
+# Build
+cmake --build --preset debug
+
+# Test
+ctest --preset debug
+
+# Release build
+cmake --preset release && cmake --build --preset release
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_33_toolchain_files 3.3 Toolchain Files
+
+**cmake/Toolchain-Linux.cmake:**
+```cmake
+# POSIX/Linux OSAdapter (development)
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_CXX_COMPILER g++)
+add_compile_definitions(RTE_BACKEND_POSIX)
+```
+
+**cmake/Toolchain-QNX.cmake:**
+```cmake
+# QNX RTOS OSAdapter (target hardware)
+set(CMAKE_C_COMPILER $ENV{QNX_HOST}/usr/bin/qcc)
+set(CMAKE_SYSTEM_NAME QNX)
+add_compile_definitions(RTE_BACKEND_QNX)
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_4_version_control_configuration 4. Version Control Configuration
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_41_git_setup 4.1 Git Setup
+
+**Repository initialization:**
+```bash
+git init
+git config user.name "Project Team"
+git config user.email "team@railway.example.com"
+git config core.filemode true          # Preserve executable bits
+git config core.safecrlf true          # Handle line endings
+```
+
+**Standard branches:**
+```
+main/               Production-ready (SIL 4 certified)
+develop/            Integration branch (pre-release)
+feature/*           Feature branches (short-lived)
+bugfix/*            Bug fix branches
+release/*           Release preparation
+hotfix/*            Emergency fixes to production
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_42_commit_message_standard 4.2 Commit Message Standard
+
+**Format:**
+```
+[Category] Short summary (max 60 chars)
+
+Detailed description (wrap at 72 chars):
+- Why this change was necessary
+- What was changed
+- Any breaking changes or side effects
+
+Fixes: #123
+Related-To: #456
+Co-Authored-By: Name <email@example.com>
+```
+
+**Categories:**
+```
+build:    CMake, build system changes
+ci:       GitHub Actions, CI/CD updates
+docs:     Documentation changes
+feat:     New feature
+fix:      Bug fix
+perf:     Performance improvements
+refactor: Code refactoring (no functional change)
+style:    Code style/formatting
+test:     Test additions/changes
+chore:    Maintenance tasks
+```
+
+**Example:**
+```
+build: Add QNX cross-compilation toolchain
+
+Adds cmake/Toolchain-QNX.cmake for building on QNX RTOS.
+Requires QNX_HOST and QNX_TARGET environment variables.
+Tested with QNX 7.1.
+
+Fixes: #42
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_43_gitignore 4.3 .gitignore
+
+```
+# Build outputs
+build/
+CMakeUserPresets.json
+*.a
+*.o
+*.so
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Documentation
+html/
+latex/
+
+# Test coverage
+*.gcda
+*.gcno
+coverage/
+
+# MISRA reports
+cppcheck-report.*
+
+# OS
+.DS_Store
+.Thumbs.db
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_5_change_control_process 5. Change Control Process
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_51_change_request_workflow 5.1 Change Request Workflow
+
+```
+1. IDENTIFY
+   Developer identifies issue/feature
+   Creates GitHub Issue with description
+
+2. EVALUATE
+   Team reviews issue
+   Assigns priority (P1/P2/P3/P4)
+   Estimates effort
+
+3. PLAN
+   Assign to developer/team
+   Add to milestone/release
+   Link related issues
+
+4. IMPLEMENT
+   Create feature branch: git checkout -b feature/issue-42
+   Make changes (commits with good messages)
+   Write/update tests
+
+5. TEST
+   Unit tests passing
+   Code review by peer (min. 2 reviewers for SIL 4)
+   Static analysis (cppcheck)
+   All checks pass
+
+6. VERIFY
+   Second reviewer approves changes
+   CM manager verifies version labels
+   Tests confirmed passing
+
+7. INTEGRATE
+   Merge to develop branch
+   Close issue
+   Update CHANGELOG
+
+8. RELEASE
+   Create release tag: v0.1.0
+   Build release artifacts
+   Tag version in git
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_52_change_control_board_ccb 5.2 Change Control Board (CCB)
+
+**Composition:**
+- Project Manager (chair)
+- Functional Safety Manager
+- Lead Architect
+- QA/Test Lead
+- CM Manager
+
+**Meeting:** Monthly (or as-needed for critical issues)
+
+**Decisions:**
+- ✅ Approve/reject change requests
+- ✅ Prioritize changes
+- ✅ Approve baseline modifications
+- ✅ Release authorization
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_53_emergency_changes_hotfixes 5.3 Emergency Changes (Hotfixes)
+
+**Process for critical production bugs:**
+
+```
+1. Create hotfix branch: git checkout -b hotfix/security-42
+2. Fix and test thoroughly
+3. Merge to main (production) and develop (integration)
+4. Tag as patch release: v0.1.1
+5. Backport to all active releases
+6. CCB reviews in next meeting
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_6_baselines_milestones 6. Baselines & Milestones
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_61_configuration_baselines 6.1 Configuration Baselines
+
+**Baseline:** Approved, frozen set of artifacts for a phase gate
+
+| Baseline | Artifacts | Approval | Retention |
+|----------|-----------|----------|-----------|
+| **Requirements Baseline** | SRS, HARA, SafeRS | FSM + Architect | Permanent (git) |
+| **Design Baseline** | Architecture, Design Docs, Traceability | Architect | Permanent (git) |
+| **Implementation Baseline** | Source code, tests, static analysis | Dev Lead + QA | Permanent (git) |
+| **Test Baseline** | Test results, coverage, test reports | QA Lead | 5 years |
+| **Assessment Baseline** | Safety case, compliance evidence | FSM | Permanent (assessment archive) |
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_62_release_baselines 6.2 Release Baselines
+
+**Version scheme:** `MAJOR.MINOR.PATCH`
+
+```
+v0.1.0 - Initial framework release (skeleton)
+v0.2.0 - Feature: OSAdapter templates
+v1.0.0 - First production release (SIL 4 certified)
+v1.0.1 - Patch: Security fix
+v1.1.0 - Minor: New RTOS OSAdapter
+v2.0.0 - Major: Architecture redesign (rare)
+```
+
+**Tagging:**
+```bash
+git tag -a v0.1.0 -m "Release: RteFramework v0.1.0"
+git push origin v0.1.0
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_7_build_process 7. Build Process
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_71_standard_build_workflow 7.1 Standard Build Workflow
+
+```bash
+# 1. Configure (applies preset configuration)
+cmake --preset debug
+
+# 2. Build (compile all sources)
+cmake --build --preset debug
+
+# 3. Test (run all unit tests)
+ctest --preset debug
+
+# 4. Analyze (static analysis with MISRA)
+./scripts/run-cppcheck.sh
+
+# 5. Coverage (measure test coverage)
+cmake --build --preset coverage
+lcov --capture --directory build --output-file coverage.info
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_72_release_build_process 7.2 Release Build Process
+
+**Steps:**
+1. **Freeze code** — No more commits to release branch
+2. **Update version** — CMakeLists.txt, documentation
+3. **Tag release** — `git tag v1.0.0`
+4. **Build artifacts** — All presets (release, debug, coverage)
+5. **Test artifacts** — Verify all builds successful
+6. **Generate docs** — Doxygen documentation
+7. **Archive evidence** — Test results, analysis reports, coverage
+8. **Sign & release** — Create GitHub release with artifacts
+
+**Example:**
+```bash
+# Create release branch
+git checkout -b release/v1.0.0
+git push origin release/v1.0.0
+
+# Update version in CMakeLists.txt
+sed -i 's/VERSION 0.1.0/VERSION 1.0.0/' CMakeLists.txt
+git commit -m "bump: version 0.1.0 → 1.0.0"
+
+# Tag release
+git tag -a v1.0.0 -m "Release v1.0.0: SIL 4 ready"
+git push origin v1.0.0
+
+# Build all configurations
+for preset in debug release asan coverage; do
+  cmake --preset $preset
+  cmake --build --preset $preset
+done
+
+# Archive test results
+mkdir -p releases/v1.0.0/test-results
+cp build/test-*.xml releases/v1.0.0/test-results/
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_8_documentation_control 8. Documentation Control
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_81_documentation_management 8.1 Documentation Management
+
+**Types of documentation:**
+
+| Document Type | Responsibility | Update Frequency | Version Control |
+|---------------|-----------------|------------------|-----------------|
+| **Architecture** | Architect | Once per release | Git (tagged) |
+| **Requirements** | System Architect | Per phase gate | Git baseline |
+| **Design** | Team | Per phase gate | Git baseline |
+| **Code comments** | Developers | During implementation | Git (per commit) |
+| **Test results** | QA | Per test run | Archived (not git) |
+| **Safety case** | FSM | Pre-assessment | Git + Archive |
+| **Release notes** | Release Manager | Per release | Git tag annotation |
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_82_documentation_standards 8.2 Documentation Standards
+
+**All documents must include:**
+```markdown
+---
+Document ID: [PROJECT]-[TYPE]-[YY.MM]
+Version: [A.B.C]
+Date: [Date]
+Status: [DRAFT / REVIEW / APPROVED / RELEASED]
+Author: [Name]
+Reviewed By: [Name]
+Approved By: [Name]
+Change History:
+| Ver | Date | Author | Change |
+|-----|------|--------|--------|
+| 1.0 | ... | ... | ... |
+---
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_9_release_management 9. Release Management
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_91_release_schedule 9.1 Release Schedule
+
+**Planned releases:**
+```
+v0.1.0 (2026-08)  - Initial skeleton (DONE)
+v0.2.0 (2026-10)  - Assessment templates complete
+v0.3.0 (2026-12)  - OSAdapter examples (POSIX, QNX)
+v1.0.0 (2027-06)  - SIL 4 certified release
+```
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_92_release_checklist 9.2 Release Checklist
+
+- [ ] All tests passing (>90% coverage)
+- [ ] Static analysis passed (zero critical findings)
+- [ ] Code review complete (all files reviewed)
+- [ ] Documentation updated (README, Doxygen, ADRs)
+- [ ] CHANGELOG.md written
+- [ ] Version number updated
+- [ ] Tagged in git
+- [ ] Release notes created
+- [ ] Test artifacts archived (5-year retention)
+- [ ] Compliance evidence archived
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_93_artifact_archiving 9.3 Artifact Archiving
+
+**Retain for 5 years (SIL 4 requirement):**
+- Test execution logs
+- Coverage reports
+- Static analysis reports
+- Build logs
+- Commit history (git)
+
+**Archive location:**
+```
+releases/
+├── v0.1.0/
+│   ├── build/
+│   ├── test-results/
+│   ├── coverage-report/
+│   ├── cppcheck-report.xml
+│   └── release-notes.md
+├── v0.2.0/
+└── v1.0.0/
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_10_access_control_permissions 10. Access Control & Permissions
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_101_git_repository_permissions 10.1 Git Repository Permissions
+
+| Role | Permissions | Examples |
+|------|-----------|----------|
+| **Developer** | Push to feature/* branches, PR | Create features, bug fixes |
+| **Code Reviewer** | Review PRs, approve merges | Verify code quality |
+| **Release Manager** | Merge to main, create tags | Release authorization |
+| **Maintainer** | Full repo access | Overall governance |
+| **Public** | Read-only (fork only) | Anyone (community) |
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_102_build_system_access 10.2 Build System Access
+
+| Role | Permissions |
+|------|-----------|
+| **Developer** | Local builds (cmake/ctest) |
+| **CI/CD** | Automated builds via GitHub Actions |
+| **Release Manager** | Create release builds & artifacts |
+| **Auditor** | Read-only access to builds/reports |
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_11_configuration_audits 11. Configuration Audits
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_111_audit_schedule 11.1 Audit Schedule
+
+**Frequency:** Monthly (or per phase gate for SIL 4 projects)
+
+**Checklist:**
+- [ ] All source files under version control
+- [ ] No uncommitted changes in main branch
+- [ ] All tags properly formatted
+- [ ] Build artifacts reproducible
+- [ ] Test results archived
+- [ ] Documentation up-to-date
+- [ ] CMakeLists.txt version matches git tag
+- [ ] CHANGELOG.md current
+- [ ] Static analysis reports archived
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_112_audit_report 11.2 Audit Report
+
+**Template:**
+```
+Configuration Audit Report
+Date: [Date]
+Auditor: [Name]
+
+Findings:
+- ✓ Source code control: PASS
+- ✓ Version labeling: PASS
+- ⚠ Documentation: 1 file out of date
+- ✓ Build reproducibility: PASS
+
+Issues:
+1. [Issue] - [Severity] - [Action] - [Owner] - [Due date]
+
+Approved by: [Functional Safety Manager]
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_12_traceability_records 12. Traceability Records
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_121_traceability_matrix 12.1 Traceability Matrix
+
+**Links:**
+- **Requirements** → Git commit SHAs (in SRS.md)
+- **Design** → Architecture docs (ADR-*.md)
+- **Implementation** → Source files (src/*.c)
+- **Tests** → Test files (tests/*.c)
+- **Compliance** → Static analysis reports
+
+**Maintenance:**
+- Updated per git commit
+- Reviewed at phase gates
+- Finalized for assessment
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_122_deviation_log 12.2 Deviation Log
+
+**Format:**
+```
+Deviation: [ID]
+Rule: MISRA C:2012 Rule 15.5
+File: src/status/rte_status.c
+Reason: Guard clauses improve readability
+Risk: Low
+Mitigation: Code review confirms consistency
+Approved By: [FSM]
+Date: [Date]
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_13_tool_configuration 13. Tool Configuration
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_131_build_tools 13.1 Build Tools
+
+| Tool | Version | Purpose | Config |
+|------|---------|---------|--------|
+| CMake | 3.16+ | Build system | CMakeLists.txt |
+| C Compiler | C99 | Code translation | cmake/Toolchain-*.cmake |
+| cppcheck | 2.21+ | MISRA analysis | .cppcheck |
+| Git | 2.x | Version control | .gitignore, .gitattributes |
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_132_cicd_github_actions 13.2 CI/CD (GitHub Actions)
+
+**Workflows (`.github/workflows/`):**
+```
+- build.yml        Run on every PR (build + test)
+- analysis.yml     Run cppcheck (MISRA compliance)
+- coverage.yml     Generate coverage reports
+- release.yml      Automated release creation
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_14_communication_reporting 14. Communication & Reporting
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_141_status_reports 14.1 Status Reports
+
+**Weekly:**
+- Commits since last report
+- Current branch status
+- Build health (passing/failing tests)
+- Static analysis status
+
+**Monthly (CCB meeting):**
+- Release progress
+- Issues and resolutions
+- Upcoming milestones
+- Audit findings
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_142_issue_tracking 14.2 Issue Tracking
+
+**GitHub Issues for:**
+- Bug reports
+- Feature requests
+- Documentation updates
+- Assessment feedback
+
+**Labels:**
+```
+bug              Problem to fix
+feature          New capability
+improvement      Enhancement
+documentation    Docs update
+assessment       Notified Body feedback
+sil-4           SIL 4 relevant
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_15_configuration_management_records 15. Configuration Management Records
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_151_records_to_maintain 15.1 Records to Maintain
+
+| Record | Retention | Location |
+|--------|-----------|----------|
+| Source code history | Permanent | Git repository |
+| Build logs | 5 years | releases/ archive |
+| Test results | 5 years | releases/ archive |
+| Analysis reports | 5 years | releases/ archive |
+| Baselines | Permanent | Git tags |
+| Change requests | 5 years | GitHub Issues |
+| Audit reports | 5 years | CM records |
+| Release notes | Permanent | Git releases/ |
+
+\subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_152_record_retention 15.2 Record Retention
+
+**SIL 4 requirement:** 5-year retention minimum
+```
+releases/v1.0.0/
+├── 2027-build-logs.txt
+├── 2027-test-results.xml
+├── 2027-coverage-report/
+├── 2027-cppcheck-report.xml
+└── 2027-static-analysis-log.txt
+```
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_16_approval 16. Approval
+
+| Role | Name | Signature | Date |
+|------|------|-----------|------|
+| CM Manager | [Name] | | |
+| Project Manager | [Name] | | |
+| Functional Safety Manager | [Name] | | |
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_17_change_history 17. Change History
+
+| Version | Date | Author | Change |
+|---------|------|--------|--------|
+| 0.1 | [Date] | [Name] | Initial draft |
+| 1.0 | [Date] | [Name] | Approved by CM Board |
+
+---
+
+\section platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_references References
+
+- CMakeLists.txt (build definition)
+- CMakePresets.json (standardized builds)
+- .gitignore (version control exclusions)
+- CLAUDE.md (coding standards)
+- docs/architecture/ (ADRs)
+- ROADMAP.md (development plan)
+- LICENSE.md (Community Improvement License)
+*/

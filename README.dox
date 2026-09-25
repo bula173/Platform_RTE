@@ -1,0 +1,241 @@
+/**
+\mainpage Platform_RTE
+
+**Product:** Platform_RTE, the Safe Computing Platform core / RTE of the RBC_Template workspace
+(repository `Platform_RTE`). C99, MISRA C:2012, EN 50128 SIL 4 target.
+**Layer:** RTE. **Assessment unit:** Platform core (part of the RTE composition, see
+[../../docs/safety/CERTIFICATION_PLAN.md](../../docs/safety/CERTIFICATION_PLAN.dox)).
+
+\section index_responsibility Responsibility
+
+Platform_RTE is the only layer through which safety applications reach the OS, the network and each
+other. It owns:
+
+- **Execution:** the cyclic application manager (init, execute, shutdown, optional pre/post hooks and a
+  built-in checkpoint stage) and the setup-phase lock.
+- **Redundancy:** N-way voting, 2-way cross-comparison, checkpoint rendezvous, dual-instance
+  ONLINE/STANDBY negotiation, state transfer on promotion, redundancy configuration.
+- **Safe state:** the single place where a transition to SAFE or REBOOT happens. Applications only
+  register a cleanup handler.
+- **Communication seam:** named channels and Flows over pluggable OSAdapters, checksums and the
+  vital-message envelope.
+- **OS abstraction (OAL):** timer, NVM, memory, task, mutex, IPC, log, reboot, netlink, platform
+  and clock sync, each reached through an OSAdapter registered at startup (ADR-005).
+- **Common utilities:** status codes, fixed-width types, checked casts, bounded strings, buffer views.
+
+It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), any transport protocol
+(Platform_Protocol_*), any railway logic (RBC_*), or any ERTMS message handling.
+
+\section index_interfaces_exposed_to_other_products Interfaces exposed to other products
+
+| Interface | Header directory | Consumed by | Notes |
+|---|---|---|---|
+| **PI-API** (`rte_flow_*`) | `include/rte/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
+| **Application manager** | `include/rte/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
+| **Safe state** | `include/rte/utils/safestate/` | all | `RTE_ASSERT`, `RTE_SAFESTATE`, `RTE_REBOOT`, cleanup handler registration |
+| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.md` |
+| **Channel service** | `include/rte/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
+| **Redundancy configuration** | `include/rte/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
+| **State registration** | `include/rte/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
+| **OSAdapter seams** | `include/rte/oal/<service>/*_osadapter.h`, `oal/flow`, `oal/protocol` | Platform_OS_POSIX, Platform_Protocol_DDS | One vtable per OAL service, `rte_osadapter_flow_t`, `rte_protocol_adapter_ops_t` |
+| **Utilities** | `include/rte/utils/` | all | Status, types, cast, buffer, string |
+| **Build artifacts** | `dist/<platform>/`, CMake package `RteFramework`, Conan `rteframework/0.1.0` | all C products | Targets `rte::core`, `::oal`, `::channels`, `::appmanager` |
+
+Every public function has a Doxygen block with pre-conditions, post-conditions and requirement IDs.
+See \ref documentation_index "docs/DOCUMENTATION_INDEX.md" for the per-module guides.
+
+\section index_interfaces_required Interfaces required
+
+Only the C standard library and, at run time, one registered OSAdapter per OAL service used. A build
+that links no OSAdapter cannot run the services; `Platform_OS_POSIX` is the reference OSAdapter.
+
+\section index_build_and_verify Build and verify
+
+```sh
+cmake --preset debug && cmake --build --preset debug && ctest --preset debug
+cmake --preset ci                        # warnings as errors
+cmake --preset asan | ubsan | coverage   # sanitizers and coverage
+cmake --build build --target cppcheck    # MISRA C:2012 analysis (or ./scripts/run-cppcheck.sh)
+cmake --install build --prefix .         # produces dist/<platform>/ for consumers
+```
+
+Cross-compilation targets and toolchain files: \ref platformrte_docs_CROSS_COMPILATION "docs/CROSS_COMPILATION.md"
+and `platform/toolchains/`. Coding rules: <a href="https://github.com/bula173/Platform_RTE/blob/master/CLAUDE.md">CLAUDE.md</a>. Conformance evidence:
+\ref platformrte_docs_MISRA_COMPLIANCE_REPORT "docs/MISRA_COMPLIANCE_REPORT.md",
+\ref platformrte_docs_COVERAGE_REPORT "docs/COVERAGE_REPORT.md", \ref platformrte_docs_EN_50128_ALIGNMENT "docs/EN_50128_ALIGNMENT.md",
+\ref platformrte_docs_SAFETY_APPLICATION_CONDITIONS "docs/SAFETY_APPLICATION_CONDITIONS.md".
+
+\section index_layout Layout
+
+```text
+include/rte/<area>/<feature>/   public header per feature (ADR-007)
+src/<feature>/                      implementation, built into 4 library targets (ADR-023)
+tests/<feature>/                    one CTest file per feature
+docs/                               guides, ADRs, requirements (SRS), safety, templates
+examples/                           standalone example programs
+```
+
+\section index_where_to_read_next Where to read next
+
+- Module status and feature notes: \ref platformrte_docs_MODULES "docs/MODULES.md"
+- Architecture: \ref system_architecture "docs/architecture/SYSTEM_OVERVIEW.md" and the ADRs
+- Workspace context: [../../docs/architecture/ARCHITECTURE.md](../../docs/architecture/ARCHITECTURE.dox)
+
+\section index_docs Documentation
+
+
+\subsection index_docs_1 docs
+
+- \subpage channel_callbacks - Channel Naming and Callback Registration
+- \subpage platformrte_docs_COVERAGE_REPORT - Unit Test Coverage Report
+- \subpage documentation_index - Documentation Index
+- \subpage platformrte_docs_EN_50128_ALIGNMENT - EN 50128 Alignment & Safety Case
+- \subpage platformrte_docs_FEATURE_EXPANSION - RteFramework Feature Expansion
+- \subpage platformrte_docs_HARDWARE_PATTERNS_GUIDE - Hardware patterns guide
+- \subpage platformrte_docs_INTEGRATION - Integrating RteFramework into Your Project
+- \subpage platformrte_docs_MODULES - Module status and feature notes
+- \subpage platformrte_docs_PACKAGE_README - RteFramework as a Reusable Package
+- \subpage platformrte_docs_REDUNDANCY_ARCHITECTURE - Redundancy architecture
+- \subpage platformrte_docs_ROADMAP - RteFramework Roadmap
+- \subpage platformrte_docs_SAFETY_APPLICATION_CONDITIONS - Safety Application Conditions (SAC) for RteFramework
+- \subpage platformrte_docs_TOOLCHAIN_STRATEGY - Toolchain Strategy & Multi-Platform Support
+
+\subsection index_docs_2 Top level
+
+- \subpage platformrte_PROJECT_BOARD - RteFramework Project Board
+
+\subsection index_docs_3 docs/architecture
+
+- \subpage platformrte_docs_architecture_ADR_005_oal_osadapter_registration - ADR-005: OAL Backend Registration via Callbacks
+- \subpage platformrte_docs_architecture_ADR_007_per_feature_directory_layout - ADR-007: Per-Feature Directory Layout
+- \subpage platformrte_docs_architecture_ADR_008_dual_channel_ccf_mitigation - ADR-008: Dual-Channel Vital Architecture — CCF Mitigation via Build Diversity
+- \subpage platformrte_docs_architecture_ADR_016_crc64_data_integrity - ADR-016: CRC-64 Data Integrity for Redundant Channels
+- \subpage platformrte_docs_architecture_ADR_017_checkpoint_and_clock_sync - ADR-017: Checkpoint Rendezvous and Clock Synchronization for Distributed Vital Channels
+- \subpage platformrte_docs_architecture_ADR_018_posix_oal_osadapter - ADR-018: A Real POSIX/Linux OAL Backend
+- \subpage platformrte_docs_architecture_ADR_021_consumer_osadapter_header_split - ADR-021: Consumer / OS-Backend Header Separation
+- \subpage platformrte_docs_architecture_ADR_023_consolidate_cmake_libraries - ADR-023: Consolidate 22 CMake Library Targets into 4
+- \subpage platformrte_docs_architecture_ADR_024_configurable_feature_build - ADR-024: Per-Module Feature Selection at Configure Time
+- \subpage platformrte_docs_architecture_ADR_025_vital_channel_voter_cross_comparator_split - ADR-025: Split `rte_vital_channel` into `rte_channel` + `rte_voter` + `rte_cross_comparator`
+- \subpage platformrte_docs_architecture_ADR_026_application_setup_phase_lock - ADR-026: Application Setup-Phase Lock and Single-Entry-Point Enforcement
+- \subpage platformrte_docs_architecture_ADR_027_udp_netlink_transport - ADR-027: UDP Transport for `rte_netlink`
+- \subpage platformrte_docs_architecture_ADR_028_channel_down_reboot_and_executive_starvation_fix - ADR-028: Channel-Down Escalation to REBOOT, and a Cyclic-Executive Starvation Fix
+- \subpage platformrte_docs_architecture_ADR_029_rbc_train_il_ctc_scenario - ADR-029: RBC Train/IL/CTC Scenario - Real Multi-Train Protocol and Failover-Ready Session State
+- \subpage platformrte_docs_architecture_ADR_030_registered_callback_list_shape - ADR-030: `rte_notify` - fixed-capacity registered-callback list shape
+- \subpage platformrte_docs_architecture_ADR_031_sapi_mem_util - ADR-031: `rte_mem_util` - one sanctioned call site per libc memory primitive
+- \subpage platformrte_docs_architecture_ADR_032_setup_phase_lock_coverage_extended - ADR-032: Setup-phase lock coverage extended to backend registration and remaining setup-only constructors
+- \subpage platformrte_docs_architecture_ADR_033_sapi_mutex - ADR-033: rte_mutex - a portable mutual-exclusion primitive
+- \subpage platformrte_docs_architecture_ADR_034_checkpoint_signature_marks - ADR-034: Checkpoint-signature marks and stage-then-commit output
+- \subpage platformrte_docs_architecture_ADR_035_platform_realtime_init - ADR-035: `rte_platform` OAL service for real-time bring-up
+- \subpage platformrte_docs_architecture_ADR_036_train_session_multiplexing - ADR-036: Train-session multiplexing - one link, many trains (up to 100)
+- \subpage platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition - ADR-037: Role C gateway - decomposition into per-client-type service binaries
+- \subpage platformrte_docs_architecture_ADR_038_status_indication_and_c_pubsub_broker - ADR-038: Status indication - a C-side pub/sub broker + an A/B↔C util channel
+- \subpage platformrte_docs_architecture_ADR_039_n_channel_topology_primitives - ADR-039: What N-channel (2oo3+) topologies need from the redundancy primitives
+- \subpage system_architecture - System Architecture Overview
+
+\subsection index_docs_4 docs/requirements
+
+- \subpage rte_srs - Software Requirements Specification (SRS)
+
+\subsection index_docs_5 docs/safety
+
+- \subpage platformrte_docs_safety_CCF_ANALYSIS - Common-Cause-Failure (CCF) Analysis — Dual-Channel Vital Core
+
+\subsection index_docs_6 docs/templates
+
+- \subpage platformrte_docs_templates_00_DOCUMENT_CHECKLIST - SIL 4 Assessment - Document Checklist
+- \subpage platformrte_docs_templates_01_SAFETY_PLAN - Safety Plan
+- \subpage platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN - Configuration Management Plan
+- \subpage platformrte_docs_templates_06_HARA_TEMPLATE - Hazard Analysis and Risk Assessment (HARA)
+- \subpage platformrte_docs_templates_15_CODE_REVIEW_REPORT - Code Review Report
+- \subpage platformrte_docs_templates_22_SAFETY_CASE - Safety Case
+- \subpage platformrte_docs_templates_README - SIL 4 Assessment Document Templates
+
+\subsection index_docs_7 examples
+
+- \subpage platformrte_examples_IPC_EXAMPLES - IPC Communication Patterns - Examples
+
+\subsection index_docs_8 include/rte/app/appmanager
+
+- \subpage appmanager_integration - App Manager Integration with Channels
+
+\subsection index_docs_9 include/rte/oal/ipc
+
+- \subpage channel_configuration - Channel Configuration Guide
+- \subpage ipc_guide - IPC (Inter-Process Communication) Guide
+- \subpage ipc_transport_selection - IPC Transport Selection Guide
+
+\subsection index_docs_10 include/rte/oal/log
+
+- \subpage log_architecture - Log Module - Architecture
+- \subpage log_user_guide - Logging Module - User Guide
+
+\subsection index_docs_11 include/rte/oal/memory
+
+- \subpage memory_architecture - Memory Module - Architecture
+- \subpage memory_user_guide - Memory Module - User Guide
+
+\subsection index_docs_12 include/rte/oal/nvm
+
+- \subpage nvm_architecture - Non-Volatile Memory Architecture
+- \subpage nvm_user_guide - Non-Volatile Memory User Guide
+
+\subsection index_docs_13 include/rte/oal/reboot
+
+- \subpage reboot_architecture - Reboot Module - Architecture
+- \subpage reboot_user_guide - Reboot Module - User Guide
+
+\subsection index_docs_14 include/rte/oal/task
+
+- \subpage task_architecture - Task Queue Module - Architecture
+- \subpage task_user_guide - Task Queue Module - User Guide
+
+\subsection index_docs_15 include/rte/oal/timer
+
+- \subpage timer_architecture - Timer Module - Architecture
+- \subpage timer_user_guide - Timer Module - User Guide
+
+\subsection index_docs_16 include/rte/redundancy/channel_link
+
+- \subpage vital_channel_architecture - Vital Channel Communication Architecture
+- \subpage vital_channel_topologies - Channel Topologies and Redundancy Patterns
+- \subpage vital_channel_user_guide - Vital Channel Module - User Guide
+
+\subsection index_docs_17 include/rte/redundancy/checksum
+
+- \subpage checksum_architecture - Checksum Module - Architecture
+- \subpage checksum_user_guide - Checksum Module - User Guide
+
+\subsection index_docs_18 include/rte/redundancy/watchdog
+
+- \subpage watchdog_architecture - Watchdog Module - Architecture
+- \subpage watchdog_user_guide - Watchdog Module - User Guide
+
+\subsection index_docs_19 include/rte/utils/buffer
+
+- \subpage buffer_architecture - Buffer Module - Architecture
+- \subpage buffer_user_guide - Buffer Module - User Guide
+
+\subsection index_docs_20 include/rte/utils/cast
+
+- \subpage cast_architecture - Cast Module - Architecture
+- \subpage cast_user_guide - Cast Module - User Guide
+
+\subsection index_docs_21 include/rte/utils/safestate
+
+- \subpage safestate_architecture - Safe-State Module - Architecture
+- \subpage safestate_user_guide - Safe-State Module - User Guide
+
+\subsection index_docs_22 include/rte/utils/status
+
+- \subpage status_architecture - Status Module - Architecture
+
+\subsection index_docs_23 include/rte/utils/string
+
+- \subpage string_architecture - String Module - Architecture
+- \subpage string_user_guide - String Module - User Guide
+
+\subsection index_docs_24 include/rte/utils/types
+
+- \subpage types_architecture - Types Module - Architecture
+- \subpage types_user_guide - Types Module - User Guide
+*/

@@ -10,7 +10,7 @@ on:
       - main
     paths:
       - 'include/rte/**/*.h'
-      - 'include/rte/**/*.md'
+      - 'include/rte/**/*.dox'
       - 'Doxyfile'
       - '.github/workflows/generate-docs.yml'
   pull_request:
@@ -19,7 +19,7 @@ on:
       - main
     paths:
       - 'include/rte/**/*.h'
-      - 'include/rte/**/*.md'
+      - 'include/rte/**/*.dox'
       - 'Doxyfile'
 
 jobs:

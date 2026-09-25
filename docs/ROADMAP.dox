@@ -1,0 +1,299 @@
+/**
+\page platformrte_docs_ROADMAP RteFramework Roadmap
+
+\section platformrte_docs_ROADMAP_overview Overview
+
+This roadmap tracks proposed feature additions and the configuration system for selective module inclusion. Features are organized by priority tier and implementation status.
+
+**Status Legend:**
+- `proposed` — Initial concept, not yet committed
+- `designing` — Architecture/design phase (ADR in progress)
+- `in-progress` — Active implementation
+- `testing` — Implementation complete, testing/review phase
+- `done` — Merged and released
+
+---
+
+\section platformrte_docs_ROADMAP_tier_1_high_fit_core_rbc_requirements Tier 1: High Fit (Core RBC Requirements)
+
+\subsection platformrte_docs_ROADMAP_ipc_enhancements_core_communication_layer IPC Enhancements (Core Communication Layer)
+- **Status:** `proposed`
+- **Priority:** P1 (High - Communication is critical)
+- **Target Release:** v0.2.0 (parallel with other Tier 1)
+- **Fit for RBC:** Excellent — RBC is multi-task system with heavy IPC
+- **Scope:**
+  - Request-Reply pattern (blocking client/server RPC)
+  - Publish-Subscribe (one-to-many broadcasting)
+  - Message filtering and routing
+  - Priority-based queues
+  - Flow control (back-pressure handling)
+  - IPC statistics and monitoring
+  - Deadlock detection
+- **GitHub Issues:** #17–#23 (7 sub-features)
+- **ADR:** <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADR-020 through ADR-026</a> (pending)
+- **Est. Effort:** 3–4 weeks total (can parallelize some features)
+- **Dependencies:** Base IPC module (already exists)
+
+\subsection platformrte_docs_ROADMAP_hierarchical_state_machine_hsm Hierarchical State Machine (HSM)
+- **Status:** `proposed`
+- **Priority:** P1 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Excellent — protocol handling becomes declarative
+- **Scope:**
+  - Table-driven event dispatch
+  - Nested states with entry/exit actions
+  - Orthogonal regions (AND states)
+  - Static transition table allocation
+- **GitHub Issue:** [#1](https://github.com/bula173/Platform_RTE/issues/1)
+- **ADR:** `docs/architecture/ADR-008-hierarchical-state-machine.md` (pending)
+- **MISRA Considerations:** Avoid function pointers in transitions; use indexed dispatch table instead
+- **Est. Effort:** 2–3 weeks (design + implementation + testing)
+
+\subsection platformrte_docs_ROADMAP_eventmessage_queue Event/Message Queue
+- **Status:** `proposed`
+- **Priority:** P1 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Excellent — async task coordination, decouples producers/consumers
+- **Scope:**
+  - Bounded circular queue (static allocation)
+  - Multiple producer, single consumer (MPSC)
+  - Overflow/underflow detection
+  - Integration with task scheduler
+- **GitHub Issue:** [#2](https://github.com/bula173/Platform_RTE/issues/2)
+- **ADR:** `docs/architecture/ADR-009-event-message-queue.md` (pending)
+- **MISRA Considerations:** Validate queue size at compile time; avoid dynamic growth
+- **Est. Effort:** 1–2 weeks
+
+\subsection platformrte_docs_ROADMAP_watchdog_mechanism_systemtaskchannelcheckpoint Watchdog Mechanism (System/Task/Channel/Checkpoint)
+- **Status:** `designing` ✓ (design complete, implementation pending)
+- **Priority:** P1 (High - Critical for SIL 4)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Excellent — Detect hung systems, tasks, channels; trigger recovery
+- **Scope:**
+  - System watchdog (overall liveness)
+  - Task watchdog (per-thread monitoring)
+  - Channel watchdog (IPC/redundancy channel monitoring)
+  - Checkpoint watchdog (integrated with barrier sync)
+  - Recovery actions: log, safe-state, reboot, failover
+  - Health status API (non-blocking diagnostics)
+  - Integration with redundancy framework
+- **GitHub Issues:** #32–#35 (4 sub-features)
+- **Documentation:** \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.md" ✓
+- **API Files:** 
+  - `include/rte/watchdog/rte_watchdog.h` ✓
+  - `src/watchdog/rte_watchdog.c` (stubs) ✓
+- **MISRA Considerations:** Deterministic, no dynamic allocation, O(1) operations
+- **SIL 4 Safety:** Meets EN 50128 liveness requirement
+- **Est. Effort:** 3–4 weeks (core + examples + testing)
+
+\subsection platformrte_docs_ROADMAP_protected_data_synchronized_access Protected Data / Synchronized Access
+- **Status:** `proposed`
+- **Priority:** P1 (Medium-High)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Good — prevents race conditions in multi-threaded access
+- **Scope:**
+  - Read-write guards (no dynamic locks)
+  - Deadlock prevention via strict lock ordering
+  - Atomic compare-and-swap helpers
+- **GitHub Issue:** [#4](https://github.com/bula173/Platform_RTE/issues/4)
+- **ADR:** `docs/architecture/ADR-011-protected-data-sync.md` (pending)
+- **MISRA Considerations:** Static lock ordering analysis required
+- **Est. Effort:** 2–3 weeks
+
+---
+
+\section platformrte_docs_ROADMAP_tier_2_strong_fit_recommended Tier 2: Strong Fit (Recommended)
+
+\subsection platformrte_docs_ROADMAP_diagnostic_ring_buffer Diagnostic Ring Buffer
+- **Status:** `proposed`
+- **Priority:** P2 (High)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — forensic logging, certification auditing
+- **Scope:**
+  - Bounded circular buffer for timestamped events
+  - No allocation after initialization
+  - Post-mortem analysis support
+  - Survives task restart
+- **GitHub Issue:** [#5](https://github.com/bula173/Platform_RTE/issues/5)
+- **ADR:** `docs/architecture/ADR-012-diagnostic-ring-buffer.md` (pending)
+- **Est. Effort:** 1–2 weeks
+
+\subsection platformrte_docs_ROADMAP_safe_configuration_manager Safe Configuration Manager
+- **Status:** `proposed`
+- **Priority:** P2 (Medium)
+- **Target Release:** 0.3.0
+- **Fit for RBC:** Good — runtime tuning, schema validation, NVM-backed
+- **Scope:**
+  - Schema-based validation
+  - Corruption detection and recovery
+  - Rollback support
+  - NVM persistence
+- **GitHub Issue:** [#6](https://github.com/bula173/Platform_RTE/issues/6)
+- **ADR:** `docs/architecture/ADR-013-safe-config-manager.md` (pending)
+- **MISRA Considerations:** All config writes must be validated before commit
+- **Est. Effort:** 2–3 weeks
+
+\subsection platformrte_docs_ROADMAP_checksum_crc_utilities Checksum & CRC Utilities
+- **Status:** `proposed`
+- **Priority:** P2 (Medium)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — data integrity, protocol compliance
+- **Scope:**
+  - CRC32 (table-based, pre-computed)
+  - Fletcher-16/32 checksums
+  - Protocol payload verification
+  - NVM integrity checking
+- **GitHub Issue:** [#7](https://github.com/bula173/Platform_RTE/issues/7)
+- **ADR:** `docs/architecture/ADR-014-checksum-crc-utils.md` (pending)
+- **Est. Effort:** 1 week
+
+\subsection platformrte_docs_ROADMAP_cyclic_scheduler_time_slot_allocator Cyclic Scheduler / Time Slot Allocator
+- **Status:** `proposed`
+- **Priority:** P2 (Low-Medium)
+- **Target Release:** 0.3.0 or later
+- **Fit for RBC:** Moderate — deterministic scheduling, but reduces flexibility
+- **Scope:**
+  - Static time-slot allocation per task
+  - Integration with timer layer
+  - Deterministic WCET analysis
+- **GitHub Issue:** [#8](https://github.com/bula173/Platform_RTE/issues/8)
+- **ADR:** `docs/architecture/ADR-015-cyclic-scheduler.md` (pending)
+- **Est. Effort:** 2–3 weeks
+
+\subsection platformrte_docs_ROADMAP_mock_osadapter_harness Mock OSAdapter Harness
+- **Status:** `proposed`
+- **Priority:** P2 (High, for testing)
+- **Target Release:** 0.2.0
+- **Fit for RBC:** Good — fast CI cycles, deterministic time control
+- **Scope:**
+  - Build-time selectable mock OSAdapters for all OAL services
+  - Time control for testing
+  - Failure injection support
+- **GitHub Issue:** [#9](https://github.com/bula173/Platform_RTE/issues/9)
+- **ADR:** `docs/architecture/ADR-016-mock-osadapter-harness.md` (pending)
+- **Est. Effort:** 2 weeks
+
+---
+
+\section platformrte_docs_ROADMAP_tier_3_specialized_use_defer_unless_required Tier 3: Specialized Use (Defer Unless Required)
+
+\subsection platformrte_docs_ROADMAP_performance_counters Performance Counters
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later
+- **Scope:** WCET analysis, task profiling, resource usage tracking
+- **GitHub Issue:** [#10](https://github.com/bula173/Platform_RTE/issues/10)
+- **Est. Effort:** 1–2 weeks
+
+\subsection platformrte_docs_ROADMAP_binary_serialization_asn1_tlv Binary Serialization (ASN.1 / TLV)
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later
+- **Scope:** Schema-aware message encoding for protocol payloads
+- **GitHub Issue:** [#11](https://github.com/bula173/Platform_RTE/issues/11)
+- **Est. Effort:** 2–3 weeks (depends on ASN.1 complexity)
+
+\subsection platformrte_docs_ROADMAP_can_bus_utilities CAN Bus Utilities
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later (rail-specific)
+- **Scope:** CAN frame builder/parser, DBC support
+- **GitHub Issue:** [#12](https://github.com/bula173/Platform_RTE/issues/12)
+- **Est. Effort:** 1–2 weeks
+
+\subsection platformrte_docs_ROADMAP_authenticated_encryption_aes_gcm_binding Authenticated Encryption (AES-GCM Binding)
+- **Status:** `proposed`
+- **Priority:** P3
+- **Target Release:** 0.4.0 or later (depends on threat model)
+- **Scope:** Thin wrapper around proven crypto library (Mbed TLS, libsodium)
+- **GitHub Issue:** [#13](https://github.com/bula173/Platform_RTE/issues/13)
+- **Est. Effort:** 1–2 weeks
+
+---
+
+\section platformrte_docs_ROADMAP_configuration_system Configuration System
+
+\subsection platformrte_docs_ROADMAP_cmake_feature_flags CMake Feature Flags
+- **Status:** `proposed`
+- **Priority:** P1 (Enables feature selection)
+- **Target Release:** 0.2.0
+- **Scope:**
+  - `RTE_ENABLE_<FEATURE>` options for each module
+  - Conditional compilation and linking
+  - Default-ON for current modules, default-OFF for new features
+- **GitHub Issue:** [#14](https://github.com/bula173/Platform_RTE/issues/14)
+- **ADR:** `docs/architecture/ADR-017-feature-configuration.md` (pending)
+- **Est. Effort:** 1 week
+
+\subsection platformrte_docs_ROADMAP_runtime_feature_registry_phase_2 Runtime Feature Registry (Phase 2)
+- **Status:** `proposed`
+- **Priority:** P2 (For multi-variant firmware)
+- **Target Release:** 0.3.0 or later
+- **Scope:**
+  - `rte_enable_feature()` API
+  - Feature availability checks at runtime
+  - Graceful degradation when features disabled
+- **GitHub Issue:** [#15](https://github.com/bula173/Platform_RTE/issues/15)
+- **ADR:** `docs/architecture/ADR-018-runtime-feature-registry.md` (pending)
+- **Est. Effort:** 1–2 weeks
+
+\subsection platformrte_docs_ROADMAP_hybrid_static_config_header_cmake_phase_3 Hybrid: Static Config Header + CMake (Phase 3)
+- **Status:** `proposed`
+- **Priority:** P2 (For certification workflows)
+- **Target Release:** 0.4.0 or later
+- **Scope:**
+  - Generated `rte_config.h` with static feature flags
+  - CMake verification of consistency
+  - Locked configuration before testing
+- **GitHub Issue:** [#16](https://github.com/bula173/Platform_RTE/issues/16)
+- **ADR:** `docs/architecture/ADR-019-static-config-certification.md` (pending)
+- **Est. Effort:** 1 week
+
+---
+
+\section platformrte_docs_ROADMAP_release_timeline Release Timeline
+
+\subsection platformrte_docs_ROADMAP_v020_next_major_release v0.2.0 (Next Major Release)
+- HSM (Tier 1)
+- Message Queue (Tier 1)
+- Watchdog & Health Monitor (Tier 1)
+- Diagnostic Ring Buffer (Tier 2)
+- Checksum & CRC Utilities (Tier 2)
+- Mock OSAdapter Harness (Tier 2)
+- CMake Feature Flags configuration system (Phase 1)
+- **Est. Timeline:** Q3 2026
+
+\subsection platformrte_docs_ROADMAP_v030 v0.3.0
+- Protected Data / Synchronized Access (Tier 1)
+- Safe Configuration Manager (Tier 2)
+- Cyclic Scheduler (Tier 2)
+- Runtime Feature Registry (Phase 2)
+- **Est. Timeline:** Q4 2026
+
+\subsection platformrte_docs_ROADMAP_v040 v0.4.0+
+- Tier 3 features (as needed)
+- Hybrid static config system (Phase 3)
+- Performance tuning and optimization
+
+---
+
+\section platformrte_docs_ROADMAP_tracking_collaboration Tracking & Collaboration
+
+- **GitHub Issues:** Each feature has a dedicated issue for design discussion, implementation tracking, and review.
+- **GitHub Projects:** Use a project board to visualize status by tier and release.
+- **ADRs:** Architecture Decision Records in `docs/architecture/` document rationale for each feature.
+- **Feature Expansion Document:** Stored in both Claude.ai (artifact) and GitHub (this file + detailed specs).
+
+---
+
+\section platformrte_docs_ROADMAP_next_steps Next Steps
+
+1. ✅ Create this roadmap document (ROADMAP.md)
+2. Create GitHub Issues for each Tier 1 feature
+3. Draft ADRs for Tier 1 features
+4. Set up GitHub Projects board for visual tracking
+5. Begin design phase for HSM (highest priority)
+6. Update `docs/requirements/SRS.md` with new feature requirements
+
+See the feature expansion artifact at [Claude.ai](https://claude.ai/code/artifact/b75f23a4-842a-4c2c-8292-bfe2ecc94716) for detailed analysis.
+*/

@@ -1,0 +1,281 @@
+///\page platformrte_examples_linux_posix_app_README Railway Message Processor (Linux POSIX)
+///
+///A simple but realistic railway communication application demonstrating RteFramework on Linux with POSIX OAL.
+///
+///\section platformrte_examples_linux_posix_app_README_overview Overview
+///
+///**Application:** Train message processor with periodic heartbeats
+///**Platform:** Linux (any Linux system with gcc/clang)
+///**Use case:** Simple train communication and state monitoring
+///**Purpose:** Learn framework basics
+///
+///\section platformrte_examples_linux_posix_app_README_what_it_does What It Does
+///
+///1. **Receives simulated train messages:**
+///   - Heartbeats (0x01)
+///   - Position updates (0x02)
+///   - Command acknowledgments (0x03)
+///
+///2. **Processes messages** with validation and error handling
+///
+///3. **Generates heartbeats** every 10 iterations (simulates timer callback)
+///
+///4. **Logs all operations** with structured logging
+///
+///5. **Tracks statistics:**
+///   - Messages processed
+///   - Heartbeats sent
+///   - Errors encountered
+///
+///\section platformrte_examples_linux_posix_app_README_building Building
+///
+///\subsection platformrte_examples_linux_posix_app_README_prerequisites Prerequisites
+///
+///```bash
+///# Ubuntu/Debian
+///sudo apt-get install cmake build-essential
+///
+///# macOS
+///brew install cmake
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_quick_build Quick Build
+///
+///From the project root:
+///
+///```bash
+///# Option 1: Build script (easiest)
+///./examples/build-linux-native.sh
+///
+///# Option 2: CMake preset
+///cmake --preset linux-native
+///cmake --build --preset linux-native
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_manual_build Manual Build
+///
+///```bash
+///# Build framework for Linux
+///mkdir -p build/linux
+///cd build/linux
+///cmake -S . -B . -DCMAKE_TOOLCHAIN_FILE=cmake/Toolchain-Linux.cmake
+///cmake --build .
+///cd ../..
+///
+///# Build the example
+///cd examples/linux-posix-app
+///mkdir build && cd build
+///cmake -S ../../.. -B .
+///cmake --build .
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_running Running
+///
+///```bash
+///# From project root
+///build/linux-native/examples/linux-posix-app/railway-processor
+///
+///# Or from example directory
+///cd examples/linux-posix-app/build
+///./railway-processor
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_example_output Example Output
+///
+///```
+///═══════════════════════════════════════════════════════════════
+///railway-message-processor Summary
+///═══════════════════════════════════════════════════════════════
+///Messages processed:  50
+///Heartbeats sent:     5
+///Errors encountered:  0
+///Final state:         SHUTDOWN
+///═══════════════════════════════════════════════════════════════
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_code_structure Code Structure
+///
+///```
+///main.c
+///├── Includes
+///│   ├── Framework headers (rte/*)
+///│   ├── Standard C library
+///│   └── POSIX headers
+///│
+///├── Configuration
+///│   ├── Message types enum
+///│   ├── Application states
+///│   └── Global context
+///│
+///├── Core Functions
+///│   ├── app_init() — Initialize application
+///│   ├── process_message() — Parse and handle message
+///│   ├── heartbeat_callback() — Periodic callback simulation
+///│   ├── simulate_train_message() — Generate test message
+///│   └── transition_to_state() — Safe state management
+///│
+///└── Main Loop
+///    ├── Initialize framework
+///    ├── Process messages
+///    ├── Generate heartbeats
+///    └── Graceful shutdown
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_framework_features_demonstrated Framework Features Demonstrated
+///
+///\subsection platformrte_examples_linux_posix_app_README_1_status_codes_no_exceptions 1. Status Codes (No Exceptions)
+///```c
+///rte_status_t status = process_message(msg, len);
+///if (status != RTE_STATUS_OK) {
+///    RTE_LOG_ERROR("Processing failed: %d", status);
+///}
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_2_structured_logging 2. Structured Logging
+///```c
+///RTE_LOG_INFO("Train %u at position %u", train_id, position);
+///RTE_LOG_WARN("Invalid message (len=%zu)", len);
+///RTE_LOG_DEBUG("Processing message [%zu bytes]", len);
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_3_safe_assertions 3. Safe Assertions
+///```c
+///RTE_ASSERT(msg != NULL);
+///RTE_ASSERT(len > 0);
+///RTE_ASSERT(len <= MESSAGE_BUFFER_SIZE);
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_4_safe_state_management 4. Safe State Management
+///```c
+///static rte_status_t transition_to_state(app_state_t new_state)
+///{
+///    // State transition logic with validation
+///    g_app.state = new_state;
+///    return RTE_STATUS_OK;
+///}
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_5_fixed_width_types 5. Fixed-Width Types
+///```c
+///uint32_t message_count;  // Not 'unsigned int'
+///uint8_t msg_type;        // Not 'unsigned char'
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_message_flow Message Flow
+///
+///```
+///simulate_train_message()
+///        ↓
+///process_message()
+///        ↓
+///(Parse message type)
+///        ↓
+///├─→ HEARTBEAT: Log "received from train"
+///├─→ POSITION_UPDATE: Validate & log position
+///├─→ COMMAND_ACK: Log acknowledgment
+///└─→ Unknown: Log warning, return error
+///        ↓
+///Update statistics
+///        ↓
+///Return status code
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_extending_the_example Extending the Example
+///
+///\subsection platformrte_examples_linux_posix_app_README_add_new_message_type Add New Message Type
+///
+///1. Add type to message handling:
+///```c
+///case 0x04: /* NEW_MESSAGE_TYPE */
+///    RTE_LOG_INFO("Received NEW_MESSAGE_TYPE");
+///    // Handle it
+///    break;
+///```
+///
+///2. Add to simulator:
+///```c
+///uint8_t sequence[] = {0x01, 0x02, 0x03, 0x04};
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_add_real_timer Add Real Timer
+///
+///Replace simulation with `rte::timer`:
+///```c
+///rte_timer_t timer;
+///rte_timer_create(&timer, RTE_TIMER_PERIODIC, 1000); // 1 second
+///rte_timer_start(&timer, heartbeat_callback, NULL);
+///// ... later ...
+///rte_timer_stop(&timer);
+///rte_timer_destroy(&timer);
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_add_task_pool Add Task Pool
+///
+///Extend with `rte::task` (when available):
+///```c
+///rte_task_t task1, task2;
+///rte_task_create(&task1, message_processor, NULL);
+///rte_task_create(&task2, heartbeat_generator, NULL);
+///```
+///
+///\subsection platformrte_examples_linux_posix_app_README_add_network_io Add Network I/O
+///
+///Add socket communication:
+///```c
+///#include <sys/socket.h>
+///// Receive messages from network instead of simulation
+///int sock = socket(AF_INET, SOCK_DGRAM, 0);
+///// ... bind, recvfrom, etc.
+///```
+///
+///\section platformrte_examples_linux_posix_app_README_safety_considerations Safety Considerations
+///
+///\subsection platformrte_examples_linux_posix_app_README_memory_safety Memory Safety
+///- No dynamic allocation after startup
+///- Fixed-size buffers with bounds checking
+///- No pointers beyond necessity
+///
+///\subsection platformrte_examples_linux_posix_app_README_type_safety Type Safety
+///- Explicit status codes (no exceptions)
+///- Fixed-width integer types
+///- Enum for state machine
+///
+///\subsection platformrte_examples_linux_posix_app_README_error_handling Error Handling
+///- Every function returns `rte_status_t`
+///- Errors logged before propagation
+///- Statistics tracked for analysis
+///
+///\subsection platformrte_examples_linux_posix_app_README_state_management State Management
+///- Safe transitions between states
+///- State validation before operations
+///- Clear state diagram in code
+///
+///\section platformrte_examples_linux_posix_app_README_performance_notes Performance Notes
+///
+///- **Message throughput:** ~10k messages/sec (on modern CPU)
+///- **Memory footprint:** ~1 MB
+///- **CPU usage:** Minimal (100ms sleep between iterations)
+///- **Latency:** <1ms per message (no real-time guarantee on Linux)
+///
+///For hard real-time performance, see the QNX RTOS example.
+///
+///\section platformrte_examples_linux_posix_app_README_next_steps Next Steps
+///
+///1. ✅ Build and run this example
+///2. Modify message types (see "Extending")
+///3. Add real timer support
+///4. Explore QNX version for real-time (in `../qnx-rtos-app/`)
+///5. Integrate into your application
+///
+///\section platformrte_examples_linux_posix_app_README_related_examples Related Examples
+///
+///- <a href="https://github.com/bula173/Platform_RTE/tree/master/examples/qnx-rtos-app">QNX RTOS Example</a> — Real-time railway server
+///- \ref platformrte_examples_README "Main README" — All example applications
+///- \ref platformrte_docs_CROSS_COMPILATION "Cross-Compilation Guide" — Build for different targets
+///- <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">Framework Documentation</a> — API reference
+///
+///\section platformrte_examples_linux_posix_app_README_references References
+///
+///- <a href="https://github.com/bula173/Platform_RTE/blob/master/include/rte/oal/log/rte_log.h">rte::log</a>
+///- <a href="https://github.com/bula173/Platform_RTE/blob/master/include/rte/utils/status/rte_status.h">rte::status</a>
+///- <a href="https://github.com/bula173/Platform_RTE/blob/master/include/rte/utils/safestate/rte_safestate.h">rte::safestate</a>

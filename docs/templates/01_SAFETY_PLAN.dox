@@ -1,0 +1,293 @@
+/**
+\page platformrte_docs_templates_01_SAFETY_PLAN Safety Plan
+
+**Document ID:** [PROJECT]-SAFETY-PLAN-26.08  
+**Project:** [Railway System Name - e.g., ERTMS RBC]  
+**SIL Target:** 4  
+**Version:** 1.0  
+**Date:** [Date]  
+**Status:** [DRAFT / APPROVED]  
+**Author:** [Name, Functional Safety Manager]  
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_1_introduction 1. Introduction
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_11_purpose 1.1 Purpose
+This Safety Plan defines the overall strategy, organization, and approach for developing [System Name] to meet EN 50128:2011 SIL 4 safety requirements.
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_12_scope 1.2 Scope
+- **In Scope:** All software components, including RteFramework baseline
+- **Out of Scope:** Hardware design, RTOS implementation (if externally supplied)
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_13_normative_references 1.3 Normative References
+- EN 50128:2011 — Railway applications - Software on board rolling stock - Software safety
+- EN 50129:2018 — Railway applications - Communication, signalling and processing systems - Functional safety and technical safety
+- MISRA C:2012 — Guidelines for the use of the C language in critical systems
+- CENELEC Product Safety Standards
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_2_lifecycle_model 2. Lifecycle Model
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_21_development_lifecycle 2.1 Development Lifecycle
+```
+Requirements Phase
+    ↓
+Design Phase
+    ↓
+Implementation Phase
+    ↓
+Verification Phase
+    ↓
+Assessment Phase (Notified Body)
+    ↓
+Deployment & Operation
+```
+
+**Process:** [V-Model / Agile / Spiral - describe your chosen model]
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_22_verification_strategy 2.2 Verification Strategy
+
+| Activity | Phase | Responsibility | Output |
+|----------|-------|-----------------|--------|
+| Requirements Review | Requirements | System Architect | Review Report |
+| Design Review | Design | Architecture Lead | Design Review Report |
+| Code Review | Implementation | Code Review Team | Code Review Report |
+| Static Analysis | Implementation | QA / Tools | MISRA Report |
+| Unit Testing | Implementation | Developers | Test Report |
+| Integration Testing | Verification | Test Team | Integration Test Report |
+| System Testing | Verification | Test Team | System Test Report |
+| Functional Safety Assessment | Assessment | Notified Body | Assessment Report |
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_3_organization_responsibilities 3. Organization & Responsibilities
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_31_roles 3.1 Roles
+
+| Role | Name | Responsibilities |
+|------|------|------------------|
+| **Functional Safety Manager** | [Name] | Overall safety strategy, safety approval |
+| **Project Manager** | [Name] | Schedule, resources, stakeholder management |
+| **System Architect** | [Name] | System design, architecture decisions |
+| **Development Lead** | [Name] | Code quality, implementation standards |
+| **QA / Test Lead** | [Name] | Testing strategy, verification |
+| **Configuration Manager** | [Name] | Change control, baselines, traceability |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_32_review_authority 3.2 Review Authority
+- **Technical Reviews:** [Name, Role]
+- **Safety Reviews:** [Functional Safety Manager]
+- **Management Approval:** [Project Manager / Program Manager]
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_4_tools_methods 4. Tools & Methods
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_41_development_tools 4.1 Development Tools
+| Tool | Purpose | Justification |
+|------|---------|---------------|
+| CMake | Build system | Standard, widely supported |
+| C99 Compiler | Translation | Matches EN 50128 qualified toolchains |
+| [cppcheck / Tool] | Static Analysis | MISRA compliance verification |
+| [Unit Test Framework] | Unit Testing | [e.g., CUnit, Unity] |
+| Git | Version Control | Traceability, change history |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_42_static_analysis_tools 4.2 Static Analysis Tools
+- **Primary:** [cppcheck / LDRA / Parasoft]
+- **Standard:** MISRA C:2012
+- **Coverage Goal:** 100% of source code
+- **Deviation Process:** All deviations documented and approved
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_43_testing_methods 4.3 Testing Methods
+- **Unit Testing:** All modules tested individually
+- **Integration Testing:** Modules tested together
+- **System Testing:** Full system tested end-to-end
+- **Coverage Target:** >90% code coverage (SIL 4)
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_5_coding_standards 5. Coding Standards
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_51_language_standard 5.1 Language & Standard
+- **Language:** C99 (C11 compatible)
+- **Standard:** MISRA C:2012 Mandatory & Required rules
+- **Exceptions:** [Document any deviations and rationale]
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_52_key_constraints 5.2 Key Constraints
+✓ No dynamic memory allocation (malloc/free banned)  
+✓ Explicit error handling (no exceptions)  
+✓ Checked type conversions (no bare casts)  
+✓ Bounded operations (no strcpy, sprintf)  
+✓ No recursion  
+✓ Pointer validation required  
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_53_rteframework_baseline 5.3 RteFramework Baseline
+- **Version:** 0.1.0
+- **Usage:** OS Abstraction Layer (OAL)
+- **Verification:** Per SAFETY_APPLICATION_CONDITIONS.md
+- **Modifications:** [List any modifications to RteFramework code]
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_6_traceability_configuration_management 6. Traceability & Configuration Management
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_61_traceability 6.1 Traceability
+- **Bidirectional:** Requirements ↔ Design ↔ Code ↔ Tests
+- **Matrix Tool:** [Spreadsheet / Dedicated tool]
+- **Coverage:** 100% of requirements traced to implementation
+- **Update:** Real-time with changes, reviewed at phase gates
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_62_configuration_management 6.2 Configuration Management
+- **Baseline:** Established at end of each phase
+- **Change Control:** Formal change request process (see CM Plan)
+- **Build Management:** Reproducible builds, version controlled
+- **Release Management:** Tagged releases for assessment
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_7_requirement_traceability 7. Requirement Traceability
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_71_requirement_categories 7.1 Requirement Categories
+
+| Category | Count | Owner | Status |
+|----------|-------|-------|--------|
+| Functional Requirements | [n] | System Architect | [Draft / In Review / Approved] |
+| Safety Requirements | [n] | Functional Safety Manager | [Draft / In Review / Approved] |
+| Design Constraints | [n] | System Architect | [Draft / In Review / Approved] |
+| Quality Requirements (MISRA, etc.) | [n] | QA Lead | [Draft / In Review / Approved] |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_72_requirement_sources 7.2 Requirement Sources
+- Safety standards (EN 50128, EN 50129)
+- Customer specifications
+- HARA findings (safety-driven requirements)
+- Architectural patterns (RteFramework)
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_8_review_assessment 8. Review & Assessment
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_81_internal_review_gates 8.1 Internal Review Gates
+| Gate | Input | Output | Approval |
+|------|-------|--------|----------|
+| Requirements Gate | SRS, HARA | Approved requirements | Functional Safety Manager |
+| Design Gate | Architecture, Design Review Report | Approved design | System Architect |
+| Code Gate | Code Review Report, Static Analysis | Approved code | Development Lead |
+| Test Gate | Test Results, Coverage Report | Approved test evidence | QA Lead |
+| Assessment Readiness | All above evidence packaged | Ready for Notified Body | Functional Safety Manager |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_82_notified_body_assessment 8.2 Notified Body Assessment
+- **Timing:** [Target date for assessment start]
+- **Body:** [CENELEC-certified lab]
+- **Scope:** Full SIL 4 assessment
+- **Expected Duration:** 3-6 months
+- **Evidence Package:** [List key documents to be submitted]
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_9_risk_management 9. Risk Management
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_91_technical_risks 9.1 Technical Risks
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|-----------|
+| MISRA violations found late | Medium | High | Early static analysis, code review before implementation |
+| Test coverage inadequate | Low | High | Coverage tools, coverage goals set early |
+| RTOS OSAdapter issues | Medium | High | Early OSAdapter design review, prototype testing |
+| Schedule overrun | Medium | Medium | Buffer in schedule, early identification of issues |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_92_organizational_risks 9.2 Organizational Risks
+| Risk | Mitigation |
+|------|-----------|
+| Key personnel unavailability | Cross-train team members |
+| Tool unavailability | Qualified backup tools identified |
+| Notified Body delays | Engage Notified Body early |
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_10_documentation_evidence 10. Documentation & Evidence
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_101_documentation_deliverables 10.1 Documentation Deliverables
+See `00_DOCUMENT_CHECKLIST.md` for complete list of 29 documents.
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_102_evidence_package_for_notified_body 10.2 Evidence Package for Notified Body
+```
+Assessment Package includes:
+- Safety Case
+- All requirement/design/test documents
+- Code review and static analysis reports
+- Source code (under version control)
+- Test logs and coverage reports
+- HARA and risk assessment
+- Deviation management
+```
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_103_storage_access 10.3 Storage & Access
+- **Location:** [Repository path / System]
+- **Access:** [Team members, Notified Body]
+- **Backup:** [Frequency and method]
+- **Retention:** [Duration - typically 10+ years]
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_11_quality_metrics 11. Quality Metrics
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_111_code_quality_targets 11.1 Code Quality Targets
+| Metric | Target | Verification |
+|--------|--------|--------------|
+| MISRA Compliance | 100% or documented deviations | Static analysis tool |
+| Code Coverage | >90% | Coverage tool |
+| Cyclomatic Complexity | <10 per function | Static analysis tool |
+| Code Review Coverage | 100% | Review checklist |
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_112_schedule_metrics 11.2 Schedule Metrics
+- Requirements phase completion: [Date]
+- Design phase completion: [Date]
+- Code completion: [Date]
+- Testing completion: [Date]
+- Assessment readiness: [Date]
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_12_communication_reporting 12. Communication & Reporting
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_121_stakeholder_updates 12.1 Stakeholder Updates
+- **Monthly:** Status report to Program Manager
+- **Bi-weekly:** Team syncs
+- **Quarterly:** Steering committee review
+
+\subsection platformrte_docs_templates_01_SAFETY_PLAN_122_issue_escalation 12.2 Issue Escalation
+- **Critical (SIL violation):** Immediate escalation to Functional Safety Manager
+- **Major (schedule impact):** Weekly escalation
+- **Minor (tracking):** Sprint review
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_13_approval 13. Approval
+
+| Role | Name | Signature | Date |
+|------|------|-----------|------|
+| Functional Safety Manager | | | |
+| Project Manager | | | |
+| System Architect | | | |
+| Quality Assurance Lead | | | |
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_14_change_history 14. Change History
+
+| Version | Date | Author | Change |
+|---------|------|--------|--------|
+| 0.1 | [Date] | [Name] | Initial draft |
+| 1.0 | [Date] | [Name] | Approved by FSM |
+
+---
+
+\section platformrte_docs_templates_01_SAFETY_PLAN_references References
+
+- EN 50128:2011
+- EN 50129:2018
+- MISRA C:2012
+- RteFramework Documentation
+- Project Charter
+- [Other standards specific to your system]
+*/

@@ -1,0 +1,180 @@
+/**
+\page platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition ADR-037: Role C gateway - decomposition into per-client-type service binaries
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_status Status
+
+Accepted - design of record. Lands **before** ADR-036's train-session
+multiplexing, so the Train gateway service is the clean sole owner of
+per-train demux when that work begins.
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_context Context
+
+Role C ("the Gateway") is the non-vital I/O relay between the external
+Train / IL / CTC simulators and the 2oo2 A/B decision channels. Today it
+is **one binary** (`rte_gateway_c`), one process per site
+(`c-west`, `c-east`), whose cyclic executive (`gateway_c.c`) calls three
+independent handlers in sequence:
+
+- `gateway_c_train_handler` - TrainSim <-> A/B relay (bidirectional)
+- `gateway_c_il_handler` - ILSim -> A/B relay (+ TrainPositionInRoute
+  back), and hosts `gateway_c_logctl` (the runtime log-level fan-out)
+- `gateway_c_ctc_handler` - A/B -> CTCSim relay (one-way)
+
+The three handlers share **no runtime state**. Each owns exactly one
+`rte_example_relay_kind_t` and one sim-facing link; the port scheme
+(`common_config.h`, `site_config.h`) already gives each kind its own
+dedicated TCP ports per peer. The only thing binding them is
+`gateway_c.c`'s appmanager / cyclic-timer / config / channel-resolver /
+channel-down-reboot boilerplate.
+
+The integrator wants role C built **from several services** rather than
+one app - IL, CTC and Train as separate binaries - as a precursor to the
+multi-train work and to a planned future **inter-service communication**
+channel between them.
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_decision Decision
+
+\subsection platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_1_three_service_binaries_one_shared_library 1. Three service binaries, one shared library
+
+`RBC_GP` builds:
+
+- `libgateway_c_common.a` (`gateway_c::common`) - the boilerplate lifted
+  verbatim from `gateway_c.c`: `gateway_c_main()` (version banner + arg
+  parse + `app_main_common_init()`), `gateway_c_common_make_config()`
+  (appmanager ops, cyclic timer, `cycle_ticks` pacing,
+  channel-down-reboot), and the shared `resolve_channel_c` (unchanged -
+  it resolves every `c-*` channel name; a service only ever *requests*
+  its own subset via `rte_channel_service_setup()`, so an over-broad
+  resolver is harmless). Plus `gateway_c_config.c`, `gateway_c_util.c`,
+  `common/{app_main_common,site_config}.c`.
+- `rte_gateway_c_train` = `main_c_train.c` + `gateway_c_train_handler.c`
+  + `gateway_c::common`
+- `rte_gateway_c_il` = `main_c_il.c` + `gateway_c_il_handler.c` +
+  `gateway_c_logctl.c` + `gateway_c::common`
+- `rte_gateway_c_ctc` = `main_c_ctc.c` + `gateway_c_ctc_handler.c` +
+  `gateway_c::common`
+
+Each `main_c_<svc>.c` is ~15 lines: it defines a
+`gateway_c_service_def_t` literal - `{ name, handler_init, handler_execute,
+handler_shutdown, handler_check_link_down, pre_handlers }` - and calls
+`gateway_c_main(argc, argv, &SVC)`. `pre_handlers` is
+`gateway_c_logctl_poll` for IL, `NULL` otherwise.
+
+The old `rte_gateway_c` binary and the `rte_monitor_c` symlink
+are **removed**. `gateway_c.c` is deleted (its contents split between
+`gateway_c_common.c` and the three `main_c_<svc>.c`).
+
+**Project ownership follows the A/B-side split.** IL and CTC are
+`RBC_GA`'s domain (that project already owns `src/AB/il/ab_ga_il.c`
+and `src/AB/ctc/ab_ga_ctc.c`), so the IL and CTC gateway services live in
+GA too: `RBC_GA/src/C/il/{gateway_c_il_handler,gateway_c_logctl,main_c_il}.c`
+and `RBC_GA/src/C/ctc/{gateway_c_ctc_handler,main_c_ctc}.c` (one
+subfolder per handler, mirroring `src/AB/{il,ctc}/`). GA builds
+`rte_gateway_c_il` / `_ctc`; GP keeps only `rte_gateway_c_train`.
+`gateway_c_common` is transport/lifecycle - platform scope - so it stays
+in GP, defined *before* GP's `add_subdirectory(RBC_GA)` so GA
+can link it; a standalone GA build (conan) just builds the `.so` and
+skips the two executables. Because GA is add_subdirectory()'d by GP, the
+two GA-built binaries install into GP's own `dist/<platform>/bin/`
+alongside the train binary (GP `install(TARGETS ...)` cross-dir, exactly
+as it already does for `rte_rbc2oo2_ga`), so the SA installer and
+`setupLocalTestEnv.sh` still see all three in one place - no change
+needed on either.
+
+\subsection platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_2_per_site_but_one_container_per_site_hosting_th 2. Per-site, but one container per site hosting the service processes
+
+Each service runs **per-site** (`rte_gateway_c_train WEST`, ...) -
+the A/B relay links are per-site and this keeps `ab_gp_channel.c`
+**completely unchanged** (A/B still connects to a listener on the same
+port; that it is now a different process on the C host is invisible).
+
+The deployment unit stays **one container per site**: `c-west` /
+`c-east` are unchanged as Docker service / container names. Inside, a
+shipped `/app/bin/gateway_c_entrypoint.sh <SITE>` launches the three
+service binaries and exits non-zero the moment **any** of them exits
+(`wait -n`, or a PID-poll fallback) - a crashed gateway service fails
+`c-west` loudly, the same "fail loud, don't limp" posture as the SA
+installer self-check (ADR notes in `RBC_SA/CLAUDE.md`).
+Consequences of keeping the container name:
+
+- Docker fault-injection (`docker restart c-west`,
+  `docker network disconnect ... c-west`) restarts / partitions all
+  three services together - the existing `robot/fault_injection/`
+  suite needs no change.
+- `docker logs c-west` interleaves all three - `get_container_log("c-west")`
+  is unchanged in Docker mode.
+
+\subsection platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_3_local_test_env_three_processes_one_merged_per 3. Local test env: three processes, one merged per-site log
+
+`setupLocalTestEnv.sh` launches 6 gateway processes (3 per site) instead
+of 2, each `ts_launch.py`-wrapped into its own
+`dist/local-test-env/logs/c_<svc>_<site>.log`.
+`ContainerSupportFunctions.get_container_log("c-west")` in local mode
+merges the three `c_*_west.log` files by timestamp, so robot assertions
+that scrape `c-west`'s log keep working unchanged.
+`ContainerLogAttachListener._ALL_SERVICES` gains
+`c-train-west`/`c-il-west`/`c-ctc-west` (+ east) for the `--stream-logs`
+live view (per-service visibility); the per-test merged `.txt` continues
+to attribute them under those names.
+
+\subsection platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_4_log_level_control 4. Log-level control
+
+`gateway_c_logctl.c` moves into the **IL** service (it fans
+`RBC_MSG_SET_LOG_LEVEL` to A/B over the IL relay - its natural home). All
+three services still read `RTE_RBC_LOG_LEVEL` at startup for their own
+threshold; all three still poll `RTE_RBC_LOG_LEVEL_FILE` for their own
+level (cheap, one `fopen`/`fgets` per cycle) but only the IL service
+broadcasts the change to A/B. One file write still re-levels the whole
+site.
+
+\subsection platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_5_future_inter_service_communication 5. Future: inter-service communication
+
+Out of scope here, but the separate-process split is chosen specifically
+so it can be added cleanly later - e.g. a local `rte_channel_service`
+loopback or shared-NVM region letting the Train service tell the IL
+service which trains are live. Nothing in this ADR precludes it; it is
+the reason "three source files in one process" was rejected in favour of
+three binaries.
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_verification Verification
+
+- N=2 `rbc_scenario` suite unchanged: **16/16**, 0 A/B SAFE-states, both
+  local and `docker compose`.
+- `robot/containers/` + `robot/fault_injection/` unchanged and passing
+  (container name `c-west`/`c-east` preserved).
+- A restart of one gateway service process fails the `c-west` container
+  (entrypoint exits non-zero) - confirmed by killing one service in a
+  running container.
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_consequences Consequences
+
+- 1 gateway binary -> 3 + 1 static lib; ~3 tiny new `main_c_*.c`;
+  `gateway_c.c` deleted. `RBC_GP/CMakeLists.txt` gains 3
+  targets + the lib; the SA installer / `packaging.conf` / Dockerfile
+  ship 3 binaries + the entrypoint script instead of one binary.
+- More processes at runtime (6 gateway processes vs 2) but the **same
+  container count** - the deployment and the robot suite's view of "the
+  gateway" are unchanged.
+- `ab_gp_channel.c` and every A/B-side file: **no change** (the port
+  contract is identical).
+- Clean seam for ADR-036: `rte_gateway_c_train` becomes the single
+  place train-session multiplexing/demux lands.
+
+\section platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition_location Location
+
+- `RBC_GP/src/application/C/`: new `gateway_c_common.{c,h}`,
+  `main_c_train.c`, `main_c_il.c`, `main_c_ctc.c`; `gateway_c.c` +
+  `gateway_c.h` removed; `gateway_c_types.h` +
+  `gateway_c_{train,il,ctc}_handler.*` + `gateway_c_logctl.*` +
+  `gateway_c_config.*` + `gateway_c_util.*` unchanged.
+- `RBC_GP/CMakeLists.txt` (3 targets + `gateway_c::common`).
+- `RBC_GP/src/application/C/main_c.c` removed.
+- `RBC_SA/Dockerfile`, `build_installers.sh`,
+  `etc/config/packaging.conf` (3 binaries + `gateway_c_entrypoint.sh`).
+- `RBC_Test_Env/docker-compose.yml` (`c-west`/`c-east`
+  `command:` -> entrypoint script), `etc/scripts/setupLocalTestEnv.sh`
+  (6 gateway launches), `robot/supportFunctions/ContainerSupportFunctions.py`
+  (`get_container_log` local merge), `robot/supportFunctions/ContainerLogAttachListener.py`
+  (`_ALL_SERVICES`).
+- ADR-036 §Location note that the Train gateway is now its own binary.
+*/
