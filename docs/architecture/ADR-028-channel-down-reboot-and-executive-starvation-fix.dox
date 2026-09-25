@@ -226,7 +226,7 @@ correlation until §2.5 is fixed separately.
 - `Platform_RTE/src/appmanager/rte_appmanager.c` (REQ-APPMANAGER-011)
 - `Platform_RTE/tests/appmanager/test_rte_appmanager.c` (two tests
   rewritten)
-- `Platform_RTE/docs/requirements/SRS.md` (REQ-APPMANAGER-011,
+- `Platform_RTE/docs/requirements/SRS.dox` (REQ-APPMANAGER-011,
   REQ-APPMANAGER-008 reworded)
 - `RBC_GP/src/application/AB/channel_ab.c` (`channel_ab_check_channel_down_reboot()`),
   `channel_ab_io.c` (down-since marking, both rx tasks),

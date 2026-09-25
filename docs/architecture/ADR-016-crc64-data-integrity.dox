@@ -350,7 +350,7 @@ if (status != RTE_STATUS_OK) {
 \section platformrte_docs_architecture_ADR_016_crc64_data_integrity_rollout_plan Rollout Plan
 
 1. **Merge:** Implement in v0.3.0 alongside watchdog
-2. **Document:** Add examples to HARDWARE_PATTERNS_GUIDE.md
+2. **Document:** Add examples to HARDWARE_PATTERNS_GUIDE.dox
 3. **Test:** Full test suite and benchmarks
 4. **Integrate:** Use in redundancy APIs (v0.4.0)
 5. **Release:** Production support in v1.0

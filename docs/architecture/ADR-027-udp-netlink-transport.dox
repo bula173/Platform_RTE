@@ -362,5 +362,5 @@ regardless of transport. Not touched by either phase.
 - `include/rte/netlink/rte_netlink.h` (doc contract: `REQ-OAL-NETLINK-014`,
   `HARDWARE_FAULT`/`DATA_CORRUPTION` semantics reworded for a
   transport-agnostic contract)
-- `docs/requirements/SRS.md` §2.8 (backfilled `REQ-OAL-NETLINK-001..014`)
+- `docs/requirements/SRS.dox` §2.8 (backfilled `REQ-OAL-NETLINK-001..014`)
 */

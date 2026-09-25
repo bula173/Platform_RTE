@@ -128,14 +128,14 @@ while (running) {
 
 **Example 1: TCP/IP Online → Standby**
 ```c
-// See CHANNEL_CONFIGURATION.md for complete example
+// See CHANNEL_CONFIGURATION.dox for complete example
 tcp_config.remote_ip = "192.168.1.100";
 tcp_config.remote_port = 5000;
 ```
 
 **Example 2: Local Shared Memory**
 ```c
-// See CHANNEL_CONFIGURATION.md
+// See CHANNEL_CONFIGURATION.dox
 shm_config.descriptor_path = "/dev/shm/rail_vital_ab";
 ```
 

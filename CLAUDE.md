@@ -15,7 +15,7 @@
 ## Documentation & Traceability
 - Every public function must document inputs, outputs, error handling, and safety-critical assumptions.
 - Link safety requirements to code via comments (e.g., `/* REQ-ID: SR_SW_042 */`), and keep a consolidated
-  requirements specification under `docs/requirements/` (e.g. `SRS.md`) as the canonical source those
+  requirements specification under `docs/requirements/` (e.g. `SRS.dox`) as the canonical source those
   comment tags cite — update the spec first when a requirement's wording changes, then the code comment.
 - All documentation is kept in Doxygen format. Every public type and function shall have a Doxygen
   comment block with `@brief`, `@param` for every parameter, `@return` describing every possible status/
@@ -35,7 +35,7 @@
 - Prefer running an automated checker (e.g. `cppcheck --enable=all --addon=misra --std=c99 -I include src`,
   or a licensed tool such as PC-lint Plus / LDRA / Parasoft C/C++test / Polyspace where available) over a
   manual read.
-- Maintain a compliance report at `docs/MISRA_COMPLIANCE_REPORT.md`: which rules were checked, how
+- Maintain a compliance report at `docs/MISRA_COMPLIANCE_REPORT.dox`: which rules were checked, how
   (tool output vs. manual review — state plainly when no tool was available), and any deviations with
   rationale. Update it whenever code changes; do not let it go stale relative to the source tree.
 ## Packaging

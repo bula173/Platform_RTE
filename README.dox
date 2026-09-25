@@ -4,7 +4,7 @@
 **Product:** Platform_RTE, the Safe Computing Platform core / RTE of the RBC_Template workspace
 (repository `Platform_RTE`). C99, MISRA C:2012, EN 50128 SIL 4 target.
 **Layer:** RTE. **Assessment unit:** Platform core (part of the RTE composition, see
-[../../docs/safety/CERTIFICATION_PLAN.md](../../docs/safety/CERTIFICATION_PLAN.dox)).
+[../../docs/safety/CERTIFICATION_PLAN.dox](../../docs/safety/CERTIFICATION_PLAN.dox)).
 
 \section index_responsibility Responsibility
 
@@ -33,7 +33,7 @@ It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), an
 | **PI-API** (`rte_flow_*`) | `include/rte/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
 | **Application manager** | `include/rte/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
 | **Safe state** | `include/rte/utils/safestate/` | all | `RTE_ASSERT`, `RTE_SAFESTATE`, `RTE_REBOOT`, cleanup handler registration |
-| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.md` |
+| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.dox` |
 | **Channel service** | `include/rte/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
 | **Redundancy configuration** | `include/rte/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
 | **State registration** | `include/rte/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
@@ -42,7 +42,7 @@ It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), an
 | **Build artifacts** | `dist/<platform>/`, CMake package `RteFramework`, Conan `rteframework/0.1.0` | all C products | Targets `rte::core`, `::oal`, `::channels`, `::appmanager` |
 
 Every public function has a Doxygen block with pre-conditions, post-conditions and requirement IDs.
-See \ref documentation_index "docs/DOCUMENTATION_INDEX.md" for the per-module guides.
+See \ref documentation_index "docs/DOCUMENTATION_INDEX.dox" for the per-module guides.
 
 \section index_interfaces_required Interfaces required
 
@@ -59,11 +59,11 @@ cmake --build build --target cppcheck    # MISRA C:2012 analysis (or ./scripts/r
 cmake --install build --prefix .         # produces dist/<platform>/ for consumers
 ```
 
-Cross-compilation targets and toolchain files: \ref platformrte_docs_CROSS_COMPILATION "docs/CROSS_COMPILATION.md"
+Cross-compilation targets and toolchain files: \ref platformrte_docs_CROSS_COMPILATION "docs/CROSS_COMPILATION.dox"
 and `platform/toolchains/`. Coding rules: <a href="https://github.com/bula173/Platform_RTE/blob/master/CLAUDE.md">CLAUDE.md</a>. Conformance evidence:
-\ref platformrte_docs_MISRA_COMPLIANCE_REPORT "docs/MISRA_COMPLIANCE_REPORT.md",
-\ref platformrte_docs_COVERAGE_REPORT "docs/COVERAGE_REPORT.md", \ref platformrte_docs_EN_50128_ALIGNMENT "docs/EN_50128_ALIGNMENT.md",
-\ref platformrte_docs_SAFETY_APPLICATION_CONDITIONS "docs/SAFETY_APPLICATION_CONDITIONS.md".
+\ref platformrte_docs_MISRA_COMPLIANCE_REPORT "docs/MISRA_COMPLIANCE_REPORT.dox",
+\ref platformrte_docs_COVERAGE_REPORT "docs/COVERAGE_REPORT.dox", \ref platformrte_docs_EN_50128_ALIGNMENT "docs/EN_50128_ALIGNMENT.dox",
+\ref platformrte_docs_SAFETY_APPLICATION_CONDITIONS "docs/SAFETY_APPLICATION_CONDITIONS.dox".
 
 \section index_layout Layout
 
@@ -77,8 +77,8 @@ examples/                           standalone example programs
 
 \section index_where_to_read_next Where to read next
 
-- Module status and feature notes: \ref platformrte_docs_MODULES "docs/MODULES.md"
-- Architecture: \ref system_architecture "docs/architecture/SYSTEM_OVERVIEW.md" and the ADRs
+- Module status and feature notes: \ref platformrte_docs_MODULES "docs/MODULES.dox"
+- Architecture: \ref system_architecture "docs/architecture/SYSTEM_OVERVIEW.dox" and the ADRs
 - Workspace context: [../../docs/architecture/ARCHITECTURE.md](../../docs/architecture/ARCHITECTURE.dox)
 
 \section index_docs Documentation

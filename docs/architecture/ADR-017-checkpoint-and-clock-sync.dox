@@ -30,7 +30,7 @@ that's a fault, handled the same way any other vital fault is (safe-state
 This closes three things already flagged elsewhere in this repo as
 designed-but-not-built:
 
-- `docs/REDUNDANCY_ARCHITECTURE.md` already specifies a
+- `docs/REDUNDANCY_ARCHITECTURE.dox` already specifies a
   `rte_channel_checkpoint()` / `rte_checkpoint_config_t` API (checkpoint
   ID, max delay, expected node count) in prose and example code, but
   `grep -rn "rte_channel_checkpoint\|rte_checkpoint_config_t" include
@@ -81,7 +81,7 @@ rte_status_t rte_channel_checkpoint(rte_channel_t *handle,
 ```
 
 `rte_checkpoint_config_t` keeps the field names already used in
-`REDUNDANCY_ARCHITECTURE.md`'s examples (`checkpoint_id`, `max_delay_ms`,
+`REDUNDANCY_ARCHITECTURE.dox`'s examples (`checkpoint_id`, `max_delay_ms`,
 `expected_node_count`) so those examples become literally true instead of
 needing to be rewritten, plus an optional `watchdog` handle
 (`rte_watchdog_t`, may be NULL) that gets kicked on a successful
@@ -129,7 +129,7 @@ checkpoint ID within the timeout does.
   modules are thin, and reuse everything already built and tested
   (`rte_checksum`, `rte_ipc`'s backend registration, `rte_watchdog`,
   `rte_safestate`).
-- Positive: `REDUNDANCY_ARCHITECTURE.md`'s existing usage examples
+- Positive: `REDUNDANCY_ARCHITECTURE.dox`'s existing usage examples
   (checkpoint_id/max_delay_ms/expected_node_count) become real rather
   than illustrative-only.
 - Negative / scope limit: `rte_clocksync` provides no protocol

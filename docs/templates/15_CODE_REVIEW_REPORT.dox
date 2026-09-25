@@ -144,7 +144,7 @@ Step 5: Report & Sign-Off
 \subsubsection platformrte_docs_templates_15_CODE_REVIEW_REPORT_rule_155_single_point_of_exit Rule 15.5 — Single point of exit
 - [ ] Single return (strict compliance), OR
 - [✓] Guard clauses documented as deliberate pattern (see deviation section)
-- **Findings:** Deliberate deviation per SAFETY_APPLICATION_CONDITIONS.md
+- **Findings:** Deliberate deviation per SAFETY_APPLICATION_CONDITIONS.dox
 
 \subsubsection platformrte_docs_templates_15_CODE_REVIEW_REPORT_rule_205_2014_library_restrictions Rule 20.5-20.14 — Library restrictions
 - [✓] No setjmp.h/longjmp (except tests)
@@ -282,7 +282,7 @@ if (status != RTE_STATUS_OK) return status;
 **Risk:** Low (pattern is consistently applied, no complex control flow)  
 **Mitigation:** Code review confirms guard clause pattern in all functions  
 **Approval:** [Functional Safety Manager signature]  
-**Evidence:** SAFETY_APPLICATION_CONDITIONS.md Section 3 (deviation documented)  
+**Evidence:** SAFETY_APPLICATION_CONDITIONS.dox Section 3 (deviation documented)  
 
 \subsection platformrte_docs_templates_15_CODE_REVIEW_REPORT_62_deviations_requiring_correction 6.2 Deviations Requiring Correction
 
@@ -387,7 +387,7 @@ All critical and major findings in the code review have been corrected. The rema
 - MISRA C:2012 Guidelines
 - EN 50128:2011
 - RteFramework Architecture Decision Records
-- SAFETY_APPLICATION_CONDITIONS.md
+- SAFETY_APPLICATION_CONDITIONS.dox
 - Code Review Checklist (attached)
 
 ---

@@ -111,36 +111,36 @@ RteFramework/
 │
 ├── docs/                         Documentation
 │   ├── README.md                Main documentation
-│   ├── INTEGRATION.md           Integration guide
-│   ├── SAFETY_APPLICATION_CONDITIONS.md
+│   ├── INTEGRATION.dox           Integration guide
+│   ├── SAFETY_APPLICATION_CONDITIONS.dox
 │   ├── EN50128_ALIGNMENT.md
-│   ├── PACKAGE_README.md
-│   ├── MISRA_COMPLIANCE_REPORT.md
+│   ├── PACKAGE_README.dox
+│   ├── MISRA_COMPLIANCE_REPORT.dox
 │   │
 │   ├── architecture/            Architecture Decision Records
-│   │   ├── ADR-001-os-abstraction-layer.md
-│   │   ├── ADR-002-cross-layer-data-buffers.md
+│   │   ├── ADR-001-os-abstraction-layer.dox
+│   │   ├── ADR-002-cross-layer-data-buffers.dox
 │   │   ├── ... (7 total)
 │   │   └── README.md
 │   │
 │   ├── requirements/            Requirements specifications
-│   │   ├── SRS.md              Consolidated SRS
-│   │   └── REQUIREMENTS.md     Traceability matrix
+│   │   ├── SRS.dox              Consolidated SRS
+│   │   └── REQUIREMENTS.dox     Traceability matrix
 │   │
 │   └── templates/              SIL 4 assessment templates
 │       ├── README.md
-│       ├── 00_DOCUMENT_CHECKLIST.md
-│       ├── 01_SAFETY_PLAN.md
-│       ├── 06_HARA_TEMPLATE.md
-│       ├── 15_CODE_REVIEW_REPORT.md
-│       └── 22_SAFETY_CASE.md
+│       ├── 00_DOCUMENT_CHECKLIST.dox
+│       ├── 01_SAFETY_PLAN.dox
+│       ├── 06_HARA_TEMPLATE.dox
+│       ├── 15_CODE_REVIEW_REPORT.dox
+│       └── 22_SAFETY_CASE.dox
 │
 ├── build/                       Build outputs (not version controlled)
 │   ├── compile_commands.json   For static analysis
 │   ├── librte_*.a          Static libraries
 │   └── test_rte_*             Test executables
 │
-└── ROADMAP.md                  Future development roadmap
+└── ROADMAP.dox                  Future development roadmap
 ```
 
 \subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_22_artifact_categories 2.2 Artifact Categories
@@ -685,7 +685,7 @@ Approved by: [Functional Safety Manager]
 \subsection platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN_121_traceability_matrix 12.1 Traceability Matrix
 
 **Links:**
-- **Requirements** → Git commit SHAs (in SRS.md)
+- **Requirements** → Git commit SHAs (in SRS.dox)
 - **Design** → Architecture docs (ADR-*.md)
 - **Implementation** → Source files (src/*.c)
 - **Tests** → Test files (tests/*.c)
@@ -826,6 +826,6 @@ releases/v1.0.0/
 - .gitignore (version control exclusions)
 - CLAUDE.md (coding standards)
 - docs/architecture/ (ADRs)
-- ROADMAP.md (development plan)
+- ROADMAP.dox (development plan)
 - LICENSE.md (Community Improvement License)
 */

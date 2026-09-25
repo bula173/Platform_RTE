@@ -17,7 +17,7 @@
 > `include/` or `src/` reads or would benefit from those macros - endianness is already handled
 > per-call via `rte_buffer_write_u16_le()`/`_be()` etc., not compile-time branching). The
 > genuinely working, verified multi-architecture story today is Docker buildx/QEMU for the
-> RBC_GP app layer - see `docs/CROSS_COMPILATION.md`'s own "Multi-Architecture Docker
+> RBC_GP app layer - see `docs/CROSS_COMPILATION.dox`'s own "Multi-Architecture Docker
 > Builds" section and `RBC_Test_Env/etc/scripts/build_multiarch.sh`. Treat
 > everything below this notice as a forward-looking design reference, not a status report.
 
@@ -805,5 +805,5 @@ done
 - cmake/Toolchain-*.cmake (platform-specific files)
 - scripts/test-all-platforms.sh (comprehensive testing)
 - .github/workflows/multi-platform-tests.yml (CI/CD matrix)
-- MISRA_COMPLIANCE_REPORT.md (compliance per platform)
+- MISRA_COMPLIANCE_REPORT.dox (compliance per platform)
 */

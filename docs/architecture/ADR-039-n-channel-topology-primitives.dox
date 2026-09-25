@@ -22,7 +22,7 @@ bool supported = (replica_count == 2U) &&
                    (topology == RTE_REDUNDANCY_TOPOLOGY_2OO2_REDUNDANT));
 ```
 
-TODO.md carried this as "GP's A/B role still registers a fixed pair of links instead of one per
+TODO.dox carried this as "GP's A/B role still registers a fixed pair of links instead of one per
 the loaded redundancy topology," phrased as if it were a mechanical fix (loop the existing
 open-a-channel code over `replica_count` instead of hardcoding 2). It is not. This ADR records why,
 so a future pass starts from the real shape of the problem instead of re-discovering it.
@@ -115,7 +115,7 @@ owning an N-way `rte_dual_channel_t` equivalent (this ADR's own "shape TBD" note
 transport question, above) - it takes a caller-gathered candidate snapshot each
 `rte_election_execute()` call instead, the same posture `rte_voter_t` already established for
 N-way operations elsewhere in this codebase. See that module's own header for the full contract
-(REQ-ELECTION-001..005) and `docs/MISRA_COMPLIANCE_REPORT.md`'s own entry for verification
+(REQ-ELECTION-001..005) and `docs/MISRA_COMPLIANCE_REPORT.dox`'s own entry for verification
 detail (`ctest` 10/10 for this module).
 
 Step 2's N-way **cross-compare** half is also done: `rte_voter_vote_buffers()`
@@ -126,7 +126,7 @@ Step 2's N-way **cross-compare** half is also done: `rte_voter_vote_buffers()`
 primitive. Reuses `rte_voter_receive()`'s own majority-grouping logic exactly (two of its
 internal helpers were parameterized to take an explicit count instead of reading
 `voter->channel_count`, so both the registered-channel path and this new buffers path share one
-grouping implementation) - see `docs/MISRA_COMPLIANCE_REPORT.md`'s own entry for the full detail
+grouping implementation) - see `docs/MISRA_COMPLIANCE_REPORT.dox`'s own entry for the full detail
 on what changed and why, and for verification (`ctest` 36/36, 4 new cases, in both Debug and
 Release).
 
@@ -142,7 +142,7 @@ per-cycle buffer snapshot.
 \section platformrte_docs_architecture_ADR_039_n_channel_topology_primitives_consequences Consequences
 
 - If accepted as the direction: this is a multi-session Platform_RTE + RBC_GP + RBC_Test_Env
-  effort, not a TODO.md one-liner. TODO.md's own entry should point here instead of restating
+  effort, not a TODO.dox one-liner. TODO.dox's own entry should point here instead of restating
   "register one link per replica" as if that were the whole task.
 - If rejected in favor of modifying the existing primitives in place: whoever does that owns
   re-verifying every existing 2oo2 consumer of `rte_dual_negotiator`/`rte_cross_comparator`

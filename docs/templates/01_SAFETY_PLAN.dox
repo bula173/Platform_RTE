@@ -125,7 +125,7 @@ Deployment & Operation
 \subsection platformrte_docs_templates_01_SAFETY_PLAN_53_rteframework_baseline 5.3 RteFramework Baseline
 - **Version:** 0.1.0
 - **Usage:** OS Abstraction Layer (OAL)
-- **Verification:** Per SAFETY_APPLICATION_CONDITIONS.md
+- **Verification:** Per SAFETY_APPLICATION_CONDITIONS.dox
 - **Modifications:** [List any modifications to RteFramework code]
 
 ---
@@ -207,7 +207,7 @@ Deployment & Operation
 \section platformrte_docs_templates_01_SAFETY_PLAN_10_documentation_evidence 10. Documentation & Evidence
 
 \subsection platformrte_docs_templates_01_SAFETY_PLAN_101_documentation_deliverables 10.1 Documentation Deliverables
-See `00_DOCUMENT_CHECKLIST.md` for complete list of 29 documents.
+See `00_DOCUMENT_CHECKLIST.dox` for complete list of 29 documents.
 
 \subsection platformrte_docs_templates_01_SAFETY_PLAN_102_evidence_package_for_notified_body 10.2 Evidence Package for Notified Body
 ```

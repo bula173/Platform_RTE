@@ -463,8 +463,8 @@
 ///│   ├── deployment-2oo3-cluster.puml
 ///│   ├── activity-checkpoint-barrier.puml
 ///│   └── README.md (diagram index)
-///├── ADR-001-os-abstraction-layer.md
-///├── ADR-005-oal-osadapter-registration.md
+///├── ADR-001-os-abstraction-layer.dox
+///├── ADR-005-oal-osadapter-registration.dox
 ///└── ...
 ///```
 ///

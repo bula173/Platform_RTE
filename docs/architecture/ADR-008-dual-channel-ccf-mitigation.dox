@@ -101,7 +101,7 @@ logic, both out of this ADR's scope.
 
 \subsection platformrte_docs_architecture_ADR_008_dual_channel_ccf_mitigation_23_ccf_analysis_is_documented_not_implied 2.3 CCF analysis is documented, not implied
 
-`docs/safety/CCF_ANALYSIS.md` records: the same-architecture assumption;
+`docs/safety/CCF_ANALYSIS.dox` records: the same-architecture assumption;
 what diverse compilation catches (compiler/codegen-specific systematic
 faults) and explicitly does **not** catch (CPU-silicon-family-wide errata,
 shared power/environment faults, and any specification-level bug common
@@ -148,5 +148,5 @@ case will still need to state.
 `rte::safestate`), per the per-feature layout (ADR-007).
 Build-diversity toolchain skeletons at `cmake/toolchain-channel-a.cmake` /
 `cmake/toolchain-channel-b.cmake`. CCF analysis at
-`docs/safety/CCF_ANALYSIS.md`.
+`docs/safety/CCF_ANALYSIS.dox`.
 */

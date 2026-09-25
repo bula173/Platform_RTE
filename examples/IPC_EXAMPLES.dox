@@ -360,6 +360,6 @@ rte_ipc_pubsub_topic_destroy(&topic);
 
 - rte_ipc_request_reply.h — Full API documentation
 - rte_ipc_pubsub.h — Full API documentation
-- \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.md" — Design details and rationale
-- \ref platformrte_docs_ROADMAP "ROADMAP.md" — Implementation timeline
+- \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.dox" — Design details and rationale
+- \ref platformrte_docs_ROADMAP "ROADMAP.dox" — Implementation timeline
 */

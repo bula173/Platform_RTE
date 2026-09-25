@@ -1,7 +1,7 @@
 /**
 \page platformrte_PROJECT_BOARD RteFramework Project Board
 
-Quick visual tracker for feature implementation status. For full details, see \ref platformrte_docs_ROADMAP "ROADMAP.md" and \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.md".
+Quick visual tracker for feature implementation status. For full details, see \ref platformrte_docs_ROADMAP "ROADMAP.dox" and \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.dox".
 
 ---
 
@@ -123,7 +123,7 @@ Quick visual tracker for feature implementation status. For full details, see \r
 
 \section platformrte_PROJECT_BOARD_how_to_update_this_board How to Update This Board
 
-1. **Check Status:** Review \ref platformrte_docs_ROADMAP "ROADMAP.md" for latest details
+1. **Check Status:** Review \ref platformrte_docs_ROADMAP "ROADMAP.dox" for latest details
 2. **Update Issue:** Move the checkbox from `[ ]` to `[x]` when status advances
 3. **Link ADR:** Add link to ADR when design document is created
 4. **Update Status:** Change `proposed` → `designing` → `in-progress` → `testing` → `done`
@@ -180,8 +180,8 @@ This Markdown board serves as a quick reference; the GitHub Project provides vis
 
 \section platformrte_PROJECT_BOARD_references References
 
-- \ref platformrte_docs_ROADMAP "ROADMAP.md" — Detailed roadmap with timelines
-- \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.md" — Full feature specifications
+- \ref platformrte_docs_ROADMAP "ROADMAP.dox" — Detailed roadmap with timelines
+- \ref platformrte_docs_FEATURE_EXPANSION "FEATURE_EXPANSION.dox" — Full feature specifications
 - [GitHub Issues](https://github.com/bula173/Platform_RTE/issues) — Issue discussions (#1–#16)
 - <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADRs</a> — Architecture Decision Records (to be created)
 - \ref rte_srs "SRS" — Software Requirements Specification (to be updated)

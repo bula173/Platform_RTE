@@ -352,7 +352,7 @@
 ///├── shared_mem.h                 # Shared memory definitions
 ///├── Makefile.multiprocess        # Build all processes
 ///├── README.md                    # High-level architecture
-///├── MULTI_PROCESS_ARCHITECTURE.md  # This document
+///├── MULTI_PROCESS_ARCHITECTURE.dox  # This document
 ///│
 ///├── west/
 ///│   ├── process_a.c    # WEST Vital A (CPU0)

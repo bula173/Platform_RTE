@@ -182,5 +182,5 @@ via a non-local jump) corrupts that call's own state.
   `src/watchdog/rte_watchdog.c`
 - `tests/appmanager/test_rte_appmanager.c`,
   `tests/lifecycle/test_rte_lifecycle.c` (new)
-- `docs/requirements/SRS.md` §3c, §3c-bis
+- `docs/requirements/SRS.dox` §3c, §3c-bis
 */

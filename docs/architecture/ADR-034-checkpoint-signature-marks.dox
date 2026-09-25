@@ -23,7 +23,7 @@ even after 40 retry rounds over a full 10-second budget, or an
 instant/near-instant match) - the signature of an ID mismatch, not
 network jitter.
 
-Cross-checking `docs/REDUNDANCY_ARCHITECTURE.md`'s own illustrative usage
+Cross-checking `docs/REDUNDANCY_ARCHITECTURE.dox`'s own illustrative usage
 of `rte_channel_checkpoint()` confirms `checkpoint_id` was originally
 conceived as a **barrier label** (the doc's own example always uses a
 constant `.checkpoint_id = 1`, naming *which* checkpoint, not a per-cycle
@@ -93,7 +93,7 @@ cycle's checkpoint outcome, so the starvation that workaround guarded
 against can no longer occur by construction. `rte_appmanager_pace_failed_checkpoint()`
 was removed.
 
-See `docs/requirements/SRS.md` section 3c (REQ-APPMANAGER-007/008/011
+See `docs/requirements/SRS.dox` section 3c (REQ-APPMANAGER-007/008/011
 through 014) for the normative requirements.
 
 \section platformrte_docs_architecture_ADR_034_checkpoint_signature_marks_consequences Consequences

@@ -37,7 +37,7 @@ not a synchronous callback invocation - wrong fit for a same-cycle
 notification, both of which need to resolve within the same call, not
 on a later poll.
 
-`docs/MISRA_COMPLIANCE_REPORT.md` Rule 11.1 ("Conversions shall not be
+`docs/MISRA_COMPLIANCE_REPORT.dox` Rule 11.1 ("Conversions shall not be
 performed between a pointer to a function and any other type") rules
 out the obvious type-erased design (store callbacks as `void *`, cast
 back to the real signature at dispatch) outright - a genuinely generic,
@@ -78,7 +78,7 @@ will run in a SIL2/SIL3 context). A fan-out notify dispatch function
 NULL-guards every slot before calling it, the same "same function
 pointer type, same call site, same NULL-guard" precedent
 `rte_watchdog_create()` already established (per
-`docs/MISRA_COMPLIANCE_REPORT.md`'s own note on that function).
+`docs/MISRA_COMPLIANCE_REPORT.dox`'s own note on that function).
 
 \subsection platformrte_docs_architecture_ADR_030_registered_callback_list_shape_23_header_only_no_rte_enable__option 2.3 Header-only, no `RTE_ENABLE_*` option
 

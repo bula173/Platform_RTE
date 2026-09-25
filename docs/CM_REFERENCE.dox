@@ -192,7 +192,7 @@
 ///| Type | Location | Update Frequency | Control |
 ///|------|----------|------------------|---------|
 ///| Architecture | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/</a> | Per phase gate | Git (ADR-*.md) |
-///| Requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/</a> | Per phase gate | Git (SRS.md) |
+///| Requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/</a> | Per phase gate | Git (SRS.dox) |
 ///| API Docs | Doxygen | Per commit | Auto from comments |
 ///| Build Docs | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.dox">README.md</a> | Per release | Git |
 ///| Safety Docs | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">docs/</a> | Per assessment | Git (approved docs) |
@@ -364,12 +364,12 @@
 ///|------|----------|------|
 ///| **Build** | Build instructions | <a href="https://github.com/bula173/RBC_Test_Sim_Train/blob/master/README.dox">README.md</a> |
 ///| **Architecture** | Design rationale | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/</a> |
-///| **Requirements** | All requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/SRS.md</a> |
-///| **MISRA** | Compliance status | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">docs/MISRA_COMPLIANCE_REPORT.md</a> |
-///| **CM Plan** | This template | \ref platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN "docs/templates/03_CONFIGURATION_MANAGEMENT_PLAN.md" |
+///| **Requirements** | All requirements | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/requirements">docs/requirements/SRS.dox</a> |
+///| **MISRA** | Compliance status | <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">docs/MISRA_COMPLIANCE_REPORT.dox</a> |
+///| **CM Plan** | This template | \ref platformrte_docs_templates_03_CONFIGURATION_MANAGEMENT_PLAN "docs/templates/03_CONFIGURATION_MANAGEMENT_PLAN.dox" |
 ///| **Build presets** | Standardized configs | <a href="https://github.com/bula173/Platform_RTE/blob/master/CMakePresets.json">CMakePresets.json</a> |
 ///| **License** | Community Improvement | \ref platformrte_LICENSE "LICENSE.md" |
-///| **Roadmap** | Future work | \ref platformrte_docs_ROADMAP "ROADMAP.md" |
+///| **Roadmap** | Future work | \ref platformrte_docs_ROADMAP "ROADMAP.dox" |
 ///
 ///---
 ///

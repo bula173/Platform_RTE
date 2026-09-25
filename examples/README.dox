@@ -374,7 +374,7 @@
 ///\section platformrte_examples_README_references References
 ///
 ///- <a href="https://github.com/bula173/Platform_RTE/tree/master/docs">RteFramework Documentation</a>
-///- \ref platformrte_docs_CROSS_COMPILATION "CROSS_COMPILATION.md"
+///- \ref platformrte_docs_CROSS_COMPILATION "CROSS_COMPILATION.dox"
 ///- [QNX Documentation](https://www.qnx.com/developers/docs/)
 ///- [POSIX Standard](https://pubs.opengroup.org/onlinepubs/9699919799/)
 ///- \ref rte_srs "Safety Requirements (SRS)"

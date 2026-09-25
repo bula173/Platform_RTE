@@ -130,7 +130,7 @@
 ///- Header files (include/rte/*/rte_*.h)
 ///- Module documentation
 ///
-///See \ref platformrte_docs_architecture_DIAGRAMS_GUIDE "DIAGRAMS_GUIDE.md" for embedding examples.
+///See \ref platformrte_docs_architecture_DIAGRAMS_GUIDE "DIAGRAMS_GUIDE.dox" for embedding examples.
 ///
 ///\section platformrte_docs_architecture_diagrams_README_updating_diagrams Updating Diagrams
 ///

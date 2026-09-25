@@ -2,13 +2,13 @@
 \page platformrte_docs_REDUNDANCY_ARCHITECTURE Redundancy architecture
 
 How Platform_RTE supports redundant, voted vital computation: the concepts, what is implemented today, and how the
-pieces fit in a 2oo2 deployment. This document merges the earlier `REDUNDANCY_ARCHITECTURE.md` (a design proposal) and
+pieces fit in a 2oo2 deployment. This document merges the earlier `REDUNDANCY_ARCHITECTURE.dox` (a design proposal) and
 `2OO2_ARCHITECTURE_GUIDE.md` (a generic 2oo2 guide). Both described APIs that were never built (`rte_vital_channel_*`,
 `rte_nonvital_*`, `rte_cluster_*`) or used other names for what is now `rte_voter`, `rte_cross_comparator` and
 `rte_channel_link`. Their API sketches, the per-CPU hardware walk-throughs and the illustrative timing tables were dropped
 because they no longer describe the code; the git history of both files keeps them. Real APIs are in the headers under
 `include/rte/redundancy/` and authoritative over anything here. Hardware selection guidance is in
-\ref platformrte_docs_HARDWARE_PATTERNS_GUIDE "HARDWARE_PATTERNS_GUIDE.md".
+\ref platformrte_docs_HARDWARE_PATTERNS_GUIDE "HARDWARE_PATTERNS_GUIDE.dox".
 
 \section platformrte_docs_REDUNDANCY_ARCHITECTURE_1_terminology 1. Terminology
 
@@ -59,7 +59,7 @@ at load time.
 3. On any disagreement the channel does not send; the Platform enters the safe state. In the reference RBC a genuine
    decision disagreement escalates to REBOOT and a live ONLINE/STANDBY failover between sites.
 
-See `application/RBC_GP/docs/REFERENCE_DESIGN.md` and `docs/architecture/ADR-034-checkpoint-signature-marks.md`.
+See `application/RBC_GP/docs/REFERENCE_DESIGN.dox` and `docs/architecture/ADR-034-checkpoint-signature-marks.dox`.
 
 \section platformrte_docs_REDUNDANCY_ARCHITECTURE_3_concepts 3. Concepts
 
@@ -98,7 +98,7 @@ point. That is what the checkpoint provides.
 | Corruption | CRC-64 mismatch on a peer sample | Safe state (halt); this is a transmission fault, not a logical disagreement |
 
 Common-cause failure limits all of this: identical CPUs and identical builds can fail together. Mitigation and its limits
-are in ADR-008 and \ref platformrte_docs_safety_CCF_ANALYSIS "safety/CCF_ANALYSIS.md".
+are in ADR-008 and \ref platformrte_docs_safety_CCF_ANALYSIS "safety/CCF_ANALYSIS.dox".
 
 \section platformrte_docs_REDUNDANCY_ARCHITECTURE_4_checkpoint_synchronization_and_pre_commit 4. Checkpoint synchronization and pre-commit
 
@@ -154,8 +154,8 @@ Behaviour of the reference implementation:
 | Periodic and continuous self-checking | CRC-64 on inter-channel data, watchdogs on links |
 | Deterministic timing | Bounded comparison and bounded waits; staged commit |
 | Fault tolerance and detection | Two channels, single-fault detection, site failover |
-| Traceability | Requirement IDs in code; SRS in `docs/requirements/SRS.md` |
-| Common-cause failure | ADR-008 and `safety/CCF_ANALYSIS.md` |
+| Traceability | Requirement IDs in code; SRS in `docs/requirements/SRS.dox` |
+| Common-cause failure | ADR-008 and `safety/CCF_ANALYSIS.dox` |
 
 Standards: EN 50128:2011 (fail-safe architecture, redundancy patterns), EN 50129:2018 (redundancy and 2oo2 voting),
 CENELEC TR 50128.

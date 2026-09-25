@@ -505,7 +505,7 @@
 ///
 ///\section platformrte_docs_CHECKSUM_INTEGRATION_GUIDE_references References
 ///
-///- **ADR-016:** `docs/architecture/ADR-016-crc64-data-integrity.md`
+///- **ADR-016:** `docs/architecture/ADR-016-crc64-data-integrity.dox`
 ///- **API Docs:** `include/rte/checksum/rte_checksum.h` (Doxygen)
 ///- **Standards:** EN 50126, EN 50128, ERTMS/ETCS specifications
 ///- **Polynomial Registry:** http://www.sunshine2k.de/articles/CRC_Polynomial_Selection_Guide.html

@@ -178,7 +178,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 
 **Evidence:**
 - 05_SRS_TEMPLATE.md
-- 06_HARA_TEMPLATE.md (hazards → safety requirements)
+- 06_HARA_TEMPLATE.dox (hazards → safety requirements)
 - 07_SAFE_REQUIREMENTS_TEMPLATE.md
 - Traceability Matrix (12)
 
@@ -215,7 +215,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 
 **Evidence:**
 - Source code (git repository)
-- 15_CODE_REVIEW_REPORT.md
+- 15_CODE_REVIEW_REPORT.dox
 - 16_STATIC_ANALYSIS_REPORT.md
 - 19_UNIT_TEST_REPORT.md
 - 21_COVERAGE_ANALYSIS.md
@@ -271,7 +271,7 @@ SAFETY ARGUMENT: "This system is SIL 4 safe because..."
 
 \subsection platformrte_docs_templates_22_SAFETY_CASE_53_rteframework_verification 5.3 RteFramework Verification
 
-Per SAFETY_APPLICATION_CONDITIONS.md:
+Per SAFETY_APPLICATION_CONDITIONS.dox:
 
 | Item | Verification Method | Status |
 |------|-------------------|--------|

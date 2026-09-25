@@ -320,5 +320,5 @@ misra-c2012-15.5  # If using guard clauses like RteFramework
 
 - Read <a href="https://github.com/bula173/Platform_RTE/blob/master/CLAUDE.md">CLAUDE.md</a> for coding standards
 - Review <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/</a> for design patterns
-- Check \ref platformrte_docs_MISRA_COMPLIANCE_REPORT "docs/MISRA_COMPLIANCE_REPORT.md" for compliance details
+- Check \ref platformrte_docs_MISRA_COMPLIANCE_REPORT "docs/MISRA_COMPLIANCE_REPORT.dox" for compliance details
 */

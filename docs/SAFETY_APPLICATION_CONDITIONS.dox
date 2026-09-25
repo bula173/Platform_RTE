@@ -106,7 +106,7 @@ Any project using RteFramework must perform:
   - Design element (ADR or design document)
   - Implementation (code file & line)
   - Test case(s)
-- **Starting Point:** `docs/requirements/SRS.md` (preliminary)
+- **Starting Point:** `docs/requirements/SRS.dox` (preliminary)
 - **Project's Responsibility:** Adapt SRS to project context, verify traceability
 - **Output:** Traceability Matrix (TRM)
 - **Evidence for Safety Case:** TRM document, reviewed & signed
@@ -235,7 +235,7 @@ When using RteFramework, your project's Safety Case must include:
 
 3. Requirement Specification (SRS)
    - List all RteFramework requirements
-   - Reference to SRS.md + project-specific modifications
+   - Reference to SRS.dox + project-specific modifications
    - Verification method for each requirement
 ```
 
@@ -492,8 +492,8 @@ For questions about these Safety Application Conditions:
 
 - **Framework Design:** See <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">docs/architecture/ADR-*.md</a>
 - **EN 50128 Alignment:** See \ref platformrte_docs_EN_50128_ALIGNMENT "docs/EN50128_ALIGNMENT.md"
-- **Integration Guide:** See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.md"
-- **Requirements Specification:** See \ref rte_srs "docs/requirements/SRS.md"
+- **Integration Guide:** See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.dox"
+- **Requirements Specification:** See \ref rte_srs "docs/requirements/SRS.dox"
 
 **Important:** This document is guidance only. Your project's Functional Safety Manager is responsible for defining actual Safety Application Conditions based on your system requirements and regulatory context. All commitments in your Safety Application Conditions must be approved by your railway system's certification authority.
 */

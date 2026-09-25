@@ -339,7 +339,7 @@ while (running) {
 - Task (monitors scheduler liveness)
 - Logging (audit trail)
 
-**Design Doc:** \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.md"
+**Design Doc:** \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.dox"
 
 ---
 
@@ -645,11 +645,11 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 
 \section platformrte_docs_FEATURE_EXPANSION_tracking_governance Tracking & Governance
 
-- **ROADMAP.md** — Detailed status, effort estimates, GitHub issue links
+- **ROADMAP.dox** — Detailed status, effort estimates, GitHub issue links
 - **GitHub Issues** — One issue per feature for design discussion and tracking
 - **GitHub Projects** — Visual board for status by tier and release
 - **ADRs** — Architecture Decision Records in `docs/architecture/ADR-NNN-*.md`
-- **SRS** — Updated `docs/requirements/SRS.md` with feature requirements
+- **SRS** — Updated `docs/requirements/SRS.dox` with feature requirements
 
 ---
 
@@ -657,7 +657,7 @@ rte_status_t rte_is_feature_available(rte_feature_id_t id, bool *available);
 
 This document is maintained in two places:
 
-1. **GitHub** — `docs/FEATURE_EXPANSION.md` (canonical, versioned)
+1. **GitHub** — `docs/FEATURE_EXPANSION.dox` (canonical, versioned)
 2. **Claude.ai Artifact** — Interactive view with better formatting
    - Link: [Feature Expansion Artifact](https://claude.ai/code/artifact/b75f23a4-842a-4c2c-8292-bfe2ecc94716)
    - This artifact is regenerated when GitHub content is updated

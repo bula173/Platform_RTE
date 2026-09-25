@@ -121,7 +121,7 @@ rte_generate_presets_template("${CMAKE_SOURCE_DIR}/CMakePresets.json")
 
 \section platformrte_docs_PACKAGE_README_example_downstream_project Example: Downstream Project
 
-See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.md" for a complete working example with source code.
+See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.dox" for a complete working example with source code.
 
 **Key integration points:**
 
@@ -226,5 +226,5 @@ project(RteFramework VERSION 0.1.0)
 
 \section platformrte_docs_PACKAGE_README_questions Questions?
 
-See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.md" for detailed integration examples, or <a href="https://github.com/bula173/Platform_RTE/blob/master/CLAUDE.md">CLAUDE.md</a> for coding standards and safety practices.
+See \ref platformrte_docs_INTEGRATION "docs/INTEGRATION.dox" for detailed integration examples, or <a href="https://github.com/bula173/Platform_RTE/blob/master/CLAUDE.md">CLAUDE.md</a> for coding standards and safety practices.
 */

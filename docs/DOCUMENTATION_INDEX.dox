@@ -7,17 +7,17 @@ Documentation is organized by feature, co-located with headers for easy discover
 
 ### IPC Module (`include/rte/ipc/`)
 
-- **IPC_GUIDE.md** - Start here for IPC overview
+- **IPC_GUIDE.dox** - Start here for IPC overview
   - Architecture layers, workflow, design principles
   - Links to all IPC documentation
 
-- **IPC_TRANSPORT_SELECTION.md** - Transport options
+- **IPC_TRANSPORT_SELECTION.dox** - Transport options
   - Shared Memory, FIFO, TCP/IP, UDP characteristics
   - POSIX vs RTOS OSAdapter differences
   - Decision tree for choosing transports
   - Real-world scenarios (railway, automotive, web service)
 
-- **CHANNEL_CONFIGURATION.md** - Configuration framework
+- **CHANNEL_CONFIGURATION.dox** - Configuration framework
   - Configuration structures for each transport type
   - How users specify IP addresses, ports, paths
   - Dispatcher callback pattern for mixed transports
@@ -37,13 +37,13 @@ Documentation is organized by feature, co-located with headers for easy discover
 
 ### Vital Channel Module (`include/rte/vital_channel/`)
 
-- **ARCHITECTURE.md** - Vital channel design
+- **ARCHITECTURE.dox** - Vital channel design
   - Voting logic (2oo2, 2oo3, NMR)
   - Transport abstraction via callbacks
   - Safe-state trigger on disagreement
   - Integration with IPC transports
 
-- **CHANNEL_TOPOLOGIES.md** - Redundancy patterns
+- **CHANNEL_TOPOLOGIES.dox** - Redundancy patterns
   - Pattern 1: Single-system 2oo2 (A ↔ B → C)
   - Pattern 2: Distributed 2oo2 (network)
   - Pattern 3: Hot standby with mirroring
@@ -56,7 +56,7 @@ Documentation is organized by feature, co-located with headers for easy discover
 
 ### System-Wide Documentation (`docs/`)
 
-- **architecture/SYSTEM_OVERVIEW.md** - System layering and common-cause mitigation
+- **architecture/SYSTEM_OVERVIEW.dox** - System layering and common-cause mitigation
   - Layered architecture (app manager, vital channels, IPC, OS)
   - Channel taxonomy (internal, inter-unit, inter-system)
   - Blocking semantics (vital, non-vital, async)
@@ -64,14 +64,14 @@ Documentation is organized by feature, co-located with headers for easy discover
   - POSIX vs RTOS implementation differences
   - Complete railway train control example
 
-- **DOCUMENTATION_INDEX.md** - This file
+- **DOCUMENTATION_INDEX.dox** - This file
   - Documentation organization
   - Reading paths for different roles
 
 @section reading_paths Reading Paths by Role
 
 ### For System Architects
-1. Start: docs/architecture/SYSTEM_OVERVIEW.md
+1. Start: docs/architecture/SYSTEM_OVERVIEW.dox
 2. Then: include/rte/vital_channel/ARCHITECTURE.md
 3. Then: include/rte/vital_channel/CHANNEL_TOPOLOGIES.md
 4. Then: include/rte/ipc/IPC_GUIDE.md
@@ -88,7 +88,7 @@ Documentation is organized by feature, co-located with headers for easy discover
    - Find your topology (2oo2 local, 2oo3 distributed, etc.)
 2. Then: include/rte/ipc/CHANNEL_CONFIGURATION.md
    - Configure your channels (IPs, ports, paths)
-3. Then: docs/architecture/SYSTEM_OVERVIEW.md (section on App Manager)
+3. Then: docs/architecture/SYSTEM_OVERVIEW.dox (section on App Manager)
    - Implement your main loop
 4. Code: See examples/channel_configuration_example.c
 
@@ -99,7 +99,7 @@ Documentation is organized by feature, co-located with headers for easy discover
    - Review redundancy patterns
 3. Then: include/rte/ipc/IPC_TRANSPORT_SELECTION.md
    - Understand transport reliability characteristics
-4. Reference: docs/architecture/SYSTEM_OVERVIEW.md
+4. Reference: docs/architecture/SYSTEM_OVERVIEW.dox
    - Understand timeout handling and error propagation
 
 @section document_structure Documentation Structure
@@ -109,7 +109,7 @@ Each module follows this structure:
 ```
 include/rte/MODULE/
   ├─ MODULE.h              (API - code + Doxygen comments)
-  ├─ ARCHITECTURE.md       (How it works - technical design)
+  ├─ ARCHITECTURE.dox       (How it works - technical design)
   ├─ GUIDE.md              (Overview + navigation)
   └─ CONFIG.md             (How to configure)
 ```
@@ -124,13 +124,13 @@ This co-location ensures:
 
 | Question | Document |
 |----------|----------|
-| How do channels communicate? | IPC_GUIDE.md |
-| Which transport should I use? | IPC_TRANSPORT_SELECTION.md |
-| How do I configure a channel? | CHANNEL_CONFIGURATION.md |
+| How do channels communicate? | IPC_GUIDE.dox |
+| Which transport should I use? | IPC_TRANSPORT_SELECTION.dox |
+| How do I configure a channel? | CHANNEL_CONFIGURATION.dox |
 | How does voting work? | vital_channel/ARCHITECTURE.md |
 | What topology fits my system? | vital_channel/CHANNEL_TOPOLOGIES.md |
-| How do I build the app manager? | architecture/SYSTEM_OVERVIEW.md |
-| What is POSIX vs RTOS? | architecture/SYSTEM_OVERVIEW.md + IPC_TRANSPORT_SELECTION.md |
+| How do I build the app manager? | architecture/SYSTEM_OVERVIEW.dox |
+| What is POSIX vs RTOS? | architecture/SYSTEM_OVERVIEW.dox + IPC_TRANSPORT_SELECTION.dox |
 | Show me working code | examples/channel_configuration_example.c |
 
 @section generating_html Generating HTML Documentation

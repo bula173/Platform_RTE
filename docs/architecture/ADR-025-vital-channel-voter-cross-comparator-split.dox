@@ -340,9 +340,9 @@ RTE_ENABLE_CROSS_COMPARATOR needs CHANNEL_LINK, VOTER, LOG
 - `src/safechannel/rte_safechannel.c`, `include/rte/safechannel/rte_safechannel.h`
 - `src/appmanager/rte_appmanager.c`, `include/rte/appmanager/rte_appmanager.h`
 - `CMakeLists.txt` (top-level), `tests/CMakeLists.txt`
-- `docs/architecture/ADR-024-configurable-feature-build.md` (dependency
+- `docs/architecture/ADR-024-configurable-feature-build.dox` (dependency
   graph, §2.1, updated)
-- `docs/architecture/ADR-023-consolidate-cmake-libraries.md` (§5,
+- `docs/architecture/ADR-023-consolidate-cmake-libraries.dox` (§5,
   pointer to this ADR added noting the old `channel/` module's removal)
 - `RBC_GP` (separate repo): `src/application/AB/channel_ab_types.h`,
   `channel_ab.c`, `channel_ab_io.c`, `channel_ab_checkpoint.h`/`.c` -

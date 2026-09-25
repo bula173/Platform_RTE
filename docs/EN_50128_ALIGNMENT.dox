@@ -75,11 +75,11 @@ RteFramework Alignment:
 | EN 50129 Activity | Platform_RTE Support |
 |---|---|
 | **Risk Assessment** | Provides FMEA templates, documented fault modes |
-| **Safety Requirements** | SRS.md as template, REQ-ID traceability |
+| **Safety Requirements** | SRS.dox as template, REQ-ID traceability |
 | **Design Specification** | ADRs document all architectural decisions |
 | **Implementation** | MISRA C:2012 compliant, no unsafe constructs |
 | **V&V Planning** | Test framework, module-by-module testing |
-| **Safety Case** | EN_50128_ALIGNMENT.md provides argument structure |
+| **Safety Case** | EN_50128_ALIGNMENT.dox provides argument structure |
 | **Operational Docs** | Watchdog, redundancy, checkpoint behavior specified |
 
 ---
@@ -88,12 +88,12 @@ RteFramework Alignment:
 
 | Technique | Section | Platform_RTE Implementation | Status |
 |-----------|---------|-------------------|--------|
-| **Requirement Specification** | 7.1 | SRS.md, CLAUDE.md, ADRs | ✅ |
+| **Requirement Specification** | 7.1 | SRS.dox, CLAUDE.md, ADRs | ✅ |
 | **Design & Implementation Standard** | 7.2.1 | MISRA C:2012 (Mandatory & Required) | ✅ |
 | **Modular Approach** | 7.2.2 | 13 independent modules (ADR-007) | ✅ |
 | **Defensive Programming** | 7.2.3 | Input validation, error handling, fail-safe | ✅ |
 | **Static Analysis (Code)** | 7.3.1 | cppcheck + MISRA addon | ✅ |
-| **Requirements Traceability** | 7.4.1 | REQ-ID tags, SRS.md canonical source | ✅ |
+| **Requirements Traceability** | 7.4.1 | REQ-ID tags, SRS.dox canonical source | ✅ |
 | **Formal Methods** | 7.5.1 | State machine specifications (TBD) | ⏳ |
 | **Fault Tolerance & Recovery** | 7.6.1 | Safe-state (✅), Watchdog (⏳ v0.3.0), Redundancy (⏳ v0.4.0+) | ⏳ |
 | **Testing (Unit, Integration, System)** | 7.7.1 | CTest framework, test suite per module | ✅ |
@@ -340,7 +340,7 @@ EN 50128 Technique: Requirements Traceability (7.4.1)
 ✓ Every public function has @brief, @param, @return
 ✓ Pre/post-conditions documented in prose
 ✓ Safety-critical assumptions called out
-✓ Traceability: REQ-ID tags link code to SRS.md
+✓ Traceability: REQ-ID tags link code to SRS.dox
 ✓ Generated HTML docs for external review
 ```
 
@@ -410,7 +410,7 @@ COVERAGE AREAS:
    └─ No stringification in safety-critical paths
 
 COMPLIANCE REPORT:
-- File: docs/MISRA_COMPLIANCE_REPORT.md
+- File: docs/MISRA_COMPLIANCE_REPORT.dox
 - Updated: After every non-trivial change
 - Deviations: With documented rationale
 - Tool Configuration: .cppcheck-suppressions (explicit overrides)
@@ -547,12 +547,12 @@ SAFETY:
 
 | EN 50128 Technique | SIL 4 | Platform_RTE Coverage | Module(s) | Status |
 |-------------------|-------|---------------|-----------|--------|
-| **Requirement Specification** | M | 100% | SRS.md, ADRs | ✅ |
+| **Requirement Specification** | M | 100% | SRS.dox, ADRs | ✅ |
 | **Design Standards (MISRA C)** | M | 100% | All (cppcheck) | ✅ |
 | **Modular Approach** | M | 100% | 13 modules | ✅ |
 | **Defensive Programming** | M | 100% | All | ✅ |
 | **Static Analysis** | M | 100% | cppcheck addon | ✅ |
-| **Requirements Traceability** | M | 95% | SRS.md, REQ-ID tags | ✅ |
+| **Requirements Traceability** | M | 95% | SRS.dox, REQ-ID tags | ✅ |
 | **Formal Methods** | M | 50% | State machine specs (TBD) | ⏳ |
 | **Fault Tolerance** | M | 100% | Redundancy, watchdog | ✅ |
 | **Testing (Unit)** | M | 80% | CTest per module | ✅ |
@@ -674,13 +674,13 @@ CONCLUSION: Deadlock is detected and recovered within bounded time.
 
 - [ ] **SRS Traceability** — Every requirement has corresponding test
   - [ ] REQ-001 through REQ-NNN mapped
-  - [ ] SRS.md is canonical source
+  - [ ] SRS.dox is canonical source
   - [ ] All ADRs reference relevant SRS requirements
 
 - [ ] **MISRA C:2012 Audit** — Code passes static analysis
   - [ ] cppcheck runs without violations
   - [ ] All deviations documented with rationale
-  - [ ] MISRA_COMPLIANCE_REPORT.md approved
+  - [ ] MISRA_COMPLIANCE_REPORT.dox approved
 
 - [ ] **Module Independence** — Each module verifiable in isolation
   - [ ] Dependencies documented (ADR-007)
@@ -831,7 +831,7 @@ Enables your FMEA to build on proven foundation.
 
 **Platform_RTE Contribution:**
 ```
-SRS.md template with REQ-ID structure
+SRS.dox template with REQ-ID structure
 ├─ Requirement identifiers (REQ-OAL-TIMER-001, etc.)
 ├─ Traceability to code (grep "REQ-OAL-TIMER-001")
 ├─ Traceability to tests (test_timer.c)
@@ -970,13 +970,13 @@ Your operational procedures inherit Platform_RTE patterns.
 **Platform_RTE Architecture**
 - <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADR-001</a> through <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADR-008</a>, then
   <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADR-016</a> through <a href="https://github.com/bula173/Platform_RTE/tree/master/docs/architecture">ADR-024</a>
-  (ADR-009 through ADR-015 were never written - see ROADMAP.md; this
+  (ADR-009 through ADR-015 were never written - see ROADMAP.dox; this
   previously read "ADR-001 through ADR-010", which both overstated a
   contiguous ADR-009/ADR-010 that don't exist and understated everything
   from ADR-016 onward)
-- \ref platformrte_docs_REDUNDANCY_ARCHITECTURE "REDUNDANCY_ARCHITECTURE.md"
-- \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.md"
-- \ref rte_srs "SRS.md"
+- \ref platformrte_docs_REDUNDANCY_ARCHITECTURE "REDUNDANCY_ARCHITECTURE.dox"
+- \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.dox"
+- \ref rte_srs "SRS.dox"
 
 ---
 
@@ -993,7 +993,7 @@ When your project **links RteFramework**:
 **Your project's responsibilities:**
 - Implement your application logic using RteFramework services
 - Follow the same coding standards (CLAUDE.md, MISRA C:2012)
-- Add your own requirements traceability (extend SRS.md)
+- Add your own requirements traceability (extend SRS.dox)
 - Write your own safety case and hazard analysis (FMEA, FTA)
 - Engage a **Notified Body** (TÜV, DEKRA, exida, etc.) for certification
 

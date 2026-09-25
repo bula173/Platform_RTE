@@ -14,9 +14,9 @@
 
 | Document | File | Status | Notes |
 |----------|------|--------|-------|
-| **Safety Plan** | `01_SAFETY_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | Overall safety lifecycle approach |
+| **Safety Plan** | `01_SAFETY_PLAN.dox` | ☐ Draft ☐ Review ☐ Approved | Overall safety lifecycle approach |
 | **V&V Plan** | `02_VERIFICATION_VALIDATION_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | Testing and verification strategy |
-| **Configuration Management Plan** | `03_CONFIGURATION_MANAGEMENT_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | Change control and CM procedures |
+| **Configuration Management Plan** | `03_CONFIGURATION_MANAGEMENT_PLAN.dox` | ☐ Draft ☐ Review ☐ Approved | Change control and CM procedures |
 | **Tool Qualification Report** | `04_TOOL_QUALIFICATION.md` | ☐ Draft ☐ Review ☐ Approved | If using specialized MISRA tools |
 
 \subsection platformrte_docs_templates_00_DOCUMENT_CHECKLIST_phase_2_requirements_analysis_requirements_phase Phase 2: Requirements & Analysis (Requirements Phase)
@@ -24,7 +24,7 @@
 | Document | File | Status | Notes |
 |----------|------|--------|-------|
 | **System Requirements Specification (SRS)** | `05_SRS_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | All functional & safety requirements |
-| **Hazard Analysis & Risk Assessment (HARA)** | `06_HARA_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | Failure modes and risk assessment |
+| **Hazard Analysis & Risk Assessment (HARA)** | `06_HARA_TEMPLATE.dox` | ☐ Draft ☐ Review ☐ Approved | Failure modes and risk assessment |
 | **Safety Requirements Specification (SafeRS)** | `07_SAFE_REQUIREMENTS_TEMPLATE.md` | ☐ Draft ☐ Review ☐ Approved | Derived safety requirements |
 | **RteFramework Integration Plan** | `08_RTE_INTEGRATION_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | How RteFramework is used |
 
@@ -43,7 +43,7 @@
 | Document | File | Status | Notes |
 |----------|------|--------|-------|
 | **Code Review Checklist** | `14_CODE_REVIEW_CHECKLIST.md` | ☐ In Progress ☐ Complete | MISRA + EN 50128 review findings |
-| **Code Review Report** | `15_CODE_REVIEW_REPORT.md` | ☐ Draft ☐ Review ☐ Approved | Formal code review results |
+| **Code Review Report** | `15_CODE_REVIEW_REPORT.dox` | ☐ Draft ☐ Review ☐ Approved | Formal code review results |
 | **Static Analysis Report** | `16_STATIC_ANALYSIS_REPORT.md` | ☐ Draft ☐ Review ☐ Approved | MISRA tool output (cppcheck or certified tool) |
 | **Coding Standards Compliance** | `17_CODING_STANDARDS.md` | ☐ Draft ☐ Review ☐ Approved | Deviation from MISRA rules (if any) |
 | **Test Plan** | `18_TEST_PLAN.md` | ☐ Draft ☐ Review ☐ Approved | Unit, integration, system test strategy |
@@ -55,7 +55,7 @@
 
 | Document | File | Status | Notes |
 |----------|------|--------|-------|
-| **Safety Case** | `22_SAFETY_CASE.md` | ☐ Draft ☐ Review ☐ Approved | Main argument for system safety |
+| **Safety Case** | `22_SAFETY_CASE.dox` | ☐ Draft ☐ Review ☐ Approved | Main argument for system safety |
 | **Functional Safety Assessment** | `23_FUNCTIONAL_SAFETY_ASSESSMENT.md` | ☐ Draft ☐ Review ☐ Approved | SIL verification evidence |
 | **RteFramework Verification Report** | `24_RTE_VERIFICATION.md` | ☐ Draft ☐ Review ☐ Approved | How RteFramework was verified |
 | **Deviation Management Report** | `25_DEVIATION_MANAGEMENT.md` | ☐ Draft ☐ Review ☐ Approved | All MISRA/EN 50128 deviations |
@@ -215,9 +215,9 @@ When ready for assessment, package should include:
 
 ```
 [PROJECT_NAME]_SIL4_Assessment_Package/
-├── 01_SAFETY_PLAN.md
+├── 01_SAFETY_PLAN.dox
 ├── 02_VERIFICATION_VALIDATION_PLAN.md
-├── 03_CONFIGURATION_MANAGEMENT_PLAN.md
+├── 03_CONFIGURATION_MANAGEMENT_PLAN.dox
 ├── 04_TOOL_QUALIFICATION.md
 ├── 05_SRS.md
 ├── 06_HARA.md
@@ -229,14 +229,14 @@ When ready for assessment, package should include:
 ├── 12_TRACEABILITY_MATRIX.md
 ├── 13_DESIGN_REVIEW_REPORT.md
 ├── 14_CODE_REVIEW_CHECKLIST.md
-├── 15_CODE_REVIEW_REPORT.md
+├── 15_CODE_REVIEW_REPORT.dox
 ├── 16_STATIC_ANALYSIS_REPORT.md
 ├── 17_CODING_STANDARDS.md
 ├── 18_TEST_PLAN.md
 ├── 19_UNIT_TEST_REPORT.md
 ├── 20_INTEGRATION_TEST_REPORT.md
 ├── 21_COVERAGE_ANALYSIS.md
-├── 22_SAFETY_CASE.md
+├── 22_SAFETY_CASE.dox
 ├── 23_FUNCTIONAL_SAFETY_ASSESSMENT.md
 ├── 24_RTE_VERIFICATION.md
 ├── 25_DEVIATION_MANAGEMENT.md

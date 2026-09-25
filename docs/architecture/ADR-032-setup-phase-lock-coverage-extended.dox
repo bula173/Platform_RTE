@@ -136,7 +136,7 @@ at here.
 
 - The fourteen functions enumerated in §2 above, across the ten files
   listed at the top of this document.
-- `docs/architecture/ADR-026-application-setup-phase-lock.md` (base
+- `docs/architecture/ADR-026-application-setup-phase-lock.dox` (base
   decision this one extends - not itself edited, kept as the historical
   record of what was gated when).
 */

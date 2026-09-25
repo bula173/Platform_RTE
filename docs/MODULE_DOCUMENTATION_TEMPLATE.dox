@@ -3,12 +3,12 @@
 ///@section overview How to Create Module Documentation
 ///
 ///Each module should have TWO documentation files:
-///1. **USER_GUIDE.md** - "How do I USE this module?" (practical examples)
-///2. **ARCHITECTURE.md** - "How does it WORK internally?" (design decisions)
+///1. **USER_GUIDE.dox** - "How do I USE this module?" (practical examples)
+///2. **ARCHITECTURE.dox** - "How does it WORK internally?" (design decisions)
 ///
 ///Place both files in `include/rte/MODULE/`
 ///
-///@section user_guide_template USER_GUIDE.md Template
+///@section user_guide_template USER_GUIDE.dox Template
 ///
 ///```markdown
 ////**
@@ -56,7 +56,7 @@
 /// */
 ///```
 ///
-///@section architecture_template ARCHITECTURE.md Template
+///@section architecture_template ARCHITECTURE.dox Template
 ///
 ///```markdown
 ////**
@@ -196,7 +196,7 @@
 ///For each module:
 ///
 ///```
-///USER_GUIDE.md:
+///USER_GUIDE.dox:
 ///☐ Overview (what is it, when to use)
 ///☐ Quick start (2-minute introduction)
 ///☐ At least 2 practical examples
@@ -204,7 +204,7 @@
 ///☐ Best practices and guidelines
 ///☐ Cross-references to related modules
 ///
-///ARCHITECTURE.md:
+///ARCHITECTURE.dox:
 ///☐ Design overview (big picture)
 ///☐ Key components (building blocks)
 ///☐ State management (if applicable)

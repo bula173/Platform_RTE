@@ -300,7 +300,7 @@ requires).
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and
-the MISRA compliance review (`docs/MISRA_COMPLIANCE_REPORT.md`) rather
+the MISRA compliance review (`docs/MISRA_COMPLIANCE_REPORT.dox`) rather
 than an individual `REQ-*` tag on every function:
 
 - Target language: Embedded C (C99/C11); MISRA C:2012 Mandatory/Required.

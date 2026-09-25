@@ -25,7 +25,7 @@ Actively growing framework with SIL 4 safety focus.
 
 **IMPLEMENTED:** Redundancy Framework — vital channels, voting, checkpoints,
 data integrity (ADR-008/ADR-017; supersedes the "design phase" framing
-`docs/REDUNDANCY_ARCHITECTURE.md` originally described this as — that
+`docs/REDUNDANCY_ARCHITECTURE.dox` originally described this as — that
 document is now a design *record*, not a proposal still to be built)
 - `rte_channel` — 2oo2/2oo3/NMR quorum voting across redundant
   channels, disagreement/health tracking
@@ -34,11 +34,11 @@ document is now a design *record*, not a proposal still to be built)
 - `rte_checkpoint` — bounded checkpoint-ID rendezvous across vital
   channels, correct even without wall-clock agreement between nodes;
   fills in `rte_channel_checkpoint()` as already specified (but not
-  previously built) in `docs/REDUNDANCY_ARCHITECTURE.md`
+  previously built) in `docs/REDUNDANCY_ARCHITECTURE.dox`
 - `rte_clocksync` — pluggable, diagnostic-only wall-clock offset/quality
   query (never the basis of vital-comparison correctness — see its header)
 - Example: `examples/geo_distributed_checkpoint_sync.c`
-- See `docs/architecture/ADR-017-checkpoint-and-clock-sync.md` section 1
+- See `docs/architecture/ADR-017-checkpoint-and-clock-sync.dox` section 1
   and ADR-024's dependency table for exactly what's wired to what.
 
 **IMPLEMENTED:** AppManager cycle hooks + built-in checkpoint (ADR-019)
@@ -55,7 +55,7 @@ document is now a design *record*, not a proposal still to be built)
 - Addendum (§5): relaxed `rte_channel_init()`'s `channel_count`
   floor from `>= 2` to `>= 1` (`RTE_VOTING_NMR`, `quorum_size == 1` only —
   2oo2/2oo3 floors unchanged) to support a single-physical-link topology;
-  see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.md`
+  see `docs/architecture/ADR-019-appmanager-cycle-hooks-and-checkpoint.dox`
   for the full retrofit writeup (including the multiplexed-frame wire
   protocol needed to carry checkpoint traffic on an existing link), first
   live-verified in `RBC_GP`'s A/B channel.
@@ -99,7 +99,7 @@ document is now a design *record*, not a proposal still to be built)
 - Framework-only in this pass — `RBC_GP`'s `site.c`/`channel_ab.c`
   keep their existing hand-rolled logic for now; retrofitting them to
   `rte_dual` is a deliberate follow-up (see ADR-020 §4 non-goals).
-- See `docs/architecture/ADR-020-dual-transfer-state-negotiation.md`.
+- See `docs/architecture/ADR-020-dual-transfer-state-negotiation.dox`.
 
 **Key Documentation:**
 - Test Coverage Report — gcovr line/function/branch
@@ -108,15 +108,15 @@ document is now a design *record*, not a proposal still to be built)
   — run `./scripts/coverage.sh` locally for the same report)
 - `docs/architecture/` — Architecture Decision Records (ADRs 001-008,
   016-019; 009-015 do not exist) + PlantUML diagrams
-- `docs/requirements/SRS.md` — Consolidated requirements specification
-- `docs/MISRA_COMPLIANCE_REPORT.md` — MISRA C:2012 conformance status
-- `docs/EN_50128_ALIGNMENT.md` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
+- `docs/requirements/SRS.dox` — Consolidated requirements specification
+- `docs/MISRA_COMPLIANCE_REPORT.dox` — MISRA C:2012 conformance status
+- `docs/EN_50128_ALIGNMENT.dox` — **EN 50126/50128/50129 alignment & safety case** ← Start here for certification
   - EN 50128 (Software safety) — All 10 mandatory techniques
   - EN 50129 (Functional safety management) — Full support
   - EN 50126 (RAM - Reliability/Availability/Maintainability) — Design features
-- `docs/REDUNDANCY_ARCHITECTURE.md` — Voting, checkpoints, site redundancy, what is implemented (includes the former 2oo2 guide)
-- `docs/WATCHDOG_DESIGN.md` — System/task/channel/checkpoint watchdog & recovery
-- `docs/HARDWARE_PATTERNS_GUIDE.md` — **Choose your SIL & Hardware** ← Start here to select a configuration
+- `docs/REDUNDANCY_ARCHITECTURE.dox` — Voting, checkpoints, site redundancy, what is implemented (includes the former 2oo2 guide)
+- `docs/WATCHDOG_DESIGN.dox` — System/task/channel/checkpoint watchdog & recovery
+- `docs/HARDWARE_PATTERNS_GUIDE.dox` — **Choose your SIL & Hardware** ← Start here to select a configuration
   - SIL 1-2: Single system (1oo1, 1oo1+Watchdog)
   - SIL 3: Dual-channel (2oo2, 2oo2D)
   - SIL 4: Triple-channel (2oo3) **← Recommended for ERTMS RBC**
@@ -124,7 +124,7 @@ document is now a design *record*, not a proposal still to be built)
   - Comparison matrix & decision tree
   - Cost estimates & implementation timeline
   - Real-world use case examples
-- `docs/HARDWARE_PATTERNS_GUIDE.md` (configuration reference part) — **All 9 hardware setup options** ← Detailed technical specs
+- `docs/HARDWARE_PATTERNS_GUIDE.dox` (configuration reference part) — **All 9 hardware setup options** ← Detailed technical specs
   - Single system (non-redundant)
   - 2oo2 dual-channel (SIL 3)
   - 2oo3 triple-channel (SIL 4)
@@ -134,7 +134,7 @@ document is now a design *record*, not a proposal still to be built)
   - Heterogeneous systems (mixed processors)
   - Centralized voter topology
   - Distributed gossip topology
-- `docs/FEATURE_EXPANSION.md` — Feature roadmap & design specs
+- `docs/FEATURE_EXPANSION.dox` — Feature roadmap & design specs
 
 OAL services, each in its own `include/rte/<feature>/` +
 `src/<feature>/` directory (ADR-007): timer, non-volatile memory (NVM),
@@ -155,5 +155,5 @@ Every OAL service is reached through a **OSAdapter registered at startup**
 implementation — this is how an integrator supplies their own
 implementation (POSIX for host-side dev/test, an RTOS OSAdapter for target
 hardware) without editing framework source. See
-`docs/architecture/ADR-005-oal-osadapter-registration.md`.
+`docs/architecture/ADR-005-oal-osadapter-registration.dox`.
 */

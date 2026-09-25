@@ -237,7 +237,7 @@
 ///  fix.
 ///
 ///**2026-08-26, update 19 (channel-by-name lookup, plus the new opt-in
-///safety-violation notification handler - see `docs/requirements/SRS.md`
+///safety-violation notification handler - see `docs/requirements/SRS.dox`
 ///sections 1.5.1/3d.1/3d.2):** automated checker run performed (`cppcheck`,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
 ///unchanged):
@@ -292,7 +292,7 @@
 ///  which nothing yet does.
 ///
 ///**2026-08-26, update 18 (module reorg into `common`/`utils`/`oal`/`redundancy`/`app`
-///tiers, plus three new MISRA-safety primitives - see `docs/requirements/SRS.md`
+///tiers, plus three new MISRA-safety primitives - see `docs/requirements/SRS.dox`
 ///sections 1.4/2.3.1):** automated checker run performed (`cppcheck`,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions` unchanged):
 ///
@@ -326,7 +326,7 @@
 ///    not "does it still comply."
 ///
 ///**2026-08-26, update 17 (ADR-034: checkpoint-signature marks, stage
-///reorder, stage-then-commit output - see `docs/requirements/SRS.md`
+///reorder, stage-then-commit output - see `docs/requirements/SRS.dox`
 ///section 3c and this file's own root-cause context in the session that
 ///wrote it):** automated checker run performed (`cppcheck` available this
 ///session, `cmake --build build --target cppcheck`,
@@ -375,8 +375,8 @@
 ///
 ///**2026-08-18, update 16 (ADR-029: RBC Train/IL/CTC scenario - real
 ///multi-train protocol, session-table cross-compare/failover-transfer
-///widening; see `docs/requirements/SRS.md` section 3h and
-///`docs/architecture/ADR-029-rbc-train-il-ctc-scenario.md`):** automated
+///widening; see `docs/requirements/SRS.dox` section 3h and
+///`docs/architecture/ADR-029-rbc-train-il-ctc-scenario.dox`):** automated
 ///checker run performed (`cppcheck` was available this session,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
 ///unchanged):
@@ -429,8 +429,8 @@
 ///
 ///**2026-08-18, update 15 (ADR-028: cyclic-executive checkpoint-starvation
 ///fix - REQ-APPMANAGER-011 - and its `RBC_GP` channel-down-reboot/
-///HOT-COLD-standby consumer; see `docs/requirements/SRS.md` and
-///`docs/architecture/ADR-028-channel-down-reboot-and-executive-starvation-fix.md`):**
+///HOT-COLD-standby consumer; see `docs/requirements/SRS.dox` and
+///`docs/architecture/ADR-028-channel-down-reboot-and-executive-starvation-fix.dox`):**
 ///automated checker run performed (`cppcheck` was available this session,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
 ///unchanged):
@@ -474,7 +474,7 @@
 ///**2026-08-18, update 14 (ADR-026: application setup-phase lock and
 ///single-entry-point enforcement, new `rte_lifecycle` module; plus the
 ///`rte_dual_channel.c` hard-fault-propagation fix - REQ-DUAL-CHANNEL-008 -
-///and its test coverage; see `docs/requirements/SRS.md`):** automated
+///and its test coverage; see `docs/requirements/SRS.dox`):** automated
 ///checker run performed (`cppcheck` was available this session,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
 ///unchanged):
@@ -517,7 +517,7 @@
 ///**2026-08-17, update 13 (ADR-025: `rte_vital_channel` split into
 ///`rte_channel`/`rte_voter`/`rte_cross_comparator`, retirement of the
 ///dead ADR-008 `channel/` module, and a `rte_appmanager.c` busy-loop fix
-///- REQ-APPMANAGER-008, see `docs/requirements/SRS.md`):** automated
+///- REQ-APPMANAGER-008, see `docs/requirements/SRS.dox`):** automated
 ///checker run performed (`cppcheck` was available this session,
 ///`cmake --build build --target cppcheck`, `.cppcheck-suppressions`
 ///unchanged):
@@ -1317,7 +1317,7 @@
 ///  bug was found live against `RBC_GP`: eager open made `rte_channel_service_setup()`
 ///  block for the full peer-handshake timeout and then fail outright for a channel whose peer
 ///  legitimately isn't running yet, aborting the whole integrator process over one optional
-///  channel - see root `TODO.md`'s Phase 4 entry for the full story. No new MISRA rule categories
+///  channel - see root `TODO.dox`'s Phase 4 entry for the full story. No new MISRA rule categories
 ///  from this redesign (still 15.5/11.5/8.9, same as the original addition above). `ctest`
 ///  re-verified 34/34 after the redesign (test file itself updated: 2 existing cases adjusted for
 ///  lazy-open, 1 new case covering "absent peer fails only I/O calls, not setup()").
@@ -1370,7 +1370,7 @@
 ///  empty-snapshot UNKNOWN cases, and the `RTE_REDUNDANCY_CONFIG_MAX_REPLICAS` boundary).
 ///
 ///- **Update (2026-09-24): `test_rte_checkpoint`'s Release-only failure, root-caused and fixed -
-///  test-only, no production code changed.** ISSUES.md carried this as two successive findings
+///  test-only, no production code changed.** ISSUES.dox carried this as two successive findings
 ///  (a `__stack_chk_fail` abort, fixed 2026-09-23; then a second, different assertion failure it
 ///  exposed). The second one is now understood completely: `test_zero_budget_hits_expired_
 ///  remaining()` never called its own `setjmp(g_jmp)` before invoking `rte_channel_checkpoint()`,
@@ -1386,7 +1386,7 @@
 ///  function's actual, correct behavior (diverts with `CHECKPOINT_TIMEOUT`) instead of the
 ///  original, mistaken `== RTE_STATUS_OK` assumption. Verified: `ctest` 36/36 in BOTH Debug and
 ///  Release builds - the first time this binary has ever fully passed under Release. See
-///  ISSUES.md's own git history for the full investigation record (now closed).
+///  ISSUES.dox's own git history for the full investigation record (now closed).
 ///
 ///- **Update (2026-09-24): new function `rte_voter_vote_buffers()`** (ADR-039 N-way cross-compare
 ///  half - decided: `rte_voter` used directly, buffer-based, matching

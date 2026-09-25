@@ -78,7 +78,7 @@ This roadmap tracks proposed feature additions and the configuration system for 
   - Health status API (non-blocking diagnostics)
   - Integration with redundancy framework
 - **GitHub Issues:** #32–#35 (4 sub-features)
-- **Documentation:** \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.md" ✓
+- **Documentation:** \ref platformrte_docs_WATCHDOG_DESIGN "WATCHDOG_DESIGN.dox" ✓
 - **API Files:** 
   - `include/rte/watchdog/rte_watchdog.h` ✓
   - `src/watchdog/rte_watchdog.c` (stubs) ✓
@@ -288,12 +288,12 @@ This roadmap tracks proposed feature additions and the configuration system for 
 
 \section platformrte_docs_ROADMAP_next_steps Next Steps
 
-1. ✅ Create this roadmap document (ROADMAP.md)
+1. ✅ Create this roadmap document (ROADMAP.dox)
 2. Create GitHub Issues for each Tier 1 feature
 3. Draft ADRs for Tier 1 features
 4. Set up GitHub Projects board for visual tracking
 5. Begin design phase for HSM (highest priority)
-6. Update `docs/requirements/SRS.md` with new feature requirements
+6. Update `docs/requirements/SRS.dox` with new feature requirements
 
 See the feature expansion artifact at [Claude.ai](https://claude.ai/code/artifact/b75f23a4-842a-4c2c-8292-bfe2ecc94716) for detailed analysis.
 */
