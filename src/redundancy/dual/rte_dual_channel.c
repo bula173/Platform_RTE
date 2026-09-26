@@ -632,3 +632,18 @@ bool rte_dual_channel_is_link_up(const rte_dual_channel_t *channel, uint32_t lin
     }
     return channel->link_up[link_index];
 }
+
+rte_status_t rte_dual_channel_set_resync_on_sequence_error(rte_dual_channel_t *channel, bool enable)
+{
+    uint32_t i;
+
+    if (channel == NULL)
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    for (i = 0U; i < RTE_DUAL_CHANNEL_MAX_LINKS; i++)
+    {
+        (void)rte_dual_msgchannel_set_resync_on_sequence_error(&channel->links[i], enable);
+    }
+    return RTE_STATUS_OK;
+}

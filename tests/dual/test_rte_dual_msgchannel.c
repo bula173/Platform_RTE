@@ -222,6 +222,30 @@ int main(void)
 
     /* reset_sequence(): NULL argument rejection. */
     assert(rte_dual_msgchannel_reset_sequence(NULL) == RTE_STATUS_INVALID_PARAM);
+    assert(rte_dual_msgchannel_set_resync_on_sequence_error(NULL, true) == RTE_STATUS_INVALID_PARAM);
+
+    /* Sequence resync: A restarts (sequence back to 0) while B keeps expecting the old number. Without the resync B
+     * rejects A for good; with it B rejects one frame, then follows A's numbering. Off by default. */
+    {
+        int i;
+
+        assert(rte_dual_msgchannel_reset_sequence(&channel_a) == RTE_STATUS_OK); /* A restarted: next_sequence 0 */
+        channel_b.expected_sequence = 100U; /* B has been running for a long time */
+        for (i = 0; i < 3; i++)
+        {
+            assert(rte_dual_msgchannel_send(&channel_a, (const uint8_t *)"r", 1U, 10U, NULL) == RTE_STATUS_OK);
+            assert(rte_dual_msgchannel_receive(&channel_b, out_payload, sizeof(out_payload), 10U, &out_payload_size,
+                                                 &out_sequence) == RTE_STATUS_DATA_CORRUPTION);
+        }
+        assert(rte_dual_msgchannel_set_resync_on_sequence_error(&channel_b, true) == RTE_STATUS_OK);
+        assert(rte_dual_msgchannel_send(&channel_a, (const uint8_t *)"r", 1U, 10U, NULL) == RTE_STATUS_OK);
+        assert(rte_dual_msgchannel_receive(&channel_b, out_payload, sizeof(out_payload), 10U, &out_payload_size,
+                                             &out_sequence) == RTE_STATUS_DATA_CORRUPTION); /* still rejected once */
+        assert(rte_dual_msgchannel_send(&channel_a, (const uint8_t *)"s", 1U, 10U, NULL) == RTE_STATUS_OK);
+        assert(rte_dual_msgchannel_receive(&channel_b, out_payload, sizeof(out_payload), 10U, &out_payload_size,
+                                             &out_sequence) == RTE_STATUS_OK);
+        assert(out_payload[0] == (uint8_t)'s');
+    }
 
     return 0;
 }

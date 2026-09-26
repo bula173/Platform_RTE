@@ -281,6 +281,9 @@ rte_dual_channel_status_t rte_dual_channel_get_status(const rte_dual_channel_t *
  */
 bool rte_dual_channel_is_link_up(const rte_dual_channel_t *channel, uint32_t link_index);
 
+/** Enables sequence resynchronisation on every link of @p channel (see rte_dual_msgchannel_set_resync_on_sequence_error()). */
+rte_status_t rte_dual_channel_set_resync_on_sequence_error(rte_dual_channel_t *channel, bool enable);
+
 #ifdef __cplusplus
 }
 #endif

@@ -71,6 +71,7 @@ typedef struct rte_dual_msgchannel_s
     uint32_t              expected_peer_id; /**< Inbound frames whose sender_id differs are rejected (masquerade defense). */
     uint32_t              next_sequence;   /**< Next outbound sequence_number. */
     uint32_t              expected_sequence; /**< Next expected inbound sequence_number (continuity check). */
+    bool                  resync_on_sequence_error; /**< See rte_dual_msgchannel_config_t::resync_on_sequence_error. */
 } rte_dual_msgchannel_t;
 
 /** @brief Configuration for rte_dual_msgchannel_init(). */
@@ -90,6 +91,18 @@ typedef struct rte_dual_msgchannel_config_s
      *  masquerade rather than delivered (ADR-020 section 1). */
     uint32_t expected_peer_id;
 } rte_dual_msgchannel_config_t;
+
+/**
+ * @brief Turns sequence resynchronisation on or off (default off after init).
+ *
+ * When on, an inbound frame with a valid CRC and the right sender_id but the wrong sequence number is still rejected
+ * (never delivered), but the expected sequence is set to that frame's number plus one, so the next frame from the same
+ * peer is accepted. For a link whose peer can restart on its own (the inter-site negotiation link): each end restarts
+ * at sequence 0, the surviving end keeps expecting the old number, and without this both ends reject each other for
+ * good. CRC and sender checks stay in force.
+ * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a NULL channel.
+ */
+rte_status_t rte_dual_msgchannel_set_resync_on_sequence_error(rte_dual_msgchannel_t *channel, bool enable);
 
 /**
  * @brief Initializes a rte_dual_msgchannel_t: starts both sequence

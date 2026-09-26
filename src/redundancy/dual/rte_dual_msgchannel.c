@@ -30,6 +30,7 @@ rte_status_t rte_dual_msgchannel_init(rte_dual_msgchannel_t *channel,
     channel->expected_peer_id  = config->expected_peer_id;
     channel->next_sequence     = 0U;
     channel->expected_sequence = 0U;
+    channel->resync_on_sequence_error = false;
 
     return RTE_STATUS_OK;
 }
@@ -113,6 +114,19 @@ rte_status_t rte_dual_msgchannel_receive(rte_dual_msgchannel_t *channel,
 
     status = rte_checksum_vital_message_verify(&frame, channel->expected_sequence, out_payload, (size_t)payload_max_size,
                                                  out_payload_size);
+    if ((status == RTE_STATUS_DATA_CORRUPTION) && channel->resync_on_sequence_error &&
+        (frame.sequence_number != channel->expected_sequence))
+    {
+        rte_checksum_result_t crc_result;
+
+        if (rte_checksum_crc64_verify((const uint8_t *)&frame, sizeof(frame) - sizeof(frame.crc64), frame.crc64,
+                                       &crc_result) == RTE_STATUS_OK)
+        {
+            /* Intact frame from the right peer with another sequence number: the peer restarted (or we did).
+             * The frame is still rejected; only the expectation follows it. */
+            channel->expected_sequence = frame.sequence_number + 1U;
+        }
+    }
     if (status != RTE_STATUS_OK)
     {
         /* channel->expected_sequence intentionally left unchanged on
@@ -142,5 +156,15 @@ rte_status_t rte_dual_msgchannel_reset_sequence(rte_dual_msgchannel_t *channel)
     channel->next_sequence     = 0U;
     channel->expected_sequence = 0U;
 
+    return RTE_STATUS_OK;
+}
+
+rte_status_t rte_dual_msgchannel_set_resync_on_sequence_error(rte_dual_msgchannel_t *channel, bool enable)
+{
+    if (channel == NULL)
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    channel->resync_on_sequence_error = enable;
     return RTE_STATUS_OK;
 }
