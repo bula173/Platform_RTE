@@ -23,6 +23,7 @@
 #include "rte_osadapter/log/rte_osadapter_log.h"
 #include "rte_osadapter/nvm/rte_osadapter_nvm.h"
 #include "rte_osadapter/platform/rte_osadapter_platform.h"
+#include "rte_osadapter/random/rte_osadapter_random.h"
 #include "rte_osadapter/reboot/rte_osadapter_reboot.h"
 #include "rte_osadapter/ipc/rte_osadapter_ipc.h"
 #include "rte_osadapter/netlink/rte_osadapter_netlink.h"
@@ -50,6 +51,7 @@ typedef struct rte_osadapter_bundle_s
     const rte_osadapter_netlink_t    *netlink;
     const rte_osadapter_flow_t       *flow;
     const rte_os_socket_ops_t        *sockets;
+    const rte_osadapter_random_t     *random;
 } rte_osadapter_bundle_t;
 
 /**

@@ -305,6 +305,7 @@ endif()
 # OSAdapter master registration and ProtocolAdapters (UDP, TCP)
 list(APPEND _rte_oal_sources
     src/oal/osadapter/rte_osadapter.c
+    src/oal/random/rte_random.c
     src/oal/protocol/rte_protocol_adapter.c
     src/oal/protocol/rte_protocol_adapter_udp.c
     src/oal/protocol/rte_protocol_adapter_tcp.c

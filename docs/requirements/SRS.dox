@@ -297,6 +297,18 @@ requires).
 | REQ-OAL-PLATFORM-010 | `rte_platform_realtime_init(rt_priority)` shall reject `rt_priority > 99` with `RTE_STATUS_INVALID_PARAM` before any OSAdapter dispatch, then request the registered OSAdapter apply memory-residency configuration and (for `rt_priority > 0`) a real-time scheduling policy/priority for the calling process/thread. |
 | REQ-OAL-PLATFORM-011 | `rte_osadapter_platform_register()` per REQ-OAL-BACKEND-001. |
 
+### 2.10 Secure random bytes — `rte_random.h`
+
+The seam for unpredictable random bytes (e.g. the EuroRadio responder random, Subset-037-2), so application code never
+calls the OS for them. Framework ships the interface and validate-then-dispatch layer; the POSIX OSAdapter backs it with
+the kernel CSPRNG (`getentropy()`).
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-RANDOM-001 | The registered OSAdapter shall return bytes from a cryptographically secure source, or fail with `RTE_STATUS_HARDWARE_FAULT`; it shall never fall back to a predictable generator. |
+| REQ-OAL-RANDOM-010 | `rte_random_fill(out, len)` shall reject a NULL `out` or `len` outside `1..RTE_RANDOM_MAX_REQUEST` (256) with `RTE_STATUS_INVALID_PARAM` before any OSAdapter dispatch; return `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when its `fill` slot is NULL; otherwise return the OSAdapter's result unchanged. |
+| REQ-OAL-RANDOM-011 | `rte_osadapter_random_register()` per REQ-OAL-BACKEND-001. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

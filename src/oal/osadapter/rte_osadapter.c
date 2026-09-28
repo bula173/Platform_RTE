@@ -98,6 +98,11 @@ rte_status_t rte_osadapter_register_all(const rte_osadapter_bundle_t *bundle)
         status = rte_osadapter_register_socket_ops(bundle->sockets);
         if (status != RTE_STATUS_OK) { return status; }
     }
+    if (bundle->random != NULL)
+    {
+        status = rte_osadapter_random_register(bundle->random);
+        if (status != RTE_STATUS_OK) { return status; }
+    }
 
     return RTE_STATUS_OK;
 }

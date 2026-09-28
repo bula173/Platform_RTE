@@ -1,6 +1,16 @@
 ///\page platformrte_docs_MISRA_COMPLIANCE_REPORT MISRA C:2012 Compliance Report
 ///
-///Date: 2026-09-09 (see "update 24" note below)
+///Date: 2026-09-28 (see "update 25" note below)
+///
+///**2026-09-28, update 25 (secure random seam: `rte_random_fill()` / `rte_osadapter_random_register()`,
+///REQ-OAL-RANDOM-001/010/011):** manual review of `include/rte/oal/random/rte_random.h`,
+///`include/rte_osadapter/random/rte_osadapter_random.h`, `src/oal/random/rte_random.c` and the new bundle slot in
+///`src/oal/osadapter/rte_osadapter.c`; `cppcheck --enable=all --addon=misra --std=c99` run on
+///`src/oal/random/rte_random.c`. A line-for-line copy of `rte_platform.c`'s validate-then-dispatch shape: the only
+///findings are Rule 15.5 (guard-clause early returns), the same accepted deviation bucket as that module - no new
+///categories. No allocation, no OS call in the framework (the OSAdapter owns the source), fixed-width types.
+///`ctest` 37/37 (new `test_rte_random`: parameter checks before dispatch, NOT_INITIALIZED / NOT_SUPPORTED, the
+///`RTE_RANDOM_MAX_REQUEST` boundary, and a source failure passed through unmasked).
 ///
 ///**2026-09-09, update 24 (structured-log field builder:
 ///`rte_log_fields_t` + `rte_log_fields_reset()` /
