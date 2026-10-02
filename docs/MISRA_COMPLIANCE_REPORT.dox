@@ -1432,3 +1432,10 @@
 ///  existing gated constructors, rule 15.5 bucket already accepted). New reason codes 3 and 4 in `rte_safestate.h`.
 ///  `cppcheck --enable=warning,performance,portability` and `--addon=misra` (2.21, no rule texts) report nothing on
 ///  the changed files. `ctest` 39/39 (new: `test_rte_site_role_policy`, `test_rte_lifecycle_osa_gates`).
+///
+///- **Update (2026-10-02): new module `rte_site_role`** (ADR-040 step 2) - the site role service moved from RBC_GP's
+///  `ab_gp_channel_negotiate.c`. No allocation (caller-owned storage and frame buffers), no recursion, no blocking
+///  outside `rte_site_role_start()`. `snprintf` for the diagnostic lines (same as `rte_appmanager`/`rte_checkpoint`).
+///  Early returns on NULL arguments (rule 15.5 bucket already accepted). The frame size is bounded to 255 because
+///  `rte_dual_channel_send()` takes a `uint8_t` size; `rte_site_role_init()` rejects anything larger, which makes the
+///  two `(uint8_t)` casts of `frame_size` value-preserving. `ctest` 40/40 (new: `test_rte_site_role`).

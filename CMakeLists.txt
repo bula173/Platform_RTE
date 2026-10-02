@@ -367,6 +367,7 @@ if(RTE_ENABLE_DUAL)
         src/redundancy/election/rte_election.c
         # ADR-040 step 1: pure site-role policy (moved from RBC_GP), same gate as dual.
         src/redundancy/site_role/rte_site_role_policy.c
+        src/redundancy/site_role/rte_site_role.c
     )
 endif()
 if(RTE_ENABLE_SAFECHANNEL)

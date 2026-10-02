@@ -64,7 +64,7 @@ One page per decision: context, decision and consequences.
 - \subpage platformrte_docs_architecture_ADR_037_role_c_gateway_decomposition - ADR-037: Role C gateway - decomposition into per-client-type service binaries
 - \subpage platformrte_docs_architecture_ADR_038_status_indication_and_c_pubsub_broker - ADR-038: Status indication - a C-side pub/sub broker + an A/B↔C util channel
 - \subpage platformrte_docs_architecture_ADR_039_n_channel_topology_primitives - ADR-039: What N-channel (2oo3+) topologies need from the redundancy primitives
-- \subpage platformrte_docs_architecture_ADR_040_site_role_service - ADR-040: Site role (ONLINE/STANDBY) as an RTE Redundancy Service (accepted, step 1 done)
+- \subpage platformrte_docs_architecture_ADR_040_site_role_service - ADR-040: Site role (ONLINE/STANDBY) as an RTE Redundancy Service (accepted, steps 1-2 done)
 */
 
 /**

@@ -532,6 +532,10 @@ ADR-040 step 1. No I/O and no state of its own.
 | REQ-SITEROLE-002 | A PROMOTE shall be turned into WAIT unless this channel is ready and its A/B sibling is ONLINE, ready, or unreachable. |
 | REQ-SITEROLE-003 | Silence alone shall never promote: `rte_site_role_takeover_allowed()` is true only for a STANDBY, non-FAULTED channel with an unresponsive counterpart and a dispatcher confirmation at most `RTE_SITE_ROLE_TAKEOVER_CONFIRM_VALID_CYCLES` old. |
 | REQ-SITEROLE-004 | A cycle counter that restarted since a confirmation or snapshot was stamped shall make the confirmation expired and the snapshot stale. |
+| REQ-SITEROLE-010 | `rte_site_role` (ADR-040 step 2) shall use no dynamic allocation; the caller supplies the service storage and both frame buffers. |
+| REQ-SITEROLE-011 | The role shall change only through `rte_site_role_decide()` or the startup negotiation, and every change shall be reported to the application's change callback before the call that made it returns. |
+| REQ-SITEROLE-012 | A per-cycle reconnect attempt shall be bounded by `reconnect_attempt_ms`; only `rte_site_role_start()` blocks, bounded by `startup_timeout_ms`. |
+| REQ-SITEROLE-013 | The link shall be closed for reconnect after `send_miss_threshold` consecutive unacknowledged sends or on any receive failure other than a timeout; a STANDBY channel then marks the counterpart unresponsive and stays STANDBY. |
 
 ## 3f. Unified channel factory — `rte_safechannel.h` (ADR-022)
 
