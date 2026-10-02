@@ -1,0 +1,92 @@
+/**
+\page platformrte_docs_architecture_ADR_040_site_role_service ADR-040: Site role (ONLINE/STANDBY) as an RTE Redundancy Service
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_status Status
+
+**Proposed (2026-10-02), not started.** Plan for gap G1 of the root
+`docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. No code has moved. Steps 2 to 5 change SIL 4 promotion logic and
+need the decisions in "Open decisions" first.
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_context Context
+
+The Capella model (RBC-GP-ARCH-CAP 0.1, 2026-10-02) puts site-role negotiation, partner supervision, verification of the
+dispatcher's takeover confirmation and state transfer on promotion in RTE **Redundancy Services** ("[SF] Negotiate Site
+Role", "[SF] Transfer State on Promotion"). The application keeps only a declarative **Site Role Client** (IF-05):
+it receives the role, supplies readiness and the state to replicate, and passes the confirmation on. Role state is
+exchanged independently by channels A and B and the role decision must agree in both (2oo2); two ONLINE sites are
+excluded.
+
+Today all of it is in RBC_GP (`AB/GP/com/`):
+
+| Piece | Where | Generic (to RTE) or application (stays) |
+|---|---|---|
+| West-East link: raw `rte_netlink`, fixed A/B ports, reconnect bounded to 50 ms | `ab_gp_channel_negotiate.c` | generic |
+| Startup tie-break (older timestamp wins), wrapping `rte_dual_channel` + `rte_dual_negotiator` | same | generic (already partly RTE) |
+| Extra payload framing `faulted | single_mode | cycle | sessions | db | valid` | same, `common_config.h` | framing generic; sessions/db codecs application |
+| Decision table, rules 1-7 + readiness gate, actions NONE/PROMOTE/DEMOTE/RENEGOTIATE/ALARM/WAIT | `ab_gp_site_role.c` | generic (readiness input is application) |
+| Standby / takeover / tie-break timing predicates | `ab_gp_standby_policy.c` | generic, except `session_adopt_allowed` |
+| Promote / demote / renegotiate, apply state transfer, cycle restart policy | `ab_gp_channel_negotiate.c` | trigger generic; what is applied is application |
+| Warm standby sync, 10 ms link service tick | same, called from `ab_gp_channel.c`, `ab_gp_channel_checkpoint.c`, `post_execute.c` | generic |
+| Takeover confirmation (flag + cycle only, not verified) | same, decoded in `ab_gp_channel.c` | verification generic |
+| Fault flush before reboot | same, from `ab_gp_channel_crosscompare.c` | generic |
+| A/B role agreement (sibling `{online, single}` compared, 3 mismatches -> reboot) | `ab_gp_channel_crosscompare.c` | generic |
+| Readiness (relay frame within 10 cycles), session adoption from sibling, relay gating on STANDBY | `ab_gp_site_status.c`, `pre_execute.c` | application |
+
+What RTE has: `rte_dual_negotiator` (startup tie-break only, no FAULTED state, no promote/demote input, no takeover,
+no payload; GP is its only caller), `rte_dual_channel` (transport), `rte_state_transfer` (codec registry, no transport),
+`rte_election` (N-way, unused), `rte_redundancy_config` (`standby_mode`). There is no site-role API.
+
+This reverses RBC_GP's decision of 2026-09-23 (review finding A3, "keep both"): under the model, the policy applied to
+the negotiator's verdict is platform mechanism, not application concern.
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_decision Decision (proposed)
+
+A new RTE module `redundancy/site_role/` owns the mechanism; GP becomes its client. Proposed API:
+
+- `rte_site_role_init(cfg)` - site id, peer id, link (flow) name, `standby_mode`, timers.
+- `rte_site_role_register_state(registry)` - GP's `rte_state_transfer` codecs (sessions, db).
+- `rte_site_role_register_readiness(fn, ctx)`.
+- `rte_site_role_register_on_change(cb)` - new role, reason, result of an applied transfer.
+- `rte_site_role_execute(cycle)` (pre-execute stage), `rte_site_role_service()` (fast tick),
+  `rte_site_role_sync(cycle)` (before the commit), `rte_site_role_notify_fault()`.
+- `rte_site_role_submit_takeover_confirm(bytes, len)` - RTE verifies (authentication, sequence, expiry).
+- `rte_site_role_get_role()`, `rte_site_role_get_status()` (the `site_wait` / `site_why` snapshot).
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_steps Steps
+
+Each step keeps behaviour identical and is verified by the existing unit tests, the Docker `2oo2_tests` and
+`fault_injection` suites, and `smoke.sh` before the next one starts.
+
+1. **Pure parts first.** Move the decision table (`ab_gp_site_role_decide`, its input/output types and reason tokens)
+   and the generic standby predicates into `rte_site_role_policy` with the decision-table test ported unchanged.
+   GP calls the RTE functions. No timing or wire change.
+2. **Mechanism.** Move link ownership, the negotiator stacking, payload framing, promote/demote/renegotiate, warm sync
+   and the fault flush behind the API above, still driven from GP's existing call points (pre-execute, the 10 ms tick,
+   pre-commit). GP registers codecs, readiness and the change callback. Wire layout and log strings unchanged (the
+   Robot suites match on them).
+3. **A/B agreement.** The sibling role check moves into RTE; GP forwards the sibling site-state bytes until RTE owns
+   the peer link.
+4. **Takeover verification.** Authenticated confirmation with sequence and expiry, keyed like the other verified
+   inputs; the trigger side is the CMI module of RBC_GA_NCBIR (gap G5). Until then the unauthenticated interim file
+   stays and is labelled as such.
+5. **Transport on `rte_flow`** (with Phase 2b / gap G3), then delete the GP copies and update RBC_GP `CLAUDE.md`
+   (the A3 decision) and `rte_redundancy_config.h` (its `standby_mode` comment is out of date).
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_open Open decisions
+
+1. Confirm that the model overrides the A3 "keep both" decision.
+2. Timing: keep the drive points in the application's cycle (option A, today's behaviour) or give RTE its own site-link
+   thread (option B, changes timing and the meaning of an acknowledgement). Proposed: A.
+3. A/B agreement source: RTE reads the sibling state itself (needs the peer link in RTE) or GP forwards it. Proposed:
+   GP forwards until step 5.
+4. Trust model for the takeover confirmation (which key, who issues it).
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_risks Risks
+
+- SIL 4 promotion logic: the table semantics (rules 1-7, WAIT) and the A/B agreement must stay in step, or every change
+  risks a `NEGOTIATION_MISMATCH` reboot.
+- The negotiation runs inside the cycle, the 10 ms tick and the checkpoint loop; moving the drive points changes timing.
+- Wire layout and log / `/tmp` strings are used by the Robot suites and `smoke.sh`.
+- A and B share the startup timestamp through a `/tmp` file, which does not work across separate hosts; it must become
+  a peer-link exchange before the platform owns it.
+*/
