@@ -69,6 +69,13 @@ typedef uint16_t rte_safestate_reason_t;
 /** Set by rte_channel_checkpoint() (ADR-017) when fewer than
  *  expected_node_count peers confirm a checkpoint within max_delay_ms. */
 #define RTE_SAFESTATE_REASON_CHECKPOINT_TIMEOUT ((rte_safestate_reason_t)2U)
+/** Set by rte_lifecycle_check_setup_allowed() (REQ-LIFECYCLE-003, DEGRADED level) when a setup-only
+ *  resource is requested after the setup phase was locked - an OSA rule violation (resources are created
+ *  only during initialisation). */
+#define RTE_SAFESTATE_REASON_SETUP_AFTER_INIT ((rte_safestate_reason_t)3U)
+/** Reported by an OSAdapter (DEGRADED level) when a real-time attribute it was asked for could not be
+ *  applied: thread priority / scheduling policy, fixed stack size, mutex priority inheritance. */
+#define RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE ((rte_safestate_reason_t)4U)
 /** First reason code value applications are free to define their own meaning for. */
 #define RTE_SAFESTATE_REASON_APPLICATION_BASE ((rte_safestate_reason_t)4096U)
 

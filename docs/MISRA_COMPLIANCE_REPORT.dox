@@ -1420,3 +1420,15 @@
 ///  cases in `test_rte_voter`: 2oo2 agreement, NMR majority agreement mirroring the existing
 ///  registered-channel NMR test, disagreement→safestate with its own `setjmp`, and invalid-param
 ///  coverage including the `RTE_VOTER_MAX_CHANNELS` boundary) in BOTH Debug and Release.
+///
+///- **Update (2026-10-02): new module `rte_site_role_policy`** (ADR-040 step 1) - the site-role decision table and
+///  standby/takeover/tie-break predicates, moved unchanged from RBC_GP; pure functions, no I/O, no state, no
+///  allocation. One change from the GP original: `RTE_SITE_ROLE_REASON_NONE` is named in both reason switches
+///  (this project's `-Wswitch-enum`), falling through to `default` - same result. **Lifecycle and OSA gates
+///  (Capella OSA rules)**: `rte_lifecycle_check_setup_allowed()` now reports a rejection through
+///  `rte_safestate_enter(DEGRADED, RTE_SAFESTATE_REASON_SETUP_AFTER_INIT, ...)` (REQ-LIFECYCLE-003; DEGRADED
+///  returns, the INVALID_STATE contract is unchanged), and `rte_task_create/start`, `rte_timer_start`,
+///  `rte_ipc_create`, `rte_nvm_open`, `rte_channel_service_setup` gained the gate (same early-return pattern as the
+///  existing gated constructors, rule 15.5 bucket already accepted). New reason codes 3 and 4 in `rte_safestate.h`.
+///  `cppcheck --enable=warning,performance,portability` and `--addon=misra` (2.21, no rule texts) report nothing on
+///  the changed files. `ctest` 39/39 (new: `test_rte_site_role_policy`, `test_rte_lifecycle_osa_gates`).

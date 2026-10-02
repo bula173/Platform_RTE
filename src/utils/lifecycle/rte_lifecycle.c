@@ -5,6 +5,7 @@
  * @ingroup LIFECYCLE
  */
 #include "rte/utils/lifecycle/rte_lifecycle.h"
+#include "rte/utils/safestate/rte_safestate.h"
 
 /** Local makros */
 
@@ -39,5 +40,15 @@ bool rte_lifecycle_is_locked(void)
 
 rte_status_t rte_lifecycle_check_setup_allowed(void)
 {
-    return g_setup_locked ? RTE_STATUS_INVALID_STATE : RTE_STATUS_OK;
+    rte_status_t status = RTE_STATUS_OK;
+
+    if (g_setup_locked)
+    {
+        /* REQ-LIFECYCLE-003: report the violation (DEGRADED returns; the caller still gets INVALID_STATE and
+         * the integrator's DEGRADED handler decides what it means). */
+        rte_safestate_enter(RTE_SAFESTATE_LEVEL_DEGRADED, RTE_SAFESTATE_REASON_SETUP_AFTER_INIT, __FILE__,
+                            (int32_t)__LINE__, "setup-only resource requested after the setup phase was locked");
+        status = RTE_STATUS_INVALID_STATE;
+    }
+    return status;
 }

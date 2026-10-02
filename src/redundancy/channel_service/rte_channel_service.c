@@ -4,6 +4,7 @@
  */
 
 #include "rte/redundancy/channel_service/rte_channel_service.h"
+#include "rte/utils/lifecycle/rte_lifecycle.h"
 #include "rte/redundancy/config/rte_redundancy_config.h"
 
 static const rte_osadapter_channel_service_t *s_osadapter;
@@ -36,6 +37,15 @@ rte_status_t rte_channel_service_setup(rte_channel_service_t *storage, const cha
     if ((storage == NULL) || (channel_name == NULL))
     {
         return RTE_STATUS_INVALID_PARAM;
+    }
+    /* REQ-LIFECYCLE-001/003 (ADR-026, OSA rules): setup-only - refused and reported once the setup phase is locked. */
+    {
+        rte_status_t lifecycle_status = rte_lifecycle_check_setup_allowed();
+
+        if (lifecycle_status != RTE_STATUS_OK)
+        {
+            return lifecycle_status;
+        }
     }
     status = validate_osadapter();
     if (status != RTE_STATUS_OK)

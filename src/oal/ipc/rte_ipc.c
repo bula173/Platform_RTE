@@ -54,6 +54,15 @@ rte_status_t rte_ipc_create(rte_ipc_storage_t *storage,
         return RTE_STATUS_INVALID_PARAM;
     }
     *out_handle = NULL;
+    /* REQ-LIFECYCLE-001/003 (ADR-026, OSA rules): setup-only - refused and reported once the setup phase is locked. */
+    {
+        rte_status_t lifecycle_status = rte_lifecycle_check_setup_allowed();
+
+        if (lifecycle_status != RTE_STATUS_OK)
+        {
+            return lifecycle_status;
+        }
+    }
     if (s_osadapter == NULL)
     {
         return RTE_STATUS_NOT_INITIALIZED;

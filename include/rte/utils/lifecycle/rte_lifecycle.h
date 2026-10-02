@@ -40,6 +40,17 @@
  * REQ-LIFECYCLE-001: setup-only constructors shall reject their call with
  *                     `RTE_STATUS_INVALID_STATE` once the application's
  *                     setup phase has been locked.
+ * REQ-LIFECYCLE-003: a rejected setup-only call shall be reported through
+ *                     rte_safestate_enter(RTE_SAFESTATE_LEVEL_DEGRADED,
+ *                     RTE_SAFESTATE_REASON_SETUP_AFTER_INIT, ...) before
+ *                     returning `RTE_STATUS_INVALID_STATE` (OSA model: a
+ *                     resource created after initialisation is a critical
+ *                     error reported to the platform's diagnostics).
+ *                     Gated since 2026-10-02 as well: `rte_task_create()`,
+ *                     `rte_task_start()`, `rte_timer_start()`,
+ *                     `rte_ipc_create()`, `rte_nvm_open()`,
+ *                     `rte_channel_service_setup()` (a POSIX task/timer
+ *                     start creates a thread).
  * REQ-LIFECYCLE-002: the setup-phase lock shall be a plain, unsynchronized
  *                     global (no dynamic allocation, no OS dependency) -
  *                     this module has no OS dependency of its own,
@@ -102,7 +113,8 @@ bool rte_lifecycle_is_locked(void);
  *        or watchdog - see this file's own header for the excluded
  *        netlink/dual exceptions).
  * @return `RTE_STATUS_INVALID_STATE` if the application's setup phase is
- *         currently locked; `RTE_STATUS_OK` otherwise.
+ *         currently locked (after reporting it, REQ-LIFECYCLE-003);
+ *         `RTE_STATUS_OK` otherwise.
  */
 rte_status_t rte_lifecycle_check_setup_allowed(void);
 

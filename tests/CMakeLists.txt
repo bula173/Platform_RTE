@@ -32,6 +32,7 @@ rte_add_test(test_rte_safestate      safestate/test_rte_safestate.c      rte::co
 rte_add_test(test_rte_safety_violation safestate/test_rte_safety_violation.c rte::core)
 rte_add_test(test_rte_string         string/test_rte_string.c            rte::core)
 rte_add_test(test_rte_lifecycle      lifecycle/test_rte_lifecycle.c      rte::core)
+rte_add_test(test_rte_lifecycle_osa_gates lifecycle/test_rte_lifecycle_osa_gates.c rte::channels)
 
 # OAL
 if(RTE_ENABLE_TIMER)
