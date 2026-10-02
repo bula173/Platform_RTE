@@ -365,6 +365,8 @@ if(RTE_ENABLE_DUAL)
         # untouched, still backing the 2oo2 path). Depends on rte_dual_types.h (rte_dual_state_t)
         # and rte_redundancy_config.h (RTE_REDUNDANCY_CONFIG_MAX_REPLICAS), same gate as dual.
         src/redundancy/election/rte_election.c
+        # ADR-040 step 1: pure site-role policy (moved from RBC_GP), same gate as dual.
+        src/redundancy/site_role/rte_site_role_policy.c
     )
 endif()
 if(RTE_ENABLE_SAFECHANNEL)

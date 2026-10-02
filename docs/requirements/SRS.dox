@@ -520,6 +520,18 @@ require.
 | REQ-DUAL-NEGOTIATOR-004 | The HOT/COLD determination for whichever side is currently STANDBY shall always be derived from the ONLINE side's own channel-degradation bit — never from the STANDBY side's own self-reported degradation, and never from the ONLINE side's opinion of its own label. This applies symmetrically regardless of which side (own or peer) is the one currently ONLINE. |
 | REQ-DUAL-NEGOTIATOR-005 | Loss of peer contact for longer than `config->peer_lost_timeout_ms` shall set `peer_state` to `RTE_DUAL_STATE_UNKNOWN`; `own_state` shall degrade to `RTE_DUAL_STATE_UNKNOWN` too unless it was already `RTE_DUAL_STATE_ONLINE`, in which case it shall remain `RTE_DUAL_STATE_ONLINE` (an active instance keeps acting without needing continuous peer confirmation). |
 
+### 3e.5 Site-role policy — `rte_site_role_policy.h` (ADR-040)
+
+Pure decision function and timing predicates of site-role negotiation (ONLINE/STANDBY), moved from RBC_GP in
+ADR-040 step 1. No I/O and no state of its own.
+
+| ID | Requirement |
+|---|---|
+| REQ-SITEROLE-001 | `rte_site_role_decide()` shall evaluate its rules in the documented order (both FAULTED; counterpart FAULTED; recovered; dispatcher-confirmed takeover; dual ONLINE; both STANDBY; follow the ONLINE A/B sibling) and return the action of the first that applies. |
+| REQ-SITEROLE-002 | A PROMOTE shall be turned into WAIT unless this channel is ready and its A/B sibling is ONLINE, ready, or unreachable. |
+| REQ-SITEROLE-003 | Silence alone shall never promote: `rte_site_role_takeover_allowed()` is true only for a STANDBY, non-FAULTED channel with an unresponsive counterpart and a dispatcher confirmation at most `RTE_SITE_ROLE_TAKEOVER_CONFIRM_VALID_CYCLES` old. |
+| REQ-SITEROLE-004 | A cycle counter that restarted since a confirmation or snapshot was stamped shall make the confirmation expired and the snapshot stale. |
+
 ## 3f. Unified channel factory — `rte_safechannel.h` (ADR-022)
 
 Hides `rte_netlink`/`rte_ipc` from application code: an application

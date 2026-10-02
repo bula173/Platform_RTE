@@ -3,9 +3,11 @@
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_status Status
 
-**Proposed (2026-10-02), not started.** Plan for gap G1 of the root
-`docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. No code has moved. Steps 2 to 5 change SIL 4 promotion logic and
-need the decisions in "Open decisions" first.
+**Accepted (2026-10-02); step 1 done.** Plan for gap G1 of the root
+`docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. Decisions 1 and 2 below were taken by the product owner on
+2026-10-02 (the model overrides A3; drive points stay in the application cycle). Step 1 moved the pure policy:
+`include/rte/redundancy/site_role/rte_site_role_policy.h`, test `tests/site_role/test_rte_site_role_policy.c`
+(REQ-SITEROLE-001..004); RBC_GP calls it, its unit tests and `smoke.sh` (incl. failover) pass. Steps 2 to 5 open.
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_context Context
 
@@ -74,9 +76,9 @@ Each step keeps behaviour identical and is verified by the existing unit tests, 
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_open Open decisions
 
-1. Confirm that the model overrides the A3 "keep both" decision.
-2. Timing: keep the drive points in the application's cycle (option A, today's behaviour) or give RTE its own site-link
-   thread (option B, changes timing and the meaning of an acknowledgement). Proposed: A.
+1. **Decided 2026-10-02:** the model overrides the A3 "keep both" decision.
+2. **Decided 2026-10-02: option A** - the drive points stay in the application's cycle (today's behaviour), no RTE
+   site-link thread.
 3. A/B agreement source: RTE reads the sibling state itself (needs the peer link in RTE) or GP forwards it. Proposed:
    GP forwards until step 5.
 4. Trust model for the takeover confirmation (which key, who issues it).
