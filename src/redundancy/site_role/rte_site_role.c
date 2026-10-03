@@ -15,6 +15,7 @@
 
 #include "rte/oal/log/rte_log.h"
 #include "rte/oal/memory/rte_mem_util.h"
+#include "rte/oal/random/rte_random.h"
 #include "rte/oal/timer/rte_timer.h"
 #include "rte/utils/buffer/rte_buffer.h"
 
@@ -537,6 +538,146 @@ static void take_local(rte_site_role_t *rs, const rte_site_role_local_t *local)
     rs->local_single_mode = local->single_mode;
 }
 
+/* ---- takeover confirmation (REQ-SITEROLE-015) ------------------------------------------------------------------- */
+
+static uint32_t read_u32_le(const uint8_t *in)
+{
+    return (uint32_t)in[0] | ((uint32_t)in[1] << 8U) | ((uint32_t)in[2] << 16U) | ((uint32_t)in[3] << 24U);
+}
+
+static uint32_t challenge_lifetime(const rte_site_role_t *rs)
+{
+    return (rs->cfg.challenge_lifetime_cycles != 0U) ? rs->cfg.challenge_lifetime_cycles
+                                                     : (uint32_t)RTE_SITE_ROLE_CHALLENGE_LIFETIME_DEFAULT_CYCLES;
+}
+
+static void draw_challenge(rte_site_role_t *rs, uint32_t cycle)
+{
+    uint8_t bytes[4];
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+
+    rs->challenge_cycle = cycle;
+    if (rte_random_fill(bytes, sizeof(bytes)) != RTE_STATUS_OK)
+    {
+        rs->challenge_valid = false; /* no token can match until a draw succeeds */
+        if (!rs->challenge_fail_reported)
+        {
+            rs->challenge_fail_reported = true;
+            (void)snprintf(line, sizeof(line), "[%s] cycle %u: takeover challenge could not be drawn - tokens refused\n",
+                           rs->cfg.role_tag, (unsigned int)cycle);
+            trace_line(rs, line);
+            log_event(rs, RTE_LOG_LEVEL_ERROR, cycle, rs->cfg.role_tag, "-", "TAKEOVER",
+                      "challenge could not be drawn - tokens refused", NULL);
+        }
+        return;
+    }
+    rs->challenge = read_u32_le(bytes);
+    rs->challenge_valid = true;
+    rs->challenge_fail_reported = false;
+}
+
+/* A new challenge when none is held, when it has lived its lifetime, or when the cycle number went back (a state
+ * transfer renumbers cycles). */
+static void refresh_challenge(rte_site_role_t *rs, uint32_t cycle)
+{
+    if (rs->cfg.verify_mac == NULL)
+    {
+        return;
+    }
+    if ((!rs->challenge_valid) || (cycle < rs->challenge_cycle) ||
+        ((cycle - rs->challenge_cycle) >= challenge_lifetime(rs)))
+    {
+        draw_challenge(rs, cycle);
+    }
+}
+
+static void record_takeover_confirmation(rte_site_role_t *rs, uint32_t cycle, const char *how)
+{
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+
+    rs->takeover_confirmed = true;
+    rs->takeover_confirm_cycle = cycle;
+    (void)snprintf(line, sizeof(line), "[%s] cycle %u: dispatcher takeover confirmation received (valid for %u cycles)\n",
+                   rs->cfg.role_tag, (unsigned int)cycle, (unsigned int)RTE_SITE_ROLE_TAKEOVER_CONFIRM_VALID_CYCLES);
+    trace_line(rs, line);
+    log_event(rs, RTE_LOG_LEVEL_WARNING, cycle, rs->cfg.role_tag, "-", "TAKEOVER", "dispatcher confirmation received",
+              how);
+}
+
+static void trace_ignored_while_online(const rte_site_role_t *rs)
+{
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+
+    (void)snprintf(line, sizeof(line), "[%s] takeover confirmation ignored - already ONLINE\n", rs->cfg.role_tag);
+    trace_line(rs, line);
+}
+
+static rte_site_role_token_result_t check_token(const rte_site_role_t *rs, const uint8_t *token, size_t token_len)
+{
+    rte_site_role_token_result_t result;
+
+    if (rs->cfg.verify_mac == NULL)
+    {
+        result = RTE_SITE_ROLE_TOKEN_NOT_CONFIGURED;
+    }
+    else if ((token == NULL) || (token_len != (size_t)RTE_SITE_ROLE_TOKEN_LEN) ||
+             (token[0] != (uint8_t)RTE_SITE_ROLE_TOKEN_VERSION) || (token[1] != (uint8_t)(rs->cfg.own_id & 0xFFU)) ||
+             (token[2] != rs->cfg.channel_id) || (token[3] != 0U) || (read_u32_le(&token[12]) != 0U))
+    {
+        result = RTE_SITE_ROLE_TOKEN_BAD_FORMAT;
+    }
+    else if (!rs->challenge_valid)
+    {
+        result = RTE_SITE_ROLE_TOKEN_NO_CHALLENGE;
+    }
+    else if (!rs->cfg.verify_mac(rs->cfg.user, token, (size_t)RTE_SITE_ROLE_TOKEN_MSG_LEN,
+                                 &token[RTE_SITE_ROLE_TOKEN_MSG_LEN]))
+    {
+        result = RTE_SITE_ROLE_TOKEN_BAD_MAC;
+    }
+    else if (read_u32_le(&token[4]) != rs->challenge)
+    {
+        result = RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE;
+    }
+    else
+    {
+        result = RTE_SITE_ROLE_TOKEN_ACCEPTED;
+    }
+    return result;
+}
+
+static const char *token_result_text(rte_site_role_token_result_t result)
+{
+    const char *text;
+
+    switch (result)
+    {
+    case RTE_SITE_ROLE_TOKEN_ACCEPTED:
+        text = "accepted";
+        break;
+    case RTE_SITE_ROLE_TOKEN_IGNORED_ONLINE:
+        text = "ignored, already ONLINE";
+        break;
+    case RTE_SITE_ROLE_TOKEN_NOT_CONFIGURED:
+        text = "no takeover key configured";
+        break;
+    case RTE_SITE_ROLE_TOKEN_NO_CHALLENGE:
+        text = "no challenge held";
+        break;
+    case RTE_SITE_ROLE_TOKEN_BAD_FORMAT:
+        text = "bad format";
+        break;
+    case RTE_SITE_ROLE_TOKEN_BAD_MAC:
+        text = "bad MAC";
+        break;
+    case RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE:
+    default:
+        text = "stale challenge";
+        break;
+    }
+    return text;
+}
+
 /* ---- public ----------------------------------------------------------------------------------------------------- */
 
 rte_status_t rte_site_role_init(rte_site_role_t *rs, const rte_site_role_config_t *cfg)
@@ -650,6 +791,7 @@ void rte_site_role_execute(rte_site_role_t *rs, uint32_t cycle, const rte_site_r
     }
     rs->cycle = cycle;
     take_local(rs, local);
+    refresh_challenge(rs, cycle);
 
     if (rs->link == NULL)
     {
@@ -766,19 +908,66 @@ void rte_site_role_on_takeover_confirm(rte_site_role_t *rs, uint32_t cycle)
     {
         return;
     }
-    if (rs->online)
+    if (rs->cfg.verify_mac != NULL)
     {
-        (void)snprintf(line, sizeof(line), "[%s] takeover confirmation ignored - already ONLINE\n", rs->cfg.role_tag);
+        (void)snprintf(line, sizeof(line),
+                       "[%s] cycle %u: unauthenticated takeover confirmation refused - a takeover key is configured\n",
+                       rs->cfg.role_tag, (unsigned int)cycle);
         trace_line(rs, line);
+        log_event(rs, RTE_LOG_LEVEL_WARNING, cycle, rs->cfg.role_tag, "-", "TAKEOVER",
+                  "unauthenticated confirmation refused", NULL);
         return;
     }
-    rs->takeover_confirmed = true;
-    rs->takeover_confirm_cycle = cycle;
-    (void)snprintf(line, sizeof(line), "[%s] cycle %u: dispatcher takeover confirmation received (valid for %u cycles)\n",
-                   rs->cfg.role_tag, (unsigned int)cycle, (unsigned int)RTE_SITE_ROLE_TAKEOVER_CONFIRM_VALID_CYCLES);
-    trace_line(rs, line);
-    log_event(rs, RTE_LOG_LEVEL_WARNING, cycle, rs->cfg.role_tag, "-", "TAKEOVER", "dispatcher confirmation received",
-              NULL);
+    if (rs->online)
+    {
+        trace_ignored_while_online(rs);
+        return;
+    }
+    record_takeover_confirmation(rs, cycle, "unauthenticated");
+}
+
+rte_site_role_token_result_t rte_site_role_on_takeover_token(rte_site_role_t *rs, uint32_t cycle, const uint8_t *token,
+                                                             size_t token_len)
+{
+    rte_site_role_token_result_t result;
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+    char extra[64];
+
+    if (rs == NULL)
+    {
+        return RTE_SITE_ROLE_TOKEN_NOT_CONFIGURED;
+    }
+    if ((rs->cfg.verify_mac != NULL) && rs->online)
+    {
+        trace_ignored_while_online(rs);
+        return RTE_SITE_ROLE_TOKEN_IGNORED_ONLINE;
+    }
+    result = check_token(rs, token, token_len);
+    if (result == RTE_SITE_ROLE_TOKEN_ACCEPTED)
+    {
+        (void)snprintf(extra, sizeof(extra), "authenticated seq=%u", (unsigned int)read_u32_le(&token[8]));
+        record_takeover_confirmation(rs, cycle, extra);
+        draw_challenge(rs, cycle); /* single use */
+    }
+    else
+    {
+        (void)snprintf(line, sizeof(line), "[%s] cycle %u: takeover confirmation token rejected (%s)\n",
+                       rs->cfg.role_tag, (unsigned int)cycle, token_result_text(result));
+        trace_line(rs, line);
+        log_event(rs, RTE_LOG_LEVEL_WARNING, cycle, rs->cfg.role_tag, "-", "TAKEOVER", "confirmation token rejected",
+                  token_result_text(result));
+    }
+    return result;
+}
+
+bool rte_site_role_takeover_challenge(const rte_site_role_t *rs, uint32_t *out)
+{
+    if ((rs == NULL) || (out == NULL) || (!rs->challenge_valid))
+    {
+        return false;
+    }
+    *out = rs->challenge;
+    return true;
 }
 
 void rte_site_role_note_lost_contact(rte_site_role_t *rs)

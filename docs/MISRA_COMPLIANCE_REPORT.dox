@@ -1443,3 +1443,12 @@
 ///  agreement check moved from RBC_GP. Saturating `uint8_t` counter (no wrap), single exit for the verdict after the
 ///  NULL/unknown early return (rule 15.5 bucket), `snprintf` diagnostics as above. `ctest` 40/40 (`test_rte_site_role`
 ///  extended: unknown sibling, agree, reset, mode mismatch, fault on the third check).
+///- **Update (2026-10-03): takeover confirmation token** (ADR-040 step 4a, REQ-SITEROLE-015) -
+///  `rte_site_role_on_takeover_token()`, `rte_site_role_takeover_challenge()`. The MAC check is an application
+///  callback (no crypto in RTE); the challenge comes from `rte_random_fill()` and a failed draw holds no challenge
+///  (fail-safe: every token refused, reported once). Little-endian decode by explicit shifts of `uint8_t` widened to
+///  `uint32_t` (rule 10.x: no implicit narrowing); the verdict switch lists every enumerator (`-Wswitch-enum`, rule
+///  16.4 `default` kept). Early returns on NULL and on ONLINE (rule 15.5 bucket). `cppcheck --addon=misra` on
+///  `rte_site_role.c`: no findings. `ctest` 40/40 (`test_rte_site_role` extended: not configured, no challenge,
+///  unauthenticated refused, bad format x6, bad MAC, stale, accepted + replay, ignored while ONLINE, lifetime expiry,
+///  cycle renumbered, random failure).

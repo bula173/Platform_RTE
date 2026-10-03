@@ -12,6 +12,7 @@
 #include "rte/redundancy/site_role/rte_site_role.h"
 #include "rte/oal/timer/rte_timer.h"
 #include "rte_osadapter/netlink/rte_osadapter_netlink.h"
+#include "rte_osadapter/random/rte_osadapter_random.h"
 #include "rte_osadapter/timer/rte_osadapter_timer.h"
 
 #define QUEUE_DEPTH 32U
@@ -356,6 +357,186 @@ static void test_sibling_agreement(void)
     assert(rte_site_role_check_sibling(&g_west, 18U, true, &sib) == RTE_SITE_ROLE_SIBLING_AGREE);
 }
 
+/* ---- takeover token (REQ-SITEROLE-015) -------------------------------------------------------------------------- */
+
+static uint8_t      g_random_next = 0x10U;
+static rte_status_t g_random_result = RTE_STATUS_OK;
+
+static rte_status_t mock_random_fill(uint8_t *out, size_t len)
+{
+    size_t i;
+
+    if (g_random_result != RTE_STATUS_OK)
+    {
+        return g_random_result;
+    }
+    for (i = 0U; i < len; i++)
+    {
+        out[i] = g_random_next;
+        g_random_next++;
+    }
+    return RTE_STATUS_OK;
+}
+
+static const rte_osadapter_random_t g_mock_random = { mock_random_fill };
+
+/* Toy MAC for the test only (the real verifier is the application's): mac[i] = msg[i] ^ msg[i + 8] ^ 0x5A. */
+static void toy_mac(const uint8_t *msg, uint8_t mac[RTE_SITE_ROLE_TOKEN_MAC_LEN])
+{
+    uint32_t i;
+
+    for (i = 0U; i < RTE_SITE_ROLE_TOKEN_MAC_LEN; i++)
+    {
+        mac[i] = (uint8_t)(msg[i] ^ msg[i + 8U] ^ 0x5AU);
+    }
+}
+
+static bool toy_verify(void *user, const uint8_t *msg, size_t msg_len, const uint8_t mac[RTE_SITE_ROLE_TOKEN_MAC_LEN])
+{
+    uint8_t expected[RTE_SITE_ROLE_TOKEN_MAC_LEN];
+
+    (void)user;
+    if (msg_len != (size_t)RTE_SITE_ROLE_TOKEN_MSG_LEN)
+    {
+        return false;
+    }
+    toy_mac(msg, expected);
+    return memcmp(expected, mac, sizeof(expected)) == 0;
+}
+
+static void make_token(uint8_t token[RTE_SITE_ROLE_TOKEN_LEN], uint8_t site, uint8_t channel, uint32_t challenge,
+                       uint32_t seq)
+{
+    (void)memset(token, 0, RTE_SITE_ROLE_TOKEN_LEN);
+    token[0] = (uint8_t)RTE_SITE_ROLE_TOKEN_VERSION;
+    token[1] = site;
+    token[2] = channel;
+    token[4] = (uint8_t)(challenge & 0xFFU);
+    token[5] = (uint8_t)((challenge >> 8U) & 0xFFU);
+    token[6] = (uint8_t)((challenge >> 16U) & 0xFFU);
+    token[7] = (uint8_t)((challenge >> 24U) & 0xFFU);
+    token[8] = (uint8_t)(seq & 0xFFU);
+    toy_mac(token, &token[RTE_SITE_ROLE_TOKEN_MSG_LEN]);
+}
+
+/* EAST (site id 1), channel B (1), counterpart silent; only a valid token for the current challenge promotes. */
+static void test_takeover_token(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+    uint8_t token[RTE_SITE_ROLE_TOKEN_LEN];
+    uint32_t challenge = 0U;
+    uint32_t first;
+    uint32_t cycle;
+
+    assert(rte_osadapter_random_register(&g_mock_random) == RTE_STATUS_OK);
+
+    /* Not configured: no challenge, tokens refused, the unauthenticated path still works (interim). */
+    reset_links();
+    setup(&g_east, &g_east_app, false, 3U);
+    rte_site_role_execute(&g_east, 1U, &local);
+    assert(!rte_site_role_takeover_challenge(&g_east, &challenge));
+    make_token(token, 1U, 0U, 0U, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 1U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_NOT_CONFIGURED);
+
+    /* Configured. */
+    reset_links();
+    setup(&g_east, &g_east_app, false, 3U);
+    g_east.cfg.verify_mac = toy_verify;
+    g_east.cfg.channel_id = 1U;
+    g_east.cfg.challenge_lifetime_cycles = 30U;
+    g_east_link.blocked = 1;
+    assert(!rte_site_role_takeover_challenge(&g_east, &challenge)); /* none before the first execute */
+    make_token(token, 1U, 1U, 0U, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 0U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_NO_CHALLENGE);
+    for (cycle = 1U; cycle <= 20U; cycle++)
+    {
+        rte_site_role_execute(&g_east, cycle, &local);
+    }
+    assert(rte_site_role_takeover_challenge(&g_east, &first));
+    assert(first == 0x13121110U); /* drawn once at cycle 1, little endian */
+
+    /* The unauthenticated path is refused once a key is configured. */
+    rte_site_role_on_takeover_confirm(&g_east, 21U);
+    rte_site_role_execute(&g_east, 21U, &local);
+    assert(!rte_site_role_is_online(&g_east));
+
+    /* Wrong site, channel, version, length, reserved byte; bad MAC; stale challenge. */
+    make_token(token, 0U, 1U, first, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    make_token(token, 1U, 0U, first, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    make_token(token, 1U, 1U, first, 1U);
+    token[0] = 2U;
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    make_token(token, 1U, 1U, first, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token) - 1U) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, NULL, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    token[13] = 1U;
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_FORMAT);
+    make_token(token, 1U, 1U, first, 1U);
+    token[RTE_SITE_ROLE_TOKEN_LEN - 1U] ^= 0x01U;
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_BAD_MAC);
+    make_token(token, 1U, 1U, first + 1U, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 22U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE);
+    rte_site_role_execute(&g_east, 22U, &local);
+    assert(!rte_site_role_is_online(&g_east));
+
+    /* Valid: accepted, the challenge changes (a replay of the same token is stale), and the next cycle promotes. */
+    make_token(token, 1U, 1U, first, 7U);
+    assert(rte_site_role_on_takeover_token(&g_east, 23U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_ACCEPTED);
+    assert(rte_site_role_takeover_challenge(&g_east, &challenge));
+    assert(challenge != first);
+    assert(rte_site_role_on_takeover_token(&g_east, 23U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE);
+    rte_site_role_execute(&g_east, 24U, &local);
+    assert(rte_site_role_is_online(&g_east));
+    assert(g_east_app.last_change.reason == RTE_SITE_ROLE_REASON_DISPATCHER_CONFIRMED);
+    make_token(token, 1U, 1U, challenge, 8U);
+    assert(rte_site_role_on_takeover_token(&g_east, 25U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_IGNORED_ONLINE);
+}
+
+/* The challenge expires after its lifetime and when the cycle number goes back; a failed draw holds no challenge. */
+static void test_takeover_challenge_lifetime(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+    uint8_t token[RTE_SITE_ROLE_TOKEN_LEN];
+    uint32_t a;
+    uint32_t b;
+
+    assert(rte_osadapter_random_register(&g_mock_random) == RTE_STATUS_OK);
+    reset_links();
+    setup(&g_east, &g_east_app, false, 3U);
+    g_east.cfg.verify_mac = toy_verify;
+    g_east.cfg.challenge_lifetime_cycles = 5U;
+    g_east_link.blocked = 1;
+
+    rte_site_role_execute(&g_east, 100U, &local);
+    assert(rte_site_role_takeover_challenge(&g_east, &a));
+    rte_site_role_execute(&g_east, 104U, &local);
+    assert(rte_site_role_takeover_challenge(&g_east, &b));
+    assert(a == b);
+    rte_site_role_execute(&g_east, 105U, &local); /* lifetime reached */
+    assert(rte_site_role_takeover_challenge(&g_east, &b));
+    assert(a != b);
+    a = b;
+    rte_site_role_execute(&g_east, 50U, &local); /* cycle renumbered backwards */
+    assert(rte_site_role_takeover_challenge(&g_east, &b));
+    assert(a != b);
+
+    /* An expired challenge no longer matches. */
+    make_token(token, 1U, 0U, a, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 50U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE);
+
+    /* rte_random fails at the next draw: no challenge, every token refused until a draw succeeds. */
+    g_random_result = RTE_STATUS_INTERNAL_ERROR;
+    rte_site_role_execute(&g_east, 55U, &local);
+    assert(!rte_site_role_takeover_challenge(&g_east, &b));
+    make_token(token, 1U, 0U, b, 1U);
+    assert(rte_site_role_on_takeover_token(&g_east, 55U, token, sizeof(token)) == RTE_SITE_ROLE_TOKEN_NO_CHALLENGE);
+    g_random_result = RTE_STATUS_OK;
+    rte_site_role_execute(&g_east, 56U, &local);
+    assert(rte_site_role_takeover_challenge(&g_east, &b));
+}
+
 int main(void)
 {
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
@@ -368,5 +549,7 @@ int main(void)
     test_silence_needs_dispatcher_confirmation();
     test_flush_faulted_frame_layout();
     test_sibling_agreement();
+    test_takeover_token();
+    test_takeover_challenge_lifetime();
     return 0;
 }

@@ -27,6 +27,12 @@
  * REQ-SITEROLE-013: the link is closed for reconnect after send_miss_threshold consecutive unacknowledged sends or on
  *                   any receive failure other than a timeout; a STANDBY channel then marks the counterpart
  *                   unresponsive and stays STANDBY (silence alone never promotes, REQ-SITEROLE-003).
+ * REQ-SITEROLE-015: with a MAC verifier configured, a dispatcher takeover confirmation is accepted only as a token
+ *                   (RTE_SITE_ROLE_TOKEN_LEN bytes) whose version, site id and channel id match this channel, whose
+ *                   challenge equals this channel's current challenge and whose MAC the verifier accepts; the
+ *                   challenge is random (rte_random), changes after every accepted token and after
+ *                   challenge_lifetime_cycles, and no token is accepted while no challenge could be drawn. The
+ *                   unauthenticated rte_site_role_on_takeover_confirm() is then refused.
  */
 #ifndef RTE_SITE_ROLE_H
 #define RTE_SITE_ROLE_H
@@ -100,6 +106,38 @@ typedef void (*rte_site_role_trace_fn)(void *user, const char *line);
 /** Waits ms milliseconds; used only by the blocking startup connect retry. */
 typedef void (*rte_site_role_delay_fn)(void *user, uint32_t ms);
 
+/*
+ * Takeover confirmation token (ADR-040 step 4, REQ-SITEROLE-015), RTE_SITE_ROLE_TOKEN_LEN bytes:
+ *   message (RTE_SITE_ROLE_TOKEN_MSG_LEN): version(1) | site id(1) | channel id(1) | 0(1) |
+ *                                          challenge(4, little endian) | issuer sequence(4, little endian) | 0(4)
+ *   mac (RTE_SITE_ROLE_TOKEN_MAC_LEN):     the issuer's MAC over the message, with the site's takeover key
+ * The challenge makes a token single-use and bounds its age without a wall clock: the issuer reads the current
+ * challenge from the channel's status, and a token for an older challenge is rejected.
+ */
+#define RTE_SITE_ROLE_TOKEN_MSG_LEN 16U
+#define RTE_SITE_ROLE_TOKEN_MAC_LEN 8U
+#define RTE_SITE_ROLE_TOKEN_LEN (RTE_SITE_ROLE_TOKEN_MSG_LEN + RTE_SITE_ROLE_TOKEN_MAC_LEN)
+#define RTE_SITE_ROLE_TOKEN_VERSION 1U
+/** Challenge lifetime used when the configuration leaves it 0. */
+#define RTE_SITE_ROLE_CHALLENGE_LIFETIME_DEFAULT_CYCLES 240U
+
+/** Checks the issuer's MAC over a token message with the site's takeover key, which the application holds (RTE does
+ *  not depend on a crypto library). Returns true only for a matching MAC. */
+typedef bool (*rte_site_role_verify_mac_fn)(void *user, const uint8_t *msg, size_t msg_len,
+                                            const uint8_t mac[RTE_SITE_ROLE_TOKEN_MAC_LEN]);
+
+/** Result of rte_site_role_on_takeover_token(). */
+typedef enum
+{
+    RTE_SITE_ROLE_TOKEN_ACCEPTED = 0,     /**< confirmation recorded, challenge changed */
+    RTE_SITE_ROLE_TOKEN_IGNORED_ONLINE,   /**< valid or not, ignored: this channel is already ONLINE */
+    RTE_SITE_ROLE_TOKEN_NOT_CONFIGURED,   /**< no MAC verifier configured */
+    RTE_SITE_ROLE_TOKEN_NO_CHALLENGE,     /**< no challenge drawn yet (or rte_random failed) */
+    RTE_SITE_ROLE_TOKEN_BAD_FORMAT,       /**< length, version, site id or channel id wrong */
+    RTE_SITE_ROLE_TOKEN_BAD_MAC,          /**< the verifier refused the MAC */
+    RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE   /**< MAC fine, but not for the current challenge (old or replayed token) */
+} rte_site_role_token_result_t;
+
 /** Configuration (copied by rte_site_role_init(); the strings and buffers must outlive the service). */
 typedef struct
 {
@@ -133,6 +171,10 @@ typedef struct
     rte_site_role_trace_fn         trace;    /**< may be NULL */
     rte_site_role_delay_fn         delay;    /**< may be NULL (startup retries without a pause) */
     void                          *user;
+    /* Takeover confirmation (REQ-SITEROLE-015). verify_mac NULL = the interim unauthenticated path. */
+    rte_site_role_verify_mac_fn    verify_mac;
+    uint8_t                        channel_id;                /**< bound into the token: 0 = A, 1 = B */
+    uint32_t                       challenge_lifetime_cycles; /**< 0 = RTE_SITE_ROLE_CHALLENGE_LIFETIME_DEFAULT_CYCLES */
 } rte_site_role_config_t;
 
 /** Consecutive disagreeing A/B checks that make a fault (REQ-SITEROLE-014). */
@@ -201,6 +243,10 @@ typedef struct
     bool                   standby_warm;
     uint32_t               cycle;
     uint8_t                sibling_mismatch;
+    bool                   challenge_valid;
+    uint32_t               challenge;
+    uint32_t               challenge_cycle;
+    bool                   challenge_fail_reported;
 } rte_site_role_t;
 
 /**
@@ -227,8 +273,28 @@ void rte_site_role_service_link(rte_site_role_t *rs, uint32_t cycle);
 /** @brief ONLINE, warm/hot standby: sends this cycle's snapshot before the output commit and tracks the ack. */
 void rte_site_role_sync_standby(rte_site_role_t *rs, uint32_t cycle, const rte_site_role_local_t *local);
 
-/** @brief Records a dispatcher confirmation that the other site is not ONLINE (ignored while ONLINE). */
+/**
+ * @brief Records an unauthenticated dispatcher confirmation that the other site is not ONLINE (ignored while ONLINE).
+ *        Interim path: refused (and logged) when a MAC verifier is configured - use rte_site_role_on_takeover_token().
+ */
 void rte_site_role_on_takeover_confirm(rte_site_role_t *rs, uint32_t cycle);
+
+/**
+ * @brief Verifies a takeover confirmation token (REQ-SITEROLE-015) and, when it is valid, records the confirmation
+ *        exactly like rte_site_role_on_takeover_confirm() and draws a new challenge. Every outcome is logged.
+ * @param token      RTE_SITE_ROLE_TOKEN_LEN bytes as described above
+ * @param token_len  number of bytes in token
+ * @return the verdict; only RTE_SITE_ROLE_TOKEN_ACCEPTED records a confirmation.
+ */
+rte_site_role_token_result_t rte_site_role_on_takeover_token(rte_site_role_t *rs, uint32_t cycle, const uint8_t *token,
+                                                             size_t token_len);
+
+/**
+ * @brief This channel's current takeover challenge, for the application's status line (the issuer MACs it).
+ * @param out  receives the challenge
+ * @return true when a challenge is held; false before the first rte_site_role_execute() or when rte_random failed.
+ */
+bool rte_site_role_takeover_challenge(const rte_site_role_t *rs, uint32_t *out);
 
 /** @brief The application stalled while ONLINE long enough for the counterpart to have taken over: yield if it is. */
 void rte_site_role_note_lost_contact(rte_site_role_t *rs);
