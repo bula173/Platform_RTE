@@ -3,7 +3,7 @@
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_status Status
 
-**Accepted (2026-10-02); steps 1 to 3 done, step 4 in progress.** Plan for gap G1 of the root
+**Accepted (2026-10-02); steps 1 to 4 done, step 5 open.** Plan for gap G1 of the root
 `docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. Decisions 1 and 2 below were taken by the product owner on
 2026-10-02 (the model overrides A3; drive points stay in the application cycle). Step 1 moved the pure policy
 (`rte_site_role_policy`, REQ-SITEROLE-001..004). Step 2 moved the mechanism: `rte_site_role` owns the inter-site
@@ -15,8 +15,9 @@ attempts (`delay` callback - the OAL has no sleep service) and the console line 
 (2026-10-03) moved the A/B role agreement rule and its 3-strike count: `rte_site_role_check_sibling()`
 (REQ-SITEROLE-014) logs the mismatch lines and the `NEGOTIATION_MISMATCH` event and returns a verdict; GP forwards
 the sibling's site-state frame and keeps the fault reaction (safe-state reboot). Step 4a (2026-10-03): the token
-check and the challenge are in `rte_site_role` (REQ-SITEROLE-015, decision 4 below); the application wiring, the
-issuer and the test environment (4b-4e) follow - the plan is in the root `TODO.dox`. Step 5 open.
+check and the challenge are in `rte_site_role` (REQ-SITEROLE-015, decision 4 below). Steps 4b-4e (2026-10-03) are
+done with no design change: RBC_GP wires the key and the token builder, RBC_Maintenance_Web is the interim issuer,
+RBC_Test_Env covers the takeover and its negative cases, and the documentation is updated. Step 5 open.
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_context Context
 
