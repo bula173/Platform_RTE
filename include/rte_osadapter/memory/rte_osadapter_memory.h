@@ -16,6 +16,11 @@ extern "C" {
 
 /**
  * @brief OSAdapter memory pool operations vtable.
+ *
+ * An OSAdapter that guards its pools with an internal lock shall bound every wait for it (REQ-OAL-MEM-015, OSA rule
+ * R2: every wait bounded). When the bound expires, create, acquire, release and stats return RTE_STATUS_TIMEOUT and
+ * leave the pool unchanged: create reserves nothing and leaves *out_handle unwritten, acquire sets *out_block to NULL,
+ * release does not return the block (it stays with the caller, who may retry), stats leaves its outputs unwritten.
  */
 typedef struct rte_osadapter_memory_s
 {

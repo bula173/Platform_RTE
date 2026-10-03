@@ -201,6 +201,7 @@ caveat in section 4); the behavior they describe is what each per-service
 | REQ-OAL-MEM-012 | `rte_mem_pool_release()` shall return a previously acquired block to its pool. |
 | REQ-OAL-MEM-013 | `rte_mem_pool_stats()` shall report current free/used block counts. |
 | REQ-OAL-MEM-014 | `rte_osadapter_memory_register()` per REQ-OAL-BACKEND-001. |
+| REQ-OAL-MEM-015 | An OSAdapter that guards its pools with an internal lock shall bound every wait for that lock (OSA rule R2: every wait bounded, OSA-ARCH-CAP 0.1). When the bound expires, `rte_mem_pool_create()`, `rte_mem_pool_acquire()`, `rte_mem_pool_release()` and `rte_mem_pool_stats()` shall return `RTE_STATUS_TIMEOUT` and leave the pool unchanged: create reserves nothing, acquire hands out no block (`*out_block` NULL), release does not return the block (it stays with the caller, who may retry), stats reads no counts. The OAL wrappers pass the status through unchanged. |
 
 #### 2.3.1 Safe pointer wrapper — `rte_safe_ptr.h`
 

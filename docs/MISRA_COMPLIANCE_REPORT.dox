@@ -1464,3 +1464,8 @@
 ///  existing dispatchers, rule 15.5 bucket already accepted), 8.7 5 -> 6 (external function with no caller in the
 ///  file, single-file analysis); free-tier none. No allocation, no new type conversion. `ctest` 41/41 (new:
 ///  `test_rte_mutex`). The POSIX implementation and its screen are in Platform_OS_POSIX's report (Update 4).
+///- **Update (2026-10-03): bounded memory-pool lock** (OSA rule R2, REQ-OAL-MEM-015) - documentation only:
+///  `rte_mem_pool_create/acquire/release/stats()` and the `rte_osadapter_memory_t` contract now name
+///  `RTE_STATUS_TIMEOUT` for an OSAdapter pool lock not acquired within its bound (pool unchanged). The OAL wrappers in
+///  `src/oal/memory/rte_memory.c` already pass the OSAdapter's status through, so no code in this repository changed
+///  and there is no new MISRA finding; the implementation and its screen are in Platform_OS_POSIX's report (Update 5).

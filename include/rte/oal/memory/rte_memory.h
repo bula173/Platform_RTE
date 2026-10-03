@@ -47,7 +47,9 @@ typedef struct rte_mem_pool_config_s
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
  *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
  *         (rte_osadapter_memory_register()); RTE_STATUS_NOT_SUPPORTED if
- *         the registered OSAdapter does not implement create.
+ *         the registered OSAdapter does not implement create;
+ *         RTE_STATUS_TIMEOUT if the OSAdapter's pool lock was not acquired
+ *         within its bound (no pool reserved, REQ-OAL-MEM-015).
  * REQ-OAL-MEM-010
  */
 rte_status_t rte_mem_pool_create(rte_mem_pool_storage_t *storage,
@@ -61,7 +63,9 @@ rte_status_t rte_mem_pool_create(rte_mem_pool_storage_t *storage,
  *                   NULL; set to NULL on failure.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_RESOURCE_EXHAUSTED
  *         if no blocks remain; RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED
- *         as in rte_mem_pool_create().
+ *         as in rte_mem_pool_create(); RTE_STATUS_TIMEOUT if the OSAdapter's
+ *         pool lock was not acquired within its bound (pool unchanged,
+ *         *out_block NULL, REQ-OAL-MEM-015).
  * REQ-OAL-MEM-011
  */
 rte_status_t rte_mem_pool_acquire(rte_mem_pool_handle_t handle, void **out_block);
@@ -71,7 +75,11 @@ rte_status_t rte_mem_pool_acquire(rte_mem_pool_handle_t handle, void **out_block
  * @param handle  Pool handle. Must not be NULL.
  * @param block   Block previously returned by rte_mem_pool_acquire(). Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_NOT_INITIALIZED/
- *         RTE_STATUS_NOT_SUPPORTED as in rte_mem_pool_create().
+ *         RTE_STATUS_NOT_SUPPORTED as in rte_mem_pool_create();
+ *         RTE_STATUS_TIMEOUT if the OSAdapter's pool lock was not acquired
+ *         within its bound (pool unchanged, REQ-OAL-MEM-015): the block was
+ *         not returned and still belongs to the caller, who may retry the
+ *         release.
  * REQ-OAL-MEM-012
  */
 rte_status_t rte_mem_pool_release(rte_mem_pool_handle_t handle, void *block);
@@ -82,7 +90,10 @@ rte_status_t rte_mem_pool_release(rte_mem_pool_handle_t handle, void *block);
  * @param out_free_blocks  Receives the number of free blocks. Must not be NULL.
  * @param out_used_blocks  Receives the number of used blocks. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_NOT_INITIALIZED/
- *         RTE_STATUS_NOT_SUPPORTED as in rte_mem_pool_create().
+ *         RTE_STATUS_NOT_SUPPORTED as in rte_mem_pool_create();
+ *         RTE_STATUS_TIMEOUT if the OSAdapter's pool lock was not acquired
+ *         within its bound (no counts read: both outputs stay 0,
+ *         REQ-OAL-MEM-015).
  * REQ-OAL-MEM-013
  */
 rte_status_t rte_mem_pool_stats(rte_mem_pool_handle_t handle,
