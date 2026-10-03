@@ -536,6 +536,7 @@ ADR-040 step 1. No I/O and no state of its own.
 | REQ-SITEROLE-011 | The role shall change only through `rte_site_role_decide()` or the startup negotiation, and every change shall be reported to the application's change callback before the call that made it returns. |
 | REQ-SITEROLE-012 | A per-cycle reconnect attempt shall be bounded by `reconnect_attempt_ms`; only `rte_site_role_start()` blocks, bounded by `startup_timeout_ms`. |
 | REQ-SITEROLE-013 | The link shall be closed for reconnect after `send_miss_threshold` consecutive unacknowledged sends or on any receive failure other than a timeout; a STANDBY channel then marks the counterpart unresponsive and stays STANDBY. |
+| REQ-SITEROLE-014 | The role of a channel and of its A/B sibling shall agree in {online, single_mode}; `RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT` (3) consecutive disagreeing checks shall be reported as a fault (`RTE_SITE_ROLE_SIBLING_FAULT`, `NEGOTIATION_MISMATCH` event); one agreeing check resets the count; no sibling state yet is no verdict. |
 
 ## 3f. Unified channel factory — `rte_safechannel.h` (ADR-022)
 

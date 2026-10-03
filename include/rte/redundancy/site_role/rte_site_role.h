@@ -20,6 +20,10 @@
  *                   reported to the application's change callback before the next call returns.
  * REQ-SITEROLE-012: a per-cycle reconnect attempt is bounded by reconnect_attempt_ms; only rte_site_role_start()
  *                   blocks, bounded by startup_timeout_ms.
+ * REQ-SITEROLE-014: the role of this channel and of its A/B sibling must agree (2oo2): a disagreement in
+ *                   {online, single_mode} for RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT consecutive checks is a fault
+ *                   (rte_site_role_check_sibling() returns RTE_SITE_ROLE_SIBLING_FAULT); one agreeing check resets
+ *                   the count. The application reacts (safe-state reboot) until the fault reaction moves too.
  * REQ-SITEROLE-013: the link is closed for reconnect after send_miss_threshold consecutive unacknowledged sends or on
  *                   any receive failure other than a timeout; a STANDBY channel then marks the counterpart
  *                   unresponsive and stays STANDBY (silence alone never promotes, REQ-SITEROLE-003).
@@ -122,6 +126,7 @@ typedef struct
     const char        *role_tag;             /**< e.g. "A/WEST", for logs */
     const char        *peer_tag;             /**< e.g. "A/EAST", for logs */
     const char        *site_name;            /**< e.g. "WEST", for log events */
+    const char        *sibling_tag;          /**< the A/B sibling of this channel, e.g. "B", for log events; NULL = "-" */
     rte_site_role_encode_state_fn  encode_state;
     rte_site_role_receive_state_fn receive_state;
     rte_site_role_change_fn        on_change;
@@ -129,6 +134,27 @@ typedef struct
     rte_site_role_delay_fn         delay;    /**< may be NULL (startup retries without a pause) */
     void                          *user;
 } rte_site_role_config_t;
+
+/** Consecutive disagreeing A/B checks that make a fault (REQ-SITEROLE-014). */
+#define RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT 3U
+
+/** The A/B sibling's site state as this channel last received it (ADR-040 step 3: forwarded by the application until
+ *  the platform owns the peer link). */
+typedef struct
+{
+    bool known;       /**< a site-state frame has arrived this run */
+    bool online;      /**< the sibling reports ONLINE */
+    bool single_mode; /**< the sibling reports single-channel mode */
+} rte_site_role_sibling_t;
+
+/** Result of rte_site_role_check_sibling(). */
+typedef enum
+{
+    RTE_SITE_ROLE_SIBLING_UNKNOWN = 0, /**< no site-state frame from the sibling yet (normal at start-up) */
+    RTE_SITE_ROLE_SIBLING_AGREE,       /**< same role and mode */
+    RTE_SITE_ROLE_SIBLING_PENDING,     /**< disagreement below the limit (logged) */
+    RTE_SITE_ROLE_SIBLING_FAULT        /**< disagreement reached the limit: the pair must not continue */
+} rte_site_role_sibling_verdict_t;
 
 /** Status snapshot for monitors (the application's status frame). */
 typedef struct
@@ -174,6 +200,7 @@ typedef struct
     uint32_t               standby_rx_cycle;
     bool                   standby_warm;
     uint32_t               cycle;
+    uint8_t                sibling_mismatch;
 } rte_site_role_t;
 
 /**
@@ -208,6 +235,15 @@ void rte_site_role_note_lost_contact(rte_site_role_t *rs);
 
 /** @brief Best-effort final frame with faulted=1 before the process reboots, so the counterpart can promote. */
 void rte_site_role_flush_faulted(rte_site_role_t *rs, bool single_mode);
+
+/**
+ * @brief A/B role agreement (REQ-SITEROLE-014): compares this channel's role and single_mode with its sibling's.
+ * @param own_single_mode  this channel's single-channel mode at the time of the check
+ * @return the verdict; on RTE_SITE_ROLE_SIBLING_FAULT the application shall enter its fault reaction (the
+ *         disagreement has been logged as NEGOTIATION_MISMATCH).
+ */
+rte_site_role_sibling_verdict_t rte_site_role_check_sibling(rte_site_role_t *rs, uint32_t cycle, bool own_single_mode,
+                                                            const rte_site_role_sibling_t *sibling);
 
 /** @brief Closes the link. Idempotent. */
 void rte_site_role_shutdown(rte_site_role_t *rs);

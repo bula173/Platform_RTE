@@ -3,7 +3,7 @@
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_status Status
 
-**Accepted (2026-10-02); steps 1 and 2 done.** Plan for gap G1 of the root
+**Accepted (2026-10-02); steps 1 to 3 done.** Plan for gap G1 of the root
 `docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. Decisions 1 and 2 below were taken by the product owner on
 2026-10-02 (the model overrides A3; drive points stay in the application cycle). Step 1 moved the pure policy
 (`rte_site_role_policy`, REQ-SITEROLE-001..004). Step 2 moved the mechanism: `rte_site_role` owns the inter-site
@@ -11,8 +11,10 @@ link, the startup negotiation, frame exchange, partner supervision and teardown,
 warm-standby sync and the FAULTED flush (REQ-SITEROLE-010..013, `tests/site_role/test_rte_site_role.c`). RBC_GP's
 `ab_gp_channel_negotiate.c` is now the Site Role Client: state codec (sessions, db), what a promotion takes over
 (transfer policy), local facts. Wire layout and log text unchanged. Two seams are still the application's: the pause between startup connect
-attempts (`delay` callback - the OAL has no sleep service) and the console line sink (`trace` callback). Steps 3 to 5
-open.
+attempts (`delay` callback - the OAL has no sleep service) and the console line sink (`trace` callback). Step 3
+(2026-10-03) moved the A/B role agreement rule and its 3-strike count: `rte_site_role_check_sibling()`
+(REQ-SITEROLE-014) logs the mismatch lines and the `NEGOTIATION_MISMATCH` event and returns a verdict; GP forwards
+the sibling's site-state frame and keeps the fault reaction (safe-state reboot). Steps 4 and 5 open.
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_context Context
 
@@ -84,8 +86,7 @@ Each step keeps behaviour identical and is verified by the existing unit tests, 
 1. **Decided 2026-10-02:** the model overrides the A3 "keep both" decision.
 2. **Decided 2026-10-02: option A** - the drive points stay in the application's cycle (today's behaviour), no RTE
    site-link thread.
-3. A/B agreement source: RTE reads the sibling state itself (needs the peer link in RTE) or GP forwards it. Proposed:
-   GP forwards until step 5.
+3. **Taken as proposed 2026-10-03 (step 3):** GP forwards the sibling state until step 5 puts the peer link in RTE.
 4. Trust model for the takeover confirmation (which key, who issues it).
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_risks Risks

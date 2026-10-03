@@ -1439,3 +1439,7 @@
 ///  Early returns on NULL arguments (rule 15.5 bucket already accepted). The frame size is bounded to 255 because
 ///  `rte_dual_channel_send()` takes a `uint8_t` size; `rte_site_role_init()` rejects anything larger, which makes the
 ///  two `(uint8_t)` casts of `frame_size` value-preserving. `ctest` 40/40 (new: `test_rte_site_role`).
+///- **Update (2026-10-03): `rte_site_role_check_sibling()`** (ADR-040 step 3, REQ-SITEROLE-014) - the A/B role
+///  agreement check moved from RBC_GP. Saturating `uint8_t` counter (no wrap), single exit for the verdict after the
+///  NULL/unknown early return (rule 15.5 bucket), `snprintf` diagnostics as above. `ctest` 40/40 (`test_rte_site_role`
+///  extended: unknown sibling, agree, reset, mode mismatch, fault on the third check).

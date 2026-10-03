@@ -329,6 +329,33 @@ static void test_flush_faulted_frame_layout(void)
     assert(g_west_app.tx[FRAME_SIZE - 1U] == 0U);
 }
 
+/* A/B role agreement (REQ-SITEROLE-014): unknown sibling is no verdict; disagreement is a fault on the third
+ * consecutive check; one agreeing check resets the count. */
+static void test_sibling_agreement(void)
+{
+    rte_site_role_sibling_t sib;
+
+    test_both_standby_tiebreak_promotes_west(); /* WEST ONLINE, not single */
+    (void)memset(&sib, 0, sizeof(sib));
+    assert(rte_site_role_check_sibling(&g_west, 11U, false, &sib) == RTE_SITE_ROLE_SIBLING_UNKNOWN);
+    assert(rte_site_role_check_sibling(&g_west, 11U, false, NULL) == RTE_SITE_ROLE_SIBLING_UNKNOWN);
+
+    sib.known = true;
+    sib.online = true;
+    assert(rte_site_role_check_sibling(&g_west, 11U, false, &sib) == RTE_SITE_ROLE_SIBLING_AGREE);
+
+    sib.online = false; /* the sibling thinks the site is STANDBY */
+    assert(rte_site_role_check_sibling(&g_west, 12U, false, &sib) == RTE_SITE_ROLE_SIBLING_PENDING);
+    assert(rte_site_role_check_sibling(&g_west, 13U, false, &sib) == RTE_SITE_ROLE_SIBLING_PENDING);
+    sib.online = true;
+    assert(rte_site_role_check_sibling(&g_west, 14U, false, &sib) == RTE_SITE_ROLE_SIBLING_AGREE); /* reset */
+    sib.single_mode = true; /* same role, different mode: also a disagreement */
+    assert(rte_site_role_check_sibling(&g_west, 15U, false, &sib) == RTE_SITE_ROLE_SIBLING_PENDING);
+    assert(rte_site_role_check_sibling(&g_west, 16U, false, &sib) == RTE_SITE_ROLE_SIBLING_PENDING);
+    assert(rte_site_role_check_sibling(&g_west, 17U, false, &sib) == RTE_SITE_ROLE_SIBLING_FAULT);
+    assert(rte_site_role_check_sibling(&g_west, 18U, true, &sib) == RTE_SITE_ROLE_SIBLING_AGREE);
+}
+
 int main(void)
 {
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
@@ -340,5 +367,6 @@ int main(void)
     test_snapshot_adopted_on_peer_faulted();
     test_silence_needs_dispatcher_confirmation();
     test_flush_faulted_frame_layout();
+    test_sibling_agreement();
     return 0;
 }

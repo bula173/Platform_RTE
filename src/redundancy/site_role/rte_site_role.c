@@ -806,6 +806,56 @@ void rte_site_role_flush_faulted(rte_site_role_t *rs, bool single_mode)
     trace_line(rs, line);
 }
 
+rte_site_role_sibling_verdict_t rte_site_role_check_sibling(rte_site_role_t *rs, uint32_t cycle, bool own_single_mode,
+                                                            const rte_site_role_sibling_t *sibling)
+{
+    rte_site_role_sibling_verdict_t verdict;
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+    char extra[80];
+
+    if ((rs == NULL) || (sibling == NULL) || !sibling->known)
+    {
+        return RTE_SITE_ROLE_SIBLING_UNKNOWN; /* the sibling has not sent its site state yet - normal at start-up */
+    }
+    if ((sibling->online == rs->online) && (sibling->single_mode == own_single_mode))
+    {
+        rs->sibling_mismatch = 0U;
+        return RTE_SITE_ROLE_SIBLING_AGREE;
+    }
+
+    if (rs->sibling_mismatch < UINT8_MAX)
+    {
+        rs->sibling_mismatch++;
+    }
+    if (rs->sibling_mismatch < (uint8_t)RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT)
+    {
+        (void)snprintf(line, sizeof(line),
+                       "[%s] cycle %u: site state mismatch with local peer (mismatch count %u/%u: own online=%d single=%d "
+                       "vs peer online=%d single=%d)\n",
+                       rs->cfg.role_tag, (unsigned int)cycle, (unsigned int)rs->sibling_mismatch,
+                       (unsigned int)RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT, rs->online ? 1 : 0, own_single_mode ? 1 : 0,
+                       sibling->online ? 1 : 0, sibling->single_mode ? 1 : 0);
+        trace_line(rs, line);
+        verdict = RTE_SITE_ROLE_SIBLING_PENDING;
+    }
+    else
+    {
+        (void)snprintf(line, sizeof(line),
+                       "[%s] cycle %u: NEGOTIATION MISMATCH - own (is_online=%d, single=%d) vs local peer's own "
+                       "(is_online=%d, single=%d) - this site's role -> FAULTED, entering REBOOT\n",
+                       rs->cfg.role_tag, (unsigned int)cycle, rs->online ? 1 : 0, own_single_mode ? 1 : 0,
+                       sibling->online ? 1 : 0, sibling->single_mode ? 1 : 0);
+        trace_line(rs, line);
+        (void)snprintf(extra, sizeof(extra), "own(online=%d,single=%d) peer(online=%d,single=%d)", rs->online ? 1 : 0,
+                       own_single_mode ? 1 : 0, sibling->online ? 1 : 0, sibling->single_mode ? 1 : 0);
+        log_event(rs, RTE_LOG_LEVEL_ERROR, cycle, rs->cfg.role_tag,
+                  (rs->cfg.sibling_tag != NULL) ? rs->cfg.sibling_tag : "-", "NEGOTIATION_MISMATCH",
+                  "FAULTED, entering REBOOT", extra);
+        verdict = RTE_SITE_ROLE_SIBLING_FAULT;
+    }
+    return verdict;
+}
+
 void rte_site_role_shutdown(rte_site_role_t *rs)
 {
     if (rs != NULL)
