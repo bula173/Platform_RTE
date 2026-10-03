@@ -1,0 +1,82 @@
+/**
+\page platformrte_docs_architecture_ADR_041_fsou_output_permission ADR-041: Per-cycle output permission to a Fail-Safe Output Unit (FSOU)
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_status Status
+
+**Proposed (2026-10-03).** Plan for gap G2 of the root `docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. Step G2.1
+is done: the optional OSAdapter seam exists (`rte_osadapter_fsou_t`, `rte_fsou_grant()`, `rte_fsou_revoke()`,
+`rte_fsou_is_present()`, `rte_fsou_report_presence()`, REQ-FSOU-001..003) and nothing calls it. The checkpoint hook
+(the vital step) waits for the product owner to accept this ADR and settle the open points below.
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_context Context
+
+The Capella SCP model (IF-SCP-02/03) has a hardware Fail-Safe Output Unit per site. The FSOU passes the site's outputs
+only when both channels (A and B) gave an output permission in the current cycle window; without both permissions the
+outputs are cut. Baseline rule 4 states the same from the software side: an output leaves the site only after both
+channels agree in the cycle (checkpoint in software, FSOU in hardware).
+
+What RTE has today:
+
+- `rte_channel_checkpoint()` (ADR-017, REQ-CHECKPOINT-001..003): the bounded checkpoint-ID rendezvous between the
+  channels. It is the software agreement point of a cycle; a timeout enters SAFE.
+- `rte_appmanager`'s built-in checkpoint stage (ADR-019, ADR-034) runs it each cycle; outputs are staged and committed
+  after it.
+- `rte_safestate_enter()` (ADR-004) is the single place a transition to SAFE or REBOOT happens.
+- `rte_site_role` (ADR-040) knows whether the site is ONLINE or STANDBY.
+
+There is no per-cycle output-permission output. A platform with an FSOU has nothing to drive it from, and the
+container build has no FSOU at all.
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_decision Decision (proposed)
+
+1. **Seam.** An optional OSAdapter vtable `rte_osadapter_fsou_t { grant(cycle_id), revoke(reason) }`, registered like
+   every other OSAdapter (ADR-005, ADR-021: vtable in `include/rte_osadapter/fsou/`, consumer calls in
+   `include/rte/oal/fsou/`), setup-only (ADR-026), and a `fsou` member at the end of `rte_osadapter_bundle_t`. Done in
+   step G2.1.
+2. **Each channel grants for itself.** Channel A and channel B each drive their own FSOU input. A channel calls
+   `grant(cycle_id)` only after its own `rte_channel_checkpoint()` returned `RTE_STATUS_OK` for that cycle. The FSOU
+   hardware does the AND of the two permissions; software does not combine them.
+3. **Revoke.** A channel calls `revoke(reason)` on every `rte_safestate_enter()` (any level that stops outputs), on a
+   checkpoint failure and on a fault flush (`rte_site_role` FAULTED). The revoke comes before the reaction itself, so
+   the outputs are cut even if the reaction does not complete.
+4. **No grant while STANDBY.** A site whose role is not ONLINE grants nothing; its outputs stay cut by the FSOU.
+5. **No FSOU registered.** An unregistered adapter means a build without an FSOU (the container build). The software
+   checkpoint stays the only output gate; RTE does not fail or degrade for it. `rte_fsou_report_presence()` logs once
+   which case applies ("FSOU present" / "no FSOU registered").
+6. **Status of a call.** `rte_fsou_grant()` / `rte_fsou_revoke()` return `RTE_STATUS_NOT_INITIALIZED` with no adapter,
+   `RTE_STATUS_NOT_SUPPORTED` for a NULL slot, else the adapter's status. What the caller does with a failed grant or
+   revoke is part of the hook step (open point 4).
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_open Open points for the owner
+
+1. **Hook point.** Call `rte_fsou_grant()` inside `rte_channel_checkpoint()` on success, or as a separate call from
+   the cycle driver (`rte_appmanager`'s checkpoint stage, or the application's own cycle for a caller that does not use
+   the built-in stage, such as RBC_GP's A/B checkpoint). Inside the checkpoint keeps it impossible to forget, but makes
+   the checkpoint depend on site role and output timing.
+2. **Grant window vs cycle time.** How long one grant holds in the FSOU (one cycle, or a configured window with
+   margin for jitter), and whether `cycle_id` is the checkpoint ID or the application's cycle counter.
+3. **Grant in STANDBY.** Decision 4 says no grant. Confirm that a STANDBY site has no outputs that must pass the FSOU
+   (for example status towards the dispatcher), or name the ones that need a separate path.
+4. **Failed grant or revoke.** Whether an adapter error on `grant` is a safe-state reason in itself, and whether a
+   failed `revoke` escalates to REBOOT.
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_steps Steps
+
+Tracked in the root `TODO.dox` (G2), not here.
+
+1. **G2.1 Seam only (done).** Vtable, registration, grant/revoke dispatch, presence report, unit tests
+   (`tests/fsou/`), SRS section 2.12. No caller, no behaviour change.
+2. **Checkpoint hook (vital).** Waits for acceptance of this ADR. Grant after an agreed checkpoint, revoke on safe
+   state / checkpoint failure / fault flush, per the settled open points.
+3. **Simulated FSOU in Platform_OS_POSIX.** Logs grant/revoke and counts a cycle window with a missing grant; a unit
+   test and a Docker check that every ONLINE cycle is granted.
+
+\section platformrte_docs_architecture_ADR_041_fsou_output_permission_consequences Consequences
+
+- `rte_osadapter_bundle_t` grows by one pointer at the end. A designated or zero-filled initialiser needs no change;
+  a positional initialiser listing every member would need the new one (none exists in the workspace today).
+- `rte_fsou.c` is built with the OAL unconditionally (no `RTE_ENABLE_*` option, so the Conan recipe is unchanged). It
+  logs through `rte_log`, like `rte_osadapter_register_all()` already depends on every OAL service being built.
+- Until the hook step, the FSOU seam has no effect on any cycle: outputs are gated by the software checkpoint alone,
+  as before.
+*/

@@ -7,6 +7,7 @@
  * - Memory, Clocks/Timers, Mutexes, Tasks/Threads
  * - Logging, NVM, Platform, Reboot
  * - IPC, Netlink, Flow
+ * - FSOU output permission (optional, ADR-041)
  * - Raw OS Sockets (rte_osadapter_socket.h)
  *
  * Compliant with CENELEC EN 50128 SIL 4 and MISRA C:2012.
@@ -28,6 +29,7 @@
 #include "rte_osadapter/ipc/rte_osadapter_ipc.h"
 #include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 #include "rte_osadapter/flow/rte_osadapter_flow.h"
+#include "rte_osadapter/fsou/rte_osadapter_fsou.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,6 +54,7 @@ typedef struct rte_osadapter_bundle_s
     const rte_osadapter_flow_t       *flow;
     const rte_os_socket_ops_t        *sockets;
     const rte_osadapter_random_t     *random;
+    const rte_osadapter_fsou_t       *fsou;      /**< Optional (ADR-041); NULL = no FSOU. */
 } rte_osadapter_bundle_t;
 
 /**

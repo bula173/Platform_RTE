@@ -302,9 +302,12 @@ if(RTE_ENABLE_CLOCKSYNC)
     list(APPEND _rte_oal_sources src/oal/clocksync/rte_clocksync.c)
 endif()
 
-# OSAdapter master registration and ProtocolAdapters (UDP, TCP)
+# OSAdapter master registration, the optional FSOU seam (ADR-041; no option of
+# its own, it logs through rte_log like the rest of the OAL) and
+# ProtocolAdapters (UDP, TCP)
 list(APPEND _rte_oal_sources
     src/oal/osadapter/rte_osadapter.c
+    src/oal/fsou/rte_fsou.c
     src/oal/random/rte_random.c
     src/oal/protocol/rte_protocol_adapter.c
     src/oal/protocol/rte_protocol_adapter_udp.c

@@ -6,7 +6,7 @@ All documentation pages of Platform_RTE, grouped by topic. The overview is the m
 \section platformrte_contents Contents
 
 - \subpage platformrte_cat_architecture - Architecture (5)
-- \subpage platformrte_cat_adr - Architecture decision records (32)
+- \subpage platformrte_cat_adr - Architecture decision records (33)
 - \subpage platformrte_cat_modules - Module documentation (35)
 - \subpage platformrte_cat_safety - Safety, requirements and quality (7)
 - \subpage platformrte_cat_guides - Guides (9)
@@ -65,6 +65,7 @@ One page per decision: context, decision and consequences.
 - \subpage platformrte_docs_architecture_ADR_038_status_indication_and_c_pubsub_broker - ADR-038: Status indication - a C-side pub/sub broker + an A/B↔C util channel
 - \subpage platformrte_docs_architecture_ADR_039_n_channel_topology_primitives - ADR-039: What N-channel (2oo3+) topologies need from the redundancy primitives
 - \subpage platformrte_docs_architecture_ADR_040_site_role_service - ADR-040: Site role (ONLINE/STANDBY) as an RTE Redundancy Service (accepted, steps 1-2 done)
+- \subpage platformrte_docs_architecture_ADR_041_fsou_output_permission - ADR-041: Per-cycle output permission to a Fail-Safe Output Unit (FSOU) (proposed, seam only)
 */
 
 /**

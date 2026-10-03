@@ -328,6 +328,19 @@ rule R2, OSA-ARCH-CAP 0.1).
 | REQ-OAL-MUTEX-013 | `rte_mutex_destroy()` shall release any OSAdapter resources bound to the mutex. |
 | REQ-OAL-MUTEX-014 | `rte_mutex_lock_timed(handle, timeout_ms)` shall wait at most `timeout_ms` for the mutex (OSA rule R2: every wait bounded): return `RTE_STATUS_OK` with the lock held, or `RTE_STATUS_TIMEOUT` with the lock not held when it was not acquired within `timeout_ms`; `timeout_ms == 0` is one non-blocking try. It shall reject a NULL `handle` with `RTE_STATUS_INVALID_PARAM`, return `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when its `lock_timed` slot is NULL, and otherwise return the OSAdapter's result unchanged; the OSAdapter returns `RTE_STATUS_INTERNAL_ERROR` for any other platform failure and never falls back to an unbounded wait. Not gated by the setup-phase lock (an operational call, like `rte_mutex_lock()`). |
 
+### 2.12 FSOU output permission (optional seam) — `rte_fsou.h` (ADR-041, proposed)
+
+The RTE side of the Fail-Safe Output Unit seam (Capella IF-SCP-02/03, baseline rule 4): a per-cycle grant and a revoke
+dispatched to an optional OSAdapter. An unregistered OSAdapter means no FSOU (the container build); the software
+checkpoint then stays the only output gate. Nothing in RTE calls the grant or revoke yet (ADR-041 is proposed; the
+checkpoint hook waits for its acceptance).
+
+| ID | Requirement |
+|---|---|
+| REQ-FSOU-001 | `rte_osadapter_fsou_register()` shall reject a NULL adapter with `RTE_STATUS_INVALID_PARAM` and shall be setup-only: once the setup phase is locked it shall return `RTE_STATUS_INVALID_STATE` and keep the previous registration (REQ-LIFECYCLE-001). `rte_osadapter_register_all()` shall register the bundle's `fsou` member only when it is non-NULL. |
+| REQ-FSOU-002 | `rte_fsou_grant(cycle_id)` and `rte_fsou_revoke(reason)` shall return `RTE_STATUS_NOT_INITIALIZED` with no FSOU OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when the matching slot is NULL; otherwise they shall pass the argument to the OSAdapter and return its result unchanged. |
+| REQ-FSOU-003 | `rte_fsou_report_presence()` shall log (INFO, tag `FSOU`) `FSOU present` or `no FSOU registered` on its first call only; every later call in the same process shall log nothing. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

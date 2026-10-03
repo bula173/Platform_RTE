@@ -1469,3 +1469,18 @@
 ///  `RTE_STATUS_TIMEOUT` for an OSAdapter pool lock not acquired within its bound (pool unchanged). The OAL wrappers in
 ///  `src/oal/memory/rte_memory.c` already pass the OSAdapter's status through, so no code in this repository changed
 ///  and there is no new MISRA finding; the implementation and its screen are in Platform_OS_POSIX's report (Update 5).
+///- **Update (2026-10-03): new module `rte_fsou`** (ADR-041 step G2.1, REQ-FSOU-001..003) - optional FSOU
+///  output-permission OSAdapter seam: `include/rte_osadapter/fsou/rte_osadapter_fsou.h`, `include/rte/oal/fsou/rte_fsou.h`,
+///  `src/oal/fsou/rte_fsou.c`; `rte_osadapter_bundle_t` gains `fsou` as its last member and `rte_osadapter_register_all()`
+///  registers it when non-NULL. Same shape as `rte_clocksync`: single exit in every function of `rte_fsou.c`, no
+///  allocation, no type conversion, the presence latch is a block-scope `static bool` (rule 8.9). `cppcheck --addon=misra
+///  --std=c99 --enable=warning,style,performance,portability -I include`: in `rte_fsou.c` only 8.7 x5 (external
+///  functions with no caller in the file, single-file analysis, advisory); the new headers report nothing; the
+///  findings in included headers (`rte_types.h` 2.3/2.5/20.7, `rte_safestate.h` 2.5/20.10) are the existing ones
+///  in those headers, not new.
+///  `rte_osadapter.c` before -> after: 15.5 16 -> 17 (one more early return at `rte_osadapter.c:110`, same pattern as
+///  the 14 existing members,
+///  rule 15.5 bucket already accepted); 2.5 2 -> 11 and 20.10 0 -> 1, both advisory and located in the newly included
+///  `rte_safestate.h` (unused reason-code macros, its `#` stringification in `RTE_ASSERT`), not in the new code; every
+///  other count unchanged. No new mandatory or required finding. `ctest` 43/43 (new: `test_rte_fsou`,
+///  `test_rte_fsou_present`) in Debug and Release with `-Werror`.

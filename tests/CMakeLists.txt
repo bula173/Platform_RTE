@@ -75,6 +75,9 @@ if(RTE_ENABLE_WATCHDOG)
 endif()
 
 rte_add_test(test_rte_osadapter      osadapter/test_rte_osadapter.c      rte::channels)
+# FSOU seam (ADR-041) - built with the OAL unconditionally, like rte_osadapter.c.
+rte_add_test(test_rte_fsou           fsou/test_rte_fsou.c                rte::oal)
+rte_add_test(test_rte_fsou_present   fsou/test_rte_fsou_present.c        rte::oal)
 
 # Channels
 if(RTE_ENABLE_CHECKSUM)

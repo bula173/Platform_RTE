@@ -103,6 +103,12 @@ rte_status_t rte_osadapter_register_all(const rte_osadapter_bundle_t *bundle)
         status = rte_osadapter_random_register(bundle->random);
         if (status != RTE_STATUS_OK) { return status; }
     }
+    if (bundle->fsou != NULL)
+    {
+        /* REQ-FSOU-001: optional seam (ADR-041), registered only when non-NULL; NULL = build without an FSOU. */
+        status = rte_osadapter_fsou_register(bundle->fsou);
+        if (status != RTE_STATUS_OK) { return status; }
+    }
 
     return RTE_STATUS_OK;
 }

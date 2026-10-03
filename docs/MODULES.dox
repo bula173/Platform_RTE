@@ -41,6 +41,13 @@ document is now a design *record*, not a proposal still to be built)
 - See `docs/architecture/ADR-017-checkpoint-and-clock-sync.dox` section 1
   and ADR-024's dependency table for exactly what's wired to what.
 
+**SEAM ONLY (no caller yet):** FSOU output permission (`include/rte/oal/fsou/rte_fsou.h`,
+`include/rte_osadapter/fsou/rte_osadapter_fsou.h`, `src/oal/fsou/rte_fsou.c`, ADR-041 proposed)
+- Optional OSAdapter `rte_osadapter_fsou_t` (`grant(cycle_id)`, `revoke(reason)`), member `fsou` of
+  `rte_osadapter_bundle_t`; unregistered = no FSOU, the software checkpoint stays the only output gate
+- `rte_fsou_report_presence()` logs once whether an FSOU is registered (REQ-FSOU-001..003)
+- The checkpoint hook that grants and revokes waits for ADR-041's acceptance
+
 **IMPLEMENTED:** AppManager cycle hooks + built-in checkpoint (ADR-019)
 - `pre_execute`/`post_execute` — optional per-cycle hooks bracketing the
   existing mandatory `execute()`, so a cyclic application's "gather

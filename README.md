@@ -19,7 +19,8 @@ other. It owns:
 - **Communication seam:** named channels and Flows over pluggable OSAdapters, checksums and the
   vital-message envelope.
 - **OS abstraction (OAL):** timer, NVM, memory, task, mutex, IPC, log, reboot, netlink, platform
-  and clock sync, each reached through an OSAdapter registered at startup (ADR-005).
+  and clock sync, each reached through an OSAdapter registered at startup (ADR-005), plus the optional
+  FSOU output-permission seam (ADR-041, proposed; no caller yet).
 - **Common utilities:** status codes, fixed-width types, checked casts, bounded strings, buffer views.
 
 It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), any transport protocol
