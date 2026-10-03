@@ -282,6 +282,7 @@ now-transport-agnostic contract, not the earlier TCP-specific one.
 | REQ-OAL-NETLINK-012 | `rte_netlink_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`; `RTE_STATUS_DATA_CORRUPTION` is returned if the OSAdapter can detect the received message violated this link's wire contract (e.g. wrong length) but not necessarily its content. |
 | REQ-OAL-NETLINK-013 | `rte_netlink_close()` shall close a link; the handle is invalid to use afterward. |
 | REQ-OAL-NETLINK-014 | This service provides no message ordering, deduplication, or delivery guarantee of its own — an OSAdapter may be built on an unreliable transport (e.g. UDP). Any such guarantee is the caller's responsibility (`rte_dual_msgchannel`/`rte_dual_channel`, ADR-020, is the reusable sequence+CRC+ACK layer for callers that need one). |
+| REQ-OAL-NETLINK-015 | A non-zero `config->rcvbuf_bytes` / `config->sndbuf_bytes` shall be applied to the link's socket before the link is handed out (at `rte_netlink_open()`, and at every socket (re)init of an OSAdapter that reuses `rte_netlink_config_t`, e.g. the POSIX channel service); a refusal shall fail the open (`RTE_STATUS_INTERNAL_ERROR`, no handle is returned (`*out_handle` is NULL)); a confirmed size below the request shall keep the link and be reported (`RTE_SAFESTATE_LEVEL_DEGRADED` / `RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE`). 0 keeps the OS default and sets nothing. OSA rules R5, R6. |
 
 ### 2.9 Real-time platform configuration — `rte_platform.h` (ADR-035)
 

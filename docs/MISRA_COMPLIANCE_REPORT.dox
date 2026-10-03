@@ -1498,3 +1498,15 @@
 ///  (`test_rte_osadapter` extended: UDP and TCP, connect and listen role - one `set_nonblocking(true)` on a good open;
 ///  refused -> `INTERNAL_ERROR`, one close of that socket, no bind/connect, `*out_handle` unwritten, a following open
 ///  works; NULL slot accepted). The POSIX `open` carries the REQ-OAL-SOCKET-001 tag (comment only, Platform_OS_POSIX).
+///- **Update (2026-10-03): socket buffer sizes in the link config** (OSA rule R5, G4 item 6 d, REQ-OAL-NETLINK-015,
+///  SRS section 2.8) - `rte_netlink_config_t` (`include/rte/oal/netlink/rte_netlink.h`) gains `uint32_t rcvbuf_bytes`
+///  and `uint32_t sndbuf_bytes` as its last members (0 = OS default) and `rte_netlink_open()`'s `@return` names
+///  `RTE_STATUS_INTERNAL_ERROR` for a refused size. No code in `src/` changed: `rte_netlink_open()` passes the config
+///  to the OSAdapter unvalidated, as before. Every initialisation of the struct in this repository zero-fills it first
+///  (`rte_safechannel.c`, `rte_site_role.c`, `rte_channel_service_flow_osadapter.c`: `memset` / `rte_mem_set`; tests:
+///  `= {0}` or a zero-filled resolver output), so the new members are 0 there. `cppcheck 2.21.0 --addon=misra
+///  --std=c99 --enable=warning,style,performance,portability -I include` on `src/oal/netlink/rte_netlink.c` before and
+///  after: identical (in the file 15.5 x16, 8.7 x5; in `rte_netlink.h` 1.4 and 17.3 x1, in `rte_types.h` 2.3 and
+///  20.7, all pre-existing); free-tier none. `ctest` 43/43 (`test_rte_netlink` extended: zero-filled sizes reach the
+///  OSAdapter as 0, non-zero sizes - including `0xFFFFFFFF` - pass through unchanged with every other field, for
+///  CONNECT and LISTEN). The POSIX implementation and its screen are in Platform_OS_POSIX's report (Update 11).

@@ -33,6 +33,10 @@
  *                      responsibility (see safeAPIFreamwork's
  *                      rte_dual_msgchannel/rte_dual_channel for a
  *                      reusable sequence+CRC+ACK layer, and ADR-027).
+ * REQ-OAL-NETLINK-015: a non-zero config->rcvbuf_bytes/sndbuf_bytes is
+ *                      applied before the link is handed out; a refusal
+ *                      fails the open; a confirmed size below the request
+ *                      is reported.
  *
  * @defgroup NETLINK Point-to-Point Network Link
  * @brief Connection-oriented link between independent processes (ADR-001)
@@ -85,6 +89,17 @@ typedef struct rte_netlink_config_s
     /** Maximum time rte_netlink_open() may block establishing the
      *  link (REQ-OAL-NETLINK-002). */
     rte_duration_ms_t   connect_timeout_ms;
+    /** Socket receive buffer size in bytes; 0 keeps the OS default (the
+     *  OSAdapter sets nothing). A non-zero value is a minimum the OSAdapter
+     *  applies and confirms before the link is handed out: at
+     *  rte_netlink_open(), and at every socket (re)init of an OSAdapter that
+     *  reuses this config (e.g. the POSIX channel service). A refusal fails
+     *  the open; a confirmed size below the request keeps the link and is
+     *  reported (REQ-OAL-NETLINK-015). */
+    uint32_t             rcvbuf_bytes;
+    /** Socket send buffer size in bytes; 0 keeps the OS default. Same rules
+     *  as rcvbuf_bytes (REQ-OAL-NETLINK-015). */
+    uint32_t             sndbuf_bytes;
 } rte_netlink_config_t;
 
 /**
@@ -96,11 +111,15 @@ typedef struct rte_netlink_config_s
  * @param out_handle  Receives the established link's handle. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
  *         RTE_STATUS_TIMEOUT if the link is not established within
- *         config->connect_timeout_ms; RTE_STATUS_NOT_INITIALIZED if no
+ *         config->connect_timeout_ms; RTE_STATUS_INTERNAL_ERROR if the
+ *         OSAdapter fails to create the link, including a refused non-zero
+ *         config->rcvbuf_bytes/sndbuf_bytes (REQ-OAL-NETLINK-015); no
+ *         handle is returned (`*out_handle` is NULL);
+ *         RTE_STATUS_NOT_INITIALIZED if no
  *         OSAdapter is registered (rte_osadapter_netlink_register());
  *         RTE_STATUS_NOT_SUPPORTED if the registered OSAdapter does not
  *         implement open.
- * REQ-OAL-NETLINK-010
+ * REQ-OAL-NETLINK-010, REQ-OAL-NETLINK-015
  */
 rte_status_t rte_netlink_open(rte_netlink_storage_t *storage,
                                  const rte_netlink_config_t *config,

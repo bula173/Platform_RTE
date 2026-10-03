@@ -8,13 +8,14 @@ static int g_mock_open_calls = 0;
 static int g_mock_send_calls = 0;
 static int g_mock_receive_calls = 0;
 static int g_mock_close_calls = 0;
+static rte_netlink_config_t g_mock_open_config; /* copy of the config the OSAdapter received */
 
 static rte_status_t mock_open(rte_netlink_storage_t *storage,
                                 const rte_netlink_config_t *config,
                                 rte_netlink_handle_t *out_handle)
 {
     (void)storage;
-    (void)config;
+    g_mock_open_config = *config;
     g_mock_open_calls++;
     *out_handle = (rte_netlink_handle_t)(void *)1; /* arbitrary non-NULL sentinel */
     return RTE_STATUS_OK;
@@ -135,6 +136,30 @@ int main(void)
     assert(rte_netlink_open(&storage, &connect_config, &handle) == RTE_STATUS_OK);
     assert(g_mock_open_calls == 1);
     assert(handle != NULL);
+    /* REQ-OAL-NETLINK-015: zero-initialised buffer sizes reach the OSAdapter as 0 (keep the OS default). */
+    assert(g_mock_open_config.rcvbuf_bytes == 0U);
+    assert(g_mock_open_config.sndbuf_bytes == 0U);
+
+    /* REQ-OAL-NETLINK-015: non-zero buffer sizes pass through the OAL to the OSAdapter unchanged, with every other
+     * field, for either role (the dispatch layer neither validates nor rewrites them). */
+    connect_config.rcvbuf_bytes = 65536U;
+    connect_config.sndbuf_bytes = 0xFFFFFFFFU;
+    assert(rte_netlink_open(&storage, &connect_config, &handle) == RTE_STATUS_OK);
+    assert(g_mock_open_calls == 2);
+    assert(g_mock_open_config.rcvbuf_bytes == 65536U);
+    assert(g_mock_open_config.sndbuf_bytes == 0xFFFFFFFFU);
+    assert(g_mock_open_config.role == RTE_NETLINK_ROLE_CONNECT);
+    assert(g_mock_open_config.host == connect_config.host);
+    assert(g_mock_open_config.port == 9000U);
+    assert(g_mock_open_config.message_size == 4U);
+    assert(g_mock_open_config.connect_timeout_ms == 100U);
+    listen_config.rcvbuf_bytes = 1U;
+    listen_config.sndbuf_bytes = 131072U;
+    assert(rte_netlink_open(&storage, &listen_config, &handle) == RTE_STATUS_OK);
+    assert(g_mock_open_calls == 3);
+    assert(g_mock_open_config.role == RTE_NETLINK_ROLE_LISTEN);
+    assert(g_mock_open_config.rcvbuf_bytes == 1U);
+    assert(g_mock_open_config.sndbuf_bytes == 131072U);
 
     assert(rte_netlink_send(handle, "x", 1U, 10U) == RTE_STATUS_OK);
     assert(g_mock_send_calls == 1);
