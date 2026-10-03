@@ -16,6 +16,12 @@ extern "C" {
 
 /**
  * @brief OSAdapter mutex operations vtable.
+ *
+ * create() shall make a priority-inheritance mutex (REQ-OAL-MUTEX-004, OSA rule R2). It returns RTE_STATUS_OK,
+ * RTE_STATUS_INVALID_PARAM for a NULL storage or out_handle, or RTE_STATUS_INTERNAL_ERROR when the platform cannot
+ * create a priority-inheritance mutex: then *out_handle is not written, the refusal is reported through
+ * rte_safestate_enter(RTE_SAFESTATE_LEVEL_DEGRADED, RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE, ...), and the adapter
+ * never falls back to a plain mutex.
  */
 typedef struct rte_osadapter_mutex_s
 {

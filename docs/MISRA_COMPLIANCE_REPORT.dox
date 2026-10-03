@@ -1452,3 +1452,8 @@
 ///  `rte_site_role.c`: no findings. `ctest` 40/40 (`test_rte_site_role` extended: not configured, no challenge,
 ///  unauthenticated refused, bad format x6, bad MAC, stale, accepted + replay, ignored while ONLINE, lifetime expiry,
 ///  cycle renumbered, random failure).
+///- **Update (2026-10-03): REQ-OAL-MUTEX-004** (OSA rule R2, priority-inheritance mutexes mandatory) - documentation
+///  only: SRS section 2.11 (new; also backfills the existing REQ-OAL-MUTEX tags) and the `@return` of
+///  `rte_mutex_create()` / the `rte_osadapter_mutex_t` contract now name `RTE_STATUS_INTERNAL_ERROR` for a refused
+///  priority inheritance. No code in this repository changed, so no new MISRA finding; the implementation and its
+///  screen are in Platform_OS_POSIX's report (Update 2).

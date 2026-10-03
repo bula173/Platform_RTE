@@ -309,6 +309,23 @@ the kernel CSPRNG (`getentropy()`).
 | REQ-OAL-RANDOM-010 | `rte_random_fill(out, len)` shall reject a NULL `out` or `len` outside `1..RTE_RANDOM_MAX_REQUEST` (256) with `RTE_STATUS_INVALID_PARAM` before any OSAdapter dispatch; return `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when its `fill` slot is NULL; otherwise return the OSAdapter's result unchanged. |
 | REQ-OAL-RANDOM-011 | `rte_osadapter_random_register()` per REQ-OAL-BACKEND-001. |
 
+### 2.11 Mutual exclusion — `rte_mutex.h` (ADR-033)
+
+Framework ships the interface and validate-then-dispatch layer; the POSIX OSAdapter backs it with `pthread_mutex_t`.
+The rows for the tags already in `rte_mutex.h` were backfilled on 2026-10-03, when REQ-OAL-MUTEX-004 was added (OSA
+rule R2, OSA-ARCH-CAP 0.1).
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-MUTEX-001 | An application shall never call a platform threading primitive (`pthread_*`, a raw RTOS semaphore API) directly to guard its own state; it uses `rte_mutex`. |
+| REQ-OAL-MUTEX-002 | No dynamic allocation; caller supplies storage. |
+| REQ-OAL-MUTEX-003 | Non-recursive: locking twice from the same task without an intervening unlock is undefined behaviour. |
+| REQ-OAL-MUTEX-004 | Every mutex the registered OSAdapter creates shall use priority inheritance. An OSAdapter that cannot create a priority-inheritance mutex shall fail the create with `RTE_STATUS_INTERNAL_ERROR`, leave `*out_handle` unwritten and report the refusal through `rte_safestate_enter(RTE_SAFESTATE_LEVEL_DEGRADED, RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE, ...)`; it shall never fall back to a mutex without priority inheritance. |
+| REQ-OAL-MUTEX-010 | `rte_mutex_create()` shall reject a NULL `storage` or `out_handle` with `RTE_STATUS_INVALID_PARAM`, refuse once the setup phase is locked (REQ-LIFECYCLE-001), return `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when its `create` slot is NULL; otherwise create an unlocked priority-inheritance mutex (REQ-OAL-MUTEX-004) in the caller's storage and return the OSAdapter's result unchanged. |
+| REQ-OAL-MUTEX-011 | `rte_mutex_lock()` shall block the calling task until it holds the mutex. |
+| REQ-OAL-MUTEX-012 | `rte_mutex_unlock()` shall release a mutex the calling task holds. |
+| REQ-OAL-MUTEX-013 | `rte_mutex_destroy()` shall release any OSAdapter resources bound to the mutex. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

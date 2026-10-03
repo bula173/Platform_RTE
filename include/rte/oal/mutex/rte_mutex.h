@@ -22,6 +22,9 @@
  *                     semantics on Linux/macOS, the only OSAdapter this
  *                     framework ships today) - a caller needing recursive
  *                     locking must track that itself.
+ * REQ-OAL-MUTEX-004: every mutex uses priority inheritance (OSA rule R2);
+ *                     an OSAdapter that cannot provide it fails the create
+ *                     and never falls back to a plain mutex.
  *
  * @defgroup MUTEX Mutex Service
  * @brief Non-recursive blocking mutual exclusion (ADR-033)
@@ -44,8 +47,8 @@ RTE_DECLARE_STORAGE(rte_mutex_storage_t, 128U);
 typedef struct rte_mutex_impl_s *rte_mutex_handle_t;
 
 /**
- * @brief Creates (and initializes, unlocked) a mutex bound to caller-owned
- *        storage.
+ * @brief Creates (and initializes, unlocked) a priority-inheritance mutex
+ *        bound to caller-owned storage (REQ-OAL-MUTEX-004).
  * @param storage     Caller-owned storage the mutex's state is placed
  *                    into. Must not be NULL and must outlive the mutex.
  * @param out_handle  Receives the created mutex's handle. Must not be NULL.
@@ -55,7 +58,11 @@ typedef struct rte_mutex_impl_s *rte_mutex_handle_t;
  *         the registered OSAdapter does not implement create;
  *         RTE_STATUS_INVALID_STATE if the application's setup phase is
  *         already locked (ADR-026) - a mutex is a setup-only resource,
- *         same posture as rte_timer_create()/rte_task_create().
+ *         same posture as rte_timer_create()/rte_task_create();
+ *         RTE_STATUS_INTERNAL_ERROR if the OSAdapter cannot create a
+ *         priority-inheritance mutex (OSA rule R2) - the refusal is reported
+ *         as DEGRADED / RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE and there is no
+ *         fallback to a plain mutex.
  * REQ-OAL-MUTEX-010
  */
 rte_status_t rte_mutex_create(rte_mutex_storage_t *storage, rte_mutex_handle_t *out_handle);
