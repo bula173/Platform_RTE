@@ -50,7 +50,14 @@ typedef struct rte_ipc_config_s
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument;
  *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered
  *         (rte_osadapter_ipc_register()); RTE_STATUS_NOT_SUPPORTED if the
- *         registered OSAdapter does not implement create.
+ *         registered OSAdapter does not implement create, or cannot move a
+ *         message of config->message_size whole (POSIX: above PIPE_BUF);
+ *         RTE_STATUS_RESOURCE_EXHAUSTED if the OSAdapter cannot hold
+ *         config->queue_depth messages (POSIX: the pipe cannot be made large
+ *         enough); RTE_STATUS_INTERNAL_ERROR if creating the OS resource
+ *         failed (POSIX: pipe(), or setting O_NONBLOCK);
+ *         RTE_STATUS_INVALID_STATE if the application's setup phase is
+ *         already locked (ADR-026) - a channel is a setup-only resource.
  * REQ-OAL-IPC-010
  */
 rte_status_t rte_ipc_create(rte_ipc_storage_t *storage,
@@ -63,9 +70,13 @@ rte_status_t rte_ipc_create(rte_ipc_storage_t *storage,
  * @param message       Message data to send. Must not be NULL.
  * @param message_size  Size of message in bytes; must be > 0.
  * @param timeout_ms    Maximum time to wait for queue space.
- * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT if
- *         the queue stays full for the whole timeout; RTE_STATUS_NOT_INITIALIZED/
- *         RTE_STATUS_NOT_SUPPORTED as in rte_ipc_create().
+ * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument or a
+ *         message_size other than the config->message_size fixed at
+ *         rte_ipc_create(); RTE_STATUS_TIMEOUT if the queue stays full for
+ *         the whole timeout; RTE_STATUS_INTERNAL_ERROR if an OS call or the
+ *         clock fails (POSIX: ioctl(FIONREAD), write() or clock_gettime());
+ *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
+ *         rte_ipc_create() (no OSAdapter registered / send not implemented).
  * REQ-OAL-IPC-011
  */
 rte_status_t rte_ipc_send(rte_ipc_handle_t handle,
@@ -79,9 +90,13 @@ rte_status_t rte_ipc_send(rte_ipc_handle_t handle,
  * @param out_message  Destination buffer. Must not be NULL.
  * @param buffer_size  Usable size of out_message in bytes; must be > 0.
  * @param timeout_ms   Maximum time to wait for a message to arrive.
- * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT if
- *         no message arrives within the timeout; RTE_STATUS_NOT_INITIALIZED/
- *         RTE_STATUS_NOT_SUPPORTED as in rte_ipc_create().
+ * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM for a bad argument or a
+ *         buffer_size smaller than the config->message_size fixed at
+ *         rte_ipc_create(); RTE_STATUS_TIMEOUT if no message arrives within
+ *         the timeout; RTE_STATUS_INTERNAL_ERROR if an OS call or the clock
+ *         fails (POSIX: poll(), read(), a closed write end or clock_gettime());
+ *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
+ *         rte_ipc_create() (no OSAdapter registered / receive not implemented).
  * REQ-OAL-IPC-012
  */
 rte_status_t rte_ipc_receive(rte_ipc_handle_t handle,
@@ -93,7 +108,8 @@ rte_status_t rte_ipc_receive(rte_ipc_handle_t handle,
  * @brief Destroys a message channel.
  * @param handle  Channel handle. Must not be NULL. Invalid to use after this call.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_NOT_INITIALIZED/
- *         RTE_STATUS_NOT_SUPPORTED as in rte_ipc_create().
+ *         RTE_STATUS_NOT_SUPPORTED as in rte_ipc_create() (no OSAdapter
+ *         registered / destroy not implemented).
  * REQ-OAL-IPC-013
  */
 rte_status_t rte_ipc_destroy(rte_ipc_handle_t handle);

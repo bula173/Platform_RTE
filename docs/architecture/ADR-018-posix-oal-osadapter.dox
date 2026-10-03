@@ -104,6 +104,15 @@ own the queue.
   expires leaves a partial message in the pipe for the next
   read - acceptable for this first cut, not something a real deployment
   should rely on without hardening.
+  (2026-10-03, OSA_RULES_AUDIT 6c): the POSIX adapter now enforces
+  `queue_depth` (an `ioctl(FIONREAD)` depth check before every send try;
+  while the queue is full, send retries with naps of at most 1 ms until
+  the deadline instead of `poll()`, while receive still waits in `poll()`)
+  and moves only whole messages of at most `PIPE_BUF` bytes (one atomic
+  `write()` per message). `rte_ipc_create()` refuses a larger
+  `message_size` with `RTE_STATUS_NOT_SUPPORTED` and a pipe that cannot
+  hold `queue_depth` messages with `RTE_STATUS_RESOURCE_EXHAUSTED`. The
+  partial-message simplification above no longer applies.
 - **Task**: one `pthread_t` per task; `period_ms > 0` runs the entry
   point in a loop with a `clock_nanosleep`-paced period, `period_ms == 0`
   runs it once. Priority is applied via `pthread_setschedparam()` with
