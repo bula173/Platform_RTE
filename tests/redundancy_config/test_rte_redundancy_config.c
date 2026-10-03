@@ -244,6 +244,83 @@ static void test_channels_malformed_rejected(void)
     assert(rte_redundancy_config_load("/tmp/rte_redcfg_bad_ch.json", &cfg) == RTE_STATUS_INVALID_STATE);
 }
 
+/* REQ-REDCFG-001: both keys on one channel, absent on the other (-> 0), in one file; UINT32_MAX accepted. */
+static void test_channels_socket_buffers(void)
+{
+    rte_redundancy_config_t cfg;
+    rte_channel_def_t ch;
+    const char *content = "{\"topology\": \"2oo2\", \"replicas\": 2, \"channels\": [\n"
+                          "  {\"id\": 1, \"name\": \"with-bufs\", \"port\": 15001,\n"
+                          "   \"rcvbuf_bytes\": 262144, \"sndbuf_bytes\": 4294967295},\n"
+                          "  {\"id\": 2, \"name\": \"no-bufs\", \"port\": 15002, \"message_size\": 64}\n"
+                          "]}";
+
+    write_file("/tmp/rte_redcfg_sockbuf.json", content);
+    assert(rte_redundancy_config_load("/tmp/rte_redcfg_sockbuf.json", &cfg) == RTE_STATUS_OK);
+    assert(cfg.channel_count == 2U);
+
+    memset(&ch, 0xA5, sizeof(ch));
+    assert(rte_redundancy_config_find_channel_by_name(&cfg, "with-bufs", &ch) == RTE_STATUS_OK);
+    assert(ch.rcvbuf_bytes == 262144U);
+    assert(ch.sndbuf_bytes == 4294967295U);
+    assert(ch.port == 15001U);
+
+    memset(&ch, 0xA5, sizeof(ch));
+    assert(rte_redundancy_config_find_channel_by_name(&cfg, "no-bufs", &ch) == RTE_STATUS_OK);
+    assert(ch.rcvbuf_bytes == 0U);
+    assert(ch.sndbuf_bytes == 0U);
+    assert(ch.port == 15002U);
+    assert(ch.message_size == 64U);
+
+    /* Last key of the object before '}', explicit 0, whitespace before ',' and before '}'. */
+    write_file("/tmp/rte_redcfg_sockbuf_last.json",
+               "{\"topology\": \"2oo2\", \"replicas\": 2, \"channels\": [ {\"name\": \"x\", \"sndbuf_bytes\": 0 , "
+               "\"rcvbuf_bytes\":4096 \n} ]}");
+    assert(rte_redundancy_config_load("/tmp/rte_redcfg_sockbuf_last.json", &cfg) == RTE_STATUS_OK);
+    assert(cfg.channels[0].rcvbuf_bytes == 4096U);
+    assert(cfg.channels[0].sndbuf_bytes == 0U);
+}
+
+/* REQ-REDCFG-001: a present but malformed or out-of-range value fails the whole load; out_config untouched. */
+static void test_channels_socket_buffers_rejected(void)
+{
+    static const char *const bad_values[] = {
+        "\"big\"",                /* a string, not a number */
+        "-1",                     /* a sign */
+        "4294967296",             /* UINT32_MAX + 1 (wraps to 0 in the unchecked parser) */
+        "4294967300",             /* first digit-step overflow at the last digit */
+        "99999999999999999999",   /* far above UINT32_MAX */
+        "1.5",                    /* a fraction */
+        "1e6",                    /* an exponent */
+        "12x",                    /* trailing junk */
+        "12 x",                   /* junk after whitespace */
+        "1 000 000",              /* digit groups */
+        "256 * 1024",             /* an expression */
+        "true",
+        ""                        /* no value at all */
+    };
+    static const char *const keys[] = { "rcvbuf_bytes", "sndbuf_bytes" };
+    char content[256];
+    uint32_t k;
+    uint32_t v;
+
+    for (k = 0U; k < (uint32_t)(sizeof(keys) / sizeof(keys[0])); k++) {
+        for (v = 0U; v < (uint32_t)(sizeof(bad_values) / sizeof(bad_values[0])); v++) {
+            rte_redundancy_config_t cfg;
+            int n = snprintf(content, sizeof(content),
+                             "{\"topology\": \"2oo2\", \"replicas\": 2, \"channels\": [ "
+                             "{\"name\": \"ok\", \"rcvbuf_bytes\": 1, \"sndbuf_bytes\": 2}, "
+                             "{\"name\": \"bad\", \"port\": 1, \"%s\": %s} ]}",
+                             keys[k], bad_values[v]);
+            assert((n > 0) && ((size_t)n < sizeof(content)));
+            write_file("/tmp/rte_redcfg_sockbuf_bad.json", content);
+            memset(&cfg, 0x5A, sizeof(cfg));
+            assert(rte_redundancy_config_load("/tmp/rte_redcfg_sockbuf_bad.json", &cfg) == RTE_STATUS_INVALID_STATE);
+            assert(cfg.channel_count == 0x5A5A5A5AU); /* untouched on failure */
+        }
+    }
+}
+
 int main(void)
 {
     test_2oo2_default_quorum();
@@ -262,6 +339,8 @@ int main(void)
     test_capability_callback_rejects_unsupported();
     test_channels_parsing();
     test_channels_malformed_rejected();
+    test_channels_socket_buffers();
+    test_channels_socket_buffers_rejected();
     printf("test_rte_redundancy_config: all tests passed\n");
     return 0;
 }

@@ -1510,3 +1510,39 @@
 ///  20.7, all pre-existing); free-tier none. `ctest` 43/43 (`test_rte_netlink` extended: zero-filled sizes reach the
 ///  OSAdapter as 0, non-zero sizes - including `0xFFFFFFFF` - pass through unchanged with every other field, for
 ///  CONNECT and LISTEN). The POSIX implementation and its screen are in Platform_OS_POSIX's report (Update 11).
+///- **Update (2026-10-03): socket buffer sizes in the redundancy config** (OSA rules R5/R6, G4 item 6 e-1,
+///  REQ-REDCFG-001, SRS section 3d.4 new) - `rte_channel_def_t` gains `uint32_t rcvbuf_bytes` and `uint32_t
+///  sndbuf_bytes` as its last members (0 = OS default), read by `rte_redundancy_config_load()` from the optional channel
+///  keys of the same names. New static `parse_uint32_checked()` and `parse_optional_channel_u32()` in
+///  `src/redundancy/config/rte_redundancy_config.c`, single exit each: overflow is tested before the multiply
+///  (`value > (UINT32_MAX - digit) / 10U`, no wrap, rule 12.4 / Dir 4.1), the digit is widened through `uint8_t` to
+///  `uint32_t` before the subtraction (no composite-expression cast, rule 10.8), and after the digits only whitespace
+///  (`skip_ws()`) and then ',' or the object end may follow - `1 000 000`, `256 * 1024` and `262144 KB` are rejected;
+///  `*out` is written only on success. `parse_channel_object()`
+///  returns `RTE_STATUS_INVALID_STATE` for a rejected value (two early returns, rule 15.5 bucket already accepted).
+///  `rte_channel_service_flow_osadapter.c` copies both fields into its resolved `rte_netlink_config_t` (two
+///  assignments, same type; not applied, `rte_flow_config_t` has no buffer fields - see that file's comment).
+///  `cppcheck 2.21.0 --addon=misra --std=c99 --enable=warning,style,performance,portability -I include
+///  --template='{file}:{line}:{column}:{id}'`, findings before (HEAD) -> after: `rte_redundancy_config.c` 15.5 64 -> 66
+///  (the new early returns at 365:9 and 369:9); every other count in the file unchanged (17.8 x17, 8.7 x8, 21.6 x6 -
+///  two of them at 677:16 and 677:35, which a template without the column prints as one line -, 10.8 at 122:33,
+///  21.14 at 67:29, 21.16 at 67:13), and the
+///  findings in included headers (`rte_types.h` 2.3 x2/2.5 x3/20.7, `rte_safestate.h` 2.5 x9/20.10, `rte_voter.h`
+///  2.5) are the existing ones; `rte_channel_service_flow_osadapter.c` identical before and after (15.5 x14, 8.7 x2,
+///  11.5, 2.3 in the file). No new mandatory or required finding. `rte_channel_def_t` grows from 120 to 128 bytes and
+///  `rte_redundancy_config_t` from 3944 to 4200 (clang, arm64); every instance is zero-filled before use
+///  (`parse_channel_object()` and `rte_redundancy_config_load()` `memset`, the static active copy, RBC_GP's static
+///  context and its `rte_mem_set` fallback). **Known finding, not changed here:** `parse_uint_value()` (line 116),
+///  still used for `id`, `port`, `message_size`, `connect_timeout_ms`, `replicas` and `quorum`, wraps modulo 2^32 and
+///  accepts a numeric prefix, and `port` is then truncated to `uint16_t` (rule 10.3 intent): measured `port` 65537 -> 1,
+///  80000 -> 14464; `message_size` / `connect_timeout_ms` 4294967296 -> 0, 4294968296 -> 1000; `id` 4294967297 -> 1;
+///  `replicas` / `quorum` 4294967298 -> 2 (passes the range check); `15001.9` -> 15001, `1e3` -> 1; and a non-numeric
+///  `port` / `message_size` / `connect_timeout_ms`, an unknown `transport` / `role` or an over-long `host` is ignored
+///  (the field keeps 0 / FLOW / CONNECT / empty) - all with `RTE_STATUS_OK`. Recorded for a separate fix.
+///  `ctest` 43/43 (`test_rte_redundancy_config` extended: both keys on one channel and absent on the other -> 0,
+///  `UINT32_MAX` accepted, the key last in its object with whitespace before ',' and '}', and thirteen malformed values
+///  per key - a string, `-1`, `4294967296`, `4294967300`, a 20-digit value, `1.5`, `1e6`, `12x`, `12 x`, `1 000 000`,
+///  `256 * 1024`, `true`, no value - each rejected with
+///  `INVALID_STATE` and `*out_config` untouched). Mutation check (fresh build dirs): removing the overflow test, the
+///  no-digit test, the trailing-character test, the whitespace skip before it (back to a one-character look-ahead) or
+///  the status check in `parse_channel_object()` each fails the test.

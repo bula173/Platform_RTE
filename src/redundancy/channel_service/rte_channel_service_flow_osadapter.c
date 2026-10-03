@@ -26,6 +26,17 @@
  * read()/send() again next cycle) is what re-attempts the open, exactly the
  * same shape the POSIX OSAdapter's own osadapter_read() reconnect-on-demand
  * logic already has.
+ *
+ * **Socket buffer sizes are not applied here.** The resolved
+ * rte_netlink_config_t carries rcvbuf_bytes / sndbuf_bytes (from a resolver,
+ * or from rte_channel_def_t's "rcvbuf_bytes" / "sndbuf_bytes" keys,
+ * REQ-REDCFG-001), but rte_flow_config_t has no buffer fields, so this
+ * flow-backed channel service drops them and the flow OSAdapter keeps the OS
+ * default. The POSIX channel service (Platform_OS_POSIX; RBC_GP's Gateway
+ * registers it through its resolver) applies them (REQ-OAL-NETLINK-015);
+ * RBC_GP's A/B register this flow-backed one, so for them the sizes take
+ * effect only once the flow path down to rte_netlink_open() carries them
+ * (rte_flow_config_t, or the flow OSAdapter's own route).
  */
 #include "rte/redundancy/channel_service/rte_channel_service_flow_osadapter.h"
 
@@ -112,6 +123,10 @@ static rte_status_t osadapter_setup(rte_channel_service_storage_t *storage, cons
         resolved.port = def.port;
         resolved.message_size = def.message_size;
         resolved.connect_timeout_ms = def.connect_timeout_ms;
+        /* Copied for a complete resolved config only: not applied, see the
+         * file comment (socket buffer sizes). */
+        resolved.rcvbuf_bytes = def.rcvbuf_bytes;
+        resolved.sndbuf_bytes = def.sndbuf_bytes;
     }
 
     (void)strncpy(state->name_buf, channel_name, sizeof(state->name_buf) - 1U);

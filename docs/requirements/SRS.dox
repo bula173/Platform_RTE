@@ -515,6 +515,14 @@ with `1 <= quorum_size <= channel_count`.
 | REQ-CROSSCOMPARATOR-003 | `rte_cross_comparator_execute()` shall require both registered channels to be healthy and to successfully receive `data_size` bytes before comparing; any unhealthy channel or receive failure shall short-circuit to `RTE_VOTING_TIMEOUT`/`RTE_VOTING_INSUFFICIENT_QUORUM` as appropriate without invoking the compare step. |
 | REQ-CROSSCOMPARATOR-004 | The comparison itself shall use `config->compare` if registered, otherwise a full `memcmp()` of the two channels' received payloads — CRC-64 transport-integrity verification (`rte_checksum`) is a separate, already-applied concern and is never itself treated as "the comparison" (ADR-025 §2.4). |
 
+### 3d.4 Redundancy topology config — `rte_redundancy_config.h`
+
+Only the requirement added with the socket buffer keys is listed here; the rest of this module (topology, replicas, quorum, roles, standby mode, the other channel keys) is not backfilled yet.
+
+| ID | Requirement |
+|---|---|
+| REQ-REDCFG-001 | `rte_redundancy_config_load()` (`rte_redundancy_config.h`) shall read the optional channel-object keys `"rcvbuf_bytes"` and `"sndbuf_bytes"` into `rte_channel_def_t::rcvbuf_bytes` / `::sndbuf_bytes`, the deployment-file source of the REQ-OAL-NETLINK-015 sizes. An absent key shall give 0 (OS default). A present value that is not an unsigned decimal integer (no digit, a sign, a fraction, an exponent, or anything other than whitespace between the digits and the following `,` or the object end, e.g. `1 000 000` or `256 * 1024`) or is above `UINT32_MAX` shall fail the whole load with `RTE_STATUS_INVALID_STATE` and leave `*out_config` untouched; it shall never be silently replaced by 0 or by a wrapped value. The consumer is the integrator, which copies the two values into `rte_netlink_config_t` for REQ-OAL-NETLINK-015. OSA rules R5, R6. |
+
 ## 3e. Dual-transfer state negotiation — `rte_dual` (ADR-020)
 
 Three files under `include/rte/dual/`: `rte_dual_msgchannel.h` (Layer

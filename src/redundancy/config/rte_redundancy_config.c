@@ -129,6 +129,81 @@ static rte_status_t parse_uint_value(const char *buf, size_t len, size_t pos, ui
     return RTE_STATUS_OK;
 }
 
+/**
+ * @brief Checked variant of parse_uint_value(), used for the socket buffer
+ *        keys (REQ-REDCFG-001). parse_uint_value() wraps modulo 2^32 and
+ *        accepts a numeric prefix ("12x" -> 12); it is kept unchanged for the
+ *        older keys. This one rejects instead.
+ * @param[in]  buf  Input buffer.
+ * @param[in]  len  End of the value's enclosing object (exclusive).
+ * @param[in]  pos  Index of the value's first character.
+ * @param[out] out  Written only on RTE_STATUS_OK.
+ * @return RTE_STATUS_OK: one or more decimal digits, value <= UINT32_MAX,
+ *         followed (after optional whitespace) by ',' or the end of the
+ *         object.
+ *         RTE_STATUS_INVALID_STATE: no leading digit (a string, a sign, ...),
+ *         a value above UINT32_MAX, or anything else after the digits and
+ *         any whitespace ('.', 'e', a letter, a second number, ...).
+ */
+static rte_status_t parse_uint32_checked(const char *buf, size_t len, size_t pos, uint32_t *out)
+{
+    size_t idx = pos;
+    uint32_t value = 0U;
+    rte_status_t status = RTE_STATUS_OK;
+
+    while ((status == RTE_STATUS_OK) && (idx < len) && (buf[idx] >= '0') && (buf[idx] <= '9')) {
+        uint32_t digit = (uint32_t)((uint8_t)buf[idx]) - (uint32_t)((uint8_t)'0');
+        if (value > ((UINT32_MAX - digit) / 10U)) {
+            status = RTE_STATUS_INVALID_STATE;
+        } else {
+            value = (value * 10U) + digit;
+            idx++;
+        }
+    }
+    if ((status == RTE_STATUS_OK) && (idx == pos)) {
+        status = RTE_STATUS_INVALID_STATE;
+    }
+    if (status == RTE_STATUS_OK) {
+        /* Only whitespace may separate the digits from the ',' or the object end
+         * (len is the index of the object's '}'): "1 000 000", "256 * 1024" and
+         * "262144 KB" are rejected, not read as their first number. */
+        idx = skip_ws(buf, len, idx);
+        if ((idx < len) && (buf[idx] != ',')) {
+            status = RTE_STATUS_INVALID_STATE;
+        }
+    }
+    if (status == RTE_STATUS_OK) {
+        *out = value;
+    }
+    return status;
+}
+
+/**
+ * @brief Optional checked unsigned key inside one channel object
+ *        (REQ-REDCFG-001).
+ * @param[in]  buf        Input buffer.
+ * @param[in]  obj_start  Index of the object's '{'.
+ * @param[in]  obj_end    Index of the object's '}'.
+ * @param[in]  key        Key name without quotes.
+ * @param[out] out        Set when the key is present and valid; left as it
+ *                        is (0 after parse_channel_object()'s memset) when
+ *                        the key is absent.
+ * @return RTE_STATUS_OK (absent, or present and valid);
+ *         RTE_STATUS_INVALID_STATE (present but rejected by
+ *         parse_uint32_checked()).
+ */
+static rte_status_t parse_optional_channel_u32(const char *buf, size_t obj_start, size_t obj_end,
+                                                const char *key, uint32_t *out)
+{
+    size_t val_pos;
+    rte_status_t status = RTE_STATUS_OK;
+
+    if (find_key_value_pos_bounded(buf, obj_start, obj_end, key, &val_pos) == RTE_STATUS_OK) {
+        status = parse_uint32_checked(buf, obj_end, val_pos, out);
+    }
+    return status;
+}
+
 /** Parse a `["a", "b", ...]` array of strings starting at buf[pos] (must be '['). */
 static rte_status_t parse_string_array(const char *buf, size_t len, size_t pos,
                                          char out[][RTE_REDUNDANCY_CONFIG_MAX_ROLE_NAME_LEN],
@@ -281,6 +356,17 @@ static rte_status_t parse_channel_object(const char *buf, size_t obj_start, size
     status = find_key_value_pos_bounded(buf, obj_start, obj_end, "connect_timeout_ms", &val_pos);
     if (status == RTE_STATUS_OK) {
         (void)parse_uint_value(buf, obj_end, val_pos, &out_channel->connect_timeout_ms);
+    }
+
+    /* rcvbuf_bytes / sndbuf_bytes (optional, 0 = OS default; a malformed or
+     * out-of-range value fails the load, REQ-REDCFG-001) */
+    status = parse_optional_channel_u32(buf, obj_start, obj_end, "rcvbuf_bytes", &out_channel->rcvbuf_bytes);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
+    }
+    status = parse_optional_channel_u32(buf, obj_start, obj_end, "sndbuf_bytes", &out_channel->sndbuf_bytes);
+    if (status != RTE_STATUS_OK) {
+        return RTE_STATUS_INVALID_STATE;
     }
 
     return RTE_STATUS_OK;

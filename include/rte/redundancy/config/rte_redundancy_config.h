@@ -35,6 +35,19 @@
  * default is used (see rte_redundancy_config_load()'s own doc). Key order in
  * the file does not matter; unrecognized keys are ignored.
  *
+ * An optional "channels" array holds flat channel objects (rte_channel_def_t):
+ * @code
+ * "channels": [
+ *   { "id": 1, "name": "ab-peer", "transport": "netlink", "role": "listen",
+ *     "host": "127.0.0.1", "port": 15001, "message_size": 384,
+ *     "connect_timeout_ms": 1000, "rcvbuf_bytes": 262144, "sndbuf_bytes": 262144 }
+ * ]
+ * @endcode
+ * "rcvbuf_bytes" and "sndbuf_bytes" are optional socket buffer sizes in bytes
+ * (0 or absent = OS default). Unlike the older numeric channel keys, a value
+ * that is not a plain unsigned decimal integer, or is above UINT32_MAX, fails
+ * the whole load (REQ-REDCFG-001).
+ *
  * @defgroup redundancy_config Redundancy topology config
  * @{
  */
@@ -92,6 +105,16 @@ typedef struct {
     uint16_t                 port;
     uint32_t                 message_size;
     uint32_t                 connect_timeout_ms;
+    /** Socket receive buffer size in bytes, from the optional channel key
+     *  "rcvbuf_bytes"; 0 (key absent) keeps the OS default. Same meaning as
+     *  rte_netlink_config_t::rcvbuf_bytes, which an integrator copies it into
+     *  (REQ-OAL-NETLINK-015, REQ-REDCFG-001). */
+    uint32_t                 rcvbuf_bytes;
+    /** Socket send buffer size in bytes, from the optional channel key
+     *  "sndbuf_bytes"; 0 (key absent) keeps the OS default. Same meaning as
+     *  rte_netlink_config_t::sndbuf_bytes (REQ-OAL-NETLINK-015,
+     *  REQ-REDCFG-001). */
+    uint32_t                 sndbuf_bytes;
 } rte_channel_def_t;
 
 /** Voting/replication topology, matching the OCORA/RCA-discussed options. */
@@ -245,7 +268,9 @@ rte_status_t rte_redundancy_config_register_capability(rte_redundancy_capability
  *         expected schema (missing/malformed "topology" or "replicas", a
  *         "roles" array longer than RTE_REDUNDANCY_CONFIG_MAX_REPLICAS, a
  *         role name longer than RTE_REDUNDANCY_CONFIG_MAX_ROLE_NAME_LEN-1,
- *         or replica_count/quorum_size that fail sanity checks below).
+ *         replica_count/quorum_size that fail sanity checks below, or a
+ *         channel whose "rcvbuf_bytes"/"sndbuf_bytes" is present but not an
+ *         unsigned decimal integer of at most UINT32_MAX - REQ-REDCFG-001).
  *         RTE_STATUS_NOT_SUPPORTED - the file parsed and validated fine,
  *         but a registered rte_redundancy_capability_fn returned false for
  *         it (see rte_redundancy_config_register_capability()).
@@ -263,6 +288,9 @@ rte_status_t rte_redundancy_config_register_capability(rte_redundancy_capability
  *
  * "standby_mode" ("hot"/"warm"/"cold") is optional; defaults to
  * RTE_STANDBY_MODE_COLD when absent (see that enum's own doc).
+ *
+ * Per channel, "rcvbuf_bytes" and "sndbuf_bytes" are optional; absent gives 0
+ * (OS default) in rte_channel_def_t (REQ-REDCFG-001).
  */
 rte_status_t rte_redundancy_config_load(const char *path, rte_redundancy_config_t *out_config);
 
