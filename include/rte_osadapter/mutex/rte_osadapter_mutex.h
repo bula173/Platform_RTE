@@ -22,6 +22,14 @@ extern "C" {
  * create a priority-inheritance mutex: then *out_handle is not written, the refusal is reported through
  * rte_safestate_enter(RTE_SAFESTATE_LEVEL_DEGRADED, RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE, ...), and the adapter
  * never falls back to a plain mutex.
+ *
+ * lock_timed() shall wait at most timeout_ms for the mutex (REQ-OAL-MUTEX-014, OSA rule R2: every wait bounded). It
+ * returns RTE_STATUS_OK with the lock held; RTE_STATUS_TIMEOUT when the lock was not acquired within timeout_ms (the
+ * lock is then not held); RTE_STATUS_INVALID_PARAM for a NULL handle; RTE_STATUS_INTERNAL_ERROR for any other platform
+ * failure (including a failed clock read - the adapter never falls back to an unbounded wait). timeout_ms == 0 is one
+ * non-blocking try (same rule as rte_ipc_send()/rte_ipc_receive()). It is the last member, so an older positional
+ * initialiser with four entries is still valid C (-Wmissing-field-initializers warns) and leaves the slot NULL;
+ * rte_mutex_lock_timed() then returns RTE_STATUS_NOT_SUPPORTED.
  */
 typedef struct rte_osadapter_mutex_s
 {
@@ -29,6 +37,7 @@ typedef struct rte_osadapter_mutex_s
     rte_status_t (*lock)(rte_mutex_handle_t handle);
     rte_status_t (*unlock)(rte_mutex_handle_t handle);
     rte_status_t (*destroy)(rte_mutex_handle_t handle);
+    rte_status_t (*lock_timed)(rte_mutex_handle_t handle, rte_duration_ms_t timeout_ms);
 } rte_osadapter_mutex_t;
 
 /**

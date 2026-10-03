@@ -325,6 +325,7 @@ rule R2, OSA-ARCH-CAP 0.1).
 | REQ-OAL-MUTEX-011 | `rte_mutex_lock()` shall block the calling task until it holds the mutex. |
 | REQ-OAL-MUTEX-012 | `rte_mutex_unlock()` shall release a mutex the calling task holds. |
 | REQ-OAL-MUTEX-013 | `rte_mutex_destroy()` shall release any OSAdapter resources bound to the mutex. |
+| REQ-OAL-MUTEX-014 | `rte_mutex_lock_timed(handle, timeout_ms)` shall wait at most `timeout_ms` for the mutex (OSA rule R2: every wait bounded): return `RTE_STATUS_OK` with the lock held, or `RTE_STATUS_TIMEOUT` with the lock not held when it was not acquired within `timeout_ms`; `timeout_ms == 0` is one non-blocking try. It shall reject a NULL `handle` with `RTE_STATUS_INVALID_PARAM`, return `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when its `lock_timed` slot is NULL, and otherwise return the OSAdapter's result unchanged; the OSAdapter returns `RTE_STATUS_INTERNAL_ERROR` for any other platform failure and never falls back to an unbounded wait. Not gated by the setup-phase lock (an operational call, like `rte_mutex_lock()`). |
 
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 

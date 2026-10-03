@@ -79,6 +79,29 @@ rte_status_t rte_mutex_create(rte_mutex_storage_t *storage, rte_mutex_handle_t *
 rte_status_t rte_mutex_lock(rte_mutex_handle_t handle);
 
 /**
+ * @brief Waits at most timeout_ms for the mutex (OSA rule R2: every wait
+ *        bounded).
+ *
+ * Not gated by the setup-phase lock: an operational call, like
+ * rte_mutex_lock(). On RTE_STATUS_OK the calling task holds the mutex and
+ * must release it with rte_mutex_unlock(); on any other status it does not
+ * hold it.
+ * @param handle      Mutex to lock. Must not be NULL.
+ * @param timeout_ms  Maximum time to wait for the mutex, in milliseconds.
+ *                    0 is one non-blocking try (same rule as
+ *                    rte_ipc_send()/rte_ipc_receive()).
+ * @return RTE_STATUS_OK with the lock held; RTE_STATUS_TIMEOUT if the lock
+ *         was not acquired within timeout_ms (lock not held);
+ *         RTE_STATUS_INVALID_PARAM for a NULL handle;
+ *         RTE_STATUS_NOT_INITIALIZED if no OSAdapter is registered;
+ *         RTE_STATUS_NOT_SUPPORTED if the registered OSAdapter does not
+ *         implement lock_timed; RTE_STATUS_INTERNAL_ERROR for any other
+ *         OSAdapter failure.
+ * REQ-OAL-MUTEX-014
+ */
+rte_status_t rte_mutex_lock_timed(rte_mutex_handle_t handle, rte_duration_ms_t timeout_ms);
+
+/**
  * @brief Releases a mutex previously locked by the calling task.
  * @param handle  Mutex to unlock. Must not be NULL. Unlocking a mutex the
  *                calling task does not hold is undefined behavior (same

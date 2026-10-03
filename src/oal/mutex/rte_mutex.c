@@ -88,6 +88,26 @@ rte_status_t rte_mutex_lock(rte_mutex_handle_t handle)
     return s_osadapter->lock(handle);
 }
 
+rte_status_t rte_mutex_lock_timed(rte_mutex_handle_t handle, rte_duration_ms_t timeout_ms)
+{
+    /* REQ-OAL-MUTEX-014: same checks as rte_mutex_lock(); not lifecycle-gated
+     * (an operational call). The timeout and the OSAdapter's result are
+     * passed through unchanged. */
+    if (handle == NULL)
+    {
+        return RTE_STATUS_INVALID_PARAM;
+    }
+    if (s_osadapter == NULL)
+    {
+        return RTE_STATUS_NOT_INITIALIZED;
+    }
+    if (s_osadapter->lock_timed == NULL)
+    {
+        return RTE_STATUS_NOT_SUPPORTED;
+    }
+    return s_osadapter->lock_timed(handle, timeout_ms);
+}
+
 rte_status_t rte_mutex_unlock(rte_mutex_handle_t handle)
 {
     if (handle == NULL)

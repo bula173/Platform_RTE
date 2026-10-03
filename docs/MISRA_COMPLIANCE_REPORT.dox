@@ -1457,3 +1457,10 @@
 ///  `rte_mutex_create()` / the `rte_osadapter_mutex_t` contract now name `RTE_STATUS_INTERNAL_ERROR` for a refused
 ///  priority inheritance. No code in this repository changed, so no new MISRA finding; the implementation and its
 ///  screen are in Platform_OS_POSIX's report (Update 2).
+///- **Update (2026-10-03): `rte_mutex_lock_timed()`** (OSA rule R2, REQ-OAL-MUTEX-014) - new dispatch function in
+///  `src/oal/mutex/rte_mutex.c`, same shape as `rte_mutex_lock()`; the vtable gains `lock_timed` as its last member.
+///  `cppcheck --addon=misra --std=c99 --enable=warning,style,performance,portability -I include` on
+///  `rte_mutex.c`, findings in that file before -> after: 15.5 15 -> 18 (the three early returns, same pattern as the
+///  existing dispatchers, rule 15.5 bucket already accepted), 8.7 5 -> 6 (external function with no caller in the
+///  file, single-file analysis); free-tier none. No allocation, no new type conversion. `ctest` 41/41 (new:
+///  `test_rte_mutex`). The POSIX implementation and its screen are in Platform_OS_POSIX's report (Update 4).

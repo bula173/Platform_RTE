@@ -103,6 +103,25 @@ directly).
   scope; it has no framework equivalent to migrate to yet (no portable
   console/stdin abstraction exists) and was called out to the user as an
   explicitly separate, not-yet-scoped follow-up.
+- **Timed lock (2026-10-03, OSA rule R2 "every wait bounded", REQ-OAL-MUTEX-014):**
+  `rte_mutex_lock_timed(handle, timeout_ms)` and a fifth vtable member
+  `lock_timed`, appended last so an older four-entry positional
+  initialiser stays valid C with the slot NULL (the call then returns
+  `RTE_STATUS_NOT_SUPPORTED`). `RTE_STATUS_OK` means the lock is held;
+  `RTE_STATUS_TIMEOUT` means it was not acquired within `timeout_ms` and
+  is not held; `timeout_ms == 0` is one non-blocking try (the `rte_ipc`
+  rule); any other platform failure, including a failed clock read, is
+  `RTE_STATUS_INTERNAL_ERROR` and never an unbounded wait. Not
+  lifecycle-gated, like `rte_mutex_lock()`. The POSIX OSAdapter uses
+  `pthread_mutex_timedlock()` on Linux, whose deadline is absolute on
+  `CLOCK_REALTIME`: a wall-clock step during a wait shortens or lengthens
+  that one wait (`pthread_mutex_clocklock(CLOCK_MONOTONIC)` would avoid
+  this, but glibc accepts it on a priority-inheritance mutex only with
+  `FUTEX_LOCK_PI2` support). Other POSIX hosts (macOS) poll with
+  `pthread_mutex_trylock()` against a `CLOCK_MONOTONIC` deadline, without
+  a priority-inheritance boost while polling - development hosts only.
+  `rte_mutex_lock()` stays as it is; moving callers (first the POSIX
+  memory-pool lock) to the timed lock is a later step.
 
 \section platformrte_docs_architecture_ADR_033_sapi_mutex_verification Verification
 
@@ -117,6 +136,12 @@ directly).
   off `pthread_mutex_t` - confirmed no behavior change (the POSIX mutex
   backend's own locking semantics are identical to what the application
   called directly before, just routed through the OAL dispatch layer).
+- Timed lock (2026-10-03): `tests/mutex/test_rte_mutex.c` (dispatch with a
+  fake OSAdapter: NULL handle, no OSAdapter, NULL slot, timeout and result
+  passed through unchanged); the real POSIX timed lock against a second
+  thread holding the mutex in RBC_GP's
+  `tests/posix_osadapter/test_rte_posix_osadapter_mutex.c` (macOS and
+  Linux).
 
 \section platformrte_docs_architecture_ADR_033_sapi_mutex_location Location
 
