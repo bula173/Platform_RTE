@@ -341,6 +341,18 @@ checkpoint hook waits for its acceptance).
 | REQ-FSOU-002 | `rte_fsou_grant(cycle_id)` and `rte_fsou_revoke(reason)` shall return `RTE_STATUS_NOT_INITIALIZED` with no FSOU OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when the matching slot is NULL; otherwise they shall pass the argument to the OSAdapter and return its result unchanged. |
 | REQ-FSOU-003 | `rte_fsou_report_presence()` shall log (INFO, tag `FSOU`) `FSOU present` or `no FSOU registered` on its first call only; every later call in the same process shall log nothing. |
 
+### 2.13 Raw OS sockets — `rte_osadapter_socket.h`
+
+The raw socket vtable (`rte_os_socket_ops_t`) an OSAdapter registers with `rte_osadapter_register_socket_ops()`, and
+the built-in raw UDP and TCP ProtocolAdapters (`rte_protocol_adapter_get_udp()` / `_tcp()`) that consume it. OSA rule
+R5 (non-blocking I/O with a timeout) for this seam; added 2026-10-03 (G4 item 6 b). No production code calls the socket
+vtable or these ProtocolAdapters yet (netlink and the channel service open their own sockets).
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-SOCKET-001 | The registered OSAdapter's `open(type, out_handle)` shall return `RTE_STATUS_OK` only with a non-blocking socket in `*out_handle`. If it cannot make the socket non-blocking it shall release the socket and return `RTE_STATUS_INTERNAL_ERROR` with `*out_handle` unwritten; it shall never hand out a blocking socket. A NULL `out_handle` shall yield `RTE_STATUS_INVALID_PARAM` and an unknown `type` `RTE_STATUS_NOT_SUPPORTED`, both with `*out_handle` unwritten. `set_nonblocking(handle, false)` may still switch an opened socket to blocking. |
+| REQ-OAL-SOCKET-002 | The raw UDP and TCP ProtocolAdapters' `open` shall check the result of `set_nonblocking(sock, true)` on the socket just opened when that vtable slot is non-NULL (a NULL slot is accepted, the socket being non-blocking by REQ-OAL-SOCKET-001). On a failure they shall close that socket, leave the socket in their state storage at `RTE_OS_SOCKET_INVALID_HANDLE`, perform no bind or connect, and return the status `set_nonblocking` returned, with the ProtocolAdapter's `*out_handle` unwritten. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

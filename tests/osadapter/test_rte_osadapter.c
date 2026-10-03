@@ -103,16 +103,23 @@ static rte_status_t mock_poll(rte_os_socket_handle_t handle, uint32_t events,
     return RTE_STATUS_OK;
 }
 
+static int s_mock_set_nonblocking_called = 0;
+static bool s_mock_set_nonblocking_flag = false;
+static rte_os_socket_handle_t s_mock_set_nonblocking_handle = RTE_OS_SOCKET_INVALID_HANDLE;
+static rte_status_t s_mock_set_nonblocking_status = RTE_STATUS_OK;
+static rte_os_socket_handle_t s_mock_close_handle = RTE_OS_SOCKET_INVALID_HANDLE;
+
 static rte_status_t mock_set_nonblocking(rte_os_socket_handle_t handle, bool nonblocking)
 {
-    (void)handle;
-    (void)nonblocking;
-    return RTE_STATUS_OK;
+    s_mock_set_nonblocking_called++;
+    s_mock_set_nonblocking_flag = nonblocking;
+    s_mock_set_nonblocking_handle = handle;
+    return s_mock_set_nonblocking_status;
 }
 
 static rte_status_t mock_close(rte_os_socket_handle_t handle)
 {
-    (void)handle;
+    s_mock_close_handle = handle;
     s_mock_close_called++;
     return RTE_STATUS_OK;
 }
@@ -216,12 +223,126 @@ static void test_protocol_adapter_tcp(void)
     assert(s_mock_close_called == 1);
 }
 
+static void reset_socket_mocks(void)
+{
+    s_mock_open_called = 0;
+    s_mock_bind_called = 0;
+    s_mock_connect_called = 0;
+    s_mock_send_called = 0;
+    s_mock_recv_called = 0;
+    s_mock_poll_called = 0;
+    s_mock_close_called = 0;
+    s_mock_close_handle = RTE_OS_SOCKET_INVALID_HANDLE;
+    s_mock_set_nonblocking_called = 0;
+    s_mock_set_nonblocking_flag = false;
+    s_mock_set_nonblocking_handle = RTE_OS_SOCKET_INVALID_HANDLE;
+    s_mock_set_nonblocking_status = RTE_STATUS_OK;
+}
+
+/* REQ-OAL-SOCKET-002 for one raw ProtocolAdapter (UDP or TCP), connect role and listen role:
+ * - good open: set_nonblocking called once, with true, on the socket just opened;
+ * - set_nonblocking refused (INTERNAL_ERROR): open returns that status, close called once on that socket, no
+ *   connect/bind, *out_handle unwritten (stays at its sentinel), and a following open works;
+ * - NULL set_nonblocking slot: open still succeeds (open is non-blocking by REQ-OAL-SOCKET-001). */
+static void check_protocol_adapter_nonblocking(const rte_protocol_adapter_ops_t *adapter, rte_protocol_type_t type)
+{
+    union
+    {
+        uint8_t bytes[256];
+        uint64_t align_u64;
+        void *align_ptr;
+    } storage;
+    static uint8_t s_sentinel_target;
+    rte_protocol_handle_t const sentinel = (rte_protocol_handle_t)(void *)&s_sentinel_target;
+    rte_protocol_config_t config;
+    rte_protocol_handle_t handle = NULL;
+    rte_os_socket_ops_t no_nonblocking_ops = s_mock_ops;
+    const rte_protocol_role_t roles[2] = { RTE_PROTOCOL_ROLE_CONNECT, RTE_PROTOCOL_ROLE_LISTEN };
+    size_t i;
+
+    assert(adapter != NULL);
+    for (i = 0U; i < 2U; i++)
+    {
+        memset(&config, 0, sizeof(config));
+        config.protocol_type = type;
+        config.role = roles[i];
+        snprintf(config.host, sizeof(config.host), "127.0.0.1");
+        config.port = 15103;
+
+        /* Good open: one set_nonblocking(42, true). */
+        reset_socket_mocks();
+        handle = NULL;
+        assert(adapter->open(&storage, sizeof(storage), &config, &s_mock_ops, &handle) == RTE_STATUS_OK);
+        assert(handle != NULL);
+        assert(s_mock_set_nonblocking_called == 1);
+        assert(s_mock_set_nonblocking_flag == true);
+        assert(s_mock_set_nonblocking_handle == (rte_os_socket_handle_t)42);
+        assert(s_mock_close_called == 0);
+        assert(adapter->close(handle) == RTE_STATUS_OK);
+        assert(s_mock_close_called == 1);
+
+        /* Refused: the status comes back, the socket is closed, nothing else happens. */
+        reset_socket_mocks();
+        s_mock_set_nonblocking_status = RTE_STATUS_INTERNAL_ERROR;
+        handle = sentinel;
+        assert(adapter->open(&storage, sizeof(storage), &config, &s_mock_ops, &handle) == RTE_STATUS_INTERNAL_ERROR);
+        assert(handle == sentinel);
+        assert(s_mock_open_called == 1);
+        assert(s_mock_set_nonblocking_called == 1);
+        assert(s_mock_close_called == 1);
+        assert(s_mock_close_handle == (rte_os_socket_handle_t)42);
+        assert(s_mock_connect_called == 0);
+        assert(s_mock_bind_called == 0);
+        /* The adapter's state storage holds no socket: `sock` is the first member of both state structs. */
+        {
+            rte_os_socket_handle_t stored_sock = (rte_os_socket_handle_t)0;
+            memcpy(&stored_sock, &storage, sizeof(stored_sock));
+            assert(stored_sock == RTE_OS_SOCKET_INVALID_HANDLE);
+        }
+
+        /* A following open works. */
+        s_mock_set_nonblocking_status = RTE_STATUS_OK;
+        assert(adapter->open(&storage, sizeof(storage), &config, &s_mock_ops, &handle) == RTE_STATUS_OK);
+        assert(handle != NULL);
+        assert(handle != sentinel);
+        assert(s_mock_open_called == 2);
+        assert(s_mock_set_nonblocking_called == 2);
+        assert(adapter->close(handle) == RTE_STATUS_OK);
+        assert(s_mock_close_called == 2);
+
+        /* NULL set_nonblocking slot: accepted. */
+        reset_socket_mocks();
+        no_nonblocking_ops.set_nonblocking = NULL;
+        handle = NULL;
+        assert(adapter->open(&storage, sizeof(storage), &config, &no_nonblocking_ops, &handle) == RTE_STATUS_OK);
+        assert(handle != NULL);
+        assert(s_mock_set_nonblocking_called == 0);
+        assert(adapter->close(handle) == RTE_STATUS_OK);
+        assert(s_mock_close_called == 1);
+    }
+    reset_socket_mocks();
+}
+
+static void test_protocol_adapter_udp_nonblocking(void)
+{
+    printf("test_protocol_adapter_udp_nonblocking...\n");
+    check_protocol_adapter_nonblocking(rte_protocol_adapter_get(RTE_PROTOCOL_TYPE_RAW_UDP), RTE_PROTOCOL_TYPE_RAW_UDP);
+}
+
+static void test_protocol_adapter_tcp_nonblocking(void)
+{
+    printf("test_protocol_adapter_tcp_nonblocking...\n");
+    check_protocol_adapter_nonblocking(rte_protocol_adapter_get(RTE_PROTOCOL_TYPE_RAW_TCP), RTE_PROTOCOL_TYPE_RAW_TCP);
+}
+
 int main(void)
 {
     printf("Running test_rte_osadapter...\n");
     test_osadapter_socket_registration();
     test_protocol_adapter_udp();
     test_protocol_adapter_tcp();
+    test_protocol_adapter_udp_nonblocking();
+    test_protocol_adapter_tcp_nonblocking();
     printf("All test_rte_osadapter tests passed!\n");
     return 0;
 }

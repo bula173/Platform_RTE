@@ -156,11 +156,19 @@ const rte_protocol_adapter_ops_t *rte_protocol_adapter_get(rte_protocol_type_t t
 
 /**
  * @brief Returns the built-in raw UDP ProtocolAdapter vtable.
+ *
+ * Its open() checks set_nonblocking(sock, true) on the socket it opened when that slot is non-NULL; on a failure it
+ * closes the socket and returns that status without writing *out_handle (REQ-OAL-SOCKET-002).
+ * @return Pointer to the static UDP ProtocolAdapter vtable (never NULL).
  */
 const rte_protocol_adapter_ops_t *rte_protocol_adapter_get_udp(void);
 
 /**
  * @brief Returns the built-in raw TCP ProtocolAdapter vtable.
+ *
+ * Its open() checks set_nonblocking(sock, true) on the socket it opened when that slot is non-NULL; on a failure it
+ * closes the socket and returns that status without writing *out_handle (REQ-OAL-SOCKET-002).
+ * @return Pointer to the static TCP ProtocolAdapter vtable (never NULL).
  */
 const rte_protocol_adapter_ops_t *rte_protocol_adapter_get_tcp(void);
 

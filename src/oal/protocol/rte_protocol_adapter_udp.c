@@ -62,9 +62,17 @@ static rte_status_t udp_adapter_open(void *storage, size_t storage_size,
     }
     state->sock = sock;
 
+    /* REQ-OAL-SOCKET-002: a refused non-blocking request releases the socket. A NULL slot is accepted, open()
+     * already delivers a non-blocking socket (REQ-OAL-SOCKET-001). */
     if (ops->set_nonblocking != NULL)
     {
-        (void)ops->set_nonblocking(sock, true);
+        status = ops->set_nonblocking(sock, true);
+        if (status != RTE_STATUS_OK)
+        {
+            (void)ops->close(sock);
+            state->sock = RTE_OS_SOCKET_INVALID_HANDLE;
+            return status;
+        }
     }
 
     if (config->role == RTE_PROTOCOL_ROLE_LISTEN)

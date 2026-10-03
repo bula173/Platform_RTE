@@ -60,9 +60,18 @@ typedef enum rte_os_socket_event_e
 typedef struct rte_os_socket_ops_s
 {
     /**
-     * @brief Creates a raw socket of the specified type.
+     * @brief Creates a raw socket of the specified type, non-blocking from creation (REQ-OAL-SOCKET-001, OSA rule R5).
+     *
+     * Post-condition of RTE_STATUS_OK: *out_handle holds a non-blocking socket, so an I/O call that cannot complete
+     * at once returns instead of waiting; set_nonblocking(false) can still switch it to blocking. An OSAdapter that
+     * cannot make the socket non-blocking releases it and never hands out a blocking socket.
      * @param type RTE_OS_SOCKET_TYPE_UDP or RTE_OS_SOCKET_TYPE_TCP.
-     * @param out_handle Output socket handle. Must not be NULL.
+     * @param out_handle Output socket handle. Must not be NULL. Written only on RTE_STATUS_OK.
+     * @return RTE_STATUS_OK with a non-blocking socket in *out_handle;
+     *         RTE_STATUS_INVALID_PARAM if out_handle is NULL;
+     *         RTE_STATUS_NOT_SUPPORTED for an unknown type;
+     *         RTE_STATUS_INTERNAL_ERROR if the platform cannot create the socket or cannot make it non-blocking
+     *         (the socket is then released). On every error *out_handle is not written.
      */
     rte_status_t (*open)(rte_os_socket_type_t type, rte_os_socket_handle_t *out_handle);
 
@@ -137,8 +146,13 @@ typedef struct rte_os_socket_ops_s
 
     /**
      * @brief Configures non-blocking mode on socket.
+     *
+     * open() already delivers a non-blocking socket (REQ-OAL-SOCKET-001); set_nonblocking(true) on a fresh socket
+     * confirms that mode, set_nonblocking(false) switches it to blocking.
      * @param handle Valid socket handle.
      * @param nonblocking True for non-blocking, false for blocking.
+     * @return RTE_STATUS_OK when the requested mode is set; otherwise the OSAdapter's error status (e.g.
+     *         RTE_STATUS_INVALID_PARAM for an invalid handle, RTE_STATUS_INTERNAL_ERROR for a platform failure).
      */
     rte_status_t (*set_nonblocking)(rte_os_socket_handle_t handle, bool nonblocking);
 

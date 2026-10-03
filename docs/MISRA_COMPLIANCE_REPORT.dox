@@ -1484,3 +1484,17 @@
 ///  `rte_safestate.h` (unused reason-code macros, its `#` stringification in `RTE_ASSERT`), not in the new code; every
 ///  other count unchanged. No new mandatory or required finding. `ctest` 43/43 (new: `test_rte_fsou`,
 ///  `test_rte_fsou_present`) in Debug and Release with `-Werror`.
+///- **Update (2026-10-03): raw socket contract** (OSA rule R5, G4 item 6 b, REQ-OAL-SOCKET-001/002, SRS section 2.13
+///  new) - the `open` Doxygen of `rte_osadapter_socket.h` states the non-blocking post-condition and every status;
+///  `rte_protocol_adapter_udp.c` / `_tcp.c` `open` now check `set_nonblocking(sock, true)` (its result was discarded
+///  with `(void)`) and on a failure close the socket, reset `state->sock` and return the status, the same shape as the
+///  existing bind failure path. No allocation, no new type conversion. `cppcheck 2.21.0 --addon=misra --std=c99
+///  --enable=warning,style,performance,portability -I include`, findings before -> after: `rte_protocol_adapter_udp.c`
+///  15.5 23 -> 24 (new early return at line 74), `rte_protocol_adapter_tcp.c` 15.5 18 -> 19 (new early return at line
+///  71), both in the accepted rule 15.5 bucket; every other count in both files unchanged (udp: 10.4 x4, 11.5 x5, 12.1,
+///  8.7, 8.9, `variableScope`; tcp: 10.4 x4, 11.5 x5, 12.1, 15.7, 8.7, 8.9, `variableScope` x2), and the findings
+///  in included headers (`rte_types.h`, `rte_mem_util.h`, `rte_osadapter_socket.h` 2.3/2.4 at lines 55/51) are the
+///  existing ones. No new mandatory or required finding. `ctest` 43/43 in Debug and Release with `-Werror`
+///  (`test_rte_osadapter` extended: UDP and TCP, connect and listen role - one `set_nonblocking(true)` on a good open;
+///  refused -> `INTERNAL_ERROR`, one close of that socket, no bind/connect, `*out_handle` unwritten, a following open
+///  works; NULL slot accepted). The POSIX `open` carries the REQ-OAL-SOCKET-001 tag (comment only, Platform_OS_POSIX).
