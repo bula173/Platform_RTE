@@ -30,8 +30,8 @@ typedef struct rte_osadapter_random_s
 /**
  * @brief Registers the OSAdapter random implementation.
  * @param adapter Pointer to random operations vtable.
- * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL, or the lifecycle status if the
- *         setup phase is already locked (REQ-LIFECYCLE-001).
+ * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL, or RTE_STATUS_INVALID_STATE if the
+ *         setup phase is already locked (REQ-LIFECYCLE-001, ADR-026; the previous registration, if any, is kept).
  *
  * REQ-OAL-RANDOM-011
  */

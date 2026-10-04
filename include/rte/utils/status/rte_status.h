@@ -48,6 +48,12 @@ typedef enum rte_status_e
 /**
  * @brief Returns a short, static, human-readable string for a status code.
  *        Intended for diagnostics/logging only; never on a safety-decision path.
+ * @param status Status code to describe; any value, including one outside the
+ *               rte_status_t enumerators.
+ * @return Static, non-NULL string literal naming @p status without its
+ *         RTE_STATUS_ prefix (e.g. "OK" for RTE_STATUS_OK); "UNKNOWN_STATUS"
+ *         for an unrecognized value. The caller must not modify it.
+ * @safety Never returns NULL; safe to call with any int-range value.
  *
  * REQ-OAL-COMMON-002
  */

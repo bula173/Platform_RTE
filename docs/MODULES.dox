@@ -158,7 +158,7 @@ sprintf/atoi/strtok (`string`), and application lifecycle management
 (`appmanager`: single entry point with init→execute→shutdown pattern).
 
 Every OAL service is reached through a **OSAdapter registered at startup**
-(`rte_<service>_register_osadapter()`) rather than a hardcoded
+(`rte_osadapter_<service>_register()`) rather than a hardcoded
 implementation — this is how an integrator supplies their own
 implementation (POSIX for host-side dev/test, an RTOS OSAdapter for target
 hardware) without editing framework source. See

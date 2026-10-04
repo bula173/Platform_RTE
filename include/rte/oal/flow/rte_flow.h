@@ -171,6 +171,13 @@ rte_status_t rte_flow_close(rte_flow_handle_t handle);
  *         if the send does not complete in time; RTE_STATUS_HARDWARE_FAULT
  *         if the OSAdapter can positively confirm no peer is reachable (not
  *         guaranteed on every OSAdapter, see REQ-OAL-FLOW-004);
+ *         RTE_STATUS_INTERNAL_ERROR for any other OSAdapter-level failure
+ *         (OSAdapter-dependent: the Platform_Protocol_DDS stub passes it
+ *         through from rte_netlink_send(), where the Platform_OS_POSIX
+ *         netlink OSAdapter returns it for a poll() errno other than the
+ *         retried EINTR, a send() errno other than the retried
+ *         EINTR/EAGAIN/EWOULDBLOCK and the HARDWARE_FAULT-mapped
+ *         ECONNREFUSED, or for a short datagram write);
  *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
  *         rte_flow_open().
  * REQ-OAL-FLOW-011
@@ -189,16 +196,30 @@ rte_status_t rte_flow_send(rte_flow_handle_t handle,
  * @param out_channel  Receives which logical channel the message arrived on.
  *                     May be NULL if the caller does not need it.
  * @param timeout_ms   Maximum time to wait for a message to arrive.
- * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT
- *         if no message arrives in time; RTE_STATUS_HARDWARE_FAULT if the
- *         OSAdapter can positively confirm no peer is reachable;
- *         RTE_STATUS_DATA_CORRUPTION if the OSAdapter received a message
- *         whose length differs from the Flow's message_size (both
- *         OSAdapter-dependent, not guaranteed on every OSAdapter, see
- *         REQ-OAL-FLOW-004; the Platform_Protocol_DDS stub passes both
- *         through from rte_netlink_receive());
- *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
- *         rte_flow_open().
+ * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM (also returned by the
+ *         Platform_Protocol_DDS stub when buffer_size is smaller than the
+ *         Flow's message_size); RTE_STATUS_TIMEOUT if no message arrives in
+ *         time; RTE_STATUS_HARDWARE_FAULT if the OSAdapter can positively
+ *         confirm no peer is reachable; RTE_STATUS_DATA_CORRUPTION if the
+ *         OSAdapter received a message whose length differs from the
+ *         Flow's message_size (both OSAdapter-dependent, not guaranteed on
+ *         every OSAdapter, see REQ-OAL-FLOW-004; the Platform_Protocol_DDS
+ *         stub passes both through from rte_netlink_receive(). On Darwin
+ *         the Platform_OS_POSIX netlink OSAdapter calls recvfrom() without
+ *         MSG_TRUNC, so a datagram longer than message_size is cut to
+ *         message_size and returned as RTE_STATUS_OK, the excess bytes
+ *         discarded; only a shorter one (other than a stray 1-byte
+ *         handshake datagram, which is dropped) yields
+ *         RTE_STATUS_DATA_CORRUPTION. Every other build passes MSG_TRUNC,
+ *         which on Linux reports the real length, so there a longer one is
+ *         RTE_STATUS_DATA_CORRUPTION too); RTE_STATUS_INTERNAL_ERROR for any
+ *         other OSAdapter-level failure (OSAdapter-dependent: passed through
+ *         by the Platform_Protocol_DDS stub; the Platform_OS_POSIX netlink
+ *         OSAdapter returns it for a poll() errno other than the retried
+ *         EINTR, or a recvfrom() errno other than the retried
+ *         EINTR/EAGAIN/EWOULDBLOCK and the HARDWARE_FAULT-mapped
+ *         ECONNREFUSED); RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED
+ *         as in rte_flow_open().
  * REQ-OAL-FLOW-012
  */
 rte_status_t rte_flow_receive(rte_flow_handle_t handle,

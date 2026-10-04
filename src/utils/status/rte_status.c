@@ -17,13 +17,8 @@
 
 
 /** Global functions */
-/**
- * @brief Convert a status code to a short, human-readable string.
- * @param status Status code to describe.
- * @return Static, non-NULL string literal naming @p status (e.g.
- *         "OK" for RTE_STATUS_OK); an unrecognized value yields "UNKNOWN_STATUS".
- * @safety Never returns NULL; safe to call with any int-range value.
- */
+/* Convert a status code to a short, human-readable string. Documented
+ * (parameter, return value, safety note) at its declaration in rte_status.h. */
 const char *rte_status_to_string(rte_status_t status)
 {
     switch (status)

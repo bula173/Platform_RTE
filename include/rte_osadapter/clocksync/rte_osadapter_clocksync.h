@@ -27,7 +27,8 @@ typedef struct rte_osadapter_clocksync_s
 /**
  * @brief Registers the OSAdapter clock synchronization implementation.
  * @param adapter Pointer to clocksync operations vtable.
- * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL, or RTE_STATUS_INVALID_STATE if the
+ *         setup phase is already locked (REQ-LIFECYCLE-001, ADR-026; the previous registration, if any, is kept).
  */
 rte_status_t rte_osadapter_clocksync_register(const rte_osadapter_clocksync_t *adapter);
 

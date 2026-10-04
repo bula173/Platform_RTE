@@ -207,7 +207,9 @@ rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel,
  * @return RTE_STATUS_OK; RTE_STATUS_TIMEOUT if nothing arrived in time;
  *         RTE_STATUS_HARDWARE_FAULT instead of RTE_STATUS_TIMEOUT if no link
  *         produced a usable frame and at least one link's receive reported a
- *         hard fault (REQ-DUAL-CHANNEL-008 below);
+ *         hard fault (REQ-DUAL-CHANNEL-008 below; a link's
+ *         RTE_STATUS_DATA_CORRUPTION, or any other receive status that is not
+ *         a hard fault, folds into RTE_STATUS_TIMEOUT);
  *         RTE_STATUS_INVALID_PARAM if a staged frame is larger than
  *         max_size (not silently truncated) or for a bad argument.
  *
@@ -253,9 +255,11 @@ rte_status_t rte_dual_channel_receive(rte_dual_channel_t *channel,
  * @param channel        Initialized channel. Must not be NULL.
  * @param out_ack_count  Optional; receives the number of links that ACKed.
  * @return RTE_STATUS_OK if at least one link acknowledged;
- *         RTE_STATUS_TIMEOUT if no link acknowledged within timeout;
- *         RTE_STATUS_HARDWARE_FAULT if every link encountered a hard fault;
- *         RTE_STATUS_INVALID_PARAM for a bad argument.
+ *         RTE_STATUS_HARDWARE_FAULT if no link acknowledged and at least one
+ *         link reported a hard fault (on its send or while waiting for its
+ *         ACK); RTE_STATUS_TIMEOUT if no link acknowledged within timeout and
+ *         none reported a hard fault (also when no link is configured);
+ *         RTE_STATUS_INVALID_PARAM if channel is NULL.
  */
 rte_status_t rte_dual_channel_send_heartbeat(rte_dual_channel_t *channel, uint32_t *out_ack_count);
 

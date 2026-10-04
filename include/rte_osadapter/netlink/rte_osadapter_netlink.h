@@ -34,7 +34,8 @@ typedef struct rte_osadapter_netlink_s
 /**
  * @brief Registers the OSAdapter network link implementation.
  * @param adapter Pointer to netlink operations vtable.
- * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL, or RTE_STATUS_INVALID_STATE if the
+ *         setup phase is already locked (REQ-LIFECYCLE-001, ADR-026; the previous registration, if any, is kept).
  */
 rte_status_t rte_osadapter_netlink_register(const rte_osadapter_netlink_t *adapter);
 
