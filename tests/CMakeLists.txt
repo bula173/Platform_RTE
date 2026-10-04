@@ -32,7 +32,6 @@ rte_add_test(test_rte_safestate      safestate/test_rte_safestate.c      rte::co
 rte_add_test(test_rte_safety_violation safestate/test_rte_safety_violation.c rte::core)
 rte_add_test(test_rte_string         string/test_rte_string.c            rte::core)
 rte_add_test(test_rte_lifecycle      lifecycle/test_rte_lifecycle.c      rte::core)
-rte_add_test(test_rte_lifecycle_osa_gates lifecycle/test_rte_lifecycle_osa_gates.c rte::channels)
 
 # OAL
 if(RTE_ENABLE_TIMER)
@@ -78,6 +77,12 @@ rte_add_test(test_rte_osadapter      osadapter/test_rte_osadapter.c      rte::ch
 # FSOU seam (ADR-041) - built with the OAL unconditionally, like rte_osadapter.c.
 rte_add_test(test_rte_fsou           fsou/test_rte_fsou.c                rte::oal)
 rte_add_test(test_rte_fsou_present   fsou/test_rte_fsou_present.c        rte::oal)
+# Exercises the lifecycle gate of each of these modules (REQ-LIFECYCLE-001/-003); random has no option.
+if(RTE_ENABLE_TIMER AND RTE_ENABLE_MUTEX AND RTE_ENABLE_NVM AND RTE_ENABLE_MEMORY AND RTE_ENABLE_TASK
+   AND RTE_ENABLE_IPC AND RTE_ENABLE_NETLINK AND RTE_ENABLE_FLOW AND RTE_ENABLE_LOG AND RTE_ENABLE_REBOOT
+   AND RTE_ENABLE_PLATFORM AND RTE_ENABLE_CLOCKSYNC AND RTE_ENABLE_CHANNEL_LINK)
+    rte_add_test(test_rte_lifecycle_osa_gates lifecycle/test_rte_lifecycle_osa_gates.c rte::channels)
+endif()
 
 # Channels
 if(RTE_ENABLE_CHECKSUM)
