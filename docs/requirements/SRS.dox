@@ -354,6 +354,16 @@ vtable or these ProtocolAdapters yet (netlink and the channel service open their
 | REQ-OAL-SOCKET-001 | The registered OSAdapter's `open(type, out_handle)` shall return `RTE_STATUS_OK` only with a non-blocking socket in `*out_handle`. If it cannot make the socket non-blocking it shall release the socket and return `RTE_STATUS_INTERNAL_ERROR` with `*out_handle` unwritten; it shall never hand out a blocking socket. A NULL `out_handle` shall yield `RTE_STATUS_INVALID_PARAM` and an unknown `type` `RTE_STATUS_NOT_SUPPORTED`, both with `*out_handle` unwritten. `set_nonblocking(handle, false)` may still switch an opened socket to blocking. |
 | REQ-OAL-SOCKET-002 | The raw UDP and TCP ProtocolAdapters' `open` shall check the result of `set_nonblocking(sock, true)` on the socket just opened when that vtable slot is non-NULL (a NULL slot is accepted, the socket being non-blocking by REQ-OAL-SOCKET-001). On a failure they shall close that socket, leave the socket in their state storage at `RTE_OS_SOCKET_INVALID_HANDLE`, perform no bind or connect, and return the status `set_nonblocking` returned, with the ProtocolAdapter's `*out_handle` unwritten. |
 
+### 2.14 Named channel service — `rte_channel_service.h`
+
+The application-facing named channel service and its OSAdapter vtable (`rte_osadapter_channel_service_t`). Only the
+requirement added with `RTE_STATUS_NOT_CONNECTED` is listed here (2026-10-04, G4 item 6 f-1); the rest of this module
+(setup, setup by id, read, `read_ex`, close, the setup-phase gate already in REQ-LIFECYCLE-003) is not backfilled yet.
+
+| ID | Requirement |
+|---|---|
+| REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: the status code and the contract exist; Platform_OS_POSIX's channel service still returns `RTE_STATUS_OK` and drops the data in this case until G4 item 6 f-2. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and

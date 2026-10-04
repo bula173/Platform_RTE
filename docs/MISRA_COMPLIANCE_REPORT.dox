@@ -1546,3 +1546,21 @@
 ///  `INVALID_STATE` and `*out_config` untouched). Mutation check (fresh build dirs): removing the overflow test, the
 ///  no-digit test, the trailing-character test, the whitespace skip before it (back to a one-character look-ahead) or
 ///  the status check in `parse_channel_object()` each fails the test.
+///- **Update (2026-10-04): `RTE_STATUS_NOT_CONNECTED`** (OSA rule R5, G4 item 6 f-1, REQ-CHANSVC-001, SRS section 2.14
+///  new) - `rte_status_t` (`include/rte/utils/status/rte_status.h`) gains `RTE_STATUS_NOT_CONNECTED = 13`, appended
+///  after `RTE_STATUS_INVALID_STATE = 12` (no existing value renumbered), and `rte_status_to_string()`
+///  (`src/utils/status/rte_status.c`) a `case` returning `"NOT_CONNECTED"`; the `default` clause (rule 16.4) is kept.
+///  `include/rte/redundancy/channel_service/rte_channel_service.h` documents the code on the OSAdapter vtable `send`
+///  and on `rte_channel_service_send()` (comments only). No other code changed and nothing returns the new code yet
+///  (Platform_OS_POSIX's channel service will, G4 item 6 f-2). Workspace check: no `rte_status_t` count/max sentinel, no array sized or
+///  indexed by a status, no range comparison on a status, no numeric mirror of the enum in Python, Robot, JSON or
+///  JavaScript; the other `switch` on `rte_status_t` (Platform_Protocol_SafeComm `transport.c` `map_status()`) has a
+///  `default` that maps the new code to `SAFECOMM_STATUS_TRANSPORT`. `cppcheck 2.21.0 --addon=misra --std=c99
+///  --enable=warning,style,performance,portability -I include --template='{file}:{line}:{column}:{id}'`, findings
+///  before (HEAD) -> after: `rte_status.c` 15.5 14 -> 15 (the new `return` at 44:46; `default` moves from 44:47 to
+///  45:47; one `return` per `case` is the file's existing form, rule 15.5 is advisory), 8.7 at 27:13 unchanged;
+///  `rte_channel_service.c` identical (15.5 x17, 8.7 x6; `rte_channel_service.h` 2.5 at 24:0 unchanged); findings in
+///  included headers (`rte_types.h` 2.3/2.5 x3/20.7, `rte_safestate.h` 2.5 x9/20.10, `rte_redundancy_config.h` 2.5,
+///  `rte_voter.h` 2.5) are the existing ones; `rte_status.h` none. No new mandatory or required finding. `ctest`
+///  (`test_rte_status` extended: the new code maps to `"NOT_CONNECTED"`, equals 13, and no two codes share a value or
+///  a string).

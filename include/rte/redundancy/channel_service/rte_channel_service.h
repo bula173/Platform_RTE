@@ -47,6 +47,18 @@ typedef struct
                           void *data,
                           size_t data_size,
                           rte_duration_ms_t timeout_ms);
+    /**
+     * @brief Sends @p data_size bytes of @p data on the channel set up in @p storage, within
+     * @p timeout_ms.
+     *
+     * REQ-CHANSVC-001 (OSA rule R5): on a listen-role link whose peer is learned from the first
+     * datagram it receives, a send before any peer is known shall transmit nothing and return
+     * @c RTE_STATUS_NOT_CONNECTED, never @c RTE_STATUS_OK. An OSAdapter that keeps the link
+     * unopened until its peer is present (the flow-backed channel service: @c RTE_STATUS_TIMEOUT)
+     * is not affected.
+     * @return @c RTE_STATUS_OK when the data was handed to the transport;
+     *         @c RTE_STATUS_NOT_CONNECTED as above; otherwise an OSAdapter-specific failure status.
+     */
     rte_status_t (*send)(rte_channel_service_storage_t *storage,
                           const void *data,
                           size_t data_size,
@@ -93,6 +105,18 @@ rte_status_t rte_channel_service_read_ex(rte_channel_service_t *storage,
                                           size_t data_size,
                                           rte_duration_ms_t timeout_ms,
                                           size_t *out_actual_size);
+/**
+ * @brief Sends @p data_size bytes of @p data on the named channel in @p storage through the
+ * registered OSAdapter's @c send.
+ * @param storage    Channel set up by @ref rte_channel_service_setup; must not be NULL.
+ * @param data       Bytes to send; must not be NULL.
+ * @param data_size  Number of bytes to send; must not be 0.
+ * @param timeout_ms Upper bound for the OSAdapter's send.
+ * @return @c RTE_STATUS_INVALID_PARAM for a NULL @p storage / @p data or a zero @p data_size;
+ *         @c RTE_STATUS_NOT_INITIALIZED with no complete OSAdapter registered;
+ *         @c RTE_STATUS_NOT_CONNECTED when a listen-role link has no peer yet and nothing was
+ *         sent (REQ-CHANSVC-001); otherwise the OSAdapter's own result, unchanged.
+ */
 rte_status_t rte_channel_service_send(rte_channel_service_t *storage,
                                          const void *data,
                                          size_t data_size,

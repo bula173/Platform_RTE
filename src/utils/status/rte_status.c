@@ -41,6 +41,7 @@ const char *rte_status_to_string(rte_status_t status)
         case RTE_STATUS_INTERNAL_ERROR:      return "INTERNAL_ERROR";
         case RTE_STATUS_VALUE_OUT_OF_RANGE:  return "VALUE_OUT_OF_RANGE";
         case RTE_STATUS_INVALID_STATE:       return "INVALID_STATE";
+        case RTE_STATUS_NOT_CONNECTED:       return "NOT_CONNECTED";
         default:                              return "UNKNOWN_STATUS";
     }
 }

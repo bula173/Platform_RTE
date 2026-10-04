@@ -37,10 +37,12 @@ typedef enum rte_status_e
     RTE_STATUS_DATA_CORRUPTION       = 9,  /**< Integrity check (e.g. NVM CRC) failed. */
     RTE_STATUS_INTERNAL_ERROR        = 10, /**< Defensive catch-all: should never happen. */
     RTE_STATUS_VALUE_OUT_OF_RANGE    = 11, /**< Checked cast: value does not fit the destination type. */
-    RTE_STATUS_INVALID_STATE         = 12  /**< Operation not permitted in the application's current
+    RTE_STATUS_INVALID_STATE         = 12, /**< Operation not permitted in the application's current
                                               *   lifecycle phase (e.g. a setup-only constructor called
                                               *   after rte_appmanager_run() has locked setup - see
                                               *   rte_lifecycle.h). */
+    RTE_STATUS_NOT_CONNECTED         = 13  /**< Listen-role link has no peer yet; nothing was sent
+                                              *   (REQ-CHANSVC-001, rte_channel_service.h). */
 } rte_status_t;
 
 /**
