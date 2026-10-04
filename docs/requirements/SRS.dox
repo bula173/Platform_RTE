@@ -362,7 +362,7 @@ requirement added with `RTE_STATUS_NOT_CONNECTED` is listed here (2026-10-04, G4
 
 | ID | Requirement |
 |---|---|
-| REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: the status code and the contract exist; Platform_OS_POSIX's channel service still returns `RTE_STATUS_OK` and drops the data in this case until G4 item 6 f-2. |
+| REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: Implemented by Platform_OS_POSIX's channel service since 2026-10-04 (G4 item 6 f-2); verified by RBC_GP `test_rte_posix_osadapter_channel_service_listen`. |
 
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
