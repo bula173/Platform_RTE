@@ -357,6 +357,10 @@ typedef struct {
  * @param signature The 64-bit signature to fold (e.g. the seed, for a
  *                   no-marks cycle).
  * @return The folded 32-bit checkpoint_id.
+ *
+ * REQ-APPMANAGER-014: A pure function (no reference to any in-progress
+ * cycle) computing the same 64-to-32-bit fold rte_appmanager_run() uses
+ * internally for checkpoint_id.
  */
 uint32_t rte_appmanager_checkpoint_fold_signature(uint64_t signature);
 
@@ -387,6 +391,12 @@ uint32_t rte_appmanager_checkpoint_fold_signature(uint64_t signature);
  *              as the same logical mark, or a single call site's mark
  *              identity should depend on which branch was taken). May be
  *              NULL to use file:line.
+ *
+ * REQ-APPMANAGER-014: During an active rte_appmanager_run() cycle, folds a
+ * CRC64 hash of `label` (if non-NULL) or `file:line` into that cycle's
+ * running signature; a documented no-op outside an active cycle. The
+ * signature resets to RTE_APPMANAGER_CHECKPOINT_SIGNATURE_SEED at the start
+ * of every cycle, before pre_execute() runs (ADR-034).
  */
 void rte_appmanager_checkpoint_mark(const char *file, int32_t line, const char *label);
 
@@ -447,6 +457,18 @@ void rte_appmanager_checkpoint_mark(const char *file, int32_t line, const char *
  *   and can discard what it staged this cycle; see that field's own doc
  * - If error_threshold is reached, application shuts down
  * - shutdown() is always called, even on error
+ *
+ * REQ-APPMANAGER-010: Locks the setup phase (rte_lifecycle_lock()) the
+ * moment ops->init() returns RTE_STATUS_OK, for the rest of that run;
+ * unlocks it (rte_lifecycle_unlock()) at the start of every call and the
+ * moment that call's own execution phase ends (ADR-026).
+ * REQ-APPMANAGER-011: config->checkpoint->voter == NULL is treated like
+ * config->checkpoint == NULL: rte_channel_checkpoint() is skipped for that
+ * cycle (no pacing, no error counted), never handled as a failed stage.
+ * REQ-APPMANAGER-012: The checkpoint stage, if configured, runs as the LAST
+ * stage of a cycle, after pre_execute()/execute()/post_execute() have had
+ * the opportunity to run, with this cycle's RTE_CHECKPOINT_MARK() signature
+ * (REQ-APPMANAGER-014) as checkpoint_id (ADR-034).
  *
  * @param config Application manager configuration
  * @return 0 (EXIT_SUCCESS) if application completed normally

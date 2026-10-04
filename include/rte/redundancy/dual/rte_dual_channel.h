@@ -173,6 +173,15 @@ rte_status_t rte_dual_channel_init(rte_dual_channel_t *channel, const rte_dual_c
  *         if none did (data was still transmitted-attempted on every
  *         link; this reports delivery confirmation, not transmission
  *         attempt); RTE_STATUS_INVALID_PARAM for a bad argument.
+ *
+ * REQ-DUAL-CHANNEL-007: The per-link ACK wait keeps polling within
+ * config->ack_timeout_ms even when rte_timer_now() shows no progress
+ * between polls, bounded by a fixed cap (RTE_DUAL_CHANNEL_STALL_POLL_LIMIT)
+ * on consecutive no-progress polls.
+ * REQ-DUAL-CHANNEL-008: If no link ACKed and at least one link's own
+ * send/receive reported RTE_STATUS_HARDWARE_FAULT, that status is returned
+ * instead of RTE_STATUS_TIMEOUT; RTE_STATUS_DATA_CORRUPTION on an otherwise
+ * healthy link still folds into RTE_STATUS_TIMEOUT.
  */
 rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel,
                                       const uint8_t *payload,
@@ -195,6 +204,11 @@ rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel,
  * @return RTE_STATUS_OK; RTE_STATUS_TIMEOUT if nothing arrived in time;
  *         RTE_STATUS_INVALID_PARAM if a staged frame is larger than
  *         max_size (not silently truncated) or for a bad argument.
+ *
+ * REQ-DUAL-CHANNEL-008: If no link produced a usable frame and at least one
+ * link's own receive reported RTE_STATUS_HARDWARE_FAULT, that status is
+ * returned instead of RTE_STATUS_TIMEOUT; RTE_STATUS_DATA_CORRUPTION on an
+ * otherwise healthy link still folds into RTE_STATUS_TIMEOUT.
  */
 rte_status_t rte_dual_channel_receive(rte_dual_channel_t *channel,
                                          uint8_t *out_payload,

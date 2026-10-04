@@ -342,6 +342,11 @@ rte_channel_t *rte_voter_get_channel(const rte_voter_t *voter, uint32_t index);
  * @return The first registered channel whose own name matches (exact
  *         strcmp() equality); NULL if voter or name is NULL, or no
  *         registered channel has a matching (non-NULL) name.
+ *
+ * REQ-VOTER-006: Returns the first registered channel whose
+ * rte_channel_get_name() exactly (strcmp()) matches name; NULL if
+ * voter/name is NULL or no name matches (a channel with a NULL name is
+ * never matched, REQ-CHANNEL-005).
  */
 rte_channel_t *rte_voter_get_channel_by_name(const rte_voter_t *voter, const char *name);
 

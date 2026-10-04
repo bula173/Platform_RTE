@@ -34,6 +34,9 @@ typedef struct rte_osadapter_nvm_s
  * @brief Registers the OSAdapter NVM implementation.
  * @param adapter Pointer to NVM operations vtable.
  * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ *
+ * REQ-OAL-NVM-015: Follows the OSAdapter-registration contract (ADR-005 section 2.1): a NULL adapter is rejected
+ * with RTE_STATUS_INVALID_PARAM; re-registering replaces the previous OSAdapter.
  */
 rte_status_t rte_osadapter_nvm_register(const rte_osadapter_nvm_t *adapter);
 

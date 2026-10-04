@@ -476,7 +476,7 @@ never sent at all, instead of only being noticed after the fact.
 | REQ-APPMANAGER-002 | Applications shall implement all mandatory operations in `rte_appmanager_operations_t` (`init`, `execute`, `shutdown`, `get_name`, `get_version`); `pre_execute`, `post_execute`, and `on_checkpoint_result` are optional and may be left `NULL`. |
 | REQ-APPMANAGER-006 | `rte_appmanager_run()` shall treat a `NULL` `pre_execute` or `post_execute` as "skip this stage", not an error, and shall not call it. |
 | REQ-APPMANAGER-007 | `rte_appmanager_run()` shall handle the checkpoint stage's result identically to `pre_execute`/`execute`/`post_execute`: on non-`RTE_STATUS_OK`, log it, increment `error_count`, and check `error_threshold` — no separate reaction path for a checkpoint failure/timeout. (ADR-034: the checkpoint stage is now the LAST stage of a cycle — REQ-APPMANAGER-012 — so this is the last opportunity for a cycle to be counted as an error, not the first.) |
-| REQ-APPMANAGER-008 | **Superseded by ADR-034, kept for history.** Originally: a genuine checkpoint-stage failure shall not be retried faster than `max_delay_ms`, via `rte_appmanager_pace_failed_checkpoint()` — needed because the checkpoint stage used to run *before* `pre_execute()`, the only place a consumer's own cycle pacing lived, so a fast-failing checkpoint could spin the loop at ~90000 iterations/second. ADR-034 moved the checkpoint stage to run LAST (REQ-APPMANAGER-012): `pre_execute()` now always runs before checkpoint even has a chance to fail, so it already paces every cycle regardless of that cycle's own checkpoint outcome — the starvation this requirement guarded against can no longer occur by construction. `rte_appmanager_pace_failed_checkpoint()` was removed accordingly. |
+| REQ-APPMANAGER-008 | **Superseded by ADR-034, kept for history; documentation-only, not tagged.** Originally: a genuine checkpoint-stage failure shall not be retried faster than `max_delay_ms`, via `rte_appmanager_pace_failed_checkpoint()` — needed because the checkpoint stage used to run *before* `pre_execute()`, the only place a consumer's own cycle pacing lived, so a fast-failing checkpoint could spin the loop at ~90000 iterations/second. ADR-034 moved the checkpoint stage to run LAST (REQ-APPMANAGER-012): `pre_execute()` now always runs before checkpoint even has a chance to fail, so it already paces every cycle regardless of that cycle's own checkpoint outcome — the starvation this requirement guarded against can no longer occur by construction. `rte_appmanager_pace_failed_checkpoint()` was removed accordingly. |
 | REQ-APPMANAGER-009 | `rte_appmanager_run()` is the single entry point for an application's lifecycle (REQ-APPMANAGER-001) and shall refuse re-entry: a call arriving while a previous call is still mid-lifecycle (`RTE_APP_STATE_INITIALIZING`/`_RUNNING`/`_SHUTTING_DOWN`) shall return `EXIT_FAILURE` immediately, without altering any state belonging to the call already in progress. A new call made only after a previous one has fully returned (state `RTE_APP_STATE_SHUTDOWN`/`_ERROR`) is unaffected — this framework's own test suite relies on exactly that sequential-call pattern (ADR-026). |
 | REQ-APPMANAGER-010 | The moment `ops->init()` returns `RTE_STATUS_OK`, `rte_appmanager_run()` shall lock the application's setup phase (`rte_lifecycle_lock()`) for the remainder of that run, and shall unlock it (`rte_lifecycle_unlock()`) both at the start of every call and the moment that call's own execution phase ends — see ADR-026 and REQ-LIFECYCLE-001. |
 | REQ-APPMANAGER-011 | `rte_appmanager_run()` shall treat `config->checkpoint->voter == NULL` identically to `config->checkpoint == NULL`: skip the `rte_channel_checkpoint()` call entirely for that cycle (no pacing, no error counted) — never as a failed stage. (ADR-034: since the checkpoint stage now runs LAST — REQ-APPMANAGER-012 — `pre_execute()`/`execute()`/`post_execute()` already ran unconditionally before this check, so a paused checkpoint can no longer starve them by construction; this requirement's original "...and proceed to pre_execute()/execute()/post_execute() normally" clause is now vacuous, kept here only as historical context for why the check exists at all.) Found live (ADR-027 Phase 3, `RBC_GP`): before this fix, a caller-paused checkpoint (`voter` toggled to `NULL` while its own underlying link is known down — a normal, documented pattern, not rare) was fed to `rte_channel_checkpoint()`, got back `RTE_STATUS_INVALID_PARAM`, and had that treated as a failed stage — paced (REQ-APPMANAGER-008) and `continue`d, which (under the pre-ADR-034 stage order) skipped every later stage for as long as `voter` stayed `NULL`, silently starving every one of a consumer's own per-cycle safety checks too, including `rte_watchdog_timer_tick()`. |
@@ -700,6 +700,20 @@ set this precedent for a `RBC_GP`-discovered requirement). See
 ADR-029 for the full design and the live debugging that produced several
 of these.
 
+These are RBC_GP requirements: their tags live in RBC_GP's sources, not in
+this product's `include/` (section 4). As of 2026-10-04: `REQ-RBC-001` in
+`src/application/AB/common/rbc_wire_types.h`, `common_config.h` and
+`src/application/AB/GP/train/ab_gp_train.c`; `REQ-RBC-002` in
+`ab_gp_train.c`, `src/application/AB/GP/ertms_procedures/ab_gp_proc_dispatch.h`/`.c`
+and `src/application/AB/GP/ertms/train/ab_gp_ertms_train_message_codec.c`;
+`REQ-RBC-003`/`-004` in `rbc_wire_types.h`; `REQ-RBC-006` in
+`src/application/AB/GP/com/ab_gp_channel_negotiate.c`,
+`src/application/AB/GP/train/ab_gp_train.h` and `common_config.h`;
+`REQ-RBC-007` in `ab_gp_train.h`; `REQ-RBC-008` in
+`src/application/AB/GP/com/ab_gp_channel_crosscompare.c`. `REQ-RBC-005`
+and `REQ-RBC-009` carry no tag in RBC_GP (an open gap there; the
+`monitor_c_init()` that `REQ-RBC-009` names no longer exists in RBC_GP).
+
 | ID | Requirement |
 |---|---|
 | REQ-RBC-001 | **REVISED (this session, wording only — see status note below).** The RBC envelope (`rbc_envelope_t`, `rbc_wire_types.h`) shall carry a real Subset-026-style header — `NID_MESSAGE` (message identity), `L_MESSAGE` (message length in bytes, genuinely variable per message kind), `T_TRAIN` (message timestamp) — and MAY be variable-length per message kind, decoded/encoded via `L_MESSAGE` rather than a single fixed frame size for every kind. This supersedes the prior fixed-28-byte-for-every-kind mandate to allow real Subset-026 message/packet shapes (nested/`N_ITER`-repeated packets, e.g. Packet 15 Movement Authority) that do not fit a flat fixed-size struct — see `RBC_Test_Sim_Train/src/train/message_catalog.json`'s `_subset026Reference`/`_subset026PacketsReference` for the real field/packet data this now needs to support. **Status: partially implemented (this session).** `rbc_wire_types.h`/`rbc_wire.c` (C) and `RBC_Test_Sim_Core/src/simcore/rbc_wire.py` (Python mirror) now carry a real, always-fully-populated 80-byte envelope (`RBC_ENVELOPE_WIRE_SIZE`/`ENVELOPE_SIZE`) with genuine `NID_MESSAGE`/`L_MESSAGE`/`T_TRAIN` header fields, plus the real flat Subset-026 content fields for message 146 (`t_train_ack`) and message 136 (the ten real Packet 0 fields — `nid_lrbg`, `q_dirlrbg`, `q_dlrbg`, `l_doubtover`, `l_doubtunder`, `q_length`, `v_train`, `q_dirtrain`, `m_mode`, `m_level`). `L_MESSAGE` genuinely varies by kind (`content_size_for_kind()`/`build_envelope()`'s own calculation) and is checked on decode, but the frame itself is NOT actually variable-length on the wire — every kind still occupies the same fixed 80-byte slot, with fields not meaningful for a given kind simply left zero, specifically to avoid the C/Python offset-aliasing bug this approach was chosen to sidestep (see `rbc_wire.c`'s own header comment). Byte-for-byte C/Python encode parity verified for both message 146 and 136. Still NOT done: a genuinely variable-length wire frame (so an unrelated kind doesn't pay for fields it never uses), and the nested/`N_ITER`-repeated packet content (e.g. Packet 15 Movement Authority for message 3) — both remain separately-scoped follow-on work; check `rbc_wire_types.h`'s own header comment for the current exact field layout before relying on either doc. |
@@ -715,45 +729,61 @@ of these.
 ## 4. Traceability
 
 Every `REQ-*` ID in this document is meant to appear verbatim in the
-corresponding header's Doxygen comment in `include/rte/`, **except**
-`REQ-OAL-BACKEND-001/002/003` in section 2, which are a documentation-only
-consolidation of a pattern repeated across the per-service
-"register_osadapter" entries (see the note above section 2.1) and
-intentionally do not appear as literal source tags. A range row (e.g.
-`REQ-COMMON-BUF-020..025`) stands for every ID in its range. The two lists
-do not match yet; the gaps found by the last check are listed below.
+Doxygen comment of the header that declares the realising function, under
+`include/` (both `include/rte/` and the OSAdapter vtable headers in
+`include/rte_osadapter/`). A range row (e.g. `REQ-COMMON-BUF-020..025`)
+stands for every ID in its range. Exceptions, which have no tag in
+`include/` by design:
 
-**Re-check of 2026-10-04 (G4 item 6 g-1), range rows expanded:** 221
-distinct IDs are tagged in `include/`; the tables of this document hold
-251 IDs.
+- `REQ-OAL-BACKEND-001/002/003` (section 2): a documentation-only
+  consolidation of the per-service "register_osadapter" pattern (see the
+  note above section 2.1). The per-service rows that cite them are tagged
+  at each `rte_osadapter_<service>_register()` declaration, with wording
+  that restates the contract without the literal `REQ-OAL-BACKEND-*` ID.
+- `REQ-APPMANAGER-008` (section 3c): superseded by ADR-034, kept for history.
+- `REQ-RBC-001..009` (section 3h): RBC_GP requirements, tagged in RBC_GP's
+  sources (see the note above that table), not here.
 
-- Every ID tagged in `include/` has a row here. The 17 IDs the first check
-  of 2026-10-04 found without a row (`REQ-OAL-FLOW-001..004` and
-  `REQ-OAL-FLOW-010..015`, `REQ-ELECTION-001..005`,
-  `REQ-STATE-TRANSFER-001/002`) got their rows in sections 2.15, 3d.6 and
-  3d.7.
-- 30 IDs have a row here but no tag in `include/`:
-  `REQ-OAL-BACKEND-001..003` (by design, see above); the
-  "register_osadapter" rows `REQ-OAL-TIMER-015`, `REQ-OAL-NVM-015`,
-  `REQ-OAL-MEM-014`, `REQ-OAL-TASK-014`, `REQ-OAL-IPC-014`,
-  `REQ-OAL-LOG-012`, `REQ-OAL-REBOOT-011`, `REQ-OAL-PLATFORM-011`;
-  `REQ-APPMANAGER-008` (superseded, kept for history) and
-  `REQ-APPMANAGER-010..014` (`-010` is tagged only in
-  `src/app/appmanager/rte_appmanager.c`); `REQ-CHANNEL-005`;
-  `REQ-DUAL-CHANNEL-007/008` (tagged only in `src/` and `tests/`);
-  `REQ-VOTER-006`; `REQ-RBC-001..009` (RBC_GP requirements, section 3h,
-  tagged in RBC_GP's sources).
+**Re-check of 2026-10-04 (G4 item 6 g-2), range rows expanded:** 237
+distinct IDs are tagged in `include/`; this document holds 251 IDs (248 in
+its tables plus the three `REQ-OAL-BACKEND-*` IDs of section 2).
+
+- Every ID tagged in `include/` has a row here.
+- 14 IDs have a row here but no tag in `include/`: the 13 exceptions above
+  and one open gap, `REQ-APPMANAGER-013`.
+- Open gap `REQ-APPMANAGER-013`: not tagged, because
+  `rte_appmanager_run()` realises it only in part. The row requires
+  `ops->on_checkpoint_result` to be called exactly once per cycle, with
+  `committed = true` when `config->checkpoint` is NULL. When
+  `pre_execute()` or `execute()` fails, the loop skips the rest of that
+  cycle (`continue` in `src/app/appmanager/rte_appmanager.c`), so neither
+  the checkpoint stage nor `on_checkpoint_result` runs in that cycle.
+  `tests/appmanager/test_rte_appmanager.c` covers the hook only on cycles
+  whose earlier stages succeed. The tag is added once the code and this row
+  agree (ISS-031).
+- The 26 IDs the 2026-10-04 g-1 check found with a row but no tag were
+  resolved in g-2: the "register_osadapter" rows `REQ-OAL-TIMER-015`,
+  `REQ-OAL-NVM-015`, `REQ-OAL-MEM-014`, `REQ-OAL-TASK-014`,
+  `REQ-OAL-IPC-014`, `REQ-OAL-LOG-012`, `REQ-OAL-REBOOT-011` and
+  `REQ-OAL-PLATFORM-011` at their `rte_osadapter_<service>_register()`
+  declarations; `REQ-APPMANAGER-010..012` at `rte_appmanager_run()` and
+  `REQ-APPMANAGER-014` at `rte_appmanager_checkpoint_mark()` and
+  `rte_appmanager_checkpoint_fold_signature()`; `REQ-CHANNEL-005` at
+  `rte_channel_get_name()`; `REQ-DUAL-CHANNEL-007` at
+  `rte_dual_channel_send()` and `REQ-DUAL-CHANNEL-008` at
+  `rte_dual_channel_send()` and `rte_dual_channel_receive()`;
+  `REQ-VOTER-006` at `rte_voter_get_channel_by_name()`;
+  `REQ-APPMANAGER-008` and `REQ-RBC-001..009` became documented exceptions.
 - A comparison that does not expand range rows also reports
   `REQ-COMMON-BUF-021..025`, `-027..031` and `REQ-COMMON-STR-022..024`,
   `-026..028`, `-030..032` as missing (the range-start IDs `BUF-026`,
   `STR-025`, `STR-029` match their rows literally); the range rows of
   sections 1.3 and 1.6 cover them.
 
-Of those 30, the 27 IDs other than `REQ-OAL-BACKEND-001..003` are not
-resolved yet (a separate follow-up). The check before 2026-10-04 used
-`REQ-[A-Z]+-[A-Z]+-[0-9]+`, which matches only three-part IDs and so
-missed every two-part ID such as `REQ-VOTER-001` or `REQ-CHANSVC-001`
-(162 IDs found instead of 221).
+The check before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which
+matches only three-part IDs and so missed every two-part ID such as
+`REQ-VOTER-001` or `REQ-CHANSVC-001` (162 IDs found instead of 221 at the
+time).
 
 Regenerate the source-side list
 (`grep -rhoE "REQ-[A-Z]+(-[A-Z]+)*-[0-9]+" include | sort -u`) whenever a
@@ -761,5 +791,5 @@ module is added or changed, and update both this file and the source
 comment together — they are required to stay in sync by inspection, since
 there is currently no automated cross-check between the two (a natural
 next step: a CI script that fails if a `REQ-*` ID appears in code but not
-here, or vice versa, ignoring the documented `REQ-OAL-BACKEND-*` exception).
+here, or vice versa, ignoring the documented exceptions above).
 */

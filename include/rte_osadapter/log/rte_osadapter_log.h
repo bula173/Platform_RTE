@@ -27,6 +27,10 @@ typedef struct rte_osadapter_log_s
  * @brief Registers the OSAdapter log implementation.
  * @param adapter Pointer to log operations vtable.
  * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ *
+ * REQ-OAL-LOG-012: Follows the OSAdapter-registration contract (ADR-005 section 2.1): a NULL adapter is rejected
+ * with RTE_STATUS_INVALID_PARAM; re-registering replaces the previous OSAdapter. Exception for this service only
+ * (ADR-005 section 2.5): no OSAdapter registered is not an error; rte_log_write() then silently does nothing.
  */
 rte_status_t rte_osadapter_log_register(const rte_osadapter_log_t *adapter);
 

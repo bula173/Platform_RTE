@@ -225,6 +225,10 @@ rte_status_t rte_channel_get_health(const rte_channel_t *handle,
  *         or if handle was never initialized); NULL if handle is NULL.
  *
  * @safety Read-only; safe to call from any context.
+ *
+ * REQ-CHANNEL-005: rte_channel_config_t::name is optional and not copied
+ * (caller-owned, must outlive the channel); returned verbatim, NULL if
+ * handle is NULL or no name was configured.
  */
 const char *rte_channel_get_name(const rte_channel_t *handle);
 

@@ -31,6 +31,9 @@ typedef struct rte_osadapter_task_s
  * @brief Registers the OSAdapter task implementation.
  * @param adapter Pointer to task operations vtable.
  * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ *
+ * REQ-OAL-TASK-014: Follows the OSAdapter-registration contract (ADR-005 section 2.1): a NULL adapter is rejected
+ * with RTE_STATUS_INVALID_PARAM; re-registering replaces the previous OSAdapter.
  */
 rte_status_t rte_osadapter_task_register(const rte_osadapter_task_t *adapter);
 

@@ -32,6 +32,9 @@ typedef struct rte_osadapter_timer_s
  * @brief Registers the OSAdapter timer implementation.
  * @param adapter Pointer to timer operations vtable.
  * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ *
+ * REQ-OAL-TIMER-015: Follows the OSAdapter-registration contract (ADR-005 section 2.1): a NULL adapter is rejected
+ * with RTE_STATUS_INVALID_PARAM; re-registering replaces the previous OSAdapter.
  */
 rte_status_t rte_osadapter_timer_register(const rte_osadapter_timer_t *adapter);
 
