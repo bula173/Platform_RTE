@@ -354,6 +354,30 @@ vtable or these ProtocolAdapters yet (netlink and the channel service open their
 | REQ-OAL-SOCKET-001 | The registered OSAdapter's `open(type, out_handle)` shall return `RTE_STATUS_OK` only with a non-blocking socket in `*out_handle`. If it cannot make the socket non-blocking it shall release the socket and return `RTE_STATUS_INTERNAL_ERROR` with `*out_handle` unwritten; it shall never hand out a blocking socket. A NULL `out_handle` shall yield `RTE_STATUS_INVALID_PARAM` and an unknown `type` `RTE_STATUS_NOT_SUPPORTED`, both with `*out_handle` unwritten. `set_nonblocking(handle, false)` may still switch an opened socket to blocking. |
 | REQ-OAL-SOCKET-002 | The raw UDP and TCP ProtocolAdapters' `open` shall check the result of `set_nonblocking(sock, true)` on the socket just opened when that vtable slot is non-NULL (a NULL slot is accepted, the socket being non-blocking by REQ-OAL-SOCKET-001). On a failure they shall close that socket, leave the socket in their state storage at `RTE_OS_SOCKET_INVALID_HANDLE`, perform no bind or connect, and return the status `set_nonblocking` returned, with the ProtocolAdapter's `*out_handle` unwritten. |
 
+### 2.15 Flows (PI API) — `rte_flow.h`
+
+A name-addressed publish/subscribe or request/response message endpoint, shaped after the `flows.h` sketch in Annex
+A.1 of the OCORA PI API specification (`fl_open`/`fl_close`/`fl_send`/`fl_receive`/`fl_getattr`/`fl_setattr`) under
+this project's `rte_` prefix. Framework ships the interface and validate-then-dispatch layer; the OSAdapter vtable
+(`rte_osadapter_flow_t`) and `rte_osadapter_flow_register()` live in `include/rte_osadapter/flow/rte_osadapter_flow.h`
+(ADR-021 seam). Number 2.14 stays unused: that section moved to 3d.5.
+
+Rows backfilled on 2026-10-04 (G4 item 6 g-1) from the tags already in `rte_flow.h`; the wording restates the header
+text and adds no requirement content. Unit tests: `tests/flow/test_rte_flow.c`.
+
+| ID | Requirement |
+|---|---|
+| REQ-OAL-FLOW-001 | No dynamic allocation; caller supplies storage (`rte_flow_storage_t`). |
+| REQ-OAL-FLOW-002 | `rte_flow_open()` shall never block longer than `config->open_timeout_ms`. |
+| REQ-OAL-FLOW-003 | Send/receive shall accept an explicit timeout and shall never block indefinitely by default — a deliberate strengthening beyond the PI API sketch (which relies on `O_NONBLOCK` alone), matching every other blocking call in this framework (e.g. REQ-OAL-NETLINK-003). `RTE_FLOW_O_NONBLOCK` is an OSAdapter-defined hint only; callers should still pass an explicit `timeout_ms` rather than relying on this flag alone. |
+| REQ-OAL-FLOW-004 | This service provides no message ordering, deduplication, or delivery guarantee of its own, same posture as `rte_netlink` (REQ-OAL-NETLINK-014). |
+| REQ-OAL-FLOW-010 | `rte_flow_open()` shall open (join, register or subscribe to) the named Flow. It shall return `RTE_STATUS_INVALID_PARAM` for a NULL `storage`, `config`, `config->name` or `out_handle`, a zero `config->message_size`, or `config->oflags` not setting exactly one of the PUBLISHER, SUBSCRIBER, REQUESTER and RESPONDER flags; `RTE_STATUS_TIMEOUT` if the Flow is not opened within `config->open_timeout_ms`; `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when the registered OSAdapter does not implement open. |
+| REQ-OAL-FLOW-011 | `rte_flow_send()` shall send one fixed-size message on the given channel (`RTE_FLOW_CHANNEL_USER` or `_CTRL`), blocking at most `timeout_ms`, and return `RTE_STATUS_TIMEOUT` if the send does not complete in time; `RTE_STATUS_HARDWARE_FAULT` if the OSAdapter can positively confirm no peer is reachable (not guaranteed on every OSAdapter, see REQ-OAL-FLOW-004). A NULL `handle` or `data` or a zero `data_size` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+| REQ-OAL-FLOW-012 | `rte_flow_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`, report the channel it arrived on through `out_channel` when that is non-NULL, and return `RTE_STATUS_TIMEOUT` if no message arrives in time; `RTE_STATUS_HARDWARE_FAULT`/`RTE_STATUS_DATA_CORRUPTION` per the note in REQ-OAL-FLOW-011. A NULL `handle` or `out_data` or a zero `buffer_size` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+| REQ-OAL-FLOW-013 | `rte_flow_close()` shall close (leave, unregister or unsubscribe from) a Flow; the handle is invalid to use afterward. A NULL `handle` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+| REQ-OAL-FLOW-014 | `rte_flow_getattr()` shall report the Flow's current static and dynamic attributes (`rte_flow_attr_t`: `message_size`, `oflags`, `is_connected`). A NULL `handle` or `out_attr` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+| REQ-OAL-FLOW-015 | `rte_flow_setattr()` shall apply the Flow's mutable attributes from `new_attr` (which fields are mutable is OSAdapter-defined; an immutable field such as `message_size` is ignored, not rejected) and report the attributes as they were before the call through `out_old_attr` when that is non-NULL. A NULL `handle` or `new_attr` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and
@@ -536,6 +560,36 @@ requirement added with `RTE_STATUS_NOT_CONNECTED` is listed here (2026-10-04, G4
 |---|---|
 | REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: Implemented by Platform_OS_POSIX's channel service since 2026-10-04 (G4 item 6 f-2); verified by RBC_GP `test_rte_posix_osadapter_channel_service_listen`. |
 
+### 3d.6 N-way election — `rte_election.h` (ADR-039)
+
+Generalizes `rte_dual_negotiator`'s pairwise older-startup-timestamp-wins rule (3e.4) to up to
+`RTE_REDUNDANCY_CONFIG_MAX_REPLICAS` candidates, for the 2oo3/NMR topologies `rte_dual_negotiator` cannot express. A
+pure state computation over a candidate snapshot the caller gathers each cycle (same posture as `rte_voter`); it owns
+no transport and is not called by `rte_dual_negotiator` or `rte_cross_comparator`. Rows backfilled on 2026-10-04 (G4
+item 6 g-1) from the tags already in `rte_election.h`; the wording restates the header text and adds no requirement
+content. Unit tests: `tests/election/test_rte_election.c`.
+
+| ID | Requirement |
+|---|---|
+| REQ-ELECTION-001 | No dynamic allocation; caller supplies storage and, on each `rte_election_execute()` call, a caller-gathered candidate snapshot. |
+| REQ-ELECTION-002 | The winner shall be the candidate with the oldest (smallest) `startup_timestamp_ms` among all candidates currently in contact (REQ-ELECTION-004); on an exact timestamp tie the smallest `id` wins — the rule `rte_dual_negotiator` uses (REQ-DUAL-NEGOTIATOR-003), generalized from 2 to N candidates. |
+| REQ-ELECTION-003 | `rte_election_execute()` shall never call `rte_safestate_enter()` itself — same "no automatic safety reaction" posture as `rte_dual_negotiator` (REQ-DUAL-NEGOTIATOR-002): deciding what a sustained lack of quorum means for safety stays an application policy decision. |
+| REQ-ELECTION-004 | A candidate not present in the snapshot passed to the current `rte_election_execute()` call (including one this instance saw earlier that has since dropped out) shall be treated as not currently in contact and cannot win that round; callers omit rather than mark timed-out candidates. |
+| REQ-ELECTION-005 | Every non-winning candidate that is in contact shall be reported `RTE_DUAL_STATE_HOTSTANDBY` if the winner's own `degraded` flag is false and `RTE_DUAL_STATE_COLDSTANDBY` if it is true — the winner's degradation, never a standby's own self-report, sets every standby's HOT/COLD label, the rule `rte_dual_negotiator` uses (REQ-DUAL-NEGOTIATOR-004), generalized from one standby to N-1. |
+
+### 3d.7 State transfer — `rte_state_transfer.h`
+
+Declarative registry of application state that must survive a STANDBY to ONLINE promotion: the application registers
+each field (name, pointer, size, optionally a custom encoder/decoder pair) and the module packs or unpacks all of them
+into or from one bounds-checked buffer. It does not decide when a transfer happens or over what transport. Rows
+backfilled on 2026-10-04 (G4 item 6 g-1) from the tags already in `rte_state_transfer.h`; the wording restates the
+header text and adds no requirement content. Unit tests: `tests/state_transfer/test_rte_state_transfer.c`.
+
+| ID | Requirement |
+|---|---|
+| REQ-STATE-TRANSFER-001 | No dynamic allocation; a fixed-size static field table (`RTE_STATE_TRANSFER_MAX_FIELDS` entries per registry) and caller-owned buffers for encode/decode. |
+| REQ-STATE-TRANSFER-002 | `rte_state_transfer_encode()`/`_decode()` shall pack/unpack the registered fields in registration order, byte-for-byte, with no padding inserted between them. |
+
 ## 3e. Dual-transfer state negotiation — `rte_dual` (ADR-020)
 
 Three files under `include/rte/dual/`: `rte_dual_msgchannel.h` (Layer
@@ -669,13 +723,15 @@ intentionally do not appear as literal source tags. A range row (e.g.
 `REQ-COMMON-BUF-020..025`) stands for every ID in its range. The two lists
 do not match yet; the gaps found by the last check are listed below.
 
-**Check of 2026-10-04 (G4 item 6), range rows expanded:** 221 distinct IDs
-are tagged in `include/`.
+**Re-check of 2026-10-04 (G4 item 6 g-1), range rows expanded:** 221
+distinct IDs are tagged in `include/`; the tables of this document hold
+251 IDs.
 
-- 17 IDs are tagged in `include/` but have no row in this document:
-  `REQ-ELECTION-001..005` (`rte_election.h`), `REQ-OAL-FLOW-001..004` and
-  `REQ-OAL-FLOW-010..015` (`rte_flow.h`), `REQ-STATE-TRANSFER-001/002`
-  (`rte_state_transfer.h`).
+- Every ID tagged in `include/` has a row here. The 17 IDs the first check
+  of 2026-10-04 found without a row (`REQ-OAL-FLOW-001..004` and
+  `REQ-OAL-FLOW-010..015`, `REQ-ELECTION-001..005`,
+  `REQ-STATE-TRANSFER-001/002`) got their rows in sections 2.15, 3d.6 and
+  3d.7.
 - 30 IDs have a row here but no tag in `include/`:
   `REQ-OAL-BACKEND-001..003` (by design, see above); the
   "register_osadapter" rows `REQ-OAL-TIMER-015`, `REQ-OAL-NVM-015`,
@@ -693,10 +749,11 @@ are tagged in `include/`.
   `STR-025`, `STR-029` match their rows literally); the range rows of
   sections 1.3 and 1.6 cover them.
 
-None of these gaps is backfilled yet (a separate follow-up). The check
-before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which matches only
-three-part IDs and so missed every two-part ID such as `REQ-VOTER-001` or
-`REQ-CHANSVC-001` (162 IDs found instead of 221).
+Of those 30, the 27 IDs other than `REQ-OAL-BACKEND-001..003` are not
+resolved yet (a separate follow-up). The check before 2026-10-04 used
+`REQ-[A-Z]+-[A-Z]+-[0-9]+`, which matches only three-part IDs and so
+missed every two-part ID such as `REQ-VOTER-001` or `REQ-CHANSVC-001`
+(162 IDs found instead of 221).
 
 Regenerate the source-side list
 (`grep -rhoE "REQ-[A-Z]+(-[A-Z]+)*-[0-9]+" include | sort -u`) whenever a
