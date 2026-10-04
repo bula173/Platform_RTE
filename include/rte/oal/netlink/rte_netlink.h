@@ -16,10 +16,9 @@
  *
  * Framework ships the interface and validate-then-dispatch layer only;
  * a concrete OSAdapter (e.g. POSIX TCP sockets) is integrator-supplied
- * (ADR-005) and lives with the application that registers it - see
- * safeAPIRBC2oo2's src/posix_osadapter/rte_posix_osadapter_netlink.c for
- * the reference POSIX/TCP implementation this header was designed
- * alongside.
+ * (ADR-005) and registered at startup - see Platform_OS_POSIX's
+ * src/rte_posix_osadapter_netlink.c for the reference POSIX
+ * implementation this header was designed alongside.
  *
  * REQ-OAL-NETLINK-001: no dynamic allocation; caller supplies storage.
  * REQ-OAL-NETLINK-002: rte_netlink_open() shall never block longer than
@@ -30,7 +29,7 @@
  *                      deduplication, or delivery guarantee of its own -
  *                      an OSAdapter may be built on an unreliable transport
  *                      (e.g. UDP). Any such guarantee is the caller's
- *                      responsibility (see safeAPIFreamwork's
+ *                      responsibility (see Platform_RTE's
  *                      rte_dual_msgchannel/rte_dual_channel for a
  *                      reusable sequence+CRC+ACK layer, and ADR-027).
  * REQ-OAL-NETLINK-015: a non-zero config->rcvbuf_bytes/sndbuf_bytes is

@@ -25,7 +25,7 @@
  * `rte_dual_channel_init()`, and `rte_dual_negotiator_init()` are NOT
  * gated by this lock. All three are legitimately re-invoked after RUN has
  * begun by an application's own reconnect-after-link-loss logic (e.g.
- * safeAPIRBC2oo2's `channel_ab_io.c`/`channel_ab_negotiate_reconnect()`),
+ * RBC_GP's former `channel_ab_io.c`/`channel_ab_negotiate_reconnect()`),
  * which is re-establishing a link the application already owns, not
  * adding a new one the application's own design never accounted for -
  * see ADR-026 for the full rationale on why that distinction, not the

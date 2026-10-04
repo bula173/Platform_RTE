@@ -225,6 +225,20 @@ rte_status_t rte_dual_channel_receive(rte_dual_channel_t *channel,
                                          uint8_t *out_size);
 
 /**
+ * @brief Transmits a connection maintenance heartbeat frame across every
+ *        configured link and waits up to ack_timeout_ms for an ACK on each.
+ * @param channel        Initialized channel. Must not be NULL.
+ * @param out_ack_count  Optional; receives the number of links that ACKed.
+ * @return RTE_STATUS_OK if at least one link acknowledged;
+ *         RTE_STATUS_HARDWARE_FAULT if no link acknowledged and at least one
+ *         link reported a hard fault (on its send or while waiting for its
+ *         ACK); RTE_STATUS_TIMEOUT if no link acknowledged within timeout and
+ *         none reported a hard fault (also when no link is configured);
+ *         RTE_STATUS_INVALID_PARAM if channel is NULL.
+ */
+rte_status_t rte_dual_channel_send_heartbeat(rte_dual_channel_t *channel, uint32_t *out_ack_count);
+
+/**
  * @brief Sends a rte_dual_state_frame_t (rte_dual_frames.h) on every
  *        configured redundant link - fire-and-forget, no ACK wait
  *        (unlike rte_dual_channel_send()'s DATA frames), matching the
@@ -249,20 +263,6 @@ rte_status_t rte_dual_channel_receive(rte_dual_channel_t *channel,
  *         link; RTE_STATUS_TIMEOUT if every link's send failed/timed
  *         out; RTE_STATUS_INVALID_PARAM if channel is NULL.
  */
-/**
- * @brief Transmits a connection maintenance heartbeat frame across every
- *        configured link and waits up to ack_timeout_ms for an ACK on each.
- * @param channel        Initialized channel. Must not be NULL.
- * @param out_ack_count  Optional; receives the number of links that ACKed.
- * @return RTE_STATUS_OK if at least one link acknowledged;
- *         RTE_STATUS_HARDWARE_FAULT if no link acknowledged and at least one
- *         link reported a hard fault (on its send or while waiting for its
- *         ACK); RTE_STATUS_TIMEOUT if no link acknowledged within timeout and
- *         none reported a hard fault (also when no link is configured);
- *         RTE_STATUS_INVALID_PARAM if channel is NULL.
- */
-rte_status_t rte_dual_channel_send_heartbeat(rte_dual_channel_t *channel, uint32_t *out_ack_count);
-
 rte_status_t rte_dual_channel_send_state_frame(rte_dual_channel_t *channel, rte_dual_state_t state,
                                                    bool channel_degraded, uint64_t timestamp_ms);
 

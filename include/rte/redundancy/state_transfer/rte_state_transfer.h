@@ -3,23 +3,24 @@
  * @brief Declarative registry of application state that must survive a
  *        STANDBY -> ONLINE promotion (RCA/OCORA compatibility initiative).
  *
- * Added per direct request as a generalization of what
- * RBC_GP/src/application/AB/GP/com/ab_gp_channel_negotiate.c
- * hand-rolls today: a fixed `negotiate_extra_payload_t` struct plus manual
- * byte-offset encode/decode functions naming GP's own `sessions[]`/`db`
- * fields directly. This module is the Platform-owned equivalent - GP/GA
- * REGISTER which of their own data fields must be transferred (name,
- * pointer, size) instead of the framework (or GP's own negotiation code)
- * hardcoding that list. See docs/rca/ at the workspace root and the
- * workspace root TODO.dox's "Platform (RCA/OCORA)" section.
+ * The Platform-owned registry of the fields an application must hand over
+ * on a promotion: the application REGISTERS which of its own data fields
+ * are transferred (name, pointer, size, optionally its own per-field
+ * codec) instead of the framework hardcoding that list. RBC_GP builds its
+ * negotiation state codec from this registry
+ * (RBC_GP/src/application/AB/GP/com/ab_gp_channel_negotiate.c,
+ * build_state_transfer_registry(): its train sessions and route database);
+ * the hand-rolled fixed struct and byte-offset codec it used before are
+ * gone. See docs/rca/ at the workspace root and the workspace root
+ * TODO.dox's "Platform (RCA/OCORA)" section.
  *
  * This module does NOT decide WHEN a transfer happens, or over what
  * transport - it only knows how to pack/unpack whatever has been
  * registered into/from one bounds-checked buffer. Cadence (hot/warm/cold)
  * is rte_redundancy_config_t::standby_mode's job; carrying the encoded
- * buffer across the wire remains the caller's own negotiation-link
- * transport (e.g. RBC_GP's ab_gp_channel_negotiate.c and its own
- * extra-payload slot).
+ * buffer across the wire is the caller's (e.g. RBC_GP encodes it into the
+ * state region of the rte_site_role frame through that service's
+ * encode_state/receive_state callbacks, rte_site_role.h).
  *
  * REQ-STATE-TRANSFER-001: no dynamic allocation; a fixed-size static field
  *                         table, caller-owned buffers for encode/decode.

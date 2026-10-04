@@ -4,11 +4,11 @@
  *        redundancy / 2oo3 / NMR), loaded from a small JSON file at startup.
  *
  * Added per direct request as part of the RCA/OCORA compatibility initiative
- * (see docs/rca/ at the workspace root, and TODO.md's "RCA/OCORA compatibility"
+ * (see docs/rca/ at the workspace root, and TODO.dox's "Platform (RCA/OCORA)"
  * section). OCORA's own Safe Computing Platform model treats voting topology
  * (how many Replicas, what quorum) as a Platform-level concern the Functional
  * Application does not hardcode - this module is that Platform-level piece:
- * an integrator (e.g. safeAPIRBC2oo2GP) reads its intended topology from a
+ * an integrator (e.g. RBC_GP) reads its intended topology from a
  * deployment-time JSON file instead of a compiled-in constant, then hands the
  * resolved quorum to rte_voter's own config (rte_redundancy_config_apply_to_voter()).
  *
@@ -153,9 +153,10 @@ typedef enum {
      *  catch-up, not a full cold transfer. */
     RTE_STANDBY_MODE_WARM = 1,
     /** Standby is not refreshed until the moment of promotion - the
-     *  default, and the ONLY mode this workspace's current
-     *  safeAPIRBC2oo2GP actually implements today (see that project's
-     *  ab_gp_channel_negotiate.c apply_state_transfer()). */
+     *  default. RBC_GP implements it and runs WARM and HOT alike as a
+     *  snapshot sync before each commit (rte_site_role standby_sync, no
+     *  independent computation; see that product's
+     *  ab_gp_channel_negotiate.c). */
     RTE_STANDBY_MODE_COLD = 2
 } rte_standby_mode_t;
 
@@ -224,7 +225,7 @@ const char *rte_redundancy_config_topology_to_string(rte_redundancy_topology_t t
 /**
  * @brief Integrator-supplied capability query: can THIS application
  *        actually run the given topology/replica_count combination? This
- *        is how an integrator (e.g. safeAPIRBC2oo2GP) declares what it
+ *        is how an integrator (e.g. RBC_GP) declares what it
  *        supports to the Platform, instead of the Platform (or the
  *        integrator's own call site) hardcoding a topology allowlist -
  *        matches OCORA's own "Platform decides" posture already used

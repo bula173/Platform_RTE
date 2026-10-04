@@ -11,9 +11,9 @@
  * so ties that application code to one specific OS/RTOS, defeating the
  * whole point of building on this framework's OAL in the first place (a
  * OSAdapter is meant to be swappable without touching application code).
- * Added specifically to close that gap: found live in safeAPIRBC2oo2,
+ * Added specifically to close that gap: found live in RBC_GP,
  * which had been using pthread_mutex_t directly (see this ADR's own
- * "Context" section, docs/architecture/ADR-033-sapi-mutex.md).
+ * "Context" section, docs/architecture/ADR-033-sapi-mutex.dox).
  *
  * REQ-OAL-MUTEX-002: no dynamic allocation; caller supplies storage.
  * REQ-OAL-MUTEX-003: non-recursive - locking twice from the same task

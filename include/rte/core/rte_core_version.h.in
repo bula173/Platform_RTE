@@ -10,7 +10,7 @@
  *
  * rte_core_get_version() returns this same string at runtime - a
  * consumer's own "what framework version am I actually linked against"
- * check (e.g. safeAPIRBC2oo2's startup version-match check) reads the
+ * check (e.g. RBC_GP's startup version-match check) reads the
  * ACTUAL compiled-in value here, not just this macro as seen by the
  * consumer's own compiler at its own build time - those two can differ if
  * a stale library archive gets linked (see that consumer's own doc for why

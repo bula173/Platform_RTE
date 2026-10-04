@@ -7,14 +7,15 @@
  * channels that are expected to carry the *same* computation (pick the
  * majority value). A cross-comparator checks *consistency* between two
  * independent channels/peers whose agreement is a diagnostic invariant,
- * not a value to pick a winner from - generalizes the pattern
- * `safeAPIRBC2oo2`'s `channel_ab_crosscompare.c` hand-rolls today.
+ * not a value to pick a winner from - generalizes the pattern RBC_GP's
+ * cross-compare used to hand-roll (its `ab_gp_channel_crosscompare.c`
+ * now calls this module).
  *
- * RCA/OCORA PI-API compatibility note (see
- * ../../../../../docs/rca/RCA-OCORA-SCP-Mapping.md at the workspace
- * root): per OCORA's Safe Computing Platform model, the Platform - not
- * the application - owns the decision to transition to a safe state on
- * disagreement between replicas/peers. rte_cross_comparator_execute()
+ * RCA/OCORA PI-API compatibility note (see docs/rca/RCA_CONCEPT.dox at
+ * the workspace root, section 3 "OCORA terminology"): per OCORA's Safe
+ * Computing Platform model, the Platform - not the application - owns
+ * the decision to transition to a safe state on disagreement between
+ * replicas/peers. rte_cross_comparator_execute()
  * therefore ALWAYS enters config->safestate_level on a DISAGREED
  * result; an application can no longer opt out of the transition
  * happening (only earlier, on_disagreement gave the application a
@@ -175,9 +176,9 @@ rte_status_t rte_cross_comparator_execute(rte_cross_comparator_t *cmp, size_t da
  *        rte_cross_comparator_execute() - no rte_channel_t registration
  *        needed. Added per direct request as part of the RCA/OCORA
  *        compatibility initiative's Phase 2b (see docs/rca/ at the
- *        workspace root and TODO.md): an integrator whose local/peer data
+ *        workspace root and TODO.dox): an integrator whose local/peer data
  *        already arrived through its own transport (e.g.
- *        safeAPIRBC2oo2GP's kind-multiplexed peer_channel, which carries
+ *        RBC_GP's kind-multiplexed peer_channel, which carries
  *        cross-compare traffic alongside checkpoint/site-state frames on
  *        one shared link - not something a generic comparator API can
  *        transparently subsume) no longer needs to hand-wire two pure

@@ -9,9 +9,9 @@
  * `rte_channel_t` instances, then use rte_voter_send()/
  * _receive() the way rte_channel_send()/_receive() used to work.
  *
- * RCA/OCORA PI-API compatibility note (see
- * ../../../../../docs/rca/RCA-OCORA-SCP-Mapping.md at the workspace
- * root, and rte_cross_comparator.h's own identical note): per OCORA's
+ * RCA/OCORA PI-API compatibility note (see docs/rca/RCA_CONCEPT.dox at
+ * the workspace root, section 3 "OCORA terminology", and
+ * rte_cross_comparator.h's own identical note): per OCORA's
  * Safe Computing Platform model, the Platform - not the application -
  * owns the decision to transition to a safe state on disagreement.
  * rte_voter_receive() therefore ALWAYS enters config->safestate_level
@@ -100,7 +100,7 @@ typedef struct {
     bool log_disagreements;
     /** Safe-state level entered unconditionally on a DISAGREED result,
      *  after on_disagreement (below) has already run. RCA/OCORA PI-API
-     *  compatibility note (see docs/rca/RCA-OCORA-SCP-Mapping.md at the
+     *  compatibility note (see docs/rca/RCA_CONCEPT.dox at the
      *  workspace root, and rte_cross_comparator.h's own identical
      *  note): the Platform, not the application, owns this decision -
      *  replaces the old `bool trigger_safestate_on_disagreement` (which

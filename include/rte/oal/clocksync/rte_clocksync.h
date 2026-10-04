@@ -6,7 +6,7 @@
  * synchronization mechanism an integrator plugs in (PTP, GPS discipline,
  * NTP, or a custom link) - no protocol implementation is bundled here,
  * only the pluggable interface, following the same
- * `rte_<service>_osadapter_t` + `rte_<service>_register_osadapter()` pattern
+ * `rte_osadapter_<service>_t` + `rte_osadapter_<service>_register()` pattern
  * rte_timer already uses (ADR-005).
  *
  * IMPORTANT - what this module is *not* for: it does **not** decide

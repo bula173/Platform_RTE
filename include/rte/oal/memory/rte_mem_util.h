@@ -4,7 +4,7 @@
 /**
  * @file rte_mem_util.h
  * @brief Thin, MISRA-visible wrappers over the three raw memory-block
- *        primitives (fill/copy/compare) every other safeAPIFreamwork or
+ *        primitives (fill/copy/compare) every other Platform_RTE or
  *        downstream-application module needs but has no business calling
  *        libc's <string.h> directly for - rte_mem_set()/rte_mem_copy()/
  *        rte_mem_compare() are the ONE sanctioned call site for each

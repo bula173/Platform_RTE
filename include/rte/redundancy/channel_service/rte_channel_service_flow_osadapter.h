@@ -3,30 +3,30 @@
  * @brief rte_osadapter_channel_service_t implementation over rte_flow.
  *
  * Added per direct request as part of the RCA/OCORA compatibility initiative's
- * Phase 4 (see docs/rca/ at the workspace root and TODO.md's "RCA/OCORA
- * compatibility" section): a real, drop-in alternative to
- * safeAPIBackendPosix's rte_posix_osadapter_channel_service, so an integrator
- * (e.g. safeAPIRBC2oo2GP) can route its named channels (e.g. "ab-peer",
+ * Phase 4 (see docs/rca/ at the workspace root and TODO.dox's "Platform
+ * (RCA/OCORA)" section): a real, drop-in alternative to
+ * Platform_OS_POSIX's rte_posix_osadapter_channel_service, so an integrator
+ * (e.g. RBC_GP) can route its named channels (e.g. "ab-peer",
  * "ab-negotiate") through rte_flow (and, once a real DDS OSAdapter exists,
  * through actual DDS) with ZERO change to its own transport-agnostic
  * rte_channel_service_setup()/_read()/_send()/_close() call sites.
  *
  * Deliberately reuses the EXACT SAME resolver function shape
  * (rte_channel_service_flow_resolve_fn, filling a rte_netlink_config_t)
- * safeAPIBackendPosix's own resolver does - an integrator that already has a
+ * Platform_OS_POSIX's own resolver does - an integrator that already has a
  * working resolve_channel() for the POSIX OSAdapter can register the SAME
  * function here unchanged; this OSAdapter translates
  * rte_netlink_config_t::role into a rte_flow_oflag_t (CONNECT->PUBLISHER,
- * LISTEN->SUBSCRIBER, matching safeAPIFlowBackendDDS's own oflags->role
+ * LISTEN->SUBSCRIBER, matching Platform_Protocol_DDS's own oflags->role
  * mapping in reverse) and opens exactly one Flow per channel name, used for
  * both send and receive - full duplex on one Flow, the same shape a single
- * netlink link already provides (verified against safeAPIFlowBackendDDS's
+ * netlink link already provides (verified against Platform_Protocol_DDS's
  * own stub: rte_flow_send()/_receive() both operate on the one underlying
  * rte_netlink_handle_t a Flow opens, regardless of which oflag it was
  * opened with).
  *
  * This module is deliberately osadapter-agnostic - it calls only rte_flow_*
- * API, never anything specific to safeAPIFlowBackendDDS or any other
+ * API, never anything specific to Platform_Protocol_DDS or any other
  * concrete rte_osadapter_flow_t. Registering a ROUTE (mapping a channel name
  * to host:port) for today's stub OSAdapter is the INTEGRATOR's job, done
  * before rte_channel_service_setup() is called (e.g. inside the
@@ -48,7 +48,7 @@
 extern "C" {
 #endif
 
-/** Same shape as safeAPIBackendPosix's rte_posix_channel_resolve_fn -
+/** Same shape as Platform_OS_POSIX's rte_posix_channel_resolve_fn -
  *  deliberately, so one resolver function can serve either OSAdapter. */
 typedef rte_status_t (*rte_channel_service_flow_resolve_fn)(const char *channel_name,
                                                                rte_netlink_config_t *out_config,

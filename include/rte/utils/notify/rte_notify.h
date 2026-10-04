@@ -3,7 +3,7 @@
  * @brief Fixed-capacity registered-callback list shape (ADR-030).
  *
  * ADR-030: extracted from a hand-rolled pattern in the downstream
- * `safeAPIRBC2oo2` project - one module (an "orchestrator") asking N
+ * `RBC_GP` project - one module (an "orchestrator") asking N
  * registered peers "is this proposed action OK" (a veto gate, all
  * registered validators must agree) and, separately, telling N
  * registered peers "this happened" (a fan-out notification, no return
