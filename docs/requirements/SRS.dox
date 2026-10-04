@@ -713,8 +713,11 @@ and `src/application/AB/GP/ertms/train/ab_gp_ertms_train_message_codec.c`;
 there as `REQ-RBC-006/007`); `REQ-RBC-008` in
 `src/application/AB/GP/com/ab_gp_channel_crosscompare.c`; `REQ-RBC-005`
 in `ab_gp_train.c` (`train_id_in_range()`),
-`src/application/AB/GP/ertms_procedures/ab_gp_ertms_engine.c` and
-`ab_gp_proc_dispatch.c`; `REQ-RBC-009` in
+`src/application/AB/GP/ertms_procedures/ab_gp_ertms_engine.c`,
+`ab_gp_proc_dispatch.c`, `src/application/AB/GP/com/ab_gp_saf_train.c`
+(`slot_of()`, `ab_gp_saf_train_is_connected()`) and
+`src/application/AB/GP/db/ab_gp_db.c` (route connect/disconnect, per-train
+accessors); `REQ-RBC-009` in
 `src/application/C/gateway_c_common.c` and
 `src/application/C/gateway_c_train_handler.c`. RBC_GA's IL and CTC
 Gateway handlers (`gateway_c_il_handler.c`, `gateway_c_ctc_handler.c`)
