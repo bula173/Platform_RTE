@@ -151,7 +151,9 @@ section 4, which also lists the IDs that are untagged by omission); the behavior
 > **REQ-OAL-BACKEND-001** (ADR-005 §2.1, applies to every OAL service):
 > `rte_<service>_register_osadapter()` shall reject a NULL OSAdapter with
 > `RTE_STATUS_INVALID_PARAM`; re-registering shall replace the previous
-> OSAdapter.
+> OSAdapter. Registration is setup-only: once the setup phase is locked
+> (REQ-LIFECYCLE-001, ADR-026) it shall return `RTE_STATUS_INVALID_STATE`
+> and keep the previous OSAdapter.
 >
 > **REQ-OAL-BACKEND-002** (ADR-005 §2.2, applies to every OAL service
 > except `rte_log`): every public function shall validate its own
@@ -373,7 +375,7 @@ text and adds no requirement content. Unit tests: `tests/flow/test_rte_flow.c`.
 | REQ-OAL-FLOW-004 | This service provides no message ordering, deduplication, or delivery guarantee of its own, same posture as `rte_netlink` (REQ-OAL-NETLINK-014). |
 | REQ-OAL-FLOW-010 | `rte_flow_open()` shall open (join, register or subscribe to) the named Flow. It shall return `RTE_STATUS_INVALID_PARAM` for a NULL `storage`, `config`, `config->name` or `out_handle`, a zero `config->message_size`, or `config->oflags` not setting exactly one of the PUBLISHER, SUBSCRIBER, REQUESTER and RESPONDER flags; `RTE_STATUS_TIMEOUT` if the Flow is not opened within `config->open_timeout_ms`; `RTE_STATUS_NOT_INITIALIZED` with no OSAdapter registered and `RTE_STATUS_NOT_SUPPORTED` when the registered OSAdapter does not implement open. |
 | REQ-OAL-FLOW-011 | `rte_flow_send()` shall send one fixed-size message on the given channel (`RTE_FLOW_CHANNEL_USER` or `_CTRL`), blocking at most `timeout_ms`, and return `RTE_STATUS_TIMEOUT` if the send does not complete in time; `RTE_STATUS_HARDWARE_FAULT` if the OSAdapter can positively confirm no peer is reachable (not guaranteed on every OSAdapter, see REQ-OAL-FLOW-004). A NULL `handle` or `data` or a zero `data_size` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
-| REQ-OAL-FLOW-012 | `rte_flow_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`, report the channel it arrived on through `out_channel` when that is non-NULL, and return `RTE_STATUS_TIMEOUT` if no message arrives in time; `RTE_STATUS_HARDWARE_FAULT`/`RTE_STATUS_DATA_CORRUPTION` per the note in REQ-OAL-FLOW-011. A NULL `handle` or `out_data` or a zero `buffer_size` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
+| REQ-OAL-FLOW-012 | `rte_flow_receive()` shall receive one fixed-size message, blocking at most `timeout_ms`, report the channel it arrived on through `out_channel` when that is non-NULL, and return `RTE_STATUS_TIMEOUT` if no message arrives in time; `RTE_STATUS_HARDWARE_FAULT` if the OSAdapter can positively confirm no peer is reachable; `RTE_STATUS_DATA_CORRUPTION` if the OSAdapter received a message whose length differs from the Flow's `message_size` (both OSAdapter-dependent, not guaranteed on every OSAdapter, see REQ-OAL-FLOW-004; the Platform_Protocol_DDS stub passes both through from `rte_netlink_receive()`). A NULL `handle` or `out_data` or a zero `buffer_size` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
 | REQ-OAL-FLOW-013 | `rte_flow_close()` shall close (leave, unregister or unsubscribe from) a Flow; the handle is invalid to use afterward. A NULL `handle` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
 | REQ-OAL-FLOW-014 | `rte_flow_getattr()` shall report the Flow's current static and dynamic attributes (`rte_flow_attr_t`: `message_size`, `oflags`, `is_connected`). A NULL `handle` or `out_attr` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
 | REQ-OAL-FLOW-015 | `rte_flow_setattr()` shall apply the Flow's mutable attributes from `new_attr` (which fields are mutable is OSAdapter-defined; an immutable field such as `message_size` is ignored, not rejected) and report the attributes as they were before the call through `out_old_attr` when that is non-NULL. A NULL `handle` or `new_attr` shall yield `RTE_STATUS_INVALID_PARAM`; `RTE_STATUS_NOT_INITIALIZED`/`RTE_STATUS_NOT_SUPPORTED` as in REQ-OAL-FLOW-010. |
@@ -395,11 +397,9 @@ than an individual `REQ-*` tag on every function:
 
 ## 3a. Distributed channel synchronization (ADR-017)
 
-Not yet backfilled into this document for every module added since the
-sections above were written (`rte_checksum` currently has no
-REQ-tagged entries here despite existing in `include/`/`src/` — a
-pre-existing gap, not introduced by this section). This section covers
-the two modules added by ADR-017.
+This section covers the two modules added by ADR-017. Modules added
+later have their own sections below (e.g. `rte_checksum` in section 3g,
+`REQ-CHECKSUM-001..008`).
 
 ### 3a.1 Checkpoint rendezvous — `rte_checkpoint.h` (ADR-017 §2.2)
 
@@ -709,7 +709,8 @@ and `src/application/AB/GP/ertms/train/ab_gp_ertms_train_message_codec.c`;
 `REQ-RBC-003`/`-004` in `rbc_wire_types.h`; `REQ-RBC-006` in
 `src/application/AB/GP/com/ab_gp_channel_negotiate.c`,
 `src/application/AB/GP/train/ab_gp_train.h` and `common_config.h`;
-`REQ-RBC-007` in `ab_gp_train.h`; `REQ-RBC-008` in
+`REQ-RBC-007` in `ab_gp_train.h` and `ab_gp_channel_negotiate.c` (written
+there as `REQ-RBC-006/007`); `REQ-RBC-008` in
 `src/application/AB/GP/com/ab_gp_channel_crosscompare.c`. `REQ-RBC-005`
 and `REQ-RBC-009` carry no tag in RBC_GP (an open gap there; the
 `monitor_c_init()` that `REQ-RBC-009` names no longer exists in RBC_GP).
@@ -776,8 +777,8 @@ its tables plus the three `REQ-OAL-BACKEND-*` IDs of section 2).
   `REQ-APPMANAGER-008` and `REQ-RBC-001..009` became documented exceptions.
 - A comparison that does not expand range rows also reports
   `REQ-COMMON-BUF-021..025`, `-027..031` and `REQ-COMMON-STR-022..024`,
-  `-026..028`, `-030..032` as missing (the range-start IDs `BUF-026`,
-  `STR-025`, `STR-029` match their rows literally); the range rows of
+  `-026..028`, `-030..032` as missing (the range-start IDs `BUF-020`,
+  `BUF-026`, `STR-021`, `STR-025`, `STR-029` match their rows literally); the range rows of
   sections 1.3 and 1.6 cover them.
 
 The check before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which

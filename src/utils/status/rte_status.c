@@ -21,7 +21,7 @@
  * @brief Convert a status code to a short, human-readable string.
  * @param status Status code to describe.
  * @return Static, non-NULL string literal naming @p status (e.g.
- *         "RTE_STATUS_OK"); an unrecognized value yields "UNKNOWN_STATUS".
+ *         "OK" for RTE_STATUS_OK); an unrecognized value yields "UNKNOWN_STATUS".
  * @safety Never returns NULL; safe to call with any int-range value.
  */
 const char *rte_status_to_string(rte_status_t status)

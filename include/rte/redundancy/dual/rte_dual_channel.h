@@ -172,7 +172,10 @@ rte_status_t rte_dual_channel_init(rte_dual_channel_t *channel, const rte_dual_c
  * @return RTE_STATUS_OK if at least one link ACKed; RTE_STATUS_TIMEOUT
  *         if none did (data was still transmitted-attempted on every
  *         link; this reports delivery confirmation, not transmission
- *         attempt); RTE_STATUS_INVALID_PARAM for a bad argument.
+ *         attempt); RTE_STATUS_HARDWARE_FAULT instead of RTE_STATUS_TIMEOUT
+ *         if no link ACKed and at least one link reported a hard fault
+ *         (REQ-DUAL-CHANNEL-008 below); RTE_STATUS_INVALID_PARAM for a bad
+ *         argument.
  *
  * REQ-DUAL-CHANNEL-007: The per-link ACK wait keeps polling within
  * config->ack_timeout_ms even when rte_timer_now() shows no progress
@@ -202,6 +205,9 @@ rte_status_t rte_dual_channel_send(rte_dual_channel_t *channel,
  *                      across links); 0 = check only what is already staged.
  * @param out_size     Receives the actual payload size. Must not be NULL.
  * @return RTE_STATUS_OK; RTE_STATUS_TIMEOUT if nothing arrived in time;
+ *         RTE_STATUS_HARDWARE_FAULT instead of RTE_STATUS_TIMEOUT if no link
+ *         produced a usable frame and at least one link's receive reported a
+ *         hard fault (REQ-DUAL-CHANNEL-008 below);
  *         RTE_STATUS_INVALID_PARAM if a staged frame is larger than
  *         max_size (not silently truncated) or for a bad argument.
  *

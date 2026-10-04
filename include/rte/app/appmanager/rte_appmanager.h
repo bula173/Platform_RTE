@@ -34,7 +34,9 @@
  * exactly once per cycle with the outcome, letting an application stage
  * (queue but not transmit) its outputs during the cycle and only commit
  * (actually send) them once the checkpoint confirms both channels agree -
- * see that field's own doc.
+ * see that field's own doc. Known deviation: ISS-031 - a failed
+ * pre_execute()/execute() skips the checkpoint stage and
+ * on_checkpoint_result() for that cycle.
  *
  * REQ-APPMANAGER-001: Applications shall use the Application Manager for
  * controlled initialization, execution, and shutdown lifecycle.
@@ -186,7 +188,9 @@ typedef struct {
      * If non-NULL and config->checkpoint is configured, called exactly
      * once per cycle immediately after the checkpoint stage (the last
      * stage of the cycle - see this header's own file-level doc and
-     * rte_appmanager_run()'s doc for the stage order). Intended for a
+     * rte_appmanager_run()'s doc for the stage order). Known deviation:
+     * ISS-031 - a failed pre_execute()/execute() skips the checkpoint
+     * stage and on_checkpoint_result() for that cycle. Intended for a
      * "stage output during the cycle, only actually transmit it here"
      * pattern: `committed` is true when this cycle's checkpoint signature
      * matched the peer's (or checkpoint is disabled/paused - see below),
@@ -455,6 +459,8 @@ void rte_appmanager_checkpoint_mark(const char *file, int32_t line, const char *
  *   still called even when the checkpoint stage itself failed, precisely
  *   so a staging application always learns the outcome (committed=false)
  *   and can discard what it staged this cycle; see that field's own doc
+ * - Known deviation: ISS-031 - a failed pre_execute()/execute() skips the
+ *   checkpoint stage and on_checkpoint_result() for that cycle
  * - If error_threshold is reached, application shuts down
  * - shutdown() is always called, even on error
  *

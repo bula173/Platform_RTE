@@ -27,7 +27,8 @@ typedef struct rte_osadapter_platform_s
 /**
  * @brief Registers the OSAdapter platform implementation.
  * @param adapter Pointer to platform operations vtable.
- * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL.
+ * @return RTE_STATUS_OK on success, RTE_STATUS_INVALID_PARAM if adapter is NULL, or RTE_STATUS_INVALID_STATE if the
+ *         setup phase is already locked (REQ-LIFECYCLE-001, ADR-026; the previous registration, if any, is kept).
  *
  * REQ-OAL-PLATFORM-011: Follows the OSAdapter-registration contract (ADR-005 section 2.1): a NULL adapter is
  * rejected with RTE_STATUS_INVALID_PARAM; re-registering replaces the previous OSAdapter.

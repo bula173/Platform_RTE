@@ -26,15 +26,16 @@
  * can implement it natively later, with zero change to this header or
  * any Functional-Actor code written against it.
  *
- * Per the PI API's own model (ADR note: see this project's ISSUES.md/
- * session history for the OCORA research this is based on), a Flow is
+ * Per the PI API's own model (see docs/rca/RCA-OCORA-PI-API.dox at the
+ * workspace root for the OCORA research this is based on), a Flow is
  * the ONLY I/O primitive a replicated Functional Actor uses - N-way
  * voting/replication of what is sent/received over a Flow is meant to
  * happen transparently, beneath this API, inside the Platform/RTE
  * layer. This header defines the actor-facing surface only; the
  * replication/voting layer underneath it (built from this framework's
  * existing rte_voter/rte_cross_comparator primitives) is tracked as
- * separate, follow-up work - see ISSUES.md.
+ * separate, follow-up work - see the workspace root TODO.dox (G3 and
+ * Phase 2b, transparent voting under rte_flow).
  *
  * REQ-OAL-FLOW-001: no dynamic allocation; caller supplies storage.
  * REQ-OAL-FLOW-002: rte_flow_open() shall never block longer than
@@ -189,8 +190,13 @@ rte_status_t rte_flow_send(rte_flow_handle_t handle,
  *                     May be NULL if the caller does not need it.
  * @param timeout_ms   Maximum time to wait for a message to arrive.
  * @return RTE_STATUS_OK; RTE_STATUS_INVALID_PARAM; RTE_STATUS_TIMEOUT
- *         if no message arrives in time; RTE_STATUS_HARDWARE_FAULT/
- *         RTE_STATUS_DATA_CORRUPTION per rte_flow_send()'s own note;
+ *         if no message arrives in time; RTE_STATUS_HARDWARE_FAULT if the
+ *         OSAdapter can positively confirm no peer is reachable;
+ *         RTE_STATUS_DATA_CORRUPTION if the OSAdapter received a message
+ *         whose length differs from the Flow's message_size (both
+ *         OSAdapter-dependent, not guaranteed on every OSAdapter, see
+ *         REQ-OAL-FLOW-004; the Platform_Protocol_DDS stub passes both
+ *         through from rte_netlink_receive());
  *         RTE_STATUS_NOT_INITIALIZED/RTE_STATUS_NOT_SUPPORTED as in
  *         rte_flow_open().
  * REQ-OAL-FLOW-012

@@ -4,21 +4,22 @@
  *        STANDBY -> ONLINE promotion (RCA/OCORA compatibility initiative).
  *
  * Added per direct request as a generalization of what
- * safeAPIRBC2oo2GP/src/application/AB/GP/com/ab_gp_channel_negotiate.c
+ * RBC_GP/src/application/AB/GP/com/ab_gp_channel_negotiate.c
  * hand-rolls today: a fixed `negotiate_extra_payload_t` struct plus manual
  * byte-offset encode/decode functions naming GP's own `sessions[]`/`db`
  * fields directly. This module is the Platform-owned equivalent - GP/GA
  * REGISTER which of their own data fields must be transferred (name,
  * pointer, size) instead of the framework (or GP's own negotiation code)
- * hardcoding that list. See docs/rca/ at the workspace root and TODO.md's
- * "RCA/OCORA compatibility" section.
+ * hardcoding that list. See docs/rca/ at the workspace root and the
+ * workspace root TODO.dox's "Platform (RCA/OCORA)" section.
  *
  * This module does NOT decide WHEN a transfer happens, or over what
  * transport - it only knows how to pack/unpack whatever has been
  * registered into/from one bounds-checked buffer. Cadence (hot/warm/cold)
  * is rte_redundancy_config_t::standby_mode's job; carrying the encoded
  * buffer across the wire remains the caller's own negotiation-link
- * transport (e.g. ab_gp_channel_negotiate.c's own extra-payload slot).
+ * transport (e.g. RBC_GP's ab_gp_channel_negotiate.c and its own
+ * extra-payload slot).
  *
  * REQ-STATE-TRANSFER-001: no dynamic allocation; a fixed-size static field
  *                         table, caller-owned buffers for encode/decode.
