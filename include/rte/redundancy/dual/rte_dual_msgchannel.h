@@ -179,9 +179,9 @@ rte_status_t rte_dual_msgchannel_receive(rte_dual_msgchannel_t *channel,
  * @brief Resets both sequence counters to 0. Intended to be called by
  *        the caller (typically rte_dual_channel_t) exactly once,
  *        immediately after config->link has been freshly (re)established
- *        with the peer - mirrors RBC_GP's former precedent
- *        (channel_ab.c's cycle_resync_requested handling after a peer
- *        link reconnected) for why a fresh link needs a fresh, mutually
+ *        with the peer - the same idea as a mechanism RBC_GP once had and
+ *        has since removed (2026-10-04): a cycle-counter reset after a
+ *        peer-link reconnect. A fresh link needs a fresh, mutually
  *        agreed starting sequence rather than fighting over whatever
  *        counters were left over from before the disconnect.
  * @param channel  Channel to reset. Must not be NULL.
