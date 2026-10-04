@@ -1546,8 +1546,8 @@
 ///  `INVALID_STATE` and `*out_config` untouched). Mutation check (fresh build dirs): removing the overflow test, the
 ///  no-digit test, the trailing-character test, the whitespace skip before it (back to a one-character look-ahead) or
 ///  the status check in `parse_channel_object()` each fails the test.
-///- **Update (2026-10-04): `RTE_STATUS_NOT_CONNECTED`** (OSA rule R5, G4 item 6 f-1, REQ-CHANSVC-001, SRS section 2.14
-///  new) - `rte_status_t` (`include/rte/utils/status/rte_status.h`) gains `RTE_STATUS_NOT_CONNECTED = 13`, appended
+///- **Update (2026-10-04): `RTE_STATUS_NOT_CONNECTED`** (OSA rule R5, G4 item 6 f-1, REQ-CHANSVC-001, SRS section 3d.5
+///  (was 2.14), new) - `rte_status_t` (`include/rte/utils/status/rte_status.h`) gains `RTE_STATUS_NOT_CONNECTED = 13`, appended
 ///  after `RTE_STATUS_INVALID_STATE = 12` (no existing value renumbered), and `rte_status_to_string()`
 ///  (`src/utils/status/rte_status.c`) a `case` returning `"NOT_CONNECTED"`; the `default` clause (rule 16.4) is kept.
 ///  `include/rte/redundancy/channel_service/rte_channel_service.h` documents the code on the OSAdapter vtable `send`

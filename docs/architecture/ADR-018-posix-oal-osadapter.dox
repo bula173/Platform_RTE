@@ -97,6 +97,22 @@ own the queue.
   wheel thread would scale better), but it is far simpler to get
   correct, and correctness matters more than scale for a first real
   backend.
+  Update (2026-10-04, G4 items 8a and 7b-1): the timer thread no longer
+  sleeps in `clock_nanosleep()`. In Platform_OS_POSIX
+  (`src/rte_posix_osadapter_period.c`, shared with the task OSAdapter)
+  the timer thread (one-shot or periodic) waits for an absolute
+  `CLOCK_MONOTONIC` deadline, advanced by one period per cycle (the period
+  does not drift by the callback's run time), on a process-wide priority-inheritance mutex and
+  condition variable: `pthread_cond_timedwait()` on a condition variable
+  created with a `CLOCK_MONOTONIC` clock attribute on non-Apple hosts, and
+  on macOS (no condition-variable clock attribute)
+  `pthread_cond_timedwait_relative_np()` of the time left, the clock read
+  again under the mutex before each wait. Stop and destroy (and suspend,
+  for a task) store the stop flag under that mutex and broadcast, so a
+  waiting thread returns at once instead of up to one period later; if
+  the mutex cannot be taken within `RTE_POSIX_PERIOD_WAKE_LOCK_TIMEOUT_MS`
+  (default 50 ms) the flag is stored without it and the thread ends at its
+  next deadline. The callback still runs on the timer's own thread.
 - **IPC**: a `pipe()` per channel, `O_NONBLOCK` + `poll()` to honor
   `timeout_ms` without busy-waiting, looped read/write to handle partial
   transfers. Known simplification, stated plainly: a message larger than
@@ -122,6 +138,25 @@ own the queue.
   task creation outright - most development/CI environments cannot grant
   real-time scheduling privilege, and refusing to create the task at all
   would make this backend unusable there.
+  Update (2026-10-04, G4 items 8a and 7b-1): the periodic task loop no
+  longer uses `clock_nanosleep()`; it is paced and woken exactly as the
+  timer thread above (absolute `CLOCK_MONOTONIC` deadline, shared wake
+  mutex and condition variable, stop/suspend/destroy broadcast).
+  Update (recorded 2026-10-04; changed 2026-10-03 by G4 item 4a, OSA
+  rule R1): the priority is no longer applied after creation with
+  `pthread_setschedparam()`. The task OSAdapter sets
+  `PTHREAD_EXPLICIT_SCHED`, `SCHED_FIFO` and the priority (clamped into the
+  platform's `SCHED_FIFO` range) on the thread attributes before
+  `pthread_create()`, and the configured stack size when it is non-zero (a
+  refused stack size is reported and the default stack is used). The
+  fallback keeps its intent: a refused scheduling attribute, a failed
+  `sched_get_priority_min()`/`sched_get_priority_max()` or `EPERM` from
+  `pthread_create()` is reported once per start (DEGRADED,
+  `RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE`) and the thread is created with
+  `PTHREAD_INHERIT_SCHED` instead: on Linux the creating thread's policy
+  and priority; on macOS (observed) time-sharing at the creator's
+  priority, `pthread_getschedparam()` reporting SCHED_OTHER 31. Any other
+  `pthread_create()` error fails the start with `RTE_STATUS_INTERNAL_ERROR`.
 - **Log**: non-blocking write to `stderr`, matching REQ-OAL-LOG-001
   ("best-effort, non-blocking, must never affect caller control flow") -
   no queue, no separate thread; `stderr` writes are typically fast enough

@@ -149,6 +149,12 @@
 ///| `RTE_STATUS_DATA_CORRUPTION` | NVM integrity check (CRC) failed |
 ///| `RTE_STATUS_INTERNAL_ERROR` | should-never-happen / defensive catch-all |
 ///
+///> **Note (2026-10-04):** the table above is the original set (values 0..10) and is left as written. Three codes were
+///> appended later, without renumbering any existing value: `RTE_STATUS_VALUE_OUT_OF_RANGE = 11` (checked cast: the
+///> value does not fit the destination type, ADR-003), `RTE_STATUS_INVALID_STATE = 12` (a setup-only call after the
+///> setup phase was locked, ADR-026) and `RTE_STATUS_NOT_CONNECTED = 13` (a listen-role channel-service send before any
+///> peer is known, REQ-CHANSVC-001, no ADR). `include/rte/utils/status/rte_status.h` is the authoritative list.
+///
 ///\section platformrte_docs_architecture_ADR_001_os_abstraction_layer_4_scope_of_the_first_abstraction_layer_oal_servi 4. Scope of the first abstraction layer (OAL services)
 ///
 ///Six services, one header each:

@@ -143,9 +143,9 @@ are ordinary functions, not macros, so they cannot capture the caller's
 Every OAL service below shares the osadapter-registration contract defined
 once in ADR-005 rather than repeating it per service. **Note:**
 `REQ-OAL-BACKEND-001/002/003` below are a documentation-only consolidation
-for readability — unlike every other ID in this SRS, they do **not**
-appear verbatim as a tag in any header comment (see the traceability
-caveat in section 4); the behavior they describe is what each per-service
+for readability — unlike the other IDs in this SRS, they are by design
+**not** a tag in any header comment (see the traceability caveat in
+section 4, which also lists the IDs that are untagged by omission); the behavior they describe is what each per-service
 `REQ-OAL-<SERVICE>-01X` "register_osadapter" entry already requires:
 
 > **REQ-OAL-BACKEND-001** (ADR-005 §2.1, applies to every OAL service):
@@ -354,16 +354,6 @@ vtable or these ProtocolAdapters yet (netlink and the channel service open their
 | REQ-OAL-SOCKET-001 | The registered OSAdapter's `open(type, out_handle)` shall return `RTE_STATUS_OK` only with a non-blocking socket in `*out_handle`. If it cannot make the socket non-blocking it shall release the socket and return `RTE_STATUS_INTERNAL_ERROR` with `*out_handle` unwritten; it shall never hand out a blocking socket. A NULL `out_handle` shall yield `RTE_STATUS_INVALID_PARAM` and an unknown `type` `RTE_STATUS_NOT_SUPPORTED`, both with `*out_handle` unwritten. `set_nonblocking(handle, false)` may still switch an opened socket to blocking. |
 | REQ-OAL-SOCKET-002 | The raw UDP and TCP ProtocolAdapters' `open` shall check the result of `set_nonblocking(sock, true)` on the socket just opened when that vtable slot is non-NULL (a NULL slot is accepted, the socket being non-blocking by REQ-OAL-SOCKET-001). On a failure they shall close that socket, leave the socket in their state storage at `RTE_OS_SOCKET_INVALID_HANDLE`, perform no bind or connect, and return the status `set_nonblocking` returned, with the ProtocolAdapter's `*out_handle` unwritten. |
 
-### 2.14 Named channel service — `rte_channel_service.h`
-
-The application-facing named channel service and its OSAdapter vtable (`rte_osadapter_channel_service_t`). Only the
-requirement added with `RTE_STATUS_NOT_CONNECTED` is listed here (2026-10-04, G4 item 6 f-1); the rest of this module
-(setup, setup by id, read, `read_ex`, close, the setup-phase gate already in REQ-LIFECYCLE-003) is not backfilled yet.
-
-| ID | Requirement |
-|---|---|
-| REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: Implemented by Platform_OS_POSIX's channel service since 2026-10-04 (G4 item 6 f-2); verified by RBC_GP `test_rte_posix_osadapter_channel_service_listen`. |
-
 ## 3. Project-wide requirements (CLAUDE.md, not yet tagged per-function)
 
 These apply across every module above and are enforced by convention and
@@ -533,6 +523,19 @@ Only the requirement added with the socket buffer keys is listed here; the rest 
 |---|---|
 | REQ-REDCFG-001 | `rte_redundancy_config_load()` (`rte_redundancy_config.h`) shall read the optional channel-object keys `"rcvbuf_bytes"` and `"sndbuf_bytes"` into `rte_channel_def_t::rcvbuf_bytes` / `::sndbuf_bytes`, the deployment-file source of the REQ-OAL-NETLINK-015 sizes. An absent key shall give 0 (OS default). A present value that is not an unsigned decimal integer (no digit, a sign, a fraction, an exponent, or anything other than whitespace between the digits and the following `,` or the object end, e.g. `1 000 000` or `256 * 1024`) or is above `UINT32_MAX` shall fail the whole load with `RTE_STATUS_INVALID_STATE` and leave `*out_config` untouched; it shall never be silently replaced by 0 or by a wrapped value. The consumer is the integrator, which copies the two values into `rte_netlink_config_t` for REQ-OAL-NETLINK-015. OSA rules R5, R6. |
 
+### 3d.5 Named channel service — `rte_channel_service.h`
+
+Moved here from section 2.14 on 2026-10-04 (G4 item 6): the header lives in `include/rte/redundancy/channel_service/`,
+not in the OS Abstraction Layer. Requirement text unchanged.
+
+The application-facing named channel service and its OSAdapter vtable (`rte_osadapter_channel_service_t`). Only the
+requirement added with `RTE_STATUS_NOT_CONNECTED` is listed here (2026-10-04, G4 item 6 f-1); the rest of this module
+(setup, setup by id, read, `read_ex`, close, the setup-phase gate already in REQ-LIFECYCLE-003) is not backfilled yet.
+
+| ID | Requirement |
+|---|---|
+| REQ-CHANSVC-001 | On a listen-role channel-service link whose peer address is learned from the first datagram the link receives, a `send` (the OSAdapter's vtable `send`, reached through `rte_channel_service_send()`) before any peer is known shall transmit nothing and shall return `RTE_STATUS_NOT_CONNECTED`, never `RTE_STATUS_OK`; `rte_channel_service_send()` shall return that status unchanged. An OSAdapter that keeps the link unopened until its peer is present (the flow-backed channel service, which returns `RTE_STATUS_TIMEOUT` for an absent peer) is not affected. OSA rule R5. Status: Implemented by Platform_OS_POSIX's channel service since 2026-10-04 (G4 item 6 f-2); verified by RBC_GP `test_rte_posix_osadapter_channel_service_listen`. |
+
 ## 3e. Dual-transfer state negotiation — `rte_dual` (ADR-020)
 
 Three files under `include/rte/dual/`: `rte_dual_msgchannel.h` (Layer
@@ -657,15 +660,46 @@ of these.
 
 ## 4. Traceability
 
-Every `REQ-*` ID in this document appears verbatim in the corresponding
-header's Doxygen comment in `include/rte/`, **except**
+Every `REQ-*` ID in this document is meant to appear verbatim in the
+corresponding header's Doxygen comment in `include/rte/`, **except**
 `REQ-OAL-BACKEND-001/002/003` in section 2, which are a documentation-only
-consolidation of a pattern repeated across all seven `REQ-OAL-*-01X`
+consolidation of a pattern repeated across the per-service
 "register_osadapter" entries (see the note above section 2.1) and
-intentionally do not appear as literal source tags.
+intentionally do not appear as literal source tags. A range row (e.g.
+`REQ-COMMON-BUF-020..025`) stands for every ID in its range. The two lists
+do not match yet; the gaps found by the last check are listed below.
+
+**Check of 2026-10-04 (G4 item 6), range rows expanded:** 221 distinct IDs
+are tagged in `include/`.
+
+- 17 IDs are tagged in `include/` but have no row in this document:
+  `REQ-ELECTION-001..005` (`rte_election.h`), `REQ-OAL-FLOW-001..004` and
+  `REQ-OAL-FLOW-010..015` (`rte_flow.h`), `REQ-STATE-TRANSFER-001/002`
+  (`rte_state_transfer.h`).
+- 30 IDs have a row here but no tag in `include/`:
+  `REQ-OAL-BACKEND-001..003` (by design, see above); the
+  "register_osadapter" rows `REQ-OAL-TIMER-015`, `REQ-OAL-NVM-015`,
+  `REQ-OAL-MEM-014`, `REQ-OAL-TASK-014`, `REQ-OAL-IPC-014`,
+  `REQ-OAL-LOG-012`, `REQ-OAL-REBOOT-011`, `REQ-OAL-PLATFORM-011`;
+  `REQ-APPMANAGER-008` (superseded, kept for history) and
+  `REQ-APPMANAGER-010..014` (`-010` is tagged only in
+  `src/app/appmanager/rte_appmanager.c`); `REQ-CHANNEL-005`;
+  `REQ-DUAL-CHANNEL-007/008` (tagged only in `src/` and `tests/`);
+  `REQ-VOTER-006`; `REQ-RBC-001..009` (RBC_GP requirements, section 3h,
+  tagged in RBC_GP's sources).
+- A comparison that does not expand range rows also reports
+  `REQ-COMMON-BUF-021..025`, `-027..031` and `REQ-COMMON-STR-022..024`,
+  `-026..028`, `-030..032` as missing (the range-start IDs `BUF-026`,
+  `STR-025`, `STR-029` match their rows literally); the range rows of
+  sections 1.3 and 1.6 cover them.
+
+None of these gaps is backfilled yet (a separate follow-up). The check
+before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which matches only
+three-part IDs and so missed every two-part ID such as `REQ-VOTER-001` or
+`REQ-CHANSVC-001` (162 IDs found instead of 221).
 
 Regenerate the source-side list
-(`grep -rhoE "REQ-[A-Z]+-[A-Z]+-[0-9]+" include | sort -u`) whenever a
+(`grep -rhoE "REQ-[A-Z]+(-[A-Z]+)*-[0-9]+" include | sort -u`) whenever a
 module is added or changed, and update both this file and the source
 comment together — they are required to stay in sync by inspection, since
 there is currently no automated cross-check between the two (a natural

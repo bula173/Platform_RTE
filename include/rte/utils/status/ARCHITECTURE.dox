@@ -96,23 +96,24 @@ The module provides `rte_status_to_string()` for diagnostics:
 rte_status_t rc = some_operation();
 if (rc != RTE_STATUS_OK) {
     printf("Error: %s\n", rte_status_to_string(rc));
-    // Output: "Error: RTE_STATUS_TIMEOUT"
+    // Output: "Error: TIMEOUT"
 }
 ```
 
-**Implementation:**
+The strings are the short names without the `RTE_STATUS_` prefix (`"OK"`, `"TIMEOUT"`, `"NOT_CONNECTED"`, ...); a
+value outside the enum yields `"UNKNOWN_STATUS"`. The result is never NULL.
+
+**Implementation** (`src/utils/status/rte_status.c`, abridged):
 ```c
-const char *rte_status_to_string(rte_status_t status) {
-    switch (status) {
-    case RTE_STATUS_OK:
-        return "RTE_STATUS_OK";
-    case RTE_STATUS_INVALID_PARAM:
-        return "RTE_STATUS_INVALID_PARAM";
-    case RTE_STATUS_TIMEOUT:
-        return "RTE_STATUS_TIMEOUT";
-    // ... etc ...
-    default:
-        return "RTE_STATUS_UNKNOWN";
+const char *rte_status_to_string(rte_status_t status)
+{
+    switch (status)
+    {
+        case RTE_STATUS_OK:                  return "OK";
+        case RTE_STATUS_INVALID_PARAM:       return "INVALID_PARAM";
+        case RTE_STATUS_TIMEOUT:             return "TIMEOUT";
+        // ... one case per enumerator, up to RTE_STATUS_NOT_CONNECTED ...
+        default:                             return "UNKNOWN_STATUS";
     }
 }
 ```
@@ -131,7 +132,7 @@ rte_status_t rte_module_init(config_t *config) {
 
     // Check if already initialized
     if (is_initialized) {
-        return RTE_STATUS_NOT_INITIALIZED;
+        return RTE_STATUS_ALREADY_INITIALIZED;
     }
 
     // Perform initialization
@@ -172,15 +173,18 @@ rte_status_t rte_buffer_write(handle, data, size, written) {
 
 @section status_architecture_safestate Integration with Safe-State
 
-Status codes inform safe-state decisions:
+Status codes inform safe-state decisions. The two snippets below are example application policy, not a rule the
+framework enforces: which status from which call leads to a safe state is decided by the application (the framework
+itself enters a safe state only where a requirement says so, e.g. REQ-CHECKPOINT-003, REQ-VOTER-005).
 
-**Critical failure:**
+**Critical failure (example policy):**
 ```c
 rte_status_t rc = vital_operation();
 if (rc != RTE_STATUS_OK) {
-    // ANY failure in vital code triggers safe-state
-    RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE,
-                  RTE_SAFESTATE_REASON_COMMUNICATION_FAILURE);
+    // Example policy: this application treats any failure of this vital call as unsafe.
+    // APP_REASON_VITAL_OP_FAILED: an application-defined reason code
+    // (>= RTE_SAFESTATE_REASON_APPLICATION_BASE, see rte_safestate.h).
+    RTE_SAFESTATE(RTE_SAFESTATE_LEVEL_SAFE, APP_REASON_VITAL_OP_FAILED);
 }
 ```
 
@@ -207,38 +211,37 @@ The status module supports MISRA C:2012:
 
 ### Files
 
-- `include/rte/status/rte_status.h` — Public API
-- `src/status/rte_status.c` — String conversion table
+- `include/rte/utils/status/rte_status.h` — Public API (the enum is authoritative)
+- `src/utils/status/rte_status.c` — `rte_status_to_string()`
 
-### String Conversion Table
+### String Conversion
 
-To keep binaries small, string conversion uses a lookup table:
+`rte_status_to_string()` is a `switch` with one `case` per enumerator and a `default` clause (MISRA C:2012 rule
+16.4) returning `"UNKNOWN_STATUS"`; there is no lookup table (see the Implementation snippet above).
 
-```c
-static const char *status_strings[] = {
-    [RTE_STATUS_OK] = "RTE_STATUS_OK",
-    [RTE_STATUS_INVALID_PARAM] = "RTE_STATUS_INVALID_PARAM",
-    // ...
-};
-```
-
-Pros: O(1) lookup, small code size
-Cons: Must maintain both enum and table (kept in sync via static checks)
+Pros: no array indexed by an external value (no out-of-bounds read for a value outside the enum), and a value
+outside the enum is handled explicitly by `default`.
+Cons: a new enumerator needs its own `case` and its own entry in the unit test's `codes[]` list; with both, the
+test catches a missing `case` (it would return `"UNKNOWN_STATUS"`).
 
 @section status_architecture_testing Testing Strategy
 
 ### Unit Tests
 
-```c
-void test_status_to_string(void) {
-    // Test all known codes
-    assert(strcmp(rte_status_to_string(RTE_STATUS_OK), "RTE_STATUS_OK") == 0);
-    assert(strcmp(rte_status_to_string(RTE_STATUS_TIMEOUT), "RTE_STATUS_TIMEOUT") == 0);
-    // ...
+`tests/status/test_rte_status.c` (abridged):
 
-    // Test unknown code
-    assert(strcmp(rte_status_to_string(9999), "RTE_STATUS_UNKNOWN") == 0);
+```c
+rte_status_t codes[] = { RTE_STATUS_OK, ..., RTE_STATUS_NOT_CONNECTED };
+for (i = 0; i < sizeof(codes) / sizeof(codes[0]); ++i) {
+    const char *s = rte_status_to_string(codes[i]);
+    assert(s != NULL);
+    assert(strcmp(s, "UNKNOWN_STATUS") != 0);   // every known code has its own name
+    // ... and no two codes share a value or a string
 }
+assert(strcmp(rte_status_to_string(RTE_STATUS_NOT_CONNECTED), "NOT_CONNECTED") == 0);
+
+// Value outside the enum: the default clause
+assert(strcmp(rte_status_to_string((rte_status_t)999), "UNKNOWN_STATUS") == 0);
 ```
 
 @section status_architecture_future Future Extensions
