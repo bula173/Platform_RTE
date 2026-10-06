@@ -15,6 +15,13 @@
  * no-ops and no timeout was ever detected (see git history) - discovered
  * while wiring a real per-role watchdog into safeAPIRBC2oo2.
  *
+ * The time base is not trusted blindly (ISS-036): start()/kick()/
+ * get_status() forward a failed rte_timer_now() status and leave the slot
+ * untouched (REQ-WATCHDOG-003), and rte_watchdog_timer_tick() treats a
+ * failed clock while any watchdog is supervising as a safe-state trigger
+ * (REQ-WATCHDOG-004) - a watchdog whose clock stands still can never
+ * expire, which would silently defeat the supervision it exists for.
+ *
  * @ingroup WATCHDOG
  */
 #include "rte/redundancy/watchdog/rte_watchdog.h"
@@ -111,6 +118,44 @@ static bool is_valid_action(rte_watchdog_action_t action)
     return valid;
 }
 
+/**
+ * @brief Checks whether slot is currently supervising: allocated, started
+ *        (not stopped) and not yet fired - i.e. a watchdog whose deadline
+ *        rte_watchdog_timer_tick() must be able to compare against the clock.
+ * @param slot  Pool slot to inspect (never NULL: callers index the pool).
+ * @return true if slot is in_use && active && !fired; false otherwise.
+ */
+static bool is_supervising(const rte_watchdog_s *slot)
+{
+    return (slot->in_use != 0U) && (slot->active != 0U) && (slot->fired == 0U);
+}
+
+/**
+ * @brief Finds the first supervising slot (see is_supervising()).
+ *
+ * Returns an index, not the slot's name: config.name is a logging-only
+ * field that rte_watchdog_create() never validates, so a NULL name must
+ * change only the log text of the REQ-WATCHDOG-004 reaction, never the
+ * vital decision whether to react at all.
+ *
+ * @return Index of the first supervising slot in pool order, or
+ *         RTE_WATCHDOG_MAX_COUNT if no slot is supervising.
+ */
+static uint32_t first_supervising_index(void)
+{
+    uint32_t found = (uint32_t)RTE_WATCHDOG_MAX_COUNT;
+    uint32_t i;
+
+    for (i = 0U; (i < (uint32_t)RTE_WATCHDOG_MAX_COUNT) && (found == (uint32_t)RTE_WATCHDOG_MAX_COUNT); i++)
+    {
+        if (is_supervising(&g_watchdog_pool[i]))
+        {
+            found = i;
+        }
+    }
+    return found;
+}
+
 /* ============================================================================
  * API: Watchdog Manager
  * ========================================================================== */
@@ -196,17 +241,28 @@ rte_status_t rte_watchdog_start(rte_watchdog_t watchdog)
 {
     rte_watchdog_s *slot = (rte_watchdog_s *)watchdog;
     rte_timestamp_ms_t now_ms = 0U;
+    rte_status_t status;
 
     if (!is_valid_handle(watchdog))
     {
-        return RTE_STATUS_INVALID_PARAM;
+        status = RTE_STATUS_INVALID_PARAM;
     }
-    (void)rte_timer_now(&now_ms);
-    slot->active = 1U;
-    slot->fired = 0U;
-    slot->deadline_ms = now_ms + slot->config.timeout_ms;
-    slot->last_kick_ms = now_ms;
-    return RTE_STATUS_OK;
+    else
+    {
+        /* REQ-WATCHDOG-003: a failed clock read is returned as-is and the
+         * watchdog is not armed - arming against a deadline computed from a
+         * made-up "now" (0) would create a watchdog that either fires at
+         * once or never, neither of which the caller asked for. */
+        status = rte_timer_now(&now_ms);
+        if (status == RTE_STATUS_OK)
+        {
+            slot->active = 1U;
+            slot->fired = 0U;
+            slot->deadline_ms = now_ms + slot->config.timeout_ms;
+            slot->last_kick_ms = now_ms;
+        }
+    }
+    return status;
 }
 
 rte_status_t rte_watchdog_stop(rte_watchdog_t watchdog)
@@ -225,45 +281,66 @@ rte_status_t rte_watchdog_kick(rte_watchdog_t watchdog)
 {
     rte_watchdog_s *slot = (rte_watchdog_s *)watchdog;
     rte_timestamp_ms_t now_ms = 0U;
+    rte_status_t status;
 
     if (!is_valid_handle(watchdog))
     {
-        return RTE_STATUS_INVALID_PARAM;
+        status = RTE_STATUS_INVALID_PARAM;
     }
-    if ((slot->active == 0U) || (slot->fired != 0U))
+    else if ((slot->active == 0U) || (slot->fired != 0U))
     {
         /* Not running, or already fired and awaiting an explicit
          * start() before it can be kicked again - this codebase's real
          * status enum has no generic RTE_STATUS_ERROR (see
          * rte_status.h); RTE_STATUS_INTERNAL_ERROR is the closest
          * "kick while not in a kickable state" signal available. */
-        return RTE_STATUS_INTERNAL_ERROR;
+        status = RTE_STATUS_INTERNAL_ERROR;
     }
-    (void)rte_timer_now(&now_ms);
-    slot->deadline_ms = now_ms + slot->config.timeout_ms;
-    slot->last_kick_ms = now_ms;
-    slot->kicks++;
-    return RTE_STATUS_OK;
+    else
+    {
+        /* REQ-WATCHDOG-003: a failed clock read is returned as-is; the
+         * deadline stays where the last good read put it and the kick is
+         * not counted, so a clock fault cannot be mistaken for liveness. */
+        status = rte_timer_now(&now_ms);
+        if (status == RTE_STATUS_OK)
+        {
+            slot->deadline_ms = now_ms + slot->config.timeout_ms;
+            slot->last_kick_ms = now_ms;
+            slot->kicks++;
+        }
+    }
+    return status;
 }
 
 rte_status_t rte_watchdog_get_status(rte_watchdog_t watchdog, rte_watchdog_status_t *status_out)
 {
     const rte_watchdog_s *slot = (const rte_watchdog_s *)watchdog;
     rte_timestamp_ms_t now_ms = 0U;
+    rte_status_t status;
 
     if (!is_valid_handle(watchdog) || (status_out == NULL))
     {
-        return RTE_STATUS_INVALID_PARAM;
+        status = RTE_STATUS_INVALID_PARAM;
     }
-    (void)rte_timer_now(&now_ms);
-    status_out->active = slot->active;
-    status_out->kicks = slot->kicks;
-    status_out->fires = slot->fires;
-    status_out->recoveries = slot->recoveries;
-    status_out->time_since_last_kick =
-        (rte_duration_ms_t)((now_ms >= slot->last_kick_ms) ? (now_ms - slot->last_kick_ms) : 0U);
-    status_out->time_until_fire = (rte_duration_ms_t)((slot->deadline_ms > now_ms) ? (slot->deadline_ms - now_ms) : 0U);
-    return RTE_STATUS_OK;
+    else
+    {
+        /* REQ-WATCHDOG-003: no partial read-out - the two time fields need
+         * the clock, so a failed read returns its status and leaves
+         * *status_out exactly as the caller passed it. */
+        status = rte_timer_now(&now_ms);
+        if (status == RTE_STATUS_OK)
+        {
+            status_out->active = slot->active;
+            status_out->kicks = slot->kicks;
+            status_out->fires = slot->fires;
+            status_out->recoveries = slot->recoveries;
+            status_out->time_since_last_kick =
+                (rte_duration_ms_t)((now_ms >= slot->last_kick_ms) ? (now_ms - slot->last_kick_ms) : 0U);
+            status_out->time_until_fire =
+                (rte_duration_ms_t)((slot->deadline_ms > now_ms) ? (slot->deadline_ms - now_ms) : 0U);
+        }
+    }
+    return status;
 }
 
 rte_status_t rte_watchdog_destroy(rte_watchdog_t watchdog)
@@ -383,20 +460,47 @@ void rte_watchdog_timer_tick(void)
      * scan (N = RTE_WATCHDOG_MAX_COUNT, a small fixed pool) comparing
      * each active watchdog's deadline against the current time. */
     rte_timestamp_ms_t now_ms = 0U;
-    uint32_t i;
 
-    if (g_manager_initialized == 0U)
+    if (g_manager_initialized != 0U)
     {
-        return;
-    }
-    (void)rte_timer_now(&now_ms);
-    for (i = 0U; i < (uint32_t)RTE_WATCHDOG_MAX_COUNT; i++)
-    {
-        const rte_watchdog_s *slot = &g_watchdog_pool[i];
-
-        if ((slot->in_use != 0U) && (slot->active != 0U) && (slot->fired == 0U) && (now_ms >= slot->deadline_ms))
+        if (rte_timer_now(&now_ms) != RTE_STATUS_OK)
         {
-            rte_watchdog_timeout_handler(i);
+            /* REQ-WATCHDOG-004: the clock this whole module measures with
+             * has failed. If any watchdog is supervising right now, its
+             * deadline can no longer be checked - and a watchdog that can
+             * never expire is exactly the silent failure watchdogs exist to
+             * prevent - so the failed time base is itself treated as a
+             * fired SAFE-level watchdog (logged under the first supervising
+             * slot's name). With nothing supervising there is nothing being
+             * silently defeated, and the tick stays a no-op. */
+            const uint32_t supervising = first_supervising_index();
+
+            if (supervising < (uint32_t)RTE_WATCHDOG_MAX_COUNT)
+            {
+                /* A NULL name (never validated by create()) only changes
+                 * the log text; the decision above does not depend on it. */
+                const char *name = g_watchdog_pool[supervising].config.name;
+
+                if (name == NULL)
+                {
+                    name = "(unnamed)";
+                }
+                rte_log_write(RTE_LOG_LEVEL_ERROR, name, "watchdog clock failed - entering SAFE state");
+                rte_safestate_enter(RTE_SAFESTATE_LEVEL_SAFE, RTE_SAFESTATE_REASON_CLOCK_FAILED, __FILE__,
+                                      (int32_t)__LINE__, name);
+            }
+        }
+        else
+        {
+            uint32_t i;
+
+            for (i = 0U; i < (uint32_t)RTE_WATCHDOG_MAX_COUNT; i++)
+            {
+                if (is_supervising(&g_watchdog_pool[i]) && (now_ms >= g_watchdog_pool[i].deadline_ms))
+                {
+                    rte_watchdog_timeout_handler(i);
+                }
+            }
         }
     }
 }

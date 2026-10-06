@@ -15,6 +15,7 @@
 ///- **Checkpoint Watchdog:** Detects if a node doesn't reach checkpoint in time
 ///- **Channel Watchdog:** Detects if IPC/redundancy channel is stuck
 ///- **Recovery Action:** Configurable response (reboot, safe-state, failover, log)
+///- **Supervised time base:** a failed `rte_timer_now()` is itself a safe-state trigger - `rte_watchdog_timer_tick()` enters `RTE_SAFESTATE_LEVEL_SAFE` with `RTE_SAFESTATE_REASON_CLOCK_FAILED` while any started watchdog depends on the clock, and `start()`/`kick()`/`get_status()` return the clock's status unchanged instead of acting on a made-up time (REQ-WATCHDOG-003/-004, ISS-036).
 ///
 ///---
 ///

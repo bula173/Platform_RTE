@@ -21,11 +21,20 @@
 
 /* ---- mock timer OSAdapter: caller-controlled clock ---- */
 static rte_timestamp_ms_t g_mock_now_ms = 0U;
+/* While non-zero the clock "fails": now() returns RTE_STATUS_NOT_SUPPORTED
+ * and leaves the output at the 0 rte_timer_now() pre-sets (ISS-036 tests). */
+static int g_mock_now_fails = 0;
 
 static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
 {
-    *out_now_ms = g_mock_now_ms;
-    return RTE_STATUS_OK;
+    rte_status_t status = RTE_STATUS_NOT_SUPPORTED;
+
+    if (g_mock_now_fails == 0)
+    {
+        *out_now_ms = g_mock_now_ms;
+        status = RTE_STATUS_OK;
+    }
+    return status;
 }
 
 static const rte_osadapter_timer_t g_mock_timer_osadapter = {
@@ -457,12 +466,288 @@ static void test_pool_exhaustion(void)
     }
 }
 
+/* REQ-WATCHDOG-003 (ISS-036): without any timer OSAdapter, rte_timer_now()
+ * reports RTE_STATUS_NOT_INITIALIZED and start() forwards it instead of
+ * arming against a made-up "now". Must run before the mock adapter is
+ * registered (rte_osadapter_timer_register() is setup-only, so it cannot be
+ * un-registered later); the manager itself needs no clock to initialize. */
+static void test_start_without_timer_adapter(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status = {0};
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = "no_clock_wd";
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(wd) == RTE_STATUS_NOT_INITIALIZED);
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_NOT_INITIALIZED);
+    assert(rte_watchdog_kick(wd) == RTE_STATUS_INTERNAL_ERROR); /* never armed */
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-003 (ISS-036): start() with a failing clock returns the
+ * clock's status and does not arm the watchdog. */
+static void test_start_with_failing_clock(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status = {0};
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = "clock_fail_start_wd";
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    g_mock_now_ms = 80000U;
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+
+    g_mock_now_fails = 1;
+    assert(rte_watchdog_start(wd) == RTE_STATUS_NOT_SUPPORTED);
+    g_mock_now_fails = 0;
+
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.active == 0U);
+
+    /* Not armed: advancing far past timeout_ms and ticking fires nothing. */
+    g_mock_now_ms += 1000U;
+    rte_watchdog_timer_tick();
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.fires == 0U);
+
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-003 (ISS-036): kick() with a failing clock returns the
+ * clock's status, does not count the kick and does not move the deadline -
+ * the watchdog still fires at the deadline the last good read set. */
+static void test_kick_with_failing_clock(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status = {0};
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = "clock_fail_kick_wd";
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    g_mock_now_ms = 90000U;
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(wd) == RTE_STATUS_OK); /* deadline 90100 */
+
+    g_mock_now_ms += 50U; /* 90050 */
+    g_mock_now_fails = 1;
+    assert(rte_watchdog_kick(wd) == RTE_STATUS_NOT_SUPPORTED);
+    g_mock_now_fails = 0;
+
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.active == 1U);
+    assert(status.kicks == 0U);
+    assert(status.time_until_fire == 50U); /* original deadline, not 90150 */
+
+    /* Past the original deadline (90100) but before the deadline a counted
+     * kick would have set (90150): a tick must fire it. */
+    g_mock_now_ms += 60U; /* 90110 */
+    rte_watchdog_timer_tick();
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.fires == 1U);
+
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-003 (ISS-036): get_status() with a failing clock returns the
+ * clock's status and writes nothing to *status_out (no partial read-out). */
+static void test_get_status_with_failing_clock(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status;
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = "clock_fail_status_wd";
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    g_mock_now_ms = 100000U;
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(wd) == RTE_STATUS_OK);
+
+    /* Sentinel values no live watchdog could produce here. */
+    status.active = 0xAAU;
+    status.kicks = 0xAAAAAAAAU;
+    status.fires = 0xAAAAAAAAU;
+    status.recoveries = 0xAAAAAAAAU;
+    status.time_since_last_kick = 0xAAAAAAAAU;
+    status.time_until_fire = 0xAAAAAAAAU;
+
+    g_mock_now_fails = 1;
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_NOT_SUPPORTED);
+    g_mock_now_fails = 0;
+
+    assert(status.active == 0xAAU);
+    assert(status.kicks == 0xAAAAAAAAU);
+    assert(status.fires == 0xAAAAAAAAU);
+    assert(status.recoveries == 0xAAAAAAAAU);
+    assert(status.time_since_last_kick == 0xAAAAAAAAU);
+    assert(status.time_until_fire == 0xAAAAAAAAU);
+
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.active == 1U);
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-004 (ISS-036): a tick with a failing clock while a started,
+ * not yet fired watchdog exists enters RTE_SAFESTATE_LEVEL_SAFE with
+ * RTE_SAFESTATE_REASON_CLOCK_FAILED - same diverting-handler pattern as
+ * test_safestate_action_dispatches_on_fire(). The watchdog itself is a LOG
+ * one: the SAFE entry comes from the failed clock, not from its action. */
+static void test_tick_with_failing_clock_enters_safe_state(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status = {0};
+
+    assert(rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_SAFE, diverting_handler) == RTE_STATUS_OK);
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = "clock_fail_tick_wd";
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    g_mock_now_ms = 110000U;
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(wd) == RTE_STATUS_OK);
+
+    g_mock_now_fails = 1;
+    g_diverting_calls = 0;
+    g_captured_level = RTE_SAFESTATE_LEVEL_DEGRADED;
+    g_captured_reason = RTE_SAFESTATE_REASON_UNSPECIFIED;
+    if (setjmp(g_jmp) == 0)
+    {
+        rte_watchdog_timer_tick();
+        assert(0); /* must not reach here: the failed clock diverts away */
+    }
+    else
+    {
+        assert(g_diverting_calls == 1);
+        assert(g_captured_level == RTE_SAFESTATE_LEVEL_SAFE);
+        assert(g_captured_reason == RTE_SAFESTATE_REASON_CLOCK_FAILED);
+    }
+    g_mock_now_fails = 0;
+
+    /* The failed-clock reaction is not a watchdog fire: nothing counted. */
+    assert(rte_watchdog_get_status(wd, &status) == RTE_STATUS_OK);
+    assert(status.active == 1U);
+    assert(status.fires == 0U);
+    assert(status.recoveries == 0U);
+
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-004 (ISS-036): a tick with a failing clock enters no safe
+ * state when nothing is supervising - only created-not-started, stopped and
+ * already-fired watchdogs exist. */
+static void test_tick_with_failing_clock_without_supervised_watchdog(void)
+{
+    rte_watchdog_t never_started = NULL;
+    rte_watchdog_t stopped = NULL;
+    rte_watchdog_t fired = NULL;
+    rte_watchdog_config_t config = {0};
+    rte_watchdog_status_t status = {0};
+
+    assert(rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_SAFE, diverting_handler) == RTE_STATUS_OK);
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+    g_mock_now_ms = 120000U;
+
+    config.name = "never_started_wd";
+    assert(rte_watchdog_create(&never_started, &config) == RTE_STATUS_OK);
+
+    config.name = "stopped_wd";
+    assert(rte_watchdog_create(&stopped, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(stopped) == RTE_STATUS_OK);
+    assert(rte_watchdog_stop(stopped) == RTE_STATUS_OK);
+
+    config.name = "fired_wd";
+    assert(rte_watchdog_create(&fired, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(fired) == RTE_STATUS_OK);
+    g_mock_now_ms += 200U;
+    rte_watchdog_timer_tick();
+    assert(rte_watchdog_get_status(fired, &status) == RTE_STATUS_OK);
+    assert(status.fires == 1U);
+
+    g_mock_now_fails = 1;
+    g_diverting_calls = 0;
+    if (setjmp(g_jmp) == 0)
+    {
+        rte_watchdog_timer_tick(); /* must return: nothing is supervising */
+    }
+    else
+    {
+        assert(0); /* must not reach here: no safe-state entry expected */
+    }
+    assert(g_diverting_calls == 0);
+    g_mock_now_fails = 0;
+
+    assert(rte_watchdog_destroy(never_started) == RTE_STATUS_OK);
+    assert(rte_watchdog_destroy(stopped) == RTE_STATUS_OK);
+    assert(rte_watchdog_destroy(fired) == RTE_STATUS_OK);
+}
+
+/* REQ-WATCHDOG-004 (ISS-036, review finding): config->name is logging-only
+ * and never validated by create(), so a NULL-named supervising watchdog
+ * must still divert the tick into SAFE when the clock fails - the name may
+ * only change the log text, never the vital decision. */
+static void test_tick_with_failing_clock_unnamed_watchdog_enters_safe_state(void)
+{
+    rte_watchdog_t wd = NULL;
+    rte_watchdog_config_t config = {0};
+
+    assert(rte_safestate_register_handler(RTE_SAFESTATE_LEVEL_SAFE, diverting_handler) == RTE_STATUS_OK);
+
+    config.type = RTE_WATCHDOG_TASK;
+    config.name = NULL;
+    config.timeout_ms = 100U;
+    config.action = RTE_WATCHDOG_ACTION_LOG;
+
+    g_mock_now_ms = 130000U;
+    assert(rte_watchdog_create(&wd, &config) == RTE_STATUS_OK);
+    assert(rte_watchdog_start(wd) == RTE_STATUS_OK);
+
+    g_mock_now_fails = 1;
+    g_diverting_calls = 0;
+    g_captured_level = RTE_SAFESTATE_LEVEL_DEGRADED;
+    g_captured_reason = RTE_SAFESTATE_REASON_UNSPECIFIED;
+    if (setjmp(g_jmp) == 0)
+    {
+        rte_watchdog_timer_tick();
+        assert(0); /* must not reach here: the failed clock diverts away */
+    }
+    else
+    {
+        assert(g_diverting_calls == 1);
+        assert(g_captured_level == RTE_SAFESTATE_LEVEL_SAFE);
+        assert(g_captured_reason == RTE_SAFESTATE_REASON_CLOCK_FAILED);
+    }
+    g_mock_now_fails = 0;
+
+    assert(rte_watchdog_destroy(wd) == RTE_STATUS_OK);
+}
+
 int main(void)
 {
     test_create_requires_manager_initialized();
 
-    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
     assert(rte_watchdog_manager_initialize() == RTE_STATUS_OK);
+    test_start_without_timer_adapter();
+
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
 
     test_create_param_validation();
     test_lifecycle_and_kick();
@@ -476,6 +761,12 @@ int main(void)
     test_failover_action_dispatches_on_fire();
     test_setup_phase_lock_rejects_create();
     test_pool_exhaustion();
+    test_start_with_failing_clock();
+    test_kick_with_failing_clock();
+    test_get_status_with_failing_clock();
+    test_tick_with_failing_clock_enters_safe_state();
+    test_tick_with_failing_clock_without_supervised_watchdog();
+    test_tick_with_failing_clock_unnamed_watchdog_enters_safe_state();
 
     assert(rte_watchdog_manager_shutdown() == RTE_STATUS_OK);
 

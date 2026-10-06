@@ -431,12 +431,16 @@ Not a full backfill of this module (see 3a's own note on the pre-existing
 gap) - just the `RTE_WATCHDOG_ACTION_FAILOVER` action, added when a real
 integrator (RBC_GP's dual-channel A/B link and SITE<->SITE
 heartbeat) needed a "my redundant peer stopped responding" reaction and
-found the action a documented dead stub.
+found the action a documented dead stub, plus the time-base contract
+(REQ-WATCHDOG-003/-004, ISS-036 step 1): the module used to ignore a failed
+`rte_timer_now()`, arming and kicking against a made-up time of 0.
 
 | ID | Requirement |
 |---|---|
 | REQ-WATCHDOG-001 | `rte_watchdog_create()` shall return `RTE_STATUS_INVALID_PARAM` if `config->action` is `RTE_WATCHDOG_ACTION_FAILOVER` and `config->custom_action` is `NULL` (same requirement already in force for `RTE_WATCHDOG_ACTION_CUSTOM`). |
 | REQ-WATCHDOG-002 | On timeout, a watchdog configured with `RTE_WATCHDOG_ACTION_FAILOVER` shall invoke `config->custom_action(config->context)` — identical dispatch to `RTE_WATCHDOG_ACTION_CUSTOM` — and shall not itself decide what the timeout means; that decision belongs to the integrator's `custom_action`. |
+| REQ-WATCHDOG-003 | `rte_watchdog_start()`, `rte_watchdog_kick()` and `rte_watchdog_get_status()` shall return the `rte_timer_now()` status unchanged and leave the watchdog unchanged when that status is not `RTE_STATUS_OK`: start does not arm, kick moves no deadline and counts no kick, get_status writes nothing to `*status_out` (no partial read-out). (ISS-036 step 1, 2026-10-06.) |
+| REQ-WATCHDOG-004 | `rte_watchdog_timer_tick()` shall enter `RTE_SAFESTATE_LEVEL_SAFE` with reason `RTE_SAFESTATE_REASON_CLOCK_FAILED` (after one ERROR log line `"watchdog clock failed - entering SAFE state"` under the first such watchdog's name) when `rte_timer_now()` fails while any started, not yet fired watchdog exists — a watchdog whose clock has failed can never expire, which is the silent failure it exists to prevent. A tick with a failed clock and no such watchdog is a no-op. (ISS-036 step 1, 2026-10-06.) |
 
 ## 3c. Application lifecycle hooks and cycle checkpoint — `rte_appmanager.h` (ADR-019/ADR-034)
 
@@ -788,6 +792,11 @@ its tables plus the three `REQ-OAL-BACKEND-*` IDs of section 2).
   `-026..028`, `-030..032` as missing (the range-start IDs `BUF-020`,
   `BUF-026`, `STR-021`, `STR-025`, `STR-029` match their rows literally); the range rows of
   sections 1.3 and 1.6 cover them.
+
+**2026-10-06 (ISS-036 step 1):** `REQ-WATCHDOG-003` and `REQ-WATCHDOG-004`
+added (section 3b) and tagged in `rte_watchdog.h` / `rte_safestate.h`: 239
+distinct IDs tagged in `include/`, 253 IDs here (250 in the tables plus the
+three `REQ-OAL-BACKEND-*` IDs); the 14 row-without-tag IDs are unchanged.
 
 The check before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which
 matches only three-part IDs and so missed every two-part ID such as

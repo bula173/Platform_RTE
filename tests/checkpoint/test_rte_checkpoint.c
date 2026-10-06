@@ -58,6 +58,23 @@
 #include "rte/redundancy/checksum/rte_checksum.h"
 #include "rte/utils/safestate/rte_safestate.h"
 #include "rte/redundancy/watchdog/rte_watchdog.h"
+#include "rte_osadapter/timer/rte_osadapter_timer.h"
+
+/* ---- mock timer OSAdapter: a clock that stands at 0 ----
+ * Since ISS-036 step 1 (REQ-WATCHDOG-003) rte_watchdog_start()/_kick() forward
+ * a failed rte_timer_now() instead of ignoring it, so the watchdog used by
+ * test_watchdog_kicked_on_success() needs a registered clock. A constant 0 is
+ * exactly what rte_timer_now() handed out here before any adapter existed, so
+ * the checkpoint timing under test is unchanged. */
+static rte_status_t mock_timer_now(rte_timestamp_ms_t *out_now_ms)
+{
+    *out_now_ms = 0U;
+    return RTE_STATUS_OK;
+}
+
+static const rte_osadapter_timer_t g_mock_timer_osadapter = {
+    NULL, NULL, NULL, NULL, mock_timer_now
+};
 
 #define TEST_CHANNEL_COUNT 2U
 
@@ -558,6 +575,7 @@ int main(void)
     size_t i;
 
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
+    assert(rte_osadapter_timer_register(&g_mock_timer_osadapter) == RTE_STATUS_OK);
 
     for (i = 0U; i < TEST_CHANNEL_COUNT; i++)
     {

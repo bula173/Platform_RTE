@@ -76,6 +76,10 @@ typedef uint16_t rte_safestate_reason_t;
 /** Reported by an OSAdapter (DEGRADED level) when a real-time attribute it was asked for could not be
  *  applied: thread priority / scheduling policy, fixed stack size, mutex priority inheritance. */
 #define RTE_SAFESTATE_REASON_OSA_RT_ATTRIBUTE ((rte_safestate_reason_t)4U)
+/** Set by rte_watchdog_timer_tick() (REQ-WATCHDOG-004, SAFE level) when the monotonic time base
+ *  rte_timer_now() failed while a liveness supervisor (a started, not yet fired watchdog) depended on it:
+ *  a watchdog that can never expire is a silent failure, so the failed clock is itself a safe-state trigger. */
+#define RTE_SAFESTATE_REASON_CLOCK_FAILED ((rte_safestate_reason_t)5U)
 /** First reason code value applications are free to define their own meaning for. */
 #define RTE_SAFESTATE_REASON_APPLICATION_BASE ((rte_safestate_reason_t)4096U)
 

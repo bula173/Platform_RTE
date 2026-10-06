@@ -141,12 +141,22 @@ rte_status_t rte_watchdog_create(rte_watchdog_t *handle_out,
  * Must be called after rte_watchdog_create().
  *
  * @param watchdog Watchdog handle
- * @return RTE_STATUS_OK on success
+ * @return RTE_STATUS_OK on success (watchdog armed from the current time)
+ *         RTE_STATUS_INVALID_PARAM if watchdog is not a live handle
+ *         the status of rte_timer_now() unchanged when the clock could
+ *         not be read, e.g. RTE_STATUS_NOT_INITIALIZED (no timer
+ *         OSAdapter), RTE_STATUS_NOT_SUPPORTED (adapter without now()) or
+ *         RTE_STATUS_INTERNAL_ERROR (the adapter's own clock read failed,
+ *         as the POSIX adapter reports a failed clock_gettime()); the watchdog
+ *         is then left exactly as it was (not armed). REQ-WATCHDOG-003
  *
  * @pre watchdog != NULL
- * @post watchdog is counting down; will fire if not kicked
+ * @post on RTE_STATUS_OK the watchdog is counting down and will fire if
+ *       not kicked; on any other status it is unchanged
  *
- * @safety Deterministic: no blocking, no dynamic allocation
+ * @safety Deterministic: no blocking, no dynamic allocation. A failed
+ *         clock read is never papered over with a deadline computed from a
+ *         made-up time (ISS-036).
  */
 rte_status_t rte_watchdog_start(rte_watchdog_t watchdog);
 
@@ -176,10 +186,19 @@ rte_status_t rte_watchdog_stop(rte_watchdog_t watchdog);
  *
  * @param watchdog Watchdog handle
  * @return RTE_STATUS_OK on success (countdown reset)
- *         RTE_STATUS_ERROR if watchdog already fired (recovery in progress)
+ *         RTE_STATUS_INVALID_PARAM if watchdog is not a live handle
+ *         RTE_STATUS_INTERNAL_ERROR if the watchdog is not started, or
+ *         already fired (recovery in progress) and not yet restarted
+ *         the status of rte_timer_now() unchanged when the clock could
+ *         not be read, e.g. RTE_STATUS_NOT_INITIALIZED (no timer
+ *         OSAdapter), RTE_STATUS_NOT_SUPPORTED (adapter without now()) or
+ *         RTE_STATUS_INTERNAL_ERROR (the adapter's own clock read failed,
+ *         as the POSIX adapter reports a failed clock_gettime()); the deadline
+ *         and the kick count are then left unchanged. REQ-WATCHDOG-003
  *
  * @pre watchdog != NULL
- * @post timeout countdown reset to timeout_ms
+ * @post on RTE_STATUS_OK the timeout countdown is reset to timeout_ms; on
+ *       any other status the watchdog is unchanged
  *
  * @safety Deterministic: no blocking, O(1) time
  *
@@ -202,9 +221,18 @@ rte_status_t rte_watchdog_kick(rte_watchdog_t watchdog);
  * @param watchdog Watchdog handle
  * @param status_out Receives watchdog status
  * @return RTE_STATUS_OK on success
+ *         RTE_STATUS_INVALID_PARAM if watchdog is not a live handle or
+ *         status_out is NULL
+ *         the status of rte_timer_now() unchanged when the clock could
+ *         not be read, e.g. RTE_STATUS_NOT_INITIALIZED (no timer
+ *         OSAdapter), RTE_STATUS_NOT_SUPPORTED (adapter without now()) or
+ *         RTE_STATUS_INTERNAL_ERROR (the adapter's own clock read failed,
+ *         as the POSIX adapter reports a failed clock_gettime()); *status_out is
+ *         then not written at all (no partial read-out). REQ-WATCHDOG-003
  *
  * @pre watchdog != NULL, status_out != NULL
- * @post status_out populated with current watchdog state
+ * @post on RTE_STATUS_OK status_out is populated with the current watchdog
+ *       state; on any other status it is untouched
  *
  * @safety Non-blocking, read-only, no side effects
  *
@@ -299,8 +327,21 @@ void rte_watchdog_timeout_handler(uint32_t watchdog_id);
  * has passed is detected and its configured recovery action
  * (rte_watchdog_timeout_handler()) is dispatched.
  *
+ * The clock itself is supervised too (REQ-WATCHDOG-004, ISS-036): when
+ * rte_timer_now() fails while at least one watchdog is started and not yet
+ * fired, no deadline can be checked and such a watchdog could never
+ * expire - so this function logs one ERROR ("watchdog clock failed -
+ * entering SAFE state", under the first such watchdog's name) and enters
+ * RTE_SAFESTATE_LEVEL_SAFE with reason RTE_SAFESTATE_REASON_CLOCK_FAILED,
+ * which does not return (REQ-COMMON-SAFESTATE-002). With no started,
+ * unfired watchdog a failed clock read leaves this call a silent no-op.
+ *
  * @note Non-blocking; O(N) over the fixed watchdog pool per call.
  * @note No-op if the watchdog manager has not been initialized.
+ * @note Does not return when the clock has failed and a watchdog is
+ *       supervising (RTE_SAFESTATE_LEVEL_SAFE). REQ-WATCHDOG-003 is the
+ *       matching rule for rte_watchdog_start() / rte_watchdog_kick() /
+ *       rte_watchdog_get_status(): forward the clock status, change nothing.
  */
 void rte_watchdog_timer_tick(void);
 
