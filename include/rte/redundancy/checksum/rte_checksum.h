@@ -21,7 +21,9 @@
  * REQ-CHECKSUM-002: rte_checksum_crc64() shall return 0 - never
  *                   dereferencing data - if the module is not yet
  *                   initialized, if its lookup table is unset, or if
- *                   data is NULL while size is nonzero.
+ *                   data is NULL while size is nonzero. 0 is not a valid
+ *                   checksum; the status-returning API shall not report
+ *                   success in this state (REQ-CHECKSUM-009).
  * REQ-CHECKSUM-003: rte_checksum_crc64() shall be deterministic and O(n)
  *                   in size, using a precomputed 256-entry lookup table
  *                   (no bit-by-bit computation on the hot path).
@@ -29,18 +31,23 @@
  *                   RTE_STATUS_DATA_CORRUPTION (not merely a boolean) on
  *                   mismatch and increment stats.verification_failures;
  *                   on match it shall return RTE_STATUS_OK and increment
- *                   stats.verification_passes.
+ *                   stats.verification_passes. Before
+ *                   rte_checksum_crc64_init() it shall return
+ *                   RTE_STATUS_NOT_INITIALIZED with result_out->match == 0
+ *                   and no stats change.
  * REQ-CHECKSUM-005: rte_checksum_vital_message_create() shall reject a
  *                   payload larger than sizeof(rte_vital_message_t::payload)
  *                   with RTE_STATUS_INVALID_PARAM, incrementing
  *                   stats.payload_oversize, without writing msg_out.
  * REQ-CHECKSUM-006: rte_checksum_vital_message_verify() shall verify the
  *                   message's CRC-64 before trusting any other field, and
- *                   report RTE_STATUS_DATA_CORRUPTION - without writing
- *                   to payload_out/payload_size_out - on either a CRC
- *                   mismatch or a sequence_number that does not equal the
+ *                   report RTE_STATUS_DATA_CORRUPTION on a CRC mismatch or
+ *                   a sequence_number that does not equal the
  *                   caller-supplied expected_sequence (incrementing
- *                   stats.sequence_errors in the latter case).
+ *                   stats.sequence_errors in the latter case), and forward
+ *                   RTE_STATUS_NOT_INITIALIZED from the CRC check - in
+ *                   both cases without writing payload_out/
+ *                   payload_size_out.
  * REQ-CHECKSUM-007: rte_checksum_vital_message_verify() shall reject a
  *                   decoded payload_size exceeding the caller's
  *                   payload_max_size with RTE_STATUS_INVALID_PARAM,
@@ -51,6 +58,12 @@
  *                   _get_stats() returns RTE_STATUS_INVALID_PARAM for a
  *                   NULL stats_out, otherwise both always return
  *                   RTE_STATUS_OK.
+ * REQ-CHECKSUM-009: rte_checksum_crc64_verify(),
+ *                   rte_checksum_vital_message_create() and
+ *                   rte_checksum_vital_message_verify() shall return
+ *                   RTE_STATUS_NOT_INITIALIZED and write neither msg_out
+ *                   nor the payload outputs nor any stats counter while
+ *                   the module is not initialized (ISS-037).
  */
 
 #ifndef RTE_CHECKSUM_H
@@ -179,6 +192,10 @@ rte_crc64_t rte_checksum_crc64(const uint8_t *data, size_t size);
  * @return RTE_STATUS_OK if verification passed
  *         RTE_STATUS_DATA_CORRUPTION if CRC mismatch (data corrupted)
  *         RTE_STATUS_INVALID_PARAM if result_out is NULL
+ *         RTE_STATUS_NOT_INITIALIZED if rte_checksum_crc64_init() has not
+ *         been called: result_out->match is 0, computed is 0, expected is
+ *         expected_crc, no stats counter changes (REQ-CHECKSUM-009; the 0
+ *         of REQ-CHECKSUM-002 is not a valid checksum)
  *
  * @safety Deterministic computation, safe for safety-critical paths
  *
@@ -255,6 +272,10 @@ typedef struct {
  * @return RTE_STATUS_OK on success
  *         RTE_STATUS_INVALID_PARAM if msg_out is NULL, payload is too
  *         large, or payload is NULL while payload_size is nonzero
+ *         RTE_STATUS_NOT_INITIALIZED if rte_checksum_crc64_init() has not
+ *         been called: msg_out is not written (a message built then would
+ *         carry crc64 == 0, the REQ-CHECKSUM-002 value, which is not a
+ *         valid checksum; REQ-CHECKSUM-009)
  *
  * @safety No dynamic allocation, deterministic execution
  *
@@ -299,6 +320,10 @@ rte_status_t rte_checksum_vital_message_create(
  *         is NULL, or the decoded payload is larger than payload_max_size
  *         RTE_STATUS_DATA_CORRUPTION if the CRC-64 fails or the sequence
  *         number does not match expected_sequence
+ *         RTE_STATUS_NOT_INITIALIZED, forwarded unchanged from
+ *         rte_checksum_crc64_verify(), if rte_checksum_crc64_init() has not
+ *         been called; like DATA_CORRUPTION it writes neither payload_out
+ *         nor payload_size_out (REQ-CHECKSUM-006, REQ-CHECKSUM-009)
  *
  * @safety Deterministic, detects data corruption and reordering
  *

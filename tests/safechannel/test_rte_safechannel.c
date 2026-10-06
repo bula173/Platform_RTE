@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "rte/redundancy/safechannel/rte_safechannel.h"
+#include "rte/redundancy/checksum/rte_checksum.h"
 #include "rte_osadapter/netlink/rte_osadapter_netlink.h"
 
 typedef struct
@@ -638,6 +639,13 @@ static void test_close_on_unopened_is_safe(void)
 
 int main(void)
 {
+    /* The dual (msgchannel) facade wraps every frame in a CRC-64 vital
+     * message, whose create/verify require rte_checksum_crc64_init()
+     * first (REQ-DUAL-MSGCHANNEL-003, REQ-CHECKSUM-009): before ISS-037
+     * this test passed without it only because the uninitialized module
+     * produced and accepted crc64 == 0. */
+    assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
+
     test_open_rejects_bad_params();
     test_dual_open_send_receive_close();
     test_dual_open_partial_endpoint_failure_unwinds();

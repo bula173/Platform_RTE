@@ -1,5 +1,5 @@
 /* Tests for rte_checksum.c (CRC-64 computation + the "vital message"
- * envelope format) - REQ-CHECKSUM-001..008 in rte_checksum.h.
+ * envelope format) - REQ-CHECKSUM-001..009 in rte_checksum.h.
  *
  * rte_checksum_crc64_init() may be called exactly once per process
  * (REQ-CHECKSUM-001: g_checksum_manager is a static, process-lifetime
@@ -27,20 +27,71 @@
 #include "rte/redundancy/checksum/rte_checksum.h"
 
 /* Runs in a forked child: verifies pre-init behavior of
- * rte_checksum_crc64() (REQ-CHECKSUM-002), then initializes with
- * `polynomial` and checks the resulting table/polynomial actually work,
- * exercising one arm of rte_checksum_crc64_init()'s switch per call. */
+ * rte_checksum_crc64() (REQ-CHECKSUM-002) and of the status-returning
+ * API (REQ-CHECKSUM-009, ISS-037), then initializes with `polynomial`
+ * and checks the resulting table/polynomial actually work, exercising
+ * one arm of rte_checksum_crc64_init()'s switch per call. */
 static void child_test_polynomial(rte_crc64_polynomial_t polynomial)
 {
     const uint8_t data[4] = { 0x01U, 0x02U, 0x03U, 0x04U };
     rte_crc64_t crc_before;
     rte_crc64_t crc_a;
     rte_crc64_t crc_b;
+    rte_checksum_result_t result;
+    rte_vital_message_t msg;
+    rte_vital_message_t msg_ref;
+    rte_vital_message_t zero_msg;
+    uint8_t out_payload[4] = { 0x5AU, 0x5AU, 0x5AU, 0x5AU };
+    uint8_t out_size = 0xEEU;
+    rte_checksum_stats_t stats;
 
     /* Pre-init: crc64() must return 0 without dereferencing data, and
      * without crashing (REQ-CHECKSUM-002). */
     crc_before = rte_checksum_crc64(data, sizeof(data));
     assert(crc_before == 0ULL);
+
+    /* Pre-init: crc64_verify() must refuse with NOT_INITIALIZED and never
+     * report a match - before ISS-037 an expected_crc of 0 (the REQ-
+     * CHECKSUM-002 value) verified as a match (REQ-CHECKSUM-004/-009). */
+    result.match = 1U;
+    result.computed = 0xFFULL;
+    assert(rte_checksum_crc64_verify(data, sizeof(data), 0ULL, &result)
+           == RTE_STATUS_NOT_INITIALIZED);
+    assert(result.match == 0U);
+    assert(result.computed == 0ULL);
+    assert(result.expected == 0ULL);
+
+    /* Pre-init: vital_message_create() with a valid payload must refuse
+     * with NOT_INITIALIZED and leave msg_out untouched (REQ-CHECKSUM-009):
+     * every byte stays at the 0xA5 pre-fill. */
+    memset(&msg, 0xA5, sizeof(msg));
+    memset(&msg_ref, 0xA5, sizeof(msg_ref));
+    assert(rte_checksum_vital_message_create(&msg, 1U, 1U, data, sizeof(data))
+           == RTE_STATUS_NOT_INITIALIZED);
+    assert(memcmp(&msg, &msg_ref, sizeof(msg)) == 0);
+
+    /* Pre-init: vital_message_verify() on an all-zero message (crc64 == 0,
+     * the former fail-open match) must refuse with NOT_INITIALIZED,
+     * forwarded unchanged from crc64_verify(), and leave payload_out /
+     * payload_size_out untouched (REQ-CHECKSUM-006/-009). */
+    memset(&zero_msg, 0, sizeof(zero_msg));
+    assert(rte_checksum_vital_message_verify(&zero_msg, 0U, out_payload,
+                                               sizeof(out_payload), &out_size)
+           == RTE_STATUS_NOT_INITIALIZED);
+    assert(out_size == 0xEEU);
+    assert(out_payload[0] == 0x5AU);
+    assert(out_payload[1] == 0x5AU);
+    assert(out_payload[2] == 0x5AU);
+    assert(out_payload[3] == 0x5AU);
+
+    /* None of the refusals above touched a stats counter
+     * (REQ-CHECKSUM-009). */
+    assert(rte_checksum_get_stats(&stats) == RTE_STATUS_OK);
+    assert(stats.total_checksums == 0U);
+    assert(stats.verification_passes == 0U);
+    assert(stats.verification_failures == 0U);
+    assert(stats.sequence_errors == 0U);
+    assert(stats.payload_oversize == 0U);
 
     assert(rte_checksum_crc64_init(polynomial) == RTE_STATUS_OK);
     assert(rte_checksum_crc64_get_polynomial() == polynomial);

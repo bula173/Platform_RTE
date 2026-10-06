@@ -47,6 +47,16 @@
  * self-consistent with this module's own declared polynomials, which is
  * what compute-then-verify integrity checking actually depends on.
  *
+ * NOTE (ISS-037 step 1, 2026-10-06): before rte_checksum_crc64_init() the
+ * raw rte_checksum_crc64() returns 0 (REQ-CHECKSUM-002), so a message
+ * created and verified in that state carried crc64 == 0 and verified as
+ * a match - no protection at all. The status-returning API
+ * (rte_checksum_crc64_verify(), rte_checksum_vital_message_create(),
+ * rte_checksum_vital_message_verify()) now refuses to work before init
+ * with RTE_STATUS_NOT_INITIALIZED and writes neither its outputs nor
+ * any stats counter (REQ-CHECKSUM-009). The raw function keeps its 0
+ * return; 0 is not a valid checksum.
+ *
  * @ingroup CHECKSUM
  */
 
@@ -462,7 +472,6 @@ rte_status_t rte_checksum_crc64_verify(const uint8_t *data,
                                          rte_crc64_t expected_crc,
                                          rte_checksum_result_t *result_out)
 {
-    rte_crc64_t computed_crc;
     rte_status_t status;
 
     /* Verify output buffer */
@@ -470,21 +479,33 @@ rte_status_t rte_checksum_crc64_verify(const uint8_t *data,
         return RTE_STATUS_INVALID_PARAM;
     }
 
-    /* Compute CRC */
-    computed_crc = rte_checksum_crc64(data, size);
-
-    /* Fill result structure */
-    result_out->computed = computed_crc;
-    result_out->expected = expected_crc;
-    result_out->match = (computed_crc == expected_crc) ? 1U : 0U;
-
-    /* Update statistics */
-    if (result_out->match != 0U) {
-        g_checksum_manager.stats.verification_passes++;
-        status = RTE_STATUS_OK;
+    /* REQ-CHECKSUM-009 / REQ-CHECKSUM-004: before init the raw CRC is 0
+     * (REQ-CHECKSUM-002), which is not a valid checksum - never report a
+     * match against it. No stats counter is touched. */
+    if (g_checksum_manager.initialized == 0U) {
+        result_out->computed = 0ULL;
+        result_out->expected = expected_crc;
+        result_out->match = 0U;
+        status = RTE_STATUS_NOT_INITIALIZED;
     } else {
-        g_checksum_manager.stats.verification_failures++;
-        status = RTE_STATUS_DATA_CORRUPTION;
+        rte_crc64_t computed_crc;
+
+        /* Compute CRC */
+        computed_crc = rte_checksum_crc64(data, size);
+
+        /* Fill result structure */
+        result_out->computed = computed_crc;
+        result_out->expected = expected_crc;
+        result_out->match = (computed_crc == expected_crc) ? 1U : 0U;
+
+        /* Update statistics */
+        if (result_out->match != 0U) {
+            g_checksum_manager.stats.verification_passes++;
+            status = RTE_STATUS_OK;
+        } else {
+            g_checksum_manager.stats.verification_failures++;
+            status = RTE_STATUS_DATA_CORRUPTION;
+        }
     }
 
     return status;
@@ -507,50 +528,54 @@ rte_status_t rte_checksum_vital_message_create(
     size_t payload_size)
 {
     rte_timestamp_ms_t now_ms = 0U;
+    rte_status_t status = RTE_STATUS_OK;
 
     /* Validate inputs */
     if (msg_out == NULL) {
-        return RTE_STATUS_INVALID_PARAM;
-    }
-
-    if (payload_size > 248U) {
+        status = RTE_STATUS_INVALID_PARAM;
+    } else if (payload_size > 248U) {
         g_checksum_manager.stats.payload_oversize++;
-        return RTE_STATUS_INVALID_PARAM;
+        status = RTE_STATUS_INVALID_PARAM;
+    } else if ((payload == NULL) && (payload_size != 0U)) {
+        status = RTE_STATUS_INVALID_PARAM;
+    } else if (g_checksum_manager.initialized == 0U) {
+        /* REQ-CHECKSUM-009: before init the message would carry
+         * crc64 == 0 (REQ-CHECKSUM-002), not a valid checksum - refuse
+         * before any write to msg_out. Checked after the parameter checks
+         * so the oversize counter above still increments for an oversize
+         * payload, as before. */
+        status = RTE_STATUS_NOT_INITIALIZED;
+    } else {
+        /* Fill message header */
+        msg_out->sequence_number = sequence;
+        msg_out->sender_id = sender_id;
+        /* Best-effort: if no timer OSAdapter is registered, rte_timer_now()
+         * returns RTE_STATUS_NOT_INITIALIZED and leaves now_ms at 0 -
+         * timestamp_ms is diagnostic only (see rte_clocksync.h's file-level
+         * note: never the basis of comparison correctness), so this is not
+         * treated as a hard failure of message creation. */
+        (void)rte_timer_now(&now_ms);
+        msg_out->timestamp_ms = (uint32_t)(now_ms & 0xFFFFFFFFULL);
+        msg_out->payload_size = (uint8_t)payload_size;
+        msg_out->padding = 0U;
+        msg_out->reserved = 0U;
+
+        /* Clear payload area */
+        memset(msg_out->payload, 0, sizeof(msg_out->payload));
+
+        /* Copy payload */
+        if ((payload != NULL) && (payload_size > 0U)) {
+            memcpy(msg_out->payload, payload, payload_size);
+        }
+
+        /* Compute CRC-64 over entire message (including payload, excluding CRC field) */
+        msg_out->crc64 = rte_checksum_crc64(
+            (const uint8_t *)msg_out,
+            sizeof(*msg_out) - sizeof(msg_out->crc64)
+        );
     }
 
-    if ((payload == NULL) && (payload_size != 0U)) {
-        return RTE_STATUS_INVALID_PARAM;
-    }
-
-    /* Fill message header */
-    msg_out->sequence_number = sequence;
-    msg_out->sender_id = sender_id;
-    /* Best-effort: if no timer OSAdapter is registered, rte_timer_now()
-     * returns RTE_STATUS_NOT_INITIALIZED and leaves now_ms at 0 -
-     * timestamp_ms is diagnostic only (see rte_clocksync.h's file-level
-     * note: never the basis of comparison correctness), so this is not
-     * treated as a hard failure of message creation. */
-    (void)rte_timer_now(&now_ms);
-    msg_out->timestamp_ms = (uint32_t)(now_ms & 0xFFFFFFFFULL);
-    msg_out->payload_size = (uint8_t)payload_size;
-    msg_out->padding = 0U;
-    msg_out->reserved = 0U;
-
-    /* Clear payload area */
-    memset(msg_out->payload, 0, sizeof(msg_out->payload));
-
-    /* Copy payload */
-    if ((payload != NULL) && (payload_size > 0U)) {
-        memcpy(msg_out->payload, payload, payload_size);
-    }
-
-    /* Compute CRC-64 over entire message (including payload, excluding CRC field) */
-    msg_out->crc64 = rte_checksum_crc64(
-        (const uint8_t *)msg_out,
-        sizeof(*msg_out) - sizeof(msg_out->crc64)
-    );
-
-    return RTE_STATUS_OK;
+    return status;
 }
 
 rte_status_t rte_checksum_vital_message_verify(
@@ -584,8 +609,14 @@ rte_status_t rte_checksum_vital_message_verify(
         &check_result
     );
 
+    /* REQ-CHECKSUM-006 / REQ-CHECKSUM-009: a CRC mismatch is
+     * RTE_STATUS_DATA_CORRUPTION; RTE_STATUS_NOT_INITIALIZED (the only other
+     * non-OK status crc64_verify() can return once the NULL check above
+     * passed) is forwarded unchanged so a caller can tell "corrupted" from
+     * "module never initialized". Neither writes payload_out /
+     * payload_size_out. */
     if (status != RTE_STATUS_OK) {
-        return RTE_STATUS_DATA_CORRUPTION;
+        return status;
     }
 
     /* Check sequence number continuity */
