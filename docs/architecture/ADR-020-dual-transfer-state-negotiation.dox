@@ -4,6 +4,11 @@
 ///
 ///Accepted
 ///
+///Later (2026-10-07): the only consumer is `rte_site_role` (ADR-040), which uses the negotiator for the start-up
+///tie-break (or seeds it with the role resumed from the A/B sibling, REQ-SITEROLE-017) and afterwards only as a link
+///diagnostic; after start-up the site role is decided by `rte_site_role_decide()`. The `site.c` / `channel_ab.c` files
+///named below no longer exist; see ADR-040 "Service behaviour as built".
+///
 ///\section platformrte_docs_architecture_ADR_020_dual_transfer_state_negotiation_context Context
 ///
 ///Two example-app files (`RBC_GP/src/application/SITE/site.c` and

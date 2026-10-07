@@ -193,8 +193,11 @@ static rte_status_t open_link_blocking(rte_site_role_t *rs)
 }
 
 /** (Re)initializes the dual channel and the negotiator over the open link. A reconnect resumes this channel's own
- *  identity (startup timestamp, and ONLINE if it is ONLINE) instead of re-litigating the startup tie-break. */
-static rte_status_t init_channel_and_negotiator(rte_site_role_t *rs)
+ *  identity (startup timestamp, and ONLINE if it is ONLINE) instead of re-litigating the startup tie-break; a start-up
+ *  next to a running A/B sibling resumes the site's role the same way (REQ-SITEROLE-017: ONLINE when the sibling is
+ *  ONLINE, STANDBY through resume_standby otherwise). A reconnect passes resume_standby false: a STANDBY reconnect keeps
+ *  re-deciding from its resumed timestamp. */
+static rte_status_t init_channel_and_negotiator(rte_site_role_t *rs, bool resume_standby)
 {
     rte_dual_channel_config_t dual_cfg;
     rte_dual_negotiator_config_t negotiator_cfg;
@@ -228,6 +231,14 @@ static rte_status_t init_channel_and_negotiator(rte_site_role_t *rs)
     {
         negotiator_cfg.resume_own_state = RTE_DUAL_STATE_ONLINE;
     }
+    else if (resume_standby)
+    {
+        negotiator_cfg.resume_own_state = RTE_DUAL_STATE_HOTSTANDBY;
+    }
+    else
+    {
+        /* RTE_DUAL_STATE_IDLE (zeroed): the negotiator decides from the startup timestamps */
+    }
     status = rte_dual_negotiator_init(&rs->negotiator, &negotiator_cfg);
     if (status != RTE_STATUS_OK)
     {
@@ -260,7 +271,7 @@ static rte_status_t reconnect(rte_site_role_t *rs)
     {
         return status;
     }
-    status = init_channel_and_negotiator(rs);
+    status = init_channel_and_negotiator(rs, false);
     if (status != RTE_STATUS_OK)
     {
         close_link(rs);
@@ -440,6 +451,91 @@ static void update_standby_warmth(rte_site_role_t *rs, uint32_t cycle)
     }
 }
 
+/* ---- A/B sibling source (REQ-SITEROLE-016) ------------------------------------------------------------------------ */
+
+/** Polls the sibling source once per cycle; a fresh frame is stamped with this cycle. */
+static void poll_sibling_source(rte_site_role_t *rs, uint32_t cycle)
+{
+    if (rs->cfg.sibling_source != NULL)
+    {
+        if (rs->cfg.sibling_source(rs->cfg.user, &rs->sibling))
+        {
+            rs->sibling_rx_cycle = cycle;
+        }
+    }
+}
+
+/** The sibling's frame counts as reachable while it is at most sibling_reach_cycles old (the rule GP applied to its
+ *  peer link: "frame within the last 3 cycles"). A cycle number that went back (a state transfer renumbers cycles)
+ *  makes the frame stale rather than letting the unsigned difference wrap. */
+static bool sibling_reachable(const rte_site_role_t *rs)
+{
+    return rs->sibling.known && (rs->cycle >= rs->sibling_rx_cycle) &&
+           ((rs->cycle - rs->sibling_rx_cycle) <= rs->cfg.sibling_reach_cycles);
+}
+
+/** With a source, the sibling facts are derived here; without one the application's local facts apply (step 3). */
+static void fill_sibling_facts(const rte_site_role_t *rs, const rte_site_role_local_t *local,
+                               rte_site_role_input_t *in)
+{
+    if (rs->cfg.sibling_source != NULL)
+    {
+        in->sibling_online = rs->sibling.known && rs->sibling.online;
+        in->sibling_ready = rs->sibling.known && rs->sibling.ready;
+        in->sibling_reachable = sibling_reachable(rs);
+    }
+    else
+    {
+        in->sibling_online = local->sibling_online;
+        in->sibling_ready = local->sibling_ready;
+        in->sibling_reachable = local->sibling_reachable;
+    }
+}
+
+/** After the role decision of this cycle (REQ-SITEROLE-014 against the role just decided): the same check, log lines
+ *  and NEGOTIATION_MISMATCH event the application ran itself in step 3. Without a source the verdict stays UNKNOWN. */
+static void check_sibling_after_decision(rte_site_role_t *rs, uint32_t cycle, const rte_site_role_local_t *local)
+{
+    if (rs->cfg.sibling_source != NULL)
+    {
+        rs->sibling_verdict = rte_site_role_check_sibling(rs, cycle, local->single_mode, &rs->sibling);
+    }
+}
+
+/** Start-up role from the A/B sibling (REQ-SITEROLE-017), after the cycle-0 poll: a known sibling frame decides the
+ *  start-up role - ONLINE when the sibling reports ONLINE, STANDBY otherwise (resume_standby) - so this channel joins
+ *  the site's role instead of evaluating the timestamp tie-break. The frame's ready and single_mode take no part.
+ *  Without a frame the tie-break runs as before; without a source nothing changes. */
+static void startup_role_from_sibling(rte_site_role_t *rs, bool *resume_standby)
+{
+    char line[SITE_ROLE_TRACE_LINE_MAX];
+
+    *resume_standby = false;
+    if (rs->cfg.sibling_source == NULL)
+    {
+        /* no source: the application supplies the sibling facts (step 3), the start-up is unchanged */
+    }
+    else if (rs->sibling.known)
+    {
+        rs->online = rs->sibling.online;
+        *resume_standby = !rs->sibling.online;
+        (void)snprintf(line, sizeof(line), "[%s] start-up: A/B sibling reports %s, resuming that role (REQ-SITEROLE-017)\n",
+                       rs->cfg.role_tag, rs->online ? "ONLINE" : "STANDBY");
+        trace_line(rs, line);
+        log_event(rs, RTE_LOG_LEVEL_INFO, 0U, rs->cfg.role_tag, (rs->cfg.sibling_tag != NULL) ? rs->cfg.sibling_tag : "-",
+                  "NEGOTIATION",
+                  rs->online ? "start-up role resumed from A/B sibling: ONLINE"
+                             : "start-up role resumed from A/B sibling: STANDBY",
+                  NULL);
+    }
+    else
+    {
+        (void)snprintf(line, sizeof(line), "[%s] start-up: no A/B sibling state, negotiating from timestamps\n",
+                       rs->cfg.role_tag);
+        trace_line(rs, line);
+    }
+}
+
 static void build_decision_input(const rte_site_role_t *rs, const rte_site_role_local_t *local,
                                  rte_site_role_input_t *in)
 {
@@ -453,14 +549,12 @@ static void build_decision_input(const rte_site_role_t *rs, const rte_site_role_
     in->peer_online_now = rs->peer_online_now;
     in->peer_faulted = rs->peer_faulted;
     in->peer_snapshot_valid = rs->peer_snapshot_valid;
-    in->sibling_online = local->sibling_online;
     in->takeover_confirmed = rs->takeover_confirmed;
     in->takeover_confirm_cycle = rs->takeover_confirm_cycle;
     in->lost_peer_while_online = rs->lost_peer_while_online;
     in->both_standby_cycles = rs->both_standby_cycles;
     in->own_ready = local->own_ready;
-    in->sibling_ready = local->sibling_ready;
-    in->sibling_reachable = local->sibling_reachable;
+    fill_sibling_facts(rs, local, in);
 }
 
 static bool reason_changed(const rte_site_role_t *rs, rte_site_role_reason_t reason)
@@ -697,6 +791,14 @@ rte_status_t rte_site_role_init(rte_site_role_t *rs, const rte_site_role_config_
     rs->standby_healthy = true;
     rs->last_reason = RTE_SITE_ROLE_REASON_NONE;
     rs->last_reason_set = true; /* matches the application's former zero-initialised int */
+    /* Sibling source (REQ-SITEROLE-016): no frame yet, no verdict yet; 0 selects the default reach window. */
+    rs->sibling.known = false;
+    rs->sibling_rx_cycle = 0U;
+    rs->sibling_verdict = RTE_SITE_ROLE_SIBLING_UNKNOWN;
+    if (rs->cfg.sibling_reach_cycles == 0U)
+    {
+        rs->cfg.sibling_reach_cycles = (uint32_t)RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES;
+    }
     return RTE_STATUS_OK;
 }
 
@@ -706,6 +808,7 @@ rte_status_t rte_site_role_start(rte_site_role_t *rs)
     char line[SITE_ROLE_TRACE_LINE_MAX];
     uint32_t waited_ms = 0U;
     rte_dual_state_t own_state;
+    bool resume_standby = false;
 
     if (rs == NULL)
     {
@@ -720,6 +823,11 @@ rte_status_t rte_site_role_start(rte_site_role_t *rs)
         (void)rte_timer_now(&rs->startup_timestamp_ms);
     }
 
+    /* REQ-SITEROLE-017: next to a running A/B sibling the site's role is already decided; the startup timestamp is
+     * not touched. */
+    poll_sibling_source(rs, 0U);
+    startup_role_from_sibling(rs, &resume_standby);
+
     status = open_link_blocking(rs);
     (void)snprintf(line, sizeof(line), "[%s] inter-site negotiation link -> %s\n", rs->cfg.role_tag,
                    rte_status_to_string(status));
@@ -731,7 +839,7 @@ rte_status_t rte_site_role_start(rte_site_role_t *rs)
         return status;
     }
 
-    status = init_channel_and_negotiator(rs);
+    status = init_channel_and_negotiator(rs, resume_standby);
     if (status != RTE_STATUS_OK)
     {
         (void)snprintf(line, sizeof(line), "[%s] negotiation dual_channel/negotiator init failed (%s)\n",
@@ -743,7 +851,8 @@ rte_status_t rte_site_role_start(rte_site_role_t *rs)
         return status;
     }
 
-    /* Startup negotiation until it settles (older startup timestamp wins, REQ-DUAL-NEGOTIATOR-003). */
+    /* Startup negotiation until it settles (older startup timestamp wins, REQ-DUAL-NEGOTIATOR-003). A role resumed
+     * from the A/B sibling is not IDLE: one execute (one beacon out) and the loop ends with that role. */
     do
     {
         status = rte_dual_negotiator_execute(&rs->negotiator, rs->cfg.link_poll_ms);
@@ -791,6 +900,7 @@ void rte_site_role_execute(rte_site_role_t *rs, uint32_t cycle, const rte_site_r
     }
     rs->cycle = cycle;
     take_local(rs, local);
+    poll_sibling_source(rs, cycle);
     refresh_challenge(rs, cycle);
 
     if (rs->link == NULL)
@@ -798,6 +908,7 @@ void rte_site_role_execute(rte_site_role_t *rs, uint32_t cycle, const rte_site_r
         if (reconnect(rs) != RTE_STATUS_OK)
         {
             run_site_role_decision(rs, cycle, local); /* rules that need no link (dispatcher confirmation) still apply */
+            check_sibling_after_decision(rs, cycle, local);
             return;
         }
     }
@@ -816,6 +927,7 @@ void rte_site_role_execute(rte_site_role_t *rs, uint32_t cycle, const rte_site_r
     update_standby_warmth(rs, cycle);
 
     run_site_role_decision(rs, cycle, local);
+    check_sibling_after_decision(rs, cycle, local);
 
     {
         const char *own_role = rs->local_faulted ? "FAULTED" : (rs->online ? "ONLINE" : "STANDBY");
@@ -1043,6 +1155,11 @@ rte_site_role_sibling_verdict_t rte_site_role_check_sibling(rte_site_role_t *rs,
         verdict = RTE_SITE_ROLE_SIBLING_FAULT;
     }
     return verdict;
+}
+
+rte_site_role_sibling_verdict_t rte_site_role_sibling_verdict(const rte_site_role_t *rs)
+{
+    return (rs != NULL) ? rs->sibling_verdict : RTE_SITE_ROLE_SIBLING_UNKNOWN;
 }
 
 void rte_site_role_shutdown(rte_site_role_t *rs)

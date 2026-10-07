@@ -3,7 +3,10 @@
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_status Status
 
-**Accepted (2026-10-02); steps 1 to 4 done, step 5 open.** Plan for gap G1 of the root
+**Accepted (2026-10-02); steps 1 to 4 done; step 5 in progress (5a, 5b-1, 5b-2 and 5b-3a done, 5b-3b and 5c
+open).** How the service behaves as built is in the section "Service behaviour as built" below; the end-to-end system
+view (both sites, A and B, cross-compare, checkpoint) is RBC_GP's
+[Site redundancy and A/B agreement](https://github.com/bula173/RBC_GP/blob/master/docs/STANDBY_AND_SITE_LINK_ARCHITECTURE.dox). Plan for gap G1 of the root
 `docs/architecture/CAPELLA_ARCHITECTURE_BASELINE.dox`. Decisions 1 and 2 below were taken by the product owner on
 2026-10-02 (the model overrides A3; drive points stay in the application cycle). Step 1 moved the pure policy
 (`rte_site_role_policy`, REQ-SITEROLE-001..004). Step 2 moved the mechanism: `rte_site_role` owns the inter-site
@@ -17,7 +20,15 @@ attempts (`delay` callback - the OAL has no sleep service) and the console line 
 the sibling's site-state frame and keeps the fault reaction (safe-state reboot). Step 4a (2026-10-03): the token
 check and the challenge are in `rte_site_role` (REQ-SITEROLE-015, decision 4 below). Steps 4b-4e (2026-10-03) are
 done with no design change: RBC_GP wires the key and the token builder, RBC_Maintenance_Web is the interim issuer,
-RBC_Test_Env covers the takeover and its negative cases, and the documentation is updated. Step 5 open.
+RBC_Test_Env covers the takeover and its negative cases, and the documentation is updated. Step 5a (2026-10-06,
+RBC_GP only): A and B of a site agree their startup timestamp over the A/B peer link (`PEER_MSG_KIND_STARTUP_TS`);
+the shared `/tmp` file is gone. Step 5b-1 (2026-10-06): the sibling-state source seam (REQ-SITEROLE-016). Step 5b-2
+(2026-10-06, RBC_GP): GP stores the sibling's raw site-state frame and hands it to the service through the source;
+the service derives the sibling facts and runs the A/B check, GP only reacts to `rte_site_role_sibling_verdict()`.
+Step 5b-3a (2026-10-06): a channel starting next to a running A/B sibling resumes the sibling's role
+(REQ-SITEROLE-017); GP does not deliver the frame at start-up yet (5b-3b), so in RBC_GP the start-up still runs the
+timestamp tie-break. Step 5c (site and peer links on `rte_flow`, GP copies deleted, `rte_site_role_check_sibling()`
+removed from the API) is open.
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_context Context
 
@@ -28,7 +39,7 @@ it receives the role, supplies readiness and the state to replicate, and passes 
 exchanged independently by channels A and B and the role decision must agree in both (2oo2); two ONLINE sites are
 excluded.
 
-Today all of it is in RBC_GP (`AB/GP/com/`):
+On 2026-10-02 all of it was in RBC_GP (`AB/GP/com/`); the table is kept as the starting point of the move:
 
 | Piece | Where | Generic (to RTE) or application (stays) |
 |---|---|---|
@@ -51,9 +62,11 @@ no payload; GP is its only caller), `rte_dual_channel` (transport), `rte_state_t
 This reverses RBC_GP's decision of 2026-09-23 (review finding A3, "keep both"): under the model, the policy applied to
 the negotiator's verdict is platform mechanism, not application concern.
 
-\section platformrte_docs_architecture_ADR_040_site_role_service_decision Decision (proposed)
+\section platformrte_docs_architecture_ADR_040_site_role_service_decision Decision
 
-A new RTE module `redundancy/site_role/` owns the mechanism; GP becomes its client. Proposed API:
+A new RTE module `redundancy/site_role/` owns the mechanism; GP becomes its client. The API sketched on 2026-10-02 is
+below; the built API differs in names and shape (callbacks in `rte_site_role_config_t` instead of register calls) and
+is `include/rte/redundancy/site_role/rte_site_role.h`, summarised in "Service behaviour as built". Sketch:
 
 - `rte_site_role_init(cfg)` - site id, peer id, link (flow) name, `standby_mode`, timers.
 - `rte_site_role_register_state(registry)` - GP's `rte_state_transfer` codecs (sessions, db).
@@ -63,6 +76,110 @@ A new RTE module `redundancy/site_role/` owns the mechanism; GP becomes its clie
   `rte_site_role_sync(cycle)` (before the commit), `rte_site_role_notify_fault()`.
 - `rte_site_role_submit_takeover_confirm(bytes, len)` - RTE verifies (authentication, sequence, expiry).
 - `rte_site_role_get_role()`, `rte_site_role_get_status()` (the `site_wait` / `site_why` snapshot).
+
+\section platformrte_docs_architecture_ADR_040_site_role_service_built Service behaviour as built (2026-10-07)
+
+Source: `include/rte/redundancy/site_role/rte_site_role.h`, `rte_site_role_policy.h`, `src/redundancy/site_role/`. The
+rule list in `rte_site_role_decide()`'s header comment is authoritative. Tests: `tests/site_role/test_rte_site_role.c`,
+`tests/site_role/test_rte_site_role_policy.c`.
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_drive Drive points (option A: the application's cycle)
+
+| Call | When the application calls it | What it does |
+|---|---|---|
+| `rte_site_role_init()` | setup | validates and copies the configuration; opens nothing |
+| `rte_site_role_start()` | setup, after `init` | start-up role (below); blocking, bounded by `startup_timeout_ms` |
+| `rte_site_role_execute(cycle, local)` | once per cycle (RBC_GP: `pre_execute`) | one site-role step (below) |
+| `rte_site_role_service_link(cycle)` | fast tick (RBC_GP: every 10 ms of the tick wait, and inside the checkpoint poll) | drains up to 4 frames, so acknowledgements do not depend on the other site's cycle phase |
+| `rte_site_role_sync_standby(cycle, local)` | before the output commit | warm/hot: ONLINE sends this cycle's snapshot and tracks the acknowledgement |
+| `rte_site_role_on_takeover_token()` / `_on_takeover_confirm()` | when the dispatcher's confirmation arrives | token check (REQ-SITEROLE-015) / unauthenticated interim path |
+| `rte_site_role_note_lost_contact()` | the application stalled while ONLINE | sets the lost-contact history (rule 5) |
+| `rte_site_role_flush_faulted()` | right before a fault reboot | best-effort final frame with `faulted = 1` |
+| `rte_site_role_sibling_verdict()` | after `execute` | the A/B verdict of that cycle (REQ-SITEROLE-016) |
+| `rte_site_role_is_online()`, `_get_status()`, `_takeover_challenge()`, `_get_negotiator_states()` | any time | role, status snapshot (`site_wait` / `site_why` in RBC_GP), current challenge, negotiator diagnostic |
+
+The application supplies: the state codec (`encode_state`, `receive_state`), the change callback (`on_change`, with
+`apply_state` on a promotion), the local facts per call (`faulted`, `single_mode`, `own_ready`; the `sibling_*` fields
+only without a sibling source), the sibling source, the MAC verifier, and the `trace` / `delay` seams.
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_start Start-up (`rte_site_role_start()`)
+
+1. Startup timestamp: the configured one (RBC_GP: the value A and B agreed, step 5a) or `rte_timer_now()`. It never
+   changes afterwards and is resumed on every reconnect.
+2. REQ-SITEROLE-017: the sibling source is polled once. A known frame decides the role (sibling ONLINE -> ONLINE,
+   otherwise STANDBY, negotiator seeded with `resume_own_state`); no frame or no source -> step 4 decides.
+3. Link: the listen side opens once; the connect side retries every `connect_retry_ms` (each attempt
+   `connect_timeout_ms`) up to `startup_timeout_ms`. Then `rte_dual_channel` (resync on sequence error) and
+   `rte_dual_negotiator` are initialised.
+4. Tie-break (REQ-DUAL-NEGOTIATOR-003): `rte_dual_negotiator_execute(link_poll_ms)` rounds until this side leaves IDLE;
+   the older startup timestamp wins ONLINE, an exact tie goes to the smaller id. A resumed role is not IDLE, so one round
+   ends the loop.
+5. Not settled within `startup_timeout_ms`: link closed, `RTE_STATUS_TIMEOUT` (RBC_GP treats it as a fatal setup step).
+   Known open defect: zero timing values loop for ever and the real bound exceeds `startup_timeout_ms` (ISS-042).
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_execute One `rte_site_role_execute()`
+
+1. Take the local facts; poll the sibling source (a fresh frame is stamped with this cycle); refresh the takeover
+   challenge.
+2. Link down: one reconnect attempt bounded by `reconnect_attempt_ms` (REQ-SITEROLE-012), resuming the startup
+   timestamp and, when ONLINE, the ONLINE state. Failed: the decision and the A/B check still run (rule 4 needs no
+   link), then return.
+3. Negotiator beacon, non-blocking (diagnostic after start-up: the role is never taken from it again).
+4. Send the frame `faulted(1) | single_mode(1) | cycle(4, LE) | state | valid(1)` (live state, the cycle and
+   `valid = 0xA5` only while ONLINE); receive the counterpart's latest frame. "Valid and not faulted" = the counterpart
+   is ONLINE now; a valid frame is kept as the snapshot to adopt on promotion; any decoded frame clears
+   `peer_unresponsive` and a pending confirmation. The received length is not checked (ISS-038).
+5. Warm/hot: a snapshot silent for more than 3 cycles is dropped (`RTE_SITE_ROLE_STANDBY_DATA_TIMEOUT_CYCLES`).
+6. Decision: `rte_site_role_decide()`, one action applied (REQ-SITEROLE-011), every change reported through `on_change`.
+7. A/B check (with a source): `rte_site_role_check_sibling()` against the role just decided.
+8. Supervision (REQ-SITEROLE-013): `send_miss_threshold` consecutive unacknowledged sends, or a receive error other
+   than a timeout, close the link. ONLINE: lost-contact history set. STANDBY: `peer_unresponsive` set, `TAKEOVER`
+   warning, the channel stays STANDBY.
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_rules Decision rules (summary of `rte_site_role_decide()`)
+
+First match wins (REQ-SITEROLE-001). "Answering" = a counterpart frame within the last 2 cycles.
+
+| # | Condition | Action |
+|---|---|---|
+| 1 | own and counterpart FAULTED | RENEGOTIATE: WEST ONLINE, EAST STANDBY |
+| 2 | STANDBY, not FAULTED, counterpart FAULTED | PROMOTE |
+| 3 | own FAULTED, counterpart healthy, valid counterpart snapshot held | DEMOTE |
+| 4 | STANDBY, not FAULTED, counterpart unresponsive, dispatcher confirmation at most `RTE_SITE_ROLE_TAKEOVER_CONFIRM_VALID_CYCLES` (120) old | PROMOTE |
+| 5 | ONLINE, nobody FAULTED, counterpart ONLINE now and answering | DEMOTE if lost-contact history (yield), else ALARM (dual ONLINE, not resolved) |
+| 6 | STANDBY, link up, counterpart answering, responsive, not ONLINE, not FAULTED, for `RTE_SITE_ROLE_BOTH_STANDBY_CYCLES` (6) consecutive cycles on WEST, or 1 cycle when the A/B sibling is ONLINE | PROMOTE |
+| 7 | STANDBY, A/B sibling ONLINE, counterpart not FAULTED and not (ONLINE now and answering), for 2 consecutive cycles | PROMOTE (follow the sibling) |
+
+Readiness gate (REQ-SITEROLE-002): a PROMOTE becomes WAIT unless `own_ready` and the sibling is ONLINE, ready or not
+reachable. Silence alone never promotes (REQ-SITEROLE-003). A restarted cycle counter makes a confirmation expired and
+a snapshot stale (REQ-SITEROLE-004).
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_sibling A/B role agreement (REQ-SITEROLE-014/016)
+
+- With `sibling_source` set, the service polls it once per `execute` (and once in `start`). Sibling online / ready =
+  the last known frame; reachable = a frame within `sibling_reach_cycles` (0 = 3) cycles; a cycle number that went back
+  makes the frame unreachable. These replace the `sibling_*` local facts.
+- After the decision, `{online, single_mode}` of this channel is compared with the **last known** sibling frame
+  (reachability does not gate the check): no frame -> UNKNOWN; equal -> AGREE (count reset); different -> PENDING, at
+  `RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT` (3) consecutive -> FAULT, with the `NEGOTIATION_MISMATCH` ERROR event. The
+  application reads `rte_site_role_sibling_verdict()` and owns the reaction (RBC_GP: reboot).
+- Without a source the application supplies the sibling facts and calls `rte_site_role_check_sibling()` itself (the
+  step 3 path; RBC_GP no longer uses it).
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_token Takeover confirmation (REQ-SITEROLE-015)
+
+With `verify_mac` set: a 24-byte token (16-byte message `version | site id | channel id | 0 | challenge | issuer
+sequence | 0`, 8-byte MAC) is accepted only for this channel, with a MAC the verifier accepts and the current
+challenge. The challenge is drawn with `rte_random`, replaced after each accepted token and after
+`challenge_lifetime_cycles` (0 = 240); no challenge, no token. While ONLINE a token is ignored. The unauthenticated
+`rte_site_role_on_takeover_confirm()` is refused when a verifier is configured. An accepted confirmation is valid for
+120 cycles and only acts through rule 4.
+
+\subsection platformrte_docs_architecture_ADR_040_site_role_service_built_open Known open defects of the service
+
+ISS-036 (the negotiator and the dual channel ignore a failed `rte_timer_now()`; the watchdog part is fixed), ISS-038
+(received frame length not checked), ISS-042 (start-up bound), ISS-043 (dual channel acknowledges then overwrites a
+DATA frame; benign for the one-link site role). All in the root `ISSUES.dox`.
 
 \section platformrte_docs_architecture_ADR_040_site_role_service_steps Steps
 
@@ -90,6 +207,8 @@ Each step keeps behaviour identical and is verified by the existing unit tests, 
 2. **Decided 2026-10-02: option A** - the drive points stay in the application's cycle (today's behaviour), no RTE
    site-link thread.
 3. **Taken as proposed 2026-10-03 (step 3):** GP forwards the sibling state until step 5 puts the peer link in RTE.
+   Since step 5b (5b-1, 5b-2) the service polls a sibling source GP supplies and runs the check itself; GP still owns
+   the A/B peer link until step 5c.
 4. **Decided 2026-10-03:** trust model for the takeover confirmation. A symmetric MAC - the Subset-037 MAC of
    Platform_Protocol_SafeComm (`mac/`), already used on the train link - with one takeover key per site. RTE does
    not link a crypto library: the application passes a `verify_mac` callback. The token is a 16-byte message
@@ -109,7 +228,7 @@ Each step keeps behaviour identical and is verified by the existing unit tests, 
 - SIL 4 promotion logic: the table semantics (rules 1-7, WAIT) and the A/B agreement must stay in step, or every change
   risks a `NEGOTIATION_MISMATCH` reboot.
 - The negotiation runs inside the cycle, the 10 ms tick and the checkpoint loop; moving the drive points changes timing.
-- Wire layout and log / `/tmp` strings are used by the Robot suites and `smoke.sh`.
-- A and B share the startup timestamp through a `/tmp` file, which does not work across separate hosts; it must become
-  a peer-link exchange before the platform owns it.
+- Wire layout and log strings are used by the Robot suites and `smoke.sh`.
+- Resolved by step 5a (2026-10-06): A and B shared the startup timestamp through a `/tmp` file, which did not work across
+  separate hosts; it is now a `STARTUP_TS` exchange over the A/B peer link (RBC_GP).
 */

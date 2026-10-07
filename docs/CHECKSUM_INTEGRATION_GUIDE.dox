@@ -455,6 +455,12 @@
 ///
 ///**Solution:** Ensure `rte_checksum_crc64_init()` called at startup before any CRC operations.
 ///
+///Before the init, `rte_checksum_crc64_verify()`, `rte_checksum_vital_message_create()` and
+///`rte_checksum_vital_message_verify()` return `RTE_STATUS_NOT_INITIALIZED` and write no output and no statistics
+///(REQ-CHECKSUM-009, ISS-037 step 1). The raw `rte_checksum_crc64()` still returns 0 in that state (REQ-CHECKSUM-002),
+///so a caller that stores its result directly (today `rte_appmanager_checkpoint_mark()` and RBC_GP's `AB_SAMPLE`
+///encoder, root `ISSUES.dox` ISS-037 remaining steps) gets an unprotected value; prefer the status-returning API.
+///
 ///```c
 ///// In main():
 ///rte_checksum_crc64_init(RTE_CRC64_ERTMS);  // Must be before IPC!

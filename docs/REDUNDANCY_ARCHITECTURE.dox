@@ -34,7 +34,8 @@ The older text used "hot standby" for a standby that only replicates state. In t
 | Checkpoint rendezvous across channels | `rte_checkpoint` (`rte_channel_checkpoint()`) and the app manager's checkpoint stage | `redundancy/checkpoint/`, `app/appmanager/` |
 | Data integrity and the vital message envelope (sequence, sender, CRC-64) | `rte_checksum` | `redundancy/checksum/` |
 | Fault detection and recovery actions (log, safe state, reboot, failover, custom) | `rte_watchdog` | `redundancy/watchdog/` |
-| Site-level ONLINE/STANDBY negotiation over redundant links | `rte_dual_*` | `redundancy/dual/` |
+| Site role (ONLINE/STANDBY): inter-site link, start-up negotiation, per-cycle role rules, partner supervision, takeover token check, A/B role agreement, warm-standby sync | `rte_site_role`, `rte_site_role_policy` (ADR-040) | `redundancy/site_role/` |
+| Start-up tie-break and the acknowledged link under the site role | `rte_dual_negotiator`, `rte_dual_channel` | `redundancy/dual/` |
 | State carried across a promotion, declared by the application | `rte_state_transfer` | `redundancy/state_transfer/` |
 | Topology, replicas, quorum, `standby_mode`, capability check | `rte_redundancy_config` | `redundancy/config/` |
 | Transition to SAFE or REBOOT | `rte_safestate` | `utils/safestate/` |
@@ -42,7 +43,7 @@ The older text used "hot standby" for a standby that only replicates state. In t
 
 Design decisions: ADR-008 (common-cause mitigation), ADR-017 (checkpoint and clock sync), ADR-019 (app manager hooks and
 checkpoint), ADR-020 (dual transfer negotiation), ADR-025 (voter and cross-comparator split), ADR-034 (staged sends and
-checkpoint signature marks).
+checkpoint signature marks), ADR-040 (site role service).
 
 **Supported today.** 2oo2 per site, and 2oo2 with redundancy across two sites with cold or warm standby. `rte_voter` votes
 N inputs, but registering an N-way mesh of channels between replicas is not implemented, so a real 2oo3 deployment is not
@@ -55,11 +56,16 @@ at load time.
 1. The app manager runs the stages in order. `pre_execute` reads inputs and the peer sample, `execute` cross-compares the
    local and peer results, `post_execute` encodes and sends this cycle's outputs.
 2. Sends are staged, not committed. The last stage is the checkpoint rendezvous between the two channels; its result
-   commits or discards the staged sends (ADR-034), so no output leaves without both channels having reached the same point.
-3. On any disagreement the channel does not send; the Platform enters the safe state. In the reference RBC a genuine
-   decision disagreement escalates to REBOOT and a live ONLINE/STANDBY failover between sites.
+   commits or discards the staged sends (ADR-034). The rendezvous compares program-path signatures, not data, and in
+   the reference RBC a "lookback" rule lets it confirm on recent peer activity alone (section 4).
+3. The data agreement gate is the application's: the reference RBC stages its flat-scheme train, IL and CTC outputs
+   only on a cross-compare AGREE of the train-session table, and a DISAGREE makes the cross-comparator enter REBOOT,
+   which leads to a live ONLINE/STANDBY failover between sites. ERTMS replies are staged before that comparison and are
+   committed by the checkpoint alone (root `ISSUES.dox` ISS-048, open).
 
-See `application/RBC_GP/docs/REFERENCE_DESIGN.dox` and `docs/architecture/ADR-034-checkpoint-signature-marks.dox`.
+The reference RBC's cycle, stage by stage, with what is compared and what bypasses the gate:
+[RBC_GP: Site redundancy and A/B agreement](https://github.com/bula173/RBC_GP/blob/master/docs/STANDBY_AND_SITE_LINK_ARCHITECTURE.dox),
+sections 4 and 6. See also `docs/architecture/ADR-034-checkpoint-signature-marks.dox`.
 
 \section platformrte_docs_REDUNDANCY_ARCHITECTURE_3_concepts 3. Concepts
 
@@ -94,7 +100,7 @@ point. That is what the checkpoint provides.
 |---|---|---|
 | Match | Results equal | Continue; outputs are committed at the checkpoint |
 | Mismatch | Results differ although both are valid | Safe state; in the reference RBC a REBOOT with `own_faulted` flushed to the counterpart site |
-| Timeout | A peer sends nothing for the configured time | Reference RBC: an ONLINE channel drops to single mode and keeps deciding; a checkpoint timeout is treated as a fault; the checkpoint is paused while the link is known down |
+| Timeout | A peer sends nothing for the configured time | Reference RBC: a checkpoint timeout (SAFE, REQ-CHECKPOINT-003) is turned into a REBOOT by the application's SAFE handler, usually within about 3 cycles; an ONLINE channel that gets no cross-compare sample for 20 cycles while its checkpoint still confirms drops to single mode |
 | Corruption | CRC-64 mismatch on a peer sample | Safe state (halt); this is a transmission fault, not a logical disagreement |
 
 Common-cause failure limits all of this: identical CPUs and identical builds can fail together. Mitigation and its limits
@@ -115,20 +121,27 @@ Properties this gives: temporal consistency (same point in time), logical consis
 outputs, fail-safe behaviour at every stage, and an audit trail (checkpoint reached, timing, comparison result, commit).
 The checkpoint is correct without a shared wall clock (ADR-017); clock synchronization is diagnostic only. In the reference
 RBC the checkpoint budget is shorter than a cycle, so a "lookback" rule also accepts a peer that exchanged a checkpoint frame
-within the last few cycles, while a silent peer still trips the safe state (see `application/RBC_GP/CLAUDE.md`).
+within the last few cycles, while a silent peer still trips the safe state. On that path the rendezvous proves liveness
+only; the data comparison is the cross-comparator's (see RBC_GP's site redundancy page, section 6.6).
 
 \section platformrte_docs_REDUNDANCY_ARCHITECTURE_5_site_redundancy_online_and_standby 5. Site redundancy: online and standby
 
 | Model | Description | In Platform_RTE |
 |---|---|---|
 | **Online (active-active)** | All nodes process the same inputs and must agree | Within a site this is the 2oo2 pair. Across sites it would be an active-active design, which is not implemented |
-| **Standby** | One site is ONLINE and outputs; the other is ready to take over | Implemented as cold and warm. Roles are ONLINE, STANDBY and FAULTED, negotiated with `rte_dual_*` |
+| **Standby** | One site is ONLINE and outputs; the other is ready to take over | Implemented as cold and warm. Roles are ONLINE, STANDBY and FAULTED, negotiated by `rte_site_role` (ADR-040) over `rte_dual_*` |
 
 Behaviour of the reference implementation:
 
-- **Negotiation.** Each channel negotiates with its counterpart on the other site; the older start time wins the initial
-  ONLINE role. A FAULTED channel never promotes itself; a STANDBY channel whose counterpart is FAULTED promotes itself;
-  a FAULTED channel whose counterpart is ONLINE recovers to STANDBY; two FAULTED channels re-negotiate.
+- **Negotiation.** Each channel negotiates with its counterpart on the other site through its own `rte_site_role`
+  instance; at start-up the older startup timestamp wins ONLINE (smaller id on a tie), or a channel joining a running
+  A/B sibling takes the sibling's role (REQ-SITEROLE-017). Afterwards seven ordered rules decide each cycle: two
+  FAULTED sites re-negotiate (WEST ONLINE); a STANDBY channel whose counterpart is FAULTED promotes; a FAULTED channel
+  whose counterpart is ONLINE recovers to STANDBY; a silent counterpart never leads to a promotion without a
+  dispatcher confirmation (authenticated when a takeover key is configured); a dual ONLINE yields or raises an alarm; both STANDBY is a tie-break (WEST, or the channel
+  whose A/B sibling is ONLINE). Every promotion waits until the A/B pair is ready, and A and B of a site must agree on
+  the role (3 disagreeing cycles are a fault). Service view: ADR-040, "Service behaviour as built"; system view, end to
+  end: [RBC_GP: Site redundancy and A/B agreement](https://github.com/bula173/RBC_GP/blob/master/docs/STANDBY_AND_SITE_LINK_ARCHITECTURE.dox).
 - **Promotion.** The application declares the state that must survive (`rte_state_transfer`). The reference RBC transfers
   sessions and the route/train database unconditionally on promotion.
 - **Standby computes or not.** Both sites run their full A/B group. In the reference RBC the standby observes but does not

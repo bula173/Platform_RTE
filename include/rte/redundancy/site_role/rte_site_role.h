@@ -24,6 +24,18 @@
  *                   {online, single_mode} for RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT consecutive checks is a fault
  *                   (rte_site_role_check_sibling() returns RTE_SITE_ROLE_SIBLING_FAULT); one agreeing check resets
  *                   the count. The application reacts (safe-state reboot) until the fault reaction moves too.
+ * REQ-SITEROLE-016: with a sibling source configured (ADR-040 step 5b), the service polls it once per
+ *                   rte_site_role_execute(), derives the A/B sibling's online, ready and reachable facts itself
+ *                   (reachable = a site-state frame within sibling_reach_cycles, default
+ *                   RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES, cycles), runs the REQ-SITEROLE-014 check after the role
+ *                   decision of the same cycle and exposes the verdict through rte_site_role_sibling_verdict(). Without
+ *                   a source the application-supplied facts and rte_site_role_check_sibling() apply unchanged.
+ * REQ-SITEROLE-017: with a sibling source configured, rte_site_role_start() polls it once before the inter-site
+ *                   negotiation; a known sibling frame decides the start-up role - ONLINE when the sibling reports
+ *                   ONLINE, STANDBY otherwise - with the negotiator seeded to that state, so this channel does not
+ *                   evaluate the REQ-DUAL-NEGOTIATOR-003 tie-break. The frame's ready and single_mode take no part;
+ *                   without a frame, or without a source, the tie-break applies unchanged. The startup timestamp is
+ *                   never changed by this rule.
  * REQ-SITEROLE-013: the link is closed for reconnect after send_miss_threshold consecutive unacknowledged sends or on
  *                   any receive failure other than a timeout; a STANDBY channel then marks the counterpart
  *                   unresponsive and stays STANDBY (silence alone never promotes, REQ-SITEROLE-003).
@@ -138,6 +150,36 @@ typedef enum
     RTE_SITE_ROLE_TOKEN_STALE_CHALLENGE   /**< MAC fine, but not for the current challenge (old or replayed token) */
 } rte_site_role_token_result_t;
 
+/** Consecutive disagreeing A/B checks that make a fault (REQ-SITEROLE-014). */
+#define RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT 3U
+/** Sibling reachability window used when the configuration leaves sibling_reach_cycles 0 (REQ-SITEROLE-016): a
+ *  site-state frame within the last 3 cycles. */
+#define RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES 3U
+
+/** The A/B sibling's site state as this channel last received it (ADR-040: from the sibling source (step 5b) or
+ *  forwarded by the application (step 3)). */
+typedef struct
+{
+    bool known;       /**< a site-state frame has arrived this run */
+    bool online;      /**< the sibling reports ONLINE */
+    bool single_mode; /**< the sibling reports single-channel mode */
+    bool ready;       /**< the sibling confirms it is ready for ONLINE (third byte of the site-state frame) */
+} rte_site_role_sibling_t;
+
+/** Sibling site-state source (REQ-SITEROLE-016), polled once per rte_site_role_execute(): fills out (with known true)
+ *  and returns true when a site-state frame from the A/B sibling arrived since the previous call; returns false and
+ *  leaves out untouched otherwise. */
+typedef bool (*rte_site_role_sibling_source_fn)(void *user, rte_site_role_sibling_t *out);
+
+/** Result of rte_site_role_check_sibling() and of the per-cycle check with a sibling source. */
+typedef enum
+{
+    RTE_SITE_ROLE_SIBLING_UNKNOWN = 0, /**< no site-state frame from the sibling yet (normal at start-up) */
+    RTE_SITE_ROLE_SIBLING_AGREE,       /**< same role and mode */
+    RTE_SITE_ROLE_SIBLING_PENDING,     /**< disagreement below the limit (logged) */
+    RTE_SITE_ROLE_SIBLING_FAULT        /**< disagreement reached the limit: the pair must not continue */
+} rte_site_role_sibling_verdict_t;
+
 /** Configuration (copied by rte_site_role_init(); the strings and buffers must outlive the service). */
 typedef struct
 {
@@ -175,28 +217,12 @@ typedef struct
     rte_site_role_verify_mac_fn    verify_mac;
     uint8_t                        channel_id;                /**< bound into the token: 0 = A, 1 = B */
     uint32_t                       challenge_lifetime_cycles; /**< 0 = RTE_SITE_ROLE_CHALLENGE_LIFETIME_DEFAULT_CYCLES */
+    /* Sibling site state (REQ-SITEROLE-016). sibling_source NULL = the application supplies the sibling facts in
+     * rte_site_role_local_t and calls rte_site_role_check_sibling() itself (step 3). Also polled once by
+     * rte_site_role_start() before the inter-site negotiation (REQ-SITEROLE-017). */
+    rte_site_role_sibling_source_fn sibling_source;
+    uint32_t                        sibling_reach_cycles; /**< 0 = RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES */
 } rte_site_role_config_t;
-
-/** Consecutive disagreeing A/B checks that make a fault (REQ-SITEROLE-014). */
-#define RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT 3U
-
-/** The A/B sibling's site state as this channel last received it (ADR-040 step 3: forwarded by the application until
- *  the platform owns the peer link). */
-typedef struct
-{
-    bool known;       /**< a site-state frame has arrived this run */
-    bool online;      /**< the sibling reports ONLINE */
-    bool single_mode; /**< the sibling reports single-channel mode */
-} rte_site_role_sibling_t;
-
-/** Result of rte_site_role_check_sibling(). */
-typedef enum
-{
-    RTE_SITE_ROLE_SIBLING_UNKNOWN = 0, /**< no site-state frame from the sibling yet (normal at start-up) */
-    RTE_SITE_ROLE_SIBLING_AGREE,       /**< same role and mode */
-    RTE_SITE_ROLE_SIBLING_PENDING,     /**< disagreement below the limit (logged) */
-    RTE_SITE_ROLE_SIBLING_FAULT        /**< disagreement reached the limit: the pair must not continue */
-} rte_site_role_sibling_verdict_t;
 
 /** Status snapshot for monitors (the application's status frame). */
 typedef struct
@@ -247,6 +273,9 @@ typedef struct
     uint32_t               challenge;
     uint32_t               challenge_cycle;
     bool                   challenge_fail_reported;
+    rte_site_role_sibling_t         sibling;          /**< last frame from the sibling source (REQ-SITEROLE-016) */
+    uint32_t                        sibling_rx_cycle; /**< cycle of that frame */
+    rte_site_role_sibling_verdict_t sibling_verdict;  /**< verdict of the last per-cycle check with a source */
 } rte_site_role_t;
 
 /**
@@ -259,6 +288,14 @@ rte_status_t rte_site_role_init(rte_site_role_t *rs, const rte_site_role_config_
 /**
  * @brief Opens the link (blocking, bounded by startup_timeout_ms) and runs the startup negotiation until it settles
  *        (older startup timestamp wins). Setup phase only.
+ *
+ * Start-up role from the A/B sibling (REQ-SITEROLE-017): with a sibling source configured, the source is polled once
+ * before the link is opened. A known sibling frame decides the role: sibling ONLINE -> this channel starts ONLINE,
+ * sibling STANDBY (ready or not) -> STANDBY; the negotiator is seeded to that state and does not evaluate the timestamp
+ * tie-break. The frame's ready (REQ-SITEROLE-002 gates promotions, not the start-up role) and single_mode
+ * (REQ-SITEROLE-014, checked from the first rte_site_role_execute()) are not consulted. No frame yet, or no source:
+ * the REQ-DUAL-NEGOTIATOR-003 tie-break as before. The startup timestamp is unchanged in every case.
+ * @param rs Service state, initialized by rte_site_role_init(). NULL returns RTE_STATUS_INVALID_PARAM.
  * @return RTE_STATUS_OK with the startup role known (rte_site_role_is_online()); the link failure status, or
  *         RTE_STATUS_TIMEOUT if the negotiation did not settle (the link is closed again).
  */
@@ -310,6 +347,14 @@ void rte_site_role_flush_faulted(rte_site_role_t *rs, bool single_mode);
  */
 rte_site_role_sibling_verdict_t rte_site_role_check_sibling(rte_site_role_t *rs, uint32_t cycle, bool own_single_mode,
                                                             const rte_site_role_sibling_t *sibling);
+
+/**
+ * @brief The A/B agreement verdict of the check run by the last rte_site_role_execute() (REQ-SITEROLE-016).
+ * @param rs  the service; may be NULL
+ * @return the verdict; RTE_SITE_ROLE_SIBLING_UNKNOWN with no sibling source configured, before the first execute or
+ *         for a NULL rs.
+ */
+rte_site_role_sibling_verdict_t rte_site_role_sibling_verdict(const rte_site_role_t *rs);
 
 /** @brief Closes the link. Idempotent. */
 void rte_site_role_shutdown(rte_site_role_t *rs);

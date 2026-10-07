@@ -4,7 +4,8 @@
  * still arrive, which is what the role logic works on (the link teardown threshold is set high where that matters).
  * Covered: frame layout, startup role STANDBY without negotiation, both-STANDBY tie-break (WEST wins), snapshot
  * receipt and adoption on a counterpart's FAULTED notice, silence never promotes, dispatcher-confirmed takeover,
- * FAULTED flush. */
+ * FAULTED flush, A/B agreement, takeover token, sibling source (REQ-SITEROLE-016), start-up role from the A/B sibling
+ * (REQ-SITEROLE-017). */
 #include <assert.h>
 #include <string.h>
 
@@ -36,7 +37,8 @@ typedef struct
     mock_queue_t *inbox;
     mock_queue_t *outbox;
     int           open;
-    int           blocked; /* simulate a silent counterpart: sends are dropped */
+    int           blocked;   /* simulate a silent counterpart: sends are dropped */
+    int           open_fail; /* simulate an unreachable counterpart: opens fail */
 } mock_link_t;
 
 static mock_queue_t g_west_to_east;
@@ -50,6 +52,10 @@ static rte_status_t mock_open(rte_netlink_storage_t *storage, const rte_netlink_
     mock_link_t *link = (config->port == PORT_WEST) ? &g_west_link : &g_east_link;
 
     (void)storage;
+    if (link->open_fail != 0)
+    {
+        return RTE_STATUS_TIMEOUT;
+    }
     link->open = 1;
     *out_handle = (rte_netlink_handle_t)(void *)link;
     return RTE_STATUS_OK;
@@ -537,6 +543,254 @@ static void test_takeover_challenge_lifetime(void)
     assert(rte_site_role_takeover_challenge(&g_east, &b));
 }
 
+/* ---- sibling source (REQ-SITEROLE-016) --------------------------------------------------------------------------- */
+
+static rte_site_role_sibling_t g_source_frame; /* what the next fresh poll hands over */
+static int                     g_source_fresh; /* 1: the next poll reports a new frame (and clears this) */
+static int                     g_source_calls;
+
+static bool mock_sibling_source(void *user, rte_site_role_sibling_t *out)
+{
+    (void)user;
+    g_source_calls++;
+    if (g_source_fresh == 0)
+    {
+        return false;
+    }
+    g_source_fresh = 0;
+    *out = g_source_frame;
+    out->known = true;
+    return true;
+}
+
+static void source_reset(void)
+{
+    (void)memset(&g_source_frame, 0, sizeof(g_source_frame));
+    g_source_fresh = 0;
+    g_source_calls = 0;
+}
+
+static void source_offer(bool online, bool ready)
+{
+    g_source_frame.online = online;
+    g_source_frame.single_mode = false;
+    g_source_frame.ready = ready;
+    g_source_fresh = 1;
+}
+
+/* WEST opens its link (one STANDBY frame to EAST) and then flushes FAULTED: EAST's inbox holds both frames. */
+static void west_announces_then_faults(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+
+    setup(&g_west, &g_west_app, true, 200U);
+    rte_site_role_execute(&g_west, 1U, &local);
+    rte_site_role_flush_faulted(&g_west, false);
+}
+
+/* With a sibling source configured the service polls it once per execute, caches the frame, derives the sibling
+ * facts for the decision and runs the agreement check after the decision of the same cycle. */
+static void test_sibling_source(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+    uint32_t cycle;
+
+    /* (1) Source configured, never fresh: no verdict, exactly one poll per execute (both execute exits). */
+    reset_links();
+    source_reset();
+    setup(&g_east, &g_east_app, false, 1U); /* threshold 1: the unacknowledged send closes the link every cycle */
+    g_east.cfg.sibling_source = mock_sibling_source;
+    assert(g_east.cfg.sibling_reach_cycles == (uint32_t)RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES);
+    assert(rte_site_role_sibling_verdict(&g_east) == RTE_SITE_ROLE_SIBLING_UNKNOWN);
+    assert(rte_site_role_sibling_verdict(NULL) == RTE_SITE_ROLE_SIBLING_UNKNOWN);
+    for (cycle = 1U; cycle <= 5U; cycle++)
+    {
+        rte_site_role_execute(&g_east, cycle, &local);
+        assert(g_source_calls == (int)cycle);
+        assert(rte_site_role_sibling_verdict(&g_east) == RTE_SITE_ROLE_SIBLING_UNKNOWN);
+    }
+    g_east_link.open_fail = 1; /* the reconnect-failed early return polls and checks too */
+    source_offer(false, true);
+    rte_site_role_execute(&g_east, 6U, &local);
+    assert(g_source_calls == 6);
+    assert(g_east.link == NULL);
+    assert(rte_site_role_sibling_verdict(&g_east) == RTE_SITE_ROLE_SIBLING_AGREE);
+
+    /* (2) A fresh frame agreeing with the own role: AGREE; the cached frame keeps agreeing while the source is
+     * silent (known never resets). */
+    reset_links();
+    source_reset();
+    setup(&g_east, &g_east_app, false, 200U);
+    g_east.cfg.sibling_source = mock_sibling_source;
+    source_offer(false, true);
+    rte_site_role_execute(&g_east, 1U, &local);
+    assert(rte_site_role_sibling_verdict(&g_east) == RTE_SITE_ROLE_SIBLING_AGREE);
+    for (cycle = 2U; cycle <= 6U; cycle++)
+    {
+        rte_site_role_execute(&g_east, cycle, &local);
+        assert(rte_site_role_sibling_verdict(&g_east) == RTE_SITE_ROLE_SIBLING_AGREE);
+    }
+    assert(g_source_calls == 6);
+    assert(!rte_site_role_is_online(&g_east));
+    assert(g_east_app.changes == 0);
+
+    /* (4) Derived sibling_online: the source reports the sibling ONLINE, so the both-STANDBY tie-break joins it on
+     * the first execute (compare test_both_standby_tiebreak_promotes_west(): WEST alone waits 6 cycles). The check
+     * runs after the decision: the frame agrees with the role just taken. */
+    reset_links();
+    source_reset();
+    setup(&g_west, &g_west_app, true, 200U);
+    g_west.cfg.sibling_source = mock_sibling_source;
+    source_offer(true, true);
+    rte_site_role_execute(&g_west, 1U, &local);
+    assert(rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 1);
+    assert(g_west_app.last_change.kind == RTE_SITE_ROLE_CHANGE_PROMOTED);
+    assert(g_west_app.last_change.reason == RTE_SITE_ROLE_REASON_BOTH_STANDBY_SIBLING);
+    assert(rte_site_role_sibling_verdict(&g_west) == RTE_SITE_ROLE_SIBLING_AGREE);
+
+    /* (3) A frame contradicting the own role (the sibling claims STANDBY while this channel is ONLINE): PENDING,
+     * PENDING, FAULT on the third execute; an agreeing frame resets to AGREE (REQ-SITEROLE-014 through the source). */
+    source_offer(false, true);
+    rte_site_role_execute(&g_west, 2U, &local);
+    assert(rte_site_role_sibling_verdict(&g_west) == RTE_SITE_ROLE_SIBLING_PENDING);
+    rte_site_role_execute(&g_west, 3U, &local);
+    assert(rte_site_role_sibling_verdict(&g_west) == RTE_SITE_ROLE_SIBLING_PENDING);
+    rte_site_role_execute(&g_west, 4U, &local);
+    assert(rte_site_role_sibling_verdict(&g_west) == RTE_SITE_ROLE_SIBLING_FAULT);
+    source_offer(true, true);
+    rte_site_role_execute(&g_west, 5U, &local);
+    assert(rte_site_role_sibling_verdict(&g_west) == RTE_SITE_ROLE_SIBLING_AGREE);
+    assert(rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 1);
+
+    /* (5) Derived reachability: counterpart FAULTED, own ready, the sibling's frame says STANDBY and not ready.
+     * The promotion is WAIT while the frame is at most 3 cycles old and goes through once the source has been
+     * silent for 4 cycles (REQ-SITEROLE-002: an unreachable sibling does not hold the promotion). */
+    reset_links();
+    source_reset();
+    west_announces_then_faults();
+    setup(&g_east, &g_east_app, false, 200U);
+    g_east.cfg.sibling_source = mock_sibling_source;
+    source_offer(false, false);
+    rte_site_role_execute(&g_east, 1U, &local); /* WEST's STANDBY frame; sibling frame stamped at cycle 1 */
+    assert(g_east_app.changes == 0);
+    for (cycle = 2U; cycle <= 4U; cycle++)
+    {
+        rte_site_role_execute(&g_east, cycle, &local); /* cycle 2: WEST's FAULTED frame -> promotion due */
+        assert(!rte_site_role_is_online(&g_east));
+        assert(g_east_app.changes == 0);
+    }
+    rte_site_role_execute(&g_east, 5U, &local); /* frame 4 cycles old: the sibling is out of reach */
+    assert(rte_site_role_is_online(&g_east));
+    assert(g_east_app.changes == 1);
+    assert(g_east_app.last_change.reason == RTE_SITE_ROLE_REASON_PEER_FAULTED);
+    assert(g_source_calls == 5);
+
+    /* (5b) A cycle number that went back (state transfer renumbering) makes the cached frame stale at once rather
+     * than wrapping the unsigned difference into a small age. */
+    reset_links();
+    source_reset();
+    west_announces_then_faults();
+    setup(&g_east, &g_east_app, false, 200U);
+    g_east.cfg.sibling_source = mock_sibling_source;
+    source_offer(false, false);
+    rte_site_role_execute(&g_east, 0xFFFFFFFEU, &local); /* frame stamped at 0xFFFFFFFE */
+    rte_site_role_execute(&g_east, 0xFFFFFFFFU, &local); /* WEST's FAULTED frame: promotion due, sibling reachable */
+    assert(!rte_site_role_is_online(&g_east));
+    rte_site_role_execute(&g_east, 1U, &local); /* renumbered: 1 - 0xFFFFFFFE would wrap to 3 */
+    assert(rte_site_role_is_online(&g_east));
+    assert(g_east_app.last_change.reason == RTE_SITE_ROLE_REASON_PEER_FAULTED);
+}
+
+/* ---- start-up role from the A/B sibling (REQ-SITEROLE-017) ------------------------------------------------------ */
+
+/* The first tests of rte_site_role_start(): the mock netlink opens at once for both roles, cfg.delay is NULL, and
+ * startup_timeout_ms 100 / link_poll_ms 10 bound a lone start to 10 negotiator polls. */
+static void setup_with_source(rte_site_role_t *rs, app_t *app, bool west)
+{
+    setup(rs, app, west, 200U);
+    rs->cfg.sibling_source = mock_sibling_source;
+}
+
+/* (1) The sibling reports ONLINE: WEST starts ONLINE without a counterpart (no tie-break, no change callback); EAST,
+ * started later without a source, finds WEST's older beacon and takes STANDBY; the roles hold over 5 cycles. */
+static void test_startup_resumes_online_sibling(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+    uint32_t cycle;
+
+    reset_links();
+    source_reset();
+    setup_with_source(&g_west, &g_west_app, true);
+    setup(&g_east, &g_east_app, false, 200U);
+    source_offer(true, true);
+    assert(rte_site_role_start(&g_west) == RTE_STATUS_OK);
+    assert(rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 0); /* a start-up role is not a change callback */
+    assert(g_source_calls == 1);
+
+    assert(rte_site_role_start(&g_east) == RTE_STATUS_OK);
+    assert(!rte_site_role_is_online(&g_east));
+
+    for (cycle = 1U; cycle <= 5U; cycle++)
+    {
+        rte_site_role_execute(&g_west, cycle, &local);
+        rte_site_role_execute(&g_east, cycle, &local);
+    }
+    assert(rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 0);
+    assert(!rte_site_role_is_online(&g_east));
+    assert(g_east_app.changes == 0);
+}
+
+/* (2) The sibling is known but STANDBY and not ready: WEST starts STANDBY (ready is not consulted); EAST, started
+ * later without a source, is STANDBY too (newer timestamp). The start-up STANDBY does not block the site's normal
+ * tie-break: once the silent source's frame is older than 3 cycles WEST promotes (REQ-SITEROLE-002). */
+static void test_startup_resumes_standby_sibling(void)
+{
+    const rte_site_role_local_t local = ready_single_channel(false);
+    uint32_t cycle;
+
+    reset_links();
+    source_reset();
+    setup_with_source(&g_west, &g_west_app, true);
+    setup(&g_east, &g_east_app, false, 200U);
+    source_offer(false, false);
+    assert(rte_site_role_start(&g_west) == RTE_STATUS_OK);
+    assert(!rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 0);
+    assert(g_source_calls == 1);
+
+    assert(rte_site_role_start(&g_east) == RTE_STATUS_OK);
+    assert(!rte_site_role_is_online(&g_east));
+
+    for (cycle = 1U; cycle <= 10U; cycle++)
+    {
+        rte_site_role_execute(&g_west, cycle, &local);
+        rte_site_role_execute(&g_east, cycle, &local);
+    }
+    assert(rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 1);
+    assert(g_west_app.last_change.kind == RTE_SITE_ROLE_CHANGE_PROMOTED);
+    assert(g_west_app.last_change.reason == RTE_SITE_ROLE_REASON_BOTH_STANDBY_WEST);
+    assert(!rte_site_role_is_online(&g_east));
+    assert(g_east_app.changes == 0);
+}
+
+/* (3) A source with no frame at start-up: the timestamp tie-break runs as before and, with no counterpart, does not
+ * settle (RTE_STATUS_TIMEOUT); the source is polled exactly once. */
+static void test_startup_without_sibling_frame_negotiates(void)
+{
+    reset_links();
+    source_reset();
+    setup_with_source(&g_west, &g_west_app, true);
+    assert(rte_site_role_start(&g_west) == RTE_STATUS_TIMEOUT);
+    assert(!rte_site_role_is_online(&g_west));
+    assert(g_west_app.changes == 0);
+    assert(g_source_calls == 1);
+}
+
 int main(void)
 {
     assert(rte_checksum_crc64_init(RTE_CRC64_ERTMS) == RTE_STATUS_OK);
@@ -551,5 +805,9 @@ int main(void)
     test_sibling_agreement();
     test_takeover_token();
     test_takeover_challenge_lifetime();
+    test_sibling_source();
+    test_startup_resumes_online_sibling();
+    test_startup_resumes_standby_sibling();
+    test_startup_without_sibling_frame_negotiates();
     return 0;
 }

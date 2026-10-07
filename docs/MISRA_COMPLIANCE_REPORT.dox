@@ -1564,3 +1564,50 @@
 ///  `rte_voter.h` 2.5) are the existing ones; `rte_status.h` none. No new mandatory or required finding. `ctest`
 ///  (`test_rte_status` extended: the new code maps to `"NOT_CONNECTED"`, equals 13, and no two codes share a value or
 ///  a string).
+///- **Update (2026-10-06): sibling site-state source seam** (ADR-040 step 5b-1, REQ-SITEROLE-016) -
+///  `rte_site_role_config_t` gains `sibling_source` (a callback the service polls once per `rte_site_role_execute()`;
+///  no allocation, the frame is cached in the caller-owned `rte_site_role_t`) and `sibling_reach_cycles` (0 resolves to
+///  `RTE_SITE_ROLE_SIBLING_REACH_DEFAULT_CYCLES`, 3); `rte_site_role_sibling_t` gains `ready`; new getter
+///  `rte_site_role_sibling_verdict()`. With a source the service derives the sibling's online/ready/reachable facts
+///  itself (reachable = `cycle >= rx_cycle && cycle - rx_cycle <= reach_cycles`; the `cycle >= rx_cycle` guard keeps a
+///  renumbered cycle from wrapping the unsigned age into a small one, as `rte_site_role_get_status()` already does for
+///  the counterpart) and runs `rte_site_role_check_sibling()` after the role decision on both exits of
+///  `rte_site_role_execute()` (same log lines, same `NEGOTIATION_MISMATCH` event, same 3-strike count); with no source
+///  nothing changes (the application's local facts and its own check, step 3). The new static helpers have a single
+///  exit; the early returns of `rte_site_role_execute()` are the existing ones (rule 15.5 bucket). `cppcheck 2.21.0
+///  --addon=misra --std=c99 --enable=warning,style,performance,portability --template='{file}:{line}:{column}:{id}'`
+///  with the flags of `compile_commands.json`, baseline = `git archive f1d50a7` into a scratch directory, counted per
+///  file and rule: `rte_site_role.c` identical before and after (15.5 x28, 21.6 x35, 8.7 x15, 10.8, 11.5,
+///  `variableScope` x7, `constParameterCallback`; included-header findings unchanged); `test_rte_site_role.c` 15.5
+///  6 -> 8 (the mock's `open_fail` early return and the mock source's "not fresh" early return; test code), everything
+///  else identical. No new mandatory or required finding. `ctest` 43/43 (`test_rte_site_role` extended:
+///  `test_sibling_source()` - one poll per execute on both exits, cached frame keeps AGREE, PENDING/PENDING/FAULT and
+///  reset through the source, the ONLINE sibling joins the tie-break at once, promotion WAITs while the frame is at
+///  most 3 cycles old and goes through after 4 silent cycles, a renumbered cycle makes the frame stale). Nine
+///  out-of-tree mutants of `rte_site_role.c` (reach `<` for `<=`, reach `+ 1`, guard removed, check before the
+///  decision, check missing on the reconnect-failed exit, double poll, `known` reset on a silent poll, derived
+///  `sibling_online`/`sibling_ready` constant) each fail the test.
+///- **Update (2026-10-06): start-up role from the A/B sibling** (ADR-040 step 5b-3a, REQ-SITEROLE-017) -
+///  `rte_site_role_start()` polls the sibling source once (cycle 0) after the timestamp capture and before the link is
+///  opened; one new static, `startup_role_from_sibling()`, takes a known frame's role (ONLINE when the sibling is
+///  ONLINE, STANDBY otherwise; `ready` and `single_mode` not read) and writes one trace line and, with a frame, one INFO
+///  `NEGOTIATION` event; `init_channel_and_negotiator()` gains one `bool resume_standby` parameter that seeds the
+///  negotiator `RTE_DUAL_STATE_HOTSTANDBY` (`reconnect()` passes false; the `if`/`else if` chain ends in a commented
+///  `else`, rule 15.7). No allocation, no new public type or function, the startup timestamp is untouched; without a
+///  source, or with no frame, the negotiator is seeded exactly as before. The new static has a single exit; the early
+///  returns of `rte_site_role_start()` are the existing ones (rule 15.5 bucket). `cppcheck 2.22.0 --addon=misra
+///  --std=c99 --enable=warning,style,performance,portability --template='{file}:{line}:{column}:{id}'` with the flags
+///  of `compile_commands.json` (`-I include -I build/generated_include`), baseline = `git archive 1b0374c` into a
+///  scratch directory, counted per source line and rule: `rte_site_role.c` alone 21.6 35 -> 37 (the two new `snprintf`
+///  trace lines; the file's accepted `snprintf` diagnostics, see the 2026-10-02 entry), every other rule identical
+///  (15.5 x28, 8.7 x15, 10.8, 11.5, `variableScope` x7, `constParameterCallback`); `test_rte_site_role.c` (run together
+///  with the source) identical (15.5 x8, 11.5 x7, 8.9 x6, 21.14, 21.16, `constVariablePointer`), and in that joint run
+///  the 8.7 on `rte_site_role_start()` goes (the test now calls it); included-header findings unchanged. No
+///  new mandatory finding and no new required finding outside the 21.6 diagnostic bucket. `ctest` 43/43
+///  (`test_rte_site_role` extended by three: a sibling reporting ONLINE starts the channel ONLINE without a counterpart
+///  and without a change callback, the later counterpart takes STANDBY; a known, not-ready STANDBY sibling starts it
+///  STANDBY and the both-STANDBY tie-break still promotes WEST once the frame is older than 3 cycles; a source with no
+///  frame leaves the tie-break, which does not settle alone; one poll per start). Out-of-tree mutants of
+///  `rte_site_role.c` - start ignores the sibling, STANDBY seeded as IDLE, ONLINE seeded as HOTSTANDBY, `ready`
+///  consulted, double poll - each fail the test; moving the poll after the link open survives (not observable with the
+///  mock link, which opens at once).

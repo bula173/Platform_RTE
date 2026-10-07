@@ -12,8 +12,9 @@ other. It owns:
 
 - **Execution:** the cyclic application manager (init, execute, shutdown, optional pre/post hooks and a
   built-in checkpoint stage) and the setup-phase lock.
-- **Redundancy:** N-way voting, 2-way cross-comparison, checkpoint rendezvous, dual-instance
-  ONLINE/STANDBY negotiation, state transfer on promotion, redundancy configuration.
+- **Redundancy:** N-way voting, 2-way cross-comparison, checkpoint rendezvous, the site-role service (ONLINE/STANDBY
+  negotiation between two sites, partner supervision, takeover token check, A/B role agreement, warm-standby sync;
+  ADR-040) over the dual-instance negotiator, state transfer on promotion, redundancy configuration.
 - **Safe state:** the single place where a transition to SAFE or REBOOT happens. Applications only
   register a cleanup handler.
 - **Communication seam:** named channels and Flows over pluggable OSAdapters, checksums and the
@@ -33,7 +34,7 @@ It does **not** implement any operating-system OSAdapter (Platform_OS_POSIX), an
 | **PI-API** (`rte_flow_*`) | `include/rte/oal/flow/` | RBC_GP, RBC_GA | Name-addressed publish/subscribe endpoint shaped after OCORA's `flows.h`; the intended public API of the platform |
 | **Application manager** | `include/rte/app/appmanager/` | RBC_GP, RBC_GA | Lifecycle, stages, cycle hooks, checkpoint result hook |
 | **Safe state** | `include/rte/utils/safestate/` | all | `RTE_ASSERT`, `RTE_SAFESTATE`, `RTE_REBOOT`, cleanup handler registration |
-| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.dox` |
+| **Redundancy services** | `include/rte/redundancy/{voter,cross_comparator,checkpoint,channel_link,dual,site_role,safechannel,checksum,watchdog}/` | RBC_GP | Used directly today; narrowing to the PI-API is tracked in the root `TODO.dox` |
 | **Channel service** | `include/rte/redundancy/channel_service/` | RBC_GP, gateways | Named channel setup, read, send, close; includes the Flow-backed variant |
 | **Redundancy configuration** | `include/rte/redundancy/config/` | integrator | Loads a JSON file (topology, replicas, quorum, `standby_mode`, roles, channel definitions) and calls the application's registered capability callback |
 | **State registration** | `include/rte/redundancy/state_transfer/` | integrator | Application lists the fields that must survive a promotion |
@@ -78,5 +79,7 @@ examples/                           standalone example programs
 ## Where to read next
 
 - Module status and feature notes: [docs/MODULES.dox](docs/MODULES.dox)
+- Site role service (ONLINE/STANDBY), as built: [docs/architecture/ADR-040-site-role-service.dox](docs/architecture/ADR-040-site-role-service.dox);
+  redundancy concepts: [docs/REDUNDANCY_ARCHITECTURE.dox](docs/REDUNDANCY_ARCHITECTURE.dox)
 - Architecture: [docs/architecture/SYSTEM_OVERVIEW.dox](docs/architecture/SYSTEM_OVERVIEW.dox) and the ADRs
 - Workspace context: [../../docs/architecture/OVERVIEW.dox](../../docs/architecture/OVERVIEW.dox)

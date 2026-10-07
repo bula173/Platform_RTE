@@ -641,7 +641,7 @@ require.
 |---|---|
 | REQ-DUAL-NEGOTIATOR-001 | No dynamic allocation; caller supplies storage and an already-initialized `rte_dual_channel_t`. |
 | REQ-DUAL-NEGOTIATOR-002 | `rte_dual_negotiator_execute()` shall never call `rte_safestate_enter()` itself — deciding what a sustained `RTE_DUAL_STATE_UNKNOWN` means for safety stays an application policy decision (ADR-020 §4's "no automatic safety reaction" non-goal). |
-| REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (same rule `RBC_GP`'s `site.c` `decide_online()` uses today). |
+| REQ-DUAL-NEGOTIATOR-003 | The initial ONLINE-vs-STANDBY decision shall use an older-startup-timestamp-wins rule, with each side's configured `own_id`/`peer_id` as a deterministic fallback only on an exact timestamp tie (the rule of the former `RBC_GP` `site.c` `decide_online()`; consumer today: `rte_site_role_start()`, ADR-040). |
 | REQ-DUAL-NEGOTIATOR-004 | The HOT/COLD determination for whichever side is currently STANDBY shall always be derived from the ONLINE side's own channel-degradation bit — never from the STANDBY side's own self-reported degradation, and never from the ONLINE side's opinion of its own label. This applies symmetrically regardless of which side (own or peer) is the one currently ONLINE. |
 | REQ-DUAL-NEGOTIATOR-005 | Loss of peer contact for longer than `config->peer_lost_timeout_ms` shall set `peer_state` to `RTE_DUAL_STATE_UNKNOWN`; `own_state` shall degrade to `RTE_DUAL_STATE_UNKNOWN` too unless it was already `RTE_DUAL_STATE_ONLINE`, in which case it shall remain `RTE_DUAL_STATE_ONLINE` (an active instance keeps acting without needing continuous peer confirmation). |
 
@@ -662,6 +662,8 @@ ADR-040 step 1. No I/O and no state of its own.
 | REQ-SITEROLE-013 | The link shall be closed for reconnect after `send_miss_threshold` consecutive unacknowledged sends or on any receive failure other than a timeout; a STANDBY channel then marks the counterpart unresponsive and stays STANDBY. |
 | REQ-SITEROLE-014 | The role of a channel and of its A/B sibling shall agree in {online, single_mode}; `RTE_SITE_ROLE_SIBLING_MISMATCH_LIMIT` (3) consecutive disagreeing checks shall be reported as a fault (`RTE_SITE_ROLE_SIBLING_FAULT`, `NEGOTIATION_MISMATCH` event); one agreeing check resets the count; no sibling state yet is no verdict. |
 | REQ-SITEROLE-015 | With a MAC verifier configured, a dispatcher takeover confirmation shall be accepted only as a token whose version, site id and channel id match the channel, whose challenge equals the channel's current challenge and whose MAC the verifier accepts. The challenge shall be drawn from `rte_random`, replaced after every accepted token and after `challenge_lifetime_cycles`; while no challenge is held no token shall be accepted. The unauthenticated confirmation shall then be refused. Every rejection shall be logged. |
+| REQ-SITEROLE-016 | With a sibling source configured, `rte_site_role` shall poll it once per `rte_site_role_execute()`, derive the A/B sibling's online, ready and reachable facts itself (reachable = a frame within `sibling_reach_cycles`, default 3, cycles), run the REQ-SITEROLE-014 check after the role decision of the same cycle and expose the verdict through `rte_site_role_sibling_verdict()`; without a source the application-supplied facts and `rte_site_role_check_sibling()` apply unchanged. |
+| REQ-SITEROLE-017 | With a sibling source configured, `rte_site_role_start()` shall poll it once before the inter-site negotiation; when a sibling frame is known the channel shall start in the sibling's role - ONLINE if the sibling reports ONLINE, STANDBY otherwise - with the negotiator seeded to that state (`resume_own_state`), so this channel does not evaluate the REQ-DUAL-NEGOTIATOR-003 tie-break; the frame's `ready` and `single_mode` shall not take part (REQ-SITEROLE-002 gates promotions, REQ-SITEROLE-014 checks `single_mode` from the first execute); without a frame, or without a source, the tie-break applies unchanged and the startup timestamp is never changed by this rule. |
 
 ## 3f. Unified channel factory — `rte_safechannel.h` (ADR-022)
 
@@ -802,6 +804,16 @@ three `REQ-OAL-BACKEND-*` IDs); the 14 row-without-tag IDs are unchanged.
 **2026-10-06 (ISS-037 step 1):** `REQ-CHECKSUM-009` added (section 3g) and
 tagged in `rte_checksum.h`: 240 distinct IDs tagged in `include/`, 254 IDs
 here (251 in the tables plus the three `REQ-OAL-BACKEND-*` IDs); the 14
+row-without-tag IDs are unchanged.
+
+**2026-10-06 (G1 step 5b-1):** `REQ-SITEROLE-016` added (section 3e, site
+role) and tagged in `rte_site_role.h`: 241 distinct IDs tagged in `include/`,
+255 IDs here (252 in the tables plus the three `REQ-OAL-BACKEND-*` IDs); the 14
+row-without-tag IDs are unchanged.
+
+**2026-10-06 (G1 step 5b-3a):** `REQ-SITEROLE-017` added (section 3e, site
+role) and tagged in `rte_site_role.h`: 242 distinct IDs tagged in `include/`,
+256 IDs here (253 in the tables plus the three `REQ-OAL-BACKEND-*` IDs); the 14
 row-without-tag IDs are unchanged.
 
 The check before 2026-10-04 used `REQ-[A-Z]+-[A-Z]+-[0-9]+`, which
